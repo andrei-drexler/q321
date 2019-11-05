@@ -448,3 +448,4 @@
 22459,loop for clipvelocity dot
 22468,forceinline clipvelocity
 22430,undo all + made overclip const
+22455,loop on lights first (for more coherence)
