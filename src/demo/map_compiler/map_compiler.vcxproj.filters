@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="map_compiler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{660ecd9d-335c-4127-88e0-05704183cb37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Demo">
+      <UniqueIdentifier>{da732638-a850-4f81-82b9-328c2cf25570}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\engine\math.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine\aabb.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h" />
+    <ClInclude Include="export_obj.h" />
+    <ClInclude Include="print_array.h" />
+    <ClInclude Include="q3map.h" />
+    <ClInclude Include="export_map.h" />
+    <ClInclude Include="..\..\engine\common.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\material.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="parse.h" />
+    <ClInclude Include="rect_packer.h" />
+  </ItemGroup>
+</Project>

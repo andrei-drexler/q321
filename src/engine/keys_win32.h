@@ -1,0 +1,138 @@
+#pragma once
+
+namespace Key {
+	enum {
+		Backspace			= VK_BACK,
+		Tab					= VK_TAB,
+		Enter				= VK_RETURN,
+
+		Shift				= VK_SHIFT,
+		Ctrl				= VK_CONTROL,
+		Alt					= VK_MENU,
+
+		Pause				= VK_PAUSE,
+		CapsLock			= VK_CAPITAL,
+		Escape				= VK_ESCAPE,
+		Space				= VK_SPACE,
+
+		PageUp				= VK_PRIOR,
+		PageDown			= VK_NEXT,
+		End					= VK_END,
+		Home				= VK_HOME,
+
+		Left				= VK_LEFT,
+		Up					= VK_UP,
+		Right				= VK_RIGHT,
+		Down				= VK_DOWN,
+
+		PrintScreen			= VK_SNAPSHOT,
+		Ins					= VK_INSERT,
+		Del					= VK_DELETE,
+
+		_0					= '0',
+		_1					= '1',
+		_2					= '2',
+		_3					= '3',
+		_4					= '4',
+		_5					= '5',
+		_6					= '6',
+		_7					= '7',
+		_8					= '8',
+		_9					= '9',
+
+		Pad0				= VK_NUMPAD0,
+		Pad1				= VK_NUMPAD1,
+		Pad2				= VK_NUMPAD2,
+		Pad3				= VK_NUMPAD3,
+		Pad4				= VK_NUMPAD4,
+		Pad5				= VK_NUMPAD5,
+		Pad6				= VK_NUMPAD6,
+		Pad7				= VK_NUMPAD7,
+		Pad8				= VK_NUMPAD8,
+		Pad9				= VK_NUMPAD9,
+
+		PadAsterisk			= VK_MULTIPLY,
+		PadPlus				= VK_ADD,
+
+		PadMinus			= VK_SUBTRACT,
+		PadDot				= VK_DECIMAL,
+		PadSlash			= VK_DIVIDE,
+
+		A					= 'A',
+		B					= 'B',
+		C					= 'C',
+		D					= 'D',
+		E					= 'E',
+		F					= 'F',
+		G					= 'G',
+		H					= 'H',
+		I					= 'I',
+		J					= 'J',
+		K					= 'K',
+		L					= 'L',
+		M					= 'M',
+		N					= 'N',
+		O					= 'O',
+		P					= 'P',
+		Q					= 'Q',
+		R					= 'R',
+		S					= 'S',
+		T					= 'T',
+		U					= 'U',
+		V					= 'V',
+		W					= 'W',
+		X					= 'X',
+		Y					= 'Y',
+		Z					= 'Z',
+
+		Minus				= VK_OEM_MINUS,
+		Plus				= VK_OEM_PLUS,
+		Backslash			= VK_OEM_5,
+
+		LeftBracket			= VK_OEM_4,
+		RightBracket		= VK_OEM_6,
+
+		Semicolon			= VK_OEM_1,
+		Quote				= VK_OEM_7,
+		Comma				= VK_OEM_COMMA,
+		Period				= VK_OEM_PERIOD,
+		Slash				= VK_OEM_2,
+
+		F1					= VK_F1,
+		F2					= VK_F2,
+		F3					= VK_F3,
+		F4					= VK_F4,
+
+		F5					= VK_F5,
+		F6					= VK_F6,
+		F7					= VK_F7,
+		F8					= VK_F8,
+
+		F9					= VK_F9,
+		F10					= VK_F10,
+		F11					= VK_F11,
+		F12					= VK_F12,
+
+		F13					= VK_F13,
+		F14					= VK_F14,
+		F15					= VK_F15,
+		F16					= VK_F16,
+		F17					= VK_F17,
+		F18					= VK_F18,
+		F19					= VK_F19,
+		F20					= VK_F20,
+		F21					= VK_F21,
+		F22					= VK_F22,
+		F23					= VK_F23,
+		F24					= VK_F24,
+
+		NumLock				= VK_NUMLOCK,
+		ScrollLock			= VK_SCROLL,
+
+		Play				= VK_PLAY,
+		Zoom				= VK_ZOOM,
+
+		BrowserBack			= VK_BROWSER_BACK,
+		BrowserForward		= VK_BROWSER_FORWARD,
+	};
+}

@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{6a2c5704-f9f4-4a13-88ae-bc538a392b26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cooked">
+      <UniqueIdentifier>{61c42226-4c05-4141-84a6-4961ad36adfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Demo">
+      <UniqueIdentifier>{523b9fc0-48e5-4411-8ae2-7d1f4a7f95ac}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\demo\cooked\dm17.h">
+      <Filter>Cooked</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\cooked\shaders.h">
+      <Filter>Cooked</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\map.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\aabb.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\demo.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\math.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\common.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\gfx_resources.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\console.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\gfx_opengl.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\sys_win32.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\keys_win32.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\gfx.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\sys.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\resource_def.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\material.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\map_patch.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\map_partition.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\player_move.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\player.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\rect_packer.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\map_lightmap.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\demo\demo.cpp">
+      <Filter>Demo</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

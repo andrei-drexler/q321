@@ -1,0 +1,443 @@
+15601
+15578,shader newlines
+15573,shader tweak
+15562,removed const from shader
+15566,intel crash
+15541,vec1
+15541,
+15534,removed hash macro from tile pattern function
+15542,consistent floats
+15525,trailing newline
+15707,quake3 banner
+15857,
+16109,auto normals
+16138,normals v2
+16107,normals v3
+16109,normals v4
+16600,quasi-working patches
+16651,mirror patches
+16642,fixed patch indexing
+16639,invisible caulk
+16601,2-pass shader compilation
+16570,removed glGetShaderiv
+16624,splitting up map loading
+16610,forceinline
+16557,undo split
+16560,tweaked q3bnr
+16556,tighter patch descriptors
+16575,per-patch subdivision info
+16580,computed lod levels
+16570,translated patch uvs
+16547,added brush arrays
+16572,separate function for patch loading (forceinline)
+16541,noinline loadpatches
+16546,smaller vertex/index arrays
+16617,changed map struct layout
+16546,reverted layout
+16536,migrating brush init
+16522,
+16404,tweaked loadpatches (manual vec3 ops)
+16434,more of the same
+16404,less of the same
+16439,another tweak
+16362,another attempt
+16357,idem
+16365,idem
+16355,breaking down more vec3s
+16336,idem
+16345,cached positions[index]
+16336,undo
+16338,
+16381,
+16327,
+16357,patch indexing tweak
+16327,undo
+16350,patch subdiv tweak
+16327,undo
+16323,tweaked normal computation
+16335,explicit cross product for normals
+16323,undo
+16326,wrap plane uv's
+16351,uv wrap v2
+16323,undo
+16371,reorganized resource defs
+16323,undo
+16322,moved nodrop last
+16280,material merging
+16316,loadmap tweak
+16288,v2
+16290,v3
+16280,undo
+16347,no more hardcoded vertex attribs
+16304,v2
+16333,v3
+16316,v4
+16304,
+16357,FCol -> C
+16328,undo + ProcGen -> pg
+16193,testing id renaming
+16244,functional id renaming
+16239,more renaming
+16170,idem
+16174,moar replacement
+16252,idem
+16198,idem
+16174,idem
+16177,idem
+16186,idem
+16161,final
+16157,finaler
+16372,comparison with no renaming
+16157,
+16133,finalest
+16175,shortest floats
+16144,
+16153,
+16164,
+16133,undo
+16130,
+16160,map tweaks
+16130,undo
+16121,merged some brushes
+16116,moved caulk to front of material list
+16153,map tweaks :(
+16149,undid some caulking
+16120,undid more caulking :(
+16137,more map tweaks
+16101,idem
+16127,...
+16121,
+16188,original map
+15724,extreme caulk test
+16096,caulk test v2
+16111,caulk test v3
+16090,more map tweaks
+16052,cleaned up rail jumppad
+16055,
+16021,simplified jumppad to rail
+16049,caulk
+16178,crinkler slow
+16108,crinkler veryslow
+16049,crinkler fast
+15997,more map tweaks
+16001,idem
+16034,in/out/uniform renaming via macros
+16001,undo
+15990,caulk
+15986,map tweaks
+15985,map tweaks
+16006,tweaked mid jumppad
+15977,undo
+16013,enlarge bboxes on synthetic plane sides
+16006,tweaked ident renaming
+16014,rename vector fields
+16006,undo
+16005,tweaked mega jumppad
+16007,map tweaks
+16050,more renaming
+16007,undo
+16031,loadpatches variation
+16186,another loadpatches variation
+16007,undo
+16003,loadpatches
+16039,vec4 positions
+16152,sse loadpatches (partial)
+16007,undo
+16489,partition wip
+16637,partition wip
+16631,tighter brush bounds (after sky/nodrop)
+16741,partition wip
+16726,partition wip
+16762,dynamic partition memory
+16760,undo + map struct layout tweak
+16740,
+16735,changed world bounds order
+16733,
+16735,
+16749,forceinline createpartition
+16733,noinline createpartition
+16738,bounds alt-memcpy
+16733,undo
+17112,arch:sse2
+17080,arch:sse
+17112,no arch
+16733,arch:ia32
+16775,removed crinkler calltrans
+16707,undo + removed crinkler saturate
+16890,sse min/max
+16759,bithack abs
+16733,undo all
+17550,functional partition + debug
+17714,added patch clip brushes
+17719,copy node in tracerayrec
+17723,undo + fixed hit plane index
+17715,
+17715,tweaked tracerayrec
+17727,
+17734,fixed patch clip height
+17805,approx rsqrt for normals
+17768,removed refinement step
+17734,undo
+17807,tweaked splitnode
+17813,
+17810,tweaked splitnode
+17804,single call to dosplit
+17797,forceinline dosplit
+17819,uncached children in tracerayrec tweak
+17791,undo + bithack dir sign
+17780,uncached children v2
+17777,v3
+17775,tweaked traceinfo layout
+17781,goto skipbrush
+17775,undo
+17769,t_enter = FLT_MAX instead of 2
+17766,tweaked dosplit swap condition
+17754,replaced max with if in dosplit
+17754,added assign_min/max
+17755,more assign_min/max
+17755,trying raw ifs instead of assign_min/max
+17756,tracerayrec tweak
+17740,bithack clamp to zero
+17738,removed clamp entirely
+17780,bithack abs
+17738,undo
+17725,simplified plane hit condition
+17725,private map functions
+17784,trace types + biased node bounds
+17788,
+17850,manual raytracing stack
+17821,forceinline tracerayrec
+17790,back to recursion
+17821,back to manual stack
+17836,forceinline createpartition
+17821,undo
+17820,
+17909,fast path for axial planes
+17820,disabled fast path
+17844,factored out testleaf, removed gotos
+17852,noinline testleaf
+17844,
+17844,replaced infinite for with gotos
+17844,
+17847,assign_min/max
+17820,back to unstructured code
+17815,assign_min/max
+17809,moved some traceinfo init from ctor to traceray
+17821,added plane vertex offset array
+17896,set plane vertex range
+17893,manual bit packing instead of bitfields
+17893,
+17909,cached mat_vertex_offset[material]
+17943,undo + separated uv mapping
+17943,forceinline uvmapper
+17977,uvmapper tweaks :(
+17893,undo
+17908,planeuv tweaks
+17893,undo
+18002,trace box half size
+18113,hacky collision detection
+17744,removed rendersprite for now
+17841,slightly less hacky collision
+17818,tweaked madds
+17811,madds
+17838,madds
+17846,madds
+17814,madds
+17828,more collision
+17729,removed inner side teleporter clip brushes
+17719,changed plane offset formula
+17759,fixed trace start and added z offset
+18108,q3 slidemove
+18157,noinline dot
+18108,undo
+18213,
+18134,removed ray benchmark code
+18100,restored overclip constant
+18327,broken stepslidemove
+18106,slight reorganization + removed stepslidemove for now
+18060,changed spawn angles
+18084,enabled alt-f4
+18069,different overclip constant
+18068,tweaked slidemove constants
+18012,tweaked plane for center-side jumppad
+18039,ra jumppad tweaks
+18046,tweaked uv-mapping
+18039,undo
+18020,tweaked plane basis computation
+18018,bithack for plane init
+18016,tweaked trace bias
+18022,bithack clamp to zero
+18016,undo
+18026,traceray mad
+18016,undo
+18028,tweaked jumppad to rail
+18034,expanded minkowski offset computation
+18081,bithack abs
+18028,undo + undo
+18015,another jumppad to rail tweak
+19875,added lightmap offsets
+20468,full lightmap offsets
+20395,repeat last valid lightmap offset
+20385,v2
+21135,online rect packing
+21098,removed padding support
+21098,rect_packer init instead of ctor
+21114,global packer variable
+21098,undo
+21107,+1 for uv bounds + increased lightmap size
+18593,removed precompiled lightmap offsets
+18668,forceinline initlightmap
+18593,noinline initlightmap
+18588,simplified uv axis init
+18610,
+18915,lightmap tile visualisation
+18933,moved uniform texture unit initialization
+18928,tweaked init condition
+18938,use global state instead of args in uniform tex unit init
+18969,undo + changed uniform register order
+18928,undo
+19195,exported lights
+19142,packed map lights and removed spotlights
+19164,deinterleaved light properties
+19142,undo
+19145,555 light colors instead of 565
+19587,lightmap (no shadows)
+19599,included spotlights (w/o targets)
+19554,lightmapped shaders
+19761,shadows
+19753,disabled shadows, for size comparison
+19784,added r_lightmap
+19772,shinier q3a banner + removed ray benchmark left-overs
+19770,sorted lights
+19773,xyz morton order (was xzy)
+19770,undo
+19814,levelshot pos/angles + map light array
+19794,out param for getlight
+19794,reordered light struct members
+19783,
+19832,capture by value in uv_map
+19783,undo
+19822,improved lightmap uv-mapping
+19841,tweaked light intensity + canonical order for mirrored planes
+19830,plane index mirror v2
+19852,clear num_lights on init
+19830,undo
+19832,rounded light color quantization
+19834,
+19820,rgb - bgr + tweaked ambient color
+19826,mirror lights on load
+19836,assignment instead of memcpy
+19813,__movsb intrinsic instead of memcpy
+19813,added MemCopy wrapper over __movsb
+19825,MemCopy bounds in CreatePartition (was memcpy)
+19813,undo
+19834,noinline initlights
+19813,undo
+19785,centered rail platform light
+19809,place mirrored lights at end of list
+19791,tweaked light for loop
+19785,undo
+20015,spotlight support
+19902,disabled spotlight contribution
+19830,added enablespotlights toggle
+19807,added use_spotlights compiler option
+19808,
+19799,fixed brush hit check
+20030,added support for area lights
+19799,disabled area lights
+19803,tweaked lighting
+19816,added shadow tolerance (for dark corners/edges)
+19804,faster angle-based early-out
+19820,traceraystep tweak
+19786,v2
+19795,v3
+19786,undo v3
+19816,traceray hitpoint init loop
+19786,undo
+19882,exported surface lights
+19913,colored surface lights
+19902,area-based surface light intensity
+20484,arch sse2
+19905,arch ia32
+19908,map tweaks
+19896,tweaked q3a banner
+19906,computed area light offsets
+20062,added sun light
+19971,disabled sun light
+20133,patch lightmap preparation + re-enabled sunlight
+20187,separated lightmap packing from lighting
+20217,factored out computelighting function
+21356,patch lighting
+21341,noinline getpatchvertex
+21320,noinline getpatch
+21367,ds/dt mad
+21380,v2
+21322,v3
+21348,undo + for loop in ds lattice init
+21303,undo + longer chains in lattice init
+21309,more of the same
+21271,and more of the same
+21271,more readable multiplication order
+21280,
+21511,parallel lightmap computation
+21511,moved batch/thunk outside of parallelfor
+21656,noinline cross
+21511,undo
+21519,void thread func
+21540,moved packer to lightmap struct + added lightmap alpha
+21525,forceinline initlightmap
+21719,lightmap dilation
+21741,v2
+21735,v3
+21728,fixed v1
+21729,higher-power beams
+21756,caulk behind platform patch
+21784,tweaked patch lightmap s/t coeff computation
+21756,undo
+21756,
+21764,disabled uv debug code
+21770,memset/MemSet
+21764,
+21744,streamlined lightmap debugging
+21754,more debugging tweaks
+21748,undo if constexpr
+21749,redid platform patch uvs
+21712,zero lightmap normal threshold
+21745,added frame struct (for level shots)
+21754,removed pixelstore
+21745,undo
+22120,functional loading screen
+22092,disable player update when loading
+22064,nonvolatile load time + lightmap ready flag
+22080,cached system time + disabled loading screen fading
+22099,moved lightmap texture update outside of map load
+22130,noinline renderframe
+22099,undo
+22063,tweaked ambient init
+22099,v2
+22073,v3
+22063,v1
+22085,removed extraneous gldepthmask
+22148,handle window activation
+22143,v2
+22102,removed fading in after load
+22116,tweaked lt2_2000/4000 color
+22136,forceinline clamp(float)
+22294,noinline clamp + min + max
+22156,noinline clamp
+22116,inline clamp
+22124,tweaked cookshader script
+22108,idem
+22109,idem
+22106,update target fps inside mainloop
+22334,first steps towards font support
+22360,noinline sys fatal
+22360,inline sys fatal
+22334,forceinline sys fatal
+22388,more font work
+22384,idem
+22435,
+22434,added grey image for r_lightmap 
+21439,disabled patch lightmapping for comparison
+21872,re-enabled the essential part
+21831,gpu lightmap pos/nor rasterization
