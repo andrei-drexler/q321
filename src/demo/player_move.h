@@ -1,12 +1,13 @@
 #pragma once
 
 namespace Demo {
-	void ClipVelocity(vec3& velocity, const vec3& normal, float overclip = 513.f/512.f) {
+	void ClipVelocity(vec3& velocity, const vec3& normal) {
+		const float Overclip = 513.f/512.f;
 		float into = dot(velocity, normal);
 		if (into < 0.f)
-			into *= overclip;
+			into *= Overclip;
 		else
-			into /= overclip;
+			into /= Overclip;
 		velocity.x -= normal.x * into;
 		velocity.y -= normal.y * into;
 		velocity.z -= normal.z * into;

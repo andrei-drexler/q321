@@ -443,3 +443,8 @@
 21831,gpu lightmap pos/nor rasterization
 22438,reverted gpu rasterization (non-conservative)
 22434,changed texture order
+22438,noinline clipvelocity
+22469,loop for clipvelocity msub
+22459,loop for clipvelocity dot
+22468,forceinline clipvelocity
+22430,undo all + made overclip const
