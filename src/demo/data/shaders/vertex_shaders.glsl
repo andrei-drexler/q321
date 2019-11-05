@@ -23,15 +23,9 @@ void FS() {
 	gl_Position = P; UV = P.xy * .5 + .5;
 }
 
-void Bake() {
-	gl_Position = vec4(T.zw * 2. - 1., 1, 1);
-	Pos = P.xyz;
-	Nor = N;
-}
-
 ////////////////////////////////////////////////////////////////
 
-// $protect void[ \t]+([a-zGLB][_a-zA-Z0-9]*)\(\)
+// $protect void[ \t]+([a-zGL][_a-zA-Z0-9]*)\(\)
 
 void cmet52() { FS(); }
 void dmnd2c() { FS(); }
@@ -53,9 +47,6 @@ void light5() { FS(); }
 void lt2() { FS(); }
 void q3bnr() { FS(); }
 void Loading() { FS(); }
-
-void BakePos() { Bake(); }
-void BakeNor() { Bake(); }
 
 void Lmapped() { Generic(); }
 void mtlfw15ow_m() { Generic(); }

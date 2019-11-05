@@ -45,11 +45,11 @@ FORCEINLINE void Map::InitLightmap() {
 	using namespace Demo;
 
 	lightmap.data = Mem::Alloc<u32>(Lightmap::Width * Lightmap::Height);
-	lightmap.pos = Mem::Alloc<vec4>(Lightmap::Width * Lightmap::Height);
-	lightmap.nor = Mem::Alloc<vec4>(Lightmap::Width * Lightmap::Height);
+	lightmap.pos = Mem::Alloc<vec3>(Lightmap::Width * Lightmap::Height);
+	lightmap.nor = Mem::Alloc<vec3>(Lightmap::Width * Lightmap::Height);
 
-	MemSet(lightmap.pos, 0, sizeof(vec4) * Lightmap::Width * Lightmap::Height);
-	MemSet(lightmap.nor, 0, sizeof(vec4) * Lightmap::Width * Lightmap::Height);
+	MemSet(lightmap.pos, 0, sizeof(vec3) * Lightmap::Width * Lightmap::Height);
+	MemSet(lightmap.nor, 0, sizeof(vec3) * Lightmap::Width * Lightmap::Height);
 
 	lightmap.packer.Init(Lightmap::Width, Lightmap::Height);
 
@@ -97,9 +97,8 @@ FORCEINLINE void Map::InitLightmap() {
 			lightmap_uv.y = (rect.min[1] + 0.5f + lightmap_uv.y * size.y) / Lightmap::Height;
 		}
 		
-		if (0) {
-		vec4* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width + rect.min[0];
-		vec4* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width + rect.min[0];
+		vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width + rect.min[0];
+		vec3* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width + rect.min[0];
 
 		u8 prim_x = patch.width >> 1;
 		u8 prim_y = patch.height >> 1;
@@ -143,9 +142,8 @@ FORCEINLINE void Map::InitLightmap() {
 				}
 				vec3 ds = s_coeff[0] * (v[1] - v[0]) + s_coeff[2] * (v[2] - v[1]);
 
-				safe_normalize(cross(dt, ds), texel_nor[x].xyz);
+				safe_normalize(cross(dt, ds), texel_nor[x]);
 			}
-		}
 		}
 	}
 
@@ -217,9 +215,8 @@ FORCEINLINE void Map::InitLightmap() {
 				lightmap_uv.y = (p[t_axis] / Lightmap::Scale - uv_bounds.mins.y + rect.min[1]) / Lightmap::Height;
 			}
 
-			if (0) {
-			vec4* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width + rect.min[0];
-			vec4* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width + rect.min[0];
+			vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width + rect.min[0];
+			vec3* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width + rect.min[0];
 				
 			for (u16 y = 0, height = rect.GetHeight(); y < height; ++y, texel_pos += Lightmap::Width, texel_nor += Lightmap::Width) {
 				for (u16 x = 0, width = rect.GetWidth(); x < width; ++x) {
@@ -240,25 +237,12 @@ FORCEINLINE void Map::InitLightmap() {
 							continue;
 					}
 
-					texel_pos[x].xyz = pos;
-					texel_nor[x].xyz = plane.xyz;
+					texel_pos[x] = pos;
+					texel_nor[x] = plane.xyz;
 				}
-			}
 			}
 		}
 	}
-
-	Gfx::SetRenderTarget(Demo::Texture::LightmapAux);
-	Gfx::Clear(Gfx::ClearBit::Color);
-	g_map.Render(Map::RenderMode::BakePos);
-	Gfx::SetRenderTarget(Gfx::Backbuffer);
-	Gfx::ReadBack(Demo::Texture::LightmapAux, lightmap.pos);
-
-	Gfx::SetRenderTarget(Demo::Texture::LightmapAux);
-	Gfx::Clear(Gfx::ClearBit::Color);
-	g_map.Render(Map::RenderMode::BakeNor);
-	Gfx::SetRenderTarget(Gfx::Backbuffer);
-	Gfx::ReadBack(Demo::Texture::LightmapAux, lightmap.nor);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -326,13 +310,13 @@ void Map::ComputeLighting(bool shadows) {
 			Map* map = params->map;
 
 			u32* texel = map->lightmap.data + y * Lightmap::Width;
-			vec4* texel_pos = map->lightmap.pos + y * Lightmap::Width;
-			vec4* texel_nor = map->lightmap.nor + y * Lightmap::Width;
+			vec3* texel_pos = map->lightmap.pos + y * Lightmap::Width;
+			vec3* texel_nor = map->lightmap.nor + y * Lightmap::Width;
 
 			for (; y < yend; ++y) {
 				for (u16 x = 0; x < Lightmap::Width; ++x, ++texel_pos, ++texel_nor, ++texel) {
-					vec3 pos = texel_pos->xyz;
-					const vec3& nor = texel_nor->xyz;
+					vec3 pos = *texel_pos;
+					const vec3& nor = *texel_nor;
 					pos += nor;
 
 					constexpr vec3 Ambient = {
@@ -441,8 +425,8 @@ void Map::ComputeLighting(bool shadows) {
 			auto& rect = lightmap.packer.GetTile(tile_index);
 			
 			u32* texel = lightmap.data + rect.min[1] * Lightmap::Width;
-			vec4* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width;
-			vec4* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width;
+			vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width;
+			vec3* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width;
 
 			for (u16 y = rect.min[1]; y < rect.max[1]; ++y, texel += Lightmap::Width, texel_pos += Lightmap::Width, texel_nor += Lightmap::Width) {
 				for (u16 x = rect.min[0]; x < rect.max[0]; ++x) {
@@ -464,7 +448,7 @@ void Map::ComputeLighting(bool shadows) {
 							break;
 
 						case Lightmap::DebugMode::Normals:
-							texel[x] = Lightmap::PackVec3(texel_nor[x].xyz * 0.5f + 0.5f);
+							texel[x] = Lightmap::PackVec3(texel_nor[x] * 0.5f + 0.5f);
 							break;
 
 						default:

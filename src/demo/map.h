@@ -303,8 +303,8 @@ struct Map {
 
 	struct {
 		u32*				data;
-		vec4*				pos;
-		vec4*				nor;
+		vec3*				pos;
+		vec3*				nor;
 		RectPacker			packer;
 	}						lightmap;
 
@@ -345,13 +345,7 @@ struct Map {
 	void					ComputeLighting(bool shadows = true);
 	void					UpdateLightmapTexture();
 
-	enum class RenderMode {
-		Normal,
-		BakePos,
-		BakeNor,
-	};
-
-	void					Render(RenderMode mode = RenderMode::Normal);
+	void					Render();
 
 
 private:
@@ -786,7 +780,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 
 ////////////////////////////////////////////////////////////////
 
-void Map::Render(RenderMode mode) {
+void Map::Render() {
 	using namespace Demo;
 
 	const bool ShowClipping = false;
@@ -819,12 +813,7 @@ void Map::Render(RenderMode mode) {
 		if (!mesh.num_vertices || !mesh.num_indices)
 			continue;
 
-		Gfx::Shader::ID shader = MaterialShaders[material];
-		if (mode == RenderMode::BakePos)
-			shader = Shader::BakePos;
-		if (mode == RenderMode::BakeNor)
-			shader = Shader::BakeNor;
-		Gfx::SetShader(shader);
+		Gfx::SetShader(MaterialShaders[material]);
 		
 		Uniform::Time.w = material;
 		Uniform::Texture0 = MaterialTextures[material];

@@ -798,11 +798,3 @@ void Loading() {
 	//FCol.xyz *= .7 + .6 * FBMT(UV, vec2(128), .9, 2., 4);
 	FCol.xyz *= .7 + .3 * NT(UV, .5/fwidth(UV));
 }
-
-void BakePos() {
-    FCol = vec4(Pos, 0);
-}
-
-void BakeNor() {
-    FCol = vec4(Nor, 0);
-}

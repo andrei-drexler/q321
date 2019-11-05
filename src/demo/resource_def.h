@@ -19,8 +19,6 @@
 	/*Name,					VertexBits*/\
 	x(Generic,				MapVertexBits)\
 	x(Loading,				FSVertexBits)\
-	x(BakePos,				MapVertexBits|Gfx::Shader::NoCull)\
-	x(BakeNor,				MapVertexBits|Gfx::Shader::NoCull)\
 	x(Lmapped,				MapVertexBits)\
 	x(fixture,				MapVertexBits)\
 	x(shiny,				MapVertexBits)\
@@ -55,7 +53,6 @@
 	x(White,		Gfx::InvalidID,		16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
 	x(Grey,			Gfx::InvalidID,		16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
 	x(Lightmap,		Gfx::InvalidID,		512,	256,	BGRA8,		Gfx::Texture::Flags::Default|Gfx::Texture::Flags::NoMips)\
-	x(LightmapAux,	Gfx::InvalidID,		512,	256,	RGBA32F,	Gfx::Texture::Flags::RenderTarget|Gfx::Texture::Flags::NoMips)\
 	x(dmnd2c,		Shader::dmnd2c,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2cow,		Shader::dmnd2cow,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(LevelshotZ,	Gfx::InvalidID,		512,	512,	Z32F,		Gfx::Texture::Flags::ZBuffer)\

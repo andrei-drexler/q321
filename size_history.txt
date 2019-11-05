@@ -441,3 +441,4 @@
 21439,disabled patch lightmapping for comparison
 21872,re-enabled the essential part
 21831,gpu lightmap pos/nor rasterization
+22438,reverted gpu rasterization (non-conservative)
