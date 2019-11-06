@@ -178,9 +178,9 @@ namespace Mem {
 		u32		size;
 	};
 	
-	Arena g_mainArena;
+	Arena g_main_arena;
 
-	FORCEINLINE void Init(Arena* arena = &g_mainArena, u32 size = 32 * MB) {
+	FORCEINLINE void Init(Arena* arena = &g_main_arena, u32 size = 32 * MB) {
 		arena->buffer	= (u8*)Sys::Alloc(size);
 		arena->low		= 0;
 		arena->high		= size;
@@ -192,7 +192,7 @@ namespace Mem {
 		arena->high = arena->size;
 	}
 
-	NOINLINE void* Alloc(u32 size, Arena* arena = &g_mainArena) {
+	NOINLINE void* Alloc(u32 size, Arena* arena = &g_main_arena) {
 		size = (size + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1);
 		if (arena->low + size <= arena->high) {
 			arena->high -= size;
@@ -203,7 +203,7 @@ namespace Mem {
 	}
 
 	template <typename T>
-	FORCEINLINE T* Alloc(u32 count = 1, Arena* arena = &g_mainArena) {
+	FORCEINLINE T* Alloc(u32 count = 1, Arena* arena = &g_main_arena) {
 		return (T*)Alloc(count * sizeof(T), arena);
 	}
 }
