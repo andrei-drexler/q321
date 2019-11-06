@@ -45,7 +45,6 @@ FORCEINLINE void Map::InitLightmap() {
 	using namespace Demo;
 
 	lightmap.data = Mem::Alloc<u32>(Lightmap::Width * Lightmap::Height);
-	lightmap.accum = Mem::Alloc<vec3>(Lightmap::Width * Lightmap::Height);
 	lightmap.pos = Mem::Alloc<vec3>(Lightmap::Width * Lightmap::Height);
 	lightmap.nor = Mem::Alloc<vec3>(Lightmap::Width * Lightmap::Height);
 
@@ -300,106 +299,93 @@ void Map::ComputeLighting(bool shadows) {
 	//shadows = false;
 
 	if (Lightmap::Debug == Lightmap::DebugMode::Off) {
-		MemSet(lightmap.accum, 0, sizeof(vec3) * Lightmap::Width * Lightmap::Height);
-
 		struct Params {
 			Map* map;
 			bool shadows;
 		} params{this, shadows};
 
 		//for (u16 y = 0; y < Lightmap::Height; ++y) {
-		ParallelFor(Lightmap::Height, &params, [](u32 ybegin, u32 yend, void* data) {
+		ParallelFor(Lightmap::Height, &params, [](u32 y, u32 yend, void* data) {
 			Params* params = (Params*)data;
 			Map* map = params->map;
 
-			for (u16 light_index = 0; light_index < map->num_lights; ++light_index) {
-				const auto& light = map->lights[light_index];
+			u32* texel = map->lightmap.data + y * Lightmap::Width;
+			vec3* texel_pos = map->lightmap.pos + y * Lightmap::Width;
+			vec3* texel_nor = map->lightmap.nor + y * Lightmap::Width;
 
-				vec3* accum = map->lightmap.accum + ybegin * Lightmap::Width;
-				vec3* texel_pos = map->lightmap.pos + ybegin * Lightmap::Width;
-				vec3* texel_nor = map->lightmap.nor + ybegin * Lightmap::Width;
-
-				for (u16 y = ybegin; y < yend; ++y) {
-					for (u16 x = 0; x < Lightmap::Width; ++x, ++texel_pos, ++texel_nor, ++accum) {
-						const vec3& nor = *texel_nor;
-						if (length_squared(nor) == 0.f)
-							continue;
-
-						vec3 pos = *texel_pos;
-						pos += nor;
-
-						vec3 light_pos = light.position;
-						if (EnableSunLight && light_index == 0)
-							light_pos += pos;
-						vec3 light_dir = pos - light_pos;
-						float angle = -dot(nor, light_dir);
-						if (angle < 0.f)
-							continue;
-
-						float dist = length(light_dir);
-						if (dist > 0.f)
-							angle /= dist;
-						assign_max(dist, 16.f);
-						float scale = light.intensity * angle;
-						if (!EnableSunLight || light_index != 0)
-							scale *= Lightmap::PointScale / (dist * dist);
-						if (scale < Lightmap::ThreshIgnore)
-							continue;
-
-						if (light.flags & Light::IsSpotlight) {
-							if (!EnableSpotlights)
-								continue;
-							float dist_by_normal = dot(light_dir, light.spot.xyz);
-							if (dist_by_normal < 0.f)
-								continue;
-							const float Radius = 64.f;
-							float radius_by_dist = (Radius + 16.f) / light.spot.w;
-							float radius_at_dist = radius_by_dist * dist_by_normal;
-							vec3 point_at_dist = light.position;
-							mad(point_at_dist, light.spot.xyz, dist_by_normal);
-							float sample_radius = length(pos - point_at_dist);
-							if (sample_radius >= radius_at_dist)
-								continue;
-							if (sample_radius > radius_at_dist - 32.f)
-								scale *= (radius_at_dist - sample_radius) * (1.f/32.f);
-						}
-
-						TraceInfo trace;
-						if (params->shadows) {
-							trace.SetLightmap(light_pos, pos);
-							// if the trace almost made it to its destination, accept it anyway
-							// this eliminates some dark edges/splotchy corners
-							const float ShadowTolerance = 2.f;
-							if (map->TraceRay(trace) && length_squared(pos - trace.hit_point) >= ShadowTolerance * ShadowTolerance)
-								continue;
-						}
-						mad(*accum, light.color, scale);
-					}
-				}
-			}
-
-			u32* texel = map->lightmap.data + ybegin * Lightmap::Width;
-			vec3* accum = map->lightmap.accum + ybegin * Lightmap::Width;
-			vec3* texel_nor = map->lightmap.nor + ybegin * Lightmap::Width;
-
-			for (u16 y = ybegin; y < yend; ++y) {
-				for (u16 x = 0; x < Lightmap::Width; ++x, ++accum, ++texel_nor, ++texel) {
+			for (; y < yend; ++y) {
+				for (u16 x = 0; x < Lightmap::Width; ++x, ++texel_pos, ++texel_nor, ++texel) {
+					vec3 pos = *texel_pos;
 					const vec3& nor = *texel_nor;
+					pos += nor;
 
 					constexpr vec3 Ambient = {
 						4.f * 6.25f,
 						4.f * 6.25f,
 						4.f * 7.f,
 					};
+					vec3 accum = Ambient;
 
-					vec3 light = *accum + Ambient;
+					TraceInfo trace;
+
+					if (length_squared(nor) > 0.f) {
+						for (u16 light_index = 0; light_index < map->num_lights; ++light_index) {
+							const auto& light = map->lights[light_index];
+							vec3 light_pos = light.position;
+							if (EnableSunLight && light_index == 0)
+								light_pos += pos;
+							vec3 light_dir = pos - light_pos;
+							float angle = -dot(nor, light_dir);
+							if (angle < 0.f)
+								continue;
+							float dist = length(light_dir);
+							if (dist > 0.f)
+								angle /= dist;
+							assign_max(dist, 16.f);
+							float scale = light.intensity * angle;
+							if (!EnableSunLight || light_index != 0)
+								scale *= Lightmap::PointScale / (dist * dist);
+							if (scale < Lightmap::ThreshIgnore)
+								continue;
+
+							if (light.flags & Light::IsSpotlight) {
+								if (!EnableSpotlights)
+									continue;
+								float dist_by_normal = dot(light_dir, light.spot.xyz);
+								if (dist_by_normal < 0.f)
+									continue;
+								const float Radius = 64.f;
+								float radius_by_dist = (Radius + 16.f) / light.spot.w;
+								float radius_at_dist = radius_by_dist * dist_by_normal;
+								vec3 point_at_dist = light.position;
+								mad(point_at_dist, light.spot.xyz, dist_by_normal);
+								float sample_radius = length(pos - point_at_dist);
+								if (sample_radius >= radius_at_dist)
+									continue;
+								if (sample_radius > radius_at_dist - 32.f)
+									scale *= (radius_at_dist - sample_radius) * (1.f/32.f);
+							}
+
+							if (params->shadows) {
+								trace.SetLightmap(light_pos, pos);
+								// if the trace almost made it to its destination, accept it anyway
+								// this eliminates some dark edges/splotchy corners
+								const float ShadowTolerance = 2.f;
+								if (map->TraceRay(trace) && length_squared(pos - trace.hit_point) >= ShadowTolerance * ShadowTolerance)
+									continue;
+							}
+
+							mad(accum, light.color, scale);
+						}
+					}
+
 					if (!params->shadows)
-						light *= 0.75f;
+						accum *= 0.75f;
 
 					u32 color = 
-						min<i32>(light.x, 255) << 16 | 
-						min<i32>(light.y, 255) <<  8 | 
-						min<i32>(light.z, 255) <<  0 ;
+						min<i32>(accum.x, 255) << 16 | 
+						min<i32>(accum.y, 255) <<  8 | 
+						min<i32>(accum.z, 255) <<  0 ;
 					
 					if (length_squared(nor) > 0.f)
 						color |= 0xff00'0000;

@@ -303,7 +303,6 @@ struct Map {
 
 	struct {
 		u32*				data;
-		vec3*				accum;
 		vec3*				pos;
 		vec3*				nor;
 		RectPacker			packer;
