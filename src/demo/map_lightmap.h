@@ -296,7 +296,9 @@ void ParallelFor(u32 count, void* data, void (*work)(u32 begin, u32 end, void* d
 void Map::ComputeLighting(bool shadows) {
 	using namespace Demo;
 
-	//shadows = false;
+#ifdef DEV
+	shadows = false;
+#endif
 
 	if (Lightmap::Debug == Lightmap::DebugMode::Off) {
 		struct Params {
