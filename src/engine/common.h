@@ -109,6 +109,12 @@ FORCEINLINE void* MemCopy(void* dest, const void* src, size_t count) {
 	return dest;
 }
 
+template <typename T>
+FORCEINLINE T* MemCopy(T* dest, const T* src, size_t count = 1) {
+	MemCopy((void*)dest, (const void*)src, count * sizeof(T));
+	return dest;
+}
+
 FORCEINLINE void* MemSet(void* dest, int c, size_t count) {
 	#ifdef _MSC_VER
 		__stosb((unsigned char*)dest, (unsigned char)c, count);
