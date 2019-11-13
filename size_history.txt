@@ -458,3 +458,7 @@
 22759,optimized rect::add
 22762,tweaked rect::clear
 22759,undo
+22728,manual stack in rect_packer::addrec
+22729,memcopy rectangle when popping
+22730,assignment instead of memcopy in rect_packer::addrec
+22728,undo

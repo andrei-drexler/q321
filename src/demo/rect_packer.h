@@ -46,7 +46,7 @@ private:
 		void				MakeInternal(bool axis, Field split_pos, Field child)		{ this->flags = Field((child << AxisBits) | Field(axis)); this->data = split_pos; }
 	};
 
-	bool					AddRec(u16 node_index, Rectangle node_rect, const Dimension wanted[2]);
+	bool					DoAdd(u16 node_index, Rectangle node_rect, const Dimension wanted[2]);
 
 	enum {
 		MaxTiles			= 2048,
@@ -71,17 +71,37 @@ void RectPacker::Init(Dimension width, Dimension height) {
 	m_nodes[0].MakeLeaf();
 }
 
-bool RectPacker::AddRec(u16 node_index, Rectangle node_rect, const Dimension wanted[2]) {
-	if (node_index >= Node::MaxIndex)
+FORCEINLINE bool RectPacker::DoAdd(u16 node_index, Rectangle node_rect, const Dimension wanted[2]) {
+	struct StackEntry {
+		u16 node_index;
+		Rectangle node_rect;
+	};
+
+	const u16 MaxDepth = 128;
+	StackEntry stack[MaxDepth];
+	u16 stack_top = 0;
+
+	goto beginning;
+
+pop:
+	if (stack_top == 0) {
 		return false;
+	} else {
+		auto& top = stack[--stack_top];
+		node_index = top.node_index;
+		node_rect = top.node_rect;
+	}
+
+beginning:
+	assert(node_index < m_numNodes);
 
 	auto& node = m_nodes[node_index];
 	if (node.IsLeaf()) {
 		if (!node.IsLeafEmpty())
-			return false;
+			goto pop;
 
 		if (node_rect.GetWidth() < wanted[0] || node_rect.GetHeight() < wanted[1])
-			return false;
+			goto pop;
 
 		if (node_rect.GetWidth() == wanted[0] && node_rect.GetHeight() == wanted[1]) {
 			m_nodes[node_index].data = m_numTiles;
@@ -108,24 +128,24 @@ bool RectPacker::AddRec(u16 node_index, Rectangle node_rect, const Dimension wan
 	auto split_pos = node.GetNodeSplitPos();
 	auto first_child = node.GetNodeFirstChild();
 
-	auto max_pos = node_rect.max[axis];
+	assert(stack_top < MaxDepth);
+	auto& push = stack[stack_top++];
+	push.node_index = first_child + 1;
+	MemCopy(&push.node_rect, &node_rect);
+	push.node_rect.min[axis] = split_pos;
+
 	node_rect.max[axis] = split_pos;
+	node_index = first_child;
 
-	if (AddRec(first_child, node_rect, wanted))
-		return true;
-
-	node_rect.min[axis] = split_pos;
-	node_rect.max[axis] = max_pos;
-
-	return AddRec(first_child + 1, node_rect, wanted);
+	goto beginning;
 }
 
-FORCEINLINE RectPacker::Index RectPacker::Add(Dimension width, Dimension height) {
+NOINLINE RectPacker::Index RectPacker::Add(Dimension width, Dimension height) {
 	assert(m_numTiles < MaxTiles);
 
 	Dimension wanted[2] = {width, height};
 	Rectangle full{{0, 0}, {m_width, m_height}};
-	if (!AddRec(0, full, wanted))
+	if (!DoAdd(0, full, wanted))
 		return Full;
 
 	return Index(m_numTiles - 1);
