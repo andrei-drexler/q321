@@ -66,8 +66,10 @@ struct Rect {
 	}
 
 	void add(const vec2& v) {
-		mins = min(mins, v);
-		maxs = max(maxs, v);
+		Math::assign_min(mins.x, v.x);
+		Math::assign_min(mins.y, v.y);
+		Math::assign_max(maxs.x, v.x);
+		Math::assign_max(maxs.y, v.y);
 	}
 
 	void add(const Rect& bounds) {

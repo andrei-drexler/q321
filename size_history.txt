@@ -455,3 +455,6 @@
 22817,memcopy in traceinfo::setcollision
 22802,memcopy in traceinfo::setlightmap
 22797,custom vec3/4/mat3/4/aabb assignment operators using memcopy
+22759,optimized rect::add
+22762,tweaked rect::clear
+22759,undo
