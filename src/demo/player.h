@@ -4,7 +4,9 @@ namespace Demo {
 	struct Player {
 		static constexpr float
 			MoveSpeed		= 320.f,
+			StepUpSpeed		= 32.f,
 			TurnSpeed		= 90.f,
+
 			Height			= 56.f,
 			HalfHeight		= Height * 0.5f,
 			HalfWidth		= 15.f,
@@ -40,17 +42,18 @@ namespace Demo {
 
 		vec3			position;
 		vec3			velocity;
+		float			step;
 		const vec4*		ground;
 		vec3			angles;
 		u32				inputs;
 
 		mat4			orientation;
 
-		bool Has(Input input) const		{ return inputs & InputMask(input); }
-		void Set(Input input)			{ inputs |= InputMask(input); }
-		void Clear(Input input)			{ inputs &= ~InputMask(input); }
+		bool			Has(Input input) const		{ return inputs & InputMask(input); }
+		void			Set(Input input)			{ inputs |= InputMask(input); }
+		void			Clear(Input input)			{ inputs &= ~InputMask(input); }
 
-		void Update(float dt);
+		void			Update(float dt);
 	} g_player;
 }
 
@@ -83,13 +86,17 @@ void Demo::Player::Update(float dt) {
 	new_velocity.z += wishdir.z;
 	new_velocity *= MoveSpeed * run;
 
-	mix_into(velocity, new_velocity, min(1.f, dt * 8.));
+	mix_into(velocity, new_velocity, min(1.f, dt * 8.f));
+
+	step -= step * dt * 8.f;
+	if (step < 0.f)
+		step = 0.f;
 
 	if (length_squared(velocity) < 1.f)
 		velocity = 0.f;
 	else
-		SlideMove(*this, dt);
-		//StepSlideMove(*this, dt);
+		//SlideMove(*this, dt);
+		StepSlideMove(*this, dt);
 		
 	assert(!isnan(position.x));
 }

@@ -143,6 +143,7 @@ namespace Demo {
 
 		Frame frame;
 		frame.pos			= g_player.position;
+		frame.pos.z			-= g_player.step;
 		frame.angles		= g_player.angles;
 		frame.fov			= cl_fov.f;
 		frame.time			= g_time - g_load_time;

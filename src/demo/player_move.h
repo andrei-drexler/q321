@@ -13,6 +13,22 @@ namespace Demo {
 		velocity.z -= normal.z * into;
 	}
 
+	bool GroundTrace(Player& player) {
+		Map::TraceInfo trace;
+		trace.SetCollision(player.position, {0.f, 0.f, -0.25f}, Player::CollisionBounds);
+		trace.start.z -= Player::EyeCenterOffset;
+
+		bool hit = g_map.TraceRay(trace);
+		trace.hit_point.z += Player::EyeCenterOffset;
+		if (hit) {
+			player.ground = g_map.brushes.planes + trace.plane;
+		} else {
+			player.ground = nullptr;
+		}
+
+		return hit;
+	}
+
 	////////////////////////////////////////////////////////////////
 	
 	bool SlideMove(Player& player, float dt) {
@@ -24,8 +40,17 @@ namespace Demo {
 
 		const u8 MaxClipPlanes = 5;
 		vec3 planes[MaxClipPlanes];
-		u8 num_planes = 0, bump, i;
+		u8 num_planes, bump, i;
 
+		// never turn against the ground plane
+		if (player.ground) {
+			num_planes = 1;
+			planes[0] = player.ground->xyz;
+		} else {
+			num_planes = 0;
+		}
+
+		// never turn against original velocity
 		safe_normalize(player.velocity, planes[num_planes++]);
 
 		const float
@@ -36,9 +61,8 @@ namespace Demo {
 			vec3 advance = player.velocity * dt;
 
 			Map::TraceInfo trace;
-			player.position.z -= Player::EyeCenterOffset;
 			trace.SetCollision(player.position, advance, Player::CollisionBounds);
-			player.position.z += Player::EyeCenterOffset;
+			trace.start.z -= Player::EyeCenterOffset;
 
 			bool hit = g_map.TraceRay(trace);
 			trace.hit_point.z += Player::EyeCenterOffset;
@@ -145,10 +169,18 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	void StepSlideMove(Player& player, float dt) {
+		if (player.velocity.z <= 0.f) {
+			if (GroundTrace(player)) {
+				ClipVelocity(player.velocity, player.ground->xyz);
+			}
+		} else {
+			player.ground = nullptr;
+		}
+
 		vec3 pos = player.position;
 		vec3 vel = player.velocity;
 
-		if (!SlideMove(player, dt))
+		if (!SlideMove(player, dt) || !player.ground)
 			return;
 		
 		const float StepSize = 18.f;
@@ -156,8 +188,9 @@ namespace Demo {
 		const vec3 down = {0.f, 0.f, -StepSize};
 
 		Map::TraceInfo trace;
-#if 0
+#if 1
 		trace.SetCollision(pos, down, Player::CollisionBounds);
+		trace.start.z -= Player::EyeCenterOffset;
 		g_map.TraceRay(trace);
 		
 		// never step up when you still have up velocity
@@ -165,8 +198,9 @@ namespace Demo {
 			return;
 #endif
 
-		trace.SetCollision(pos, up, Player::CollisionBounds);
+		trace.delta = up;
 		g_map.TraceRay(trace);
+		trace.hit_point.z += Player::EyeCenterOffset;
 		if (trace.fraction < 1.f)
 			return;
 
@@ -174,19 +208,20 @@ namespace Demo {
 		player.velocity = vel;
 		SlideMove(player, dt);
 
-		trace.SetCollision(player.position, down, Player::CollisionBounds);
+		trace.start = player.position;
+		trace.start.z -= Player::EyeCenterOffset;
+		trace.delta = down;
 		g_map.TraceRay(trace);
+		trace.hit_point.z += Player::EyeCenterOffset;
 		if (trace.fraction > 0.f) {
 			player.position = trace.hit_point;
-			player.position.z += 3.f;
 		}
 
 		if (trace.fraction < 1.f)
 			ClipVelocity(player.velocity, trace.hit_normal);
 
 		float delta = player.position.z - pos.z;
-		if (abs(delta) > 0.5f) {
-			int abcd = 0;
-		}
+		if (delta > 0.5f)
+			player.step += delta;
 	}
 } // namespace Demo
