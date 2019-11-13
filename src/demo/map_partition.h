@@ -3,23 +3,23 @@
 ////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Map::TraceInfo::SetBullet(const vec3& a, const vec3& b) {
-	start = a;
-	delta = b - a;
-	box_half_size = 0.f;
+	MemCopy(&start, &a);
+	MemCopy(&delta, &(b - a));
+	MemSet(&box_half_size, 0, sizeof(box_half_size));
 	type = Type::Bullet;
 }
 
 FORCEINLINE void Map::TraceInfo::SetLightmap(const vec3& a, const vec3& b) {
-	start = a;
-	delta = b - a;
-	box_half_size = 0.f;
+	MemCopy(&start, &a);
+	MemCopy(&delta, &(b - a));
+	MemSet(&box_half_size, 0, sizeof(box_half_size));
 	type = Type::Lightmap;
 }
 
 FORCEINLINE void Map::TraceInfo::SetCollision(const vec3& a, const vec3& travel, const vec3& box) {
-	start = a;
-	delta = travel;
-	box_half_size = box;
+	MemCopy(&start, &a);
+	MemCopy(&delta, &travel);
+	MemCopy(&box_half_size, &box);
 	type = Type::Collision;
 }
 

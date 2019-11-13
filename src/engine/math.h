@@ -299,6 +299,8 @@ struct vec3 {
 	constexpr vec3(float x, float y, float z) : x(x), y(y), z(z) { }
 	constexpr vec3(float scalar) : x(scalar), y(scalar), z(scalar) { }
 
+	vec3& operator=(const vec3& copy) { return *MemCopy(this, &copy); }
+
 	constexpr float& operator[](size_t i) { return data[i]; }
 	constexpr const float& operator[](size_t i) const { return data[i]; }
 
@@ -337,6 +339,8 @@ struct vec4 {
 	constexpr vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) { }
 	constexpr vec4(float scalar) : x(scalar), y(scalar), z(scalar), w(scalar) { }
 	
+	vec4& operator=(const vec4& copy) { return *MemCopy(this, &copy); }
+
 	constexpr float& operator[](size_t i) { return data[i]; }
 	constexpr const float& operator[](size_t i) const { return data[i]; }
 
@@ -514,6 +518,8 @@ struct mat3 {
 
 	constexpr explicit mat3(const mat4& m);
 
+	mat3& operator=(const mat3& copy) { return *MemCopy(this, &copy); }
+
 	constexpr vec3& operator[](size_t i) { return m[i]; }
 	constexpr const vec3& operator[](size_t i) const { return m[i]; }
 
@@ -633,11 +639,13 @@ struct mat4 {
 		w(0.f,   0.f,   0.f,   1.f)
 	{ }
 
+	mat4& operator=(const mat4& copy) { return *MemCopy(this, &copy); }
+
 	constexpr vec4&			operator[](size_t i) { return m[i]; }
 	constexpr const vec4&	operator[](size_t i) const { return m[i]; }
 
-	constexpr mat4&			SetRow(int row, const vec4& v)	{ m[0][row] = v.x; m[1][row] = v.y; m[2][row] = v.z; m[3][row] = v.w; return *this; }
-	constexpr mat4&			SetPosition(const vec3& pos)	{ w.xyz = pos; return *this; }
+	mat4&					SetRow(int row, const vec4& v)	{ m[0][row] = v.x; m[1][row] = v.y; m[2][row] = v.z; m[3][row] = v.w; return *this; }
+	mat4&					SetPosition(const vec3& pos)	{ w.xyz = pos; return *this; }
 	constexpr const vec3&	GetPosition() const				{ return w.xyz; }
 };
 

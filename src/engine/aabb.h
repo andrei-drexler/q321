@@ -8,6 +8,8 @@ struct AABB {
 
 	AABB() = default;
 
+	AABB& operator=(const AABB& copy) { return *MemCopy(this, &copy); }
+
 	void clear() {
 		mins = vec3(FLT_MAX);
 		maxs = vec3(-FLT_MAX);

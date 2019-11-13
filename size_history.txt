@@ -451,3 +451,7 @@
 22455,loop on lights first (for more coherence)
 22430,undo (~6% perf delta not worth it)
 22858,stepslidemove (wip)
+22850,loop in traceinfo::setcollision
+22817,memcopy in traceinfo::setcollision
+22802,memcopy in traceinfo::setlightmap
+22797,custom vec3/4/mat3/4/aabb assignment operators using memcopy
