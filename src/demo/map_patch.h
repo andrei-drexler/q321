@@ -36,6 +36,8 @@ NOINLINE void Map::LoadPatches(const PackedMap& packed, u8 pass) {
 
 			auto first_vertex = num_mat_verts[patch.material];
 			auto dst_index = patches.count++;
+			assert(patches.count <= MAX_NUM_PATCHES);
+
 			patches.source[dst_index] = (patch_index << 1) | mirror_side;
 			patches.control_start[dst_index] = current_patch_vertex - num_control_points;
 			patches.vertex_start[dst_index] = mat_vertex_offset[patch.material] + first_vertex;

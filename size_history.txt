@@ -463,3 +463,4 @@
 22730,assignment instead of memcopy in rect_packer::addrec
 22728,undo
 22724,custom memset when generating white/grey textures
+22719,lowered max_num_patches
