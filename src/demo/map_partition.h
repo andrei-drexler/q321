@@ -111,16 +111,16 @@ NOINLINE void Map::SplitNode(u16 index, i16 bounds[2][3]) {
 }
 
 NOINLINE void Map::CreatePartition() {
-	auto& root = partition.nodes[0];
-	partition.num_nodes = 1;
-	root.data[0] = 0;
-	root.data[1] = brushes.count;
-
 	for (u16 i = 0, count = brushes.count; i < count; ++i)
 		partition.brushes[i] = i;
 
+	auto& root = partition.nodes[0];
+	root.data[0] = 0;
+	root.data[1] = brushes.count;
+	partition.num_nodes = 1;
+
 	i16 bounds[2][3];
-	memcpy(bounds, source->world_bounds, sizeof(bounds));
+	MemCopy(bounds, source->world_bounds, sizeof(bounds));
 
 	SplitNode(0, bounds);
 }
