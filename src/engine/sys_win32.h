@@ -349,18 +349,20 @@ FORCEINLINE void Sys::CloseFile(File::Handle& file) {
 	}
 }
 
-FORCEINLINE u32 Sys::ReadFromFile(File::Handle file, void* buffer, u32 size) {
-	DWORD read;
-	if (!::ReadFile((HANDLE)file.data, buffer, size, &read, NULL))
-		read = 0;
-	return read;
+FORCEINLINE bool Sys::ReadFromFile(File::Handle file, void* buffer, u32 size, u32* read) {
+	DWORD bytes_read;
+	BOOL result = ::ReadFile((HANDLE)file.data, buffer, size, &bytes_read, NULL);
+	if (read)
+		*read = bytes_read;
+	return result != FALSE;
 }
 
-FORCEINLINE u32 Sys::WriteToFile(File::Handle file, const void* buffer, u32 size) {
-	DWORD written;
-	if (!::WriteFile((HANDLE)file.data, buffer, size, &written, NULL))
-		written = 0;
-	return written;
+FORCEINLINE bool Sys::WriteToFile(File::Handle file, const void* buffer, u32 size, u32* written) {
+	DWORD bytes_written;
+	BOOL result = ::WriteFile((HANDLE)file.data, buffer, size, &bytes_written, NULL);
+	if (written)
+		*written = bytes_written;
+	return result != FALSE;
 }
 
 ////////////////////////////////////////////////////////////////

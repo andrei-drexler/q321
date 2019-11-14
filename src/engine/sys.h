@@ -117,14 +117,16 @@ namespace Sys {
 
 		struct Handle {
 			void* data;
+
+			explicit operator bool() const;
 		};
 	}
 
 	File::Handle	OpenFile(const char* path, File::Mode mode = File::Mode::Read);
 	bool			IsOpen(File::Handle file);
 	void			CloseFile(File::Handle& file);
-	u32				ReadFromFile(File::Handle file, void* buffer, u32 size);
-	u32				WriteToFile(File::Handle file, const void* buffer, u32 size);
+	bool			ReadFromFile(File::Handle file, void* buffer, u32 size, u32* read = nullptr);
+	bool			WriteToFile(File::Handle file, const void* buffer, u32 size, u32* written = nullptr);
 
 	////////////////////////////////////////////////////////////////
 
@@ -137,6 +139,10 @@ namespace Sys {
 	}
 
 	void RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height);
+}
+
+Sys::File::Handle::operator bool() const {
+	return IsOpen(*this);
 }
 
 ////////////////////////////////////////////////////////////////
