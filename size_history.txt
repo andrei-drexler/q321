@@ -462,3 +462,4 @@
 22729,memcopy rectangle when popping
 22730,assignment instead of memcopy in rect_packer::addrec
 22728,undo
+22724,custom memset when generating white/grey textures
