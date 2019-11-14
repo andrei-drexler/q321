@@ -220,6 +220,7 @@ namespace Gfx {
 	void SetTextureContents(Texture::ID id, const void* pixels, const IRect* rect = nullptr);
 	void GenerateMipMaps(Texture::ID id);
 	void ReadBack(Texture::ID id, void* pixels);
+	bool SaveTGA(const char* path, const u32* pixels, u16 width, u16 height);
 	
 	void SetRenderTarget(Texture::ID id);
 	void SetShader(Shader::ID id);
@@ -232,4 +233,52 @@ namespace Gfx {
 	void Sync();
 	
 	vec2 GetResolution();
+
+	namespace TGA {
+		#pragma pack(push, 1)
+		struct Header {
+			u8		identSize;
+			u8		colorMapType;
+			u8		imageType;
+			u16		colorMapStart;
+			u16		colorMapLength;
+			u8		colorMapBits;
+			u16		originX;
+			u16		originY;
+			u16		width;
+			u16		height;
+			u8		colorBits;
+			u8		imageInfo;
+		};
+		#pragma pack(pop)
+
+		enum Format {
+			Uncompressed = 2,
+			CompressedRLE = 10,
+		};
+	}
+}
+
+////////////////////////////////////////////////////////////////
+
+bool Gfx::SaveTGA(const char* path, const u32* pixels, u16 width, u16 height) {
+	Sys::File::Handle file = Sys::OpenFile(path, Sys::File::Write);
+	if (!file)
+		return false;
+
+	TGA::Header header;
+	MemSet(&header, 0, sizeof(header));
+
+	header.colorBits = 32;
+	header.imageType = TGA::Uncompressed;
+	header.width = width;
+	header.height = height;
+
+	bool result;
+	result = Sys::WriteToFile(file, &header, sizeof(header));
+	result |= Sys::WriteToFile(file, pixels, width * height * sizeof(u32));
+
+	Sys::CloseFile(file);
+
+	return result;
 }
