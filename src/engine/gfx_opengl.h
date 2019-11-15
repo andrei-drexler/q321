@@ -509,6 +509,7 @@ FORCEINLINE void Gfx::RegisterUniforms(const char* names, const Uniform::Type* t
 void Gfx::SetTextureContents(Texture::ID id, const void* pixels, const IRect* rect) {
 	using namespace GL;
 
+	assert(id < g_state.num_textures);
 	auto& texture = g_state.texture_state[id];
 	IRect full = {0, 0, texture.width, texture.height};
 	if (!rect)
@@ -520,17 +521,23 @@ void Gfx::SetTextureContents(Texture::ID id, const void* pixels, const IRect* re
 void Gfx::GenerateMipMaps(Texture::ID id) {
 	using namespace GL;
 
+	assert(id < g_state.num_textures);
 	auto& texture = g_state.texture_state[id];
 	glBindTexture(GL_TEXTURE_2D, texture.handle);
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-void Gfx::ReadBack(Texture::ID id, void* pixels) {
+NOINLINE void Gfx::ReadBack(Texture::ID id, void* pixels) {
 	using namespace GL;
 
-	auto& texture = g_state.texture_state[id];
-	glBindTexture(GL_TEXTURE_2D, texture.handle);
-	glGetTexImage(GL_TEXTURE_2D, 0, texture.format, texture.type, pixels);
+	if (id < g_state.num_textures) {
+		auto& texture = g_state.texture_state[id];
+		glBindTexture(GL_TEXTURE_2D, texture.handle);
+		glGetTexImage(GL_TEXTURE_2D, 0, texture.format, texture.type, pixels);
+	} else {
+		SetRenderTarget(Backbuffer);
+		glReadPixels(0, 0, Sys::g_window.width, Sys::g_window.height, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+	}
 }
 
 ////////////////////////////////////////////////////////////////

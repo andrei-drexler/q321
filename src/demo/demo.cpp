@@ -189,6 +189,33 @@ namespace Demo {
 	constexpr auto KeyBindings =
 		MakeLookupTable<int, Player::Input, 0, 255>(GetKeyBinding);
 
+	////////////////////////////////////////////////////////////////
+
+	u32 g_screenshot_index;
+
+	void TakeScreenshot() {
+		const char Prefix[] = "screenshot_";
+		const char Suffix[] = ".tga";
+		char file_name[32];
+		MemCopy(file_name, Prefix, size(Prefix) - 1);
+		do {
+			MemCopy(IntToString(++g_screenshot_index, file_name + (size(Prefix) - 1)), Suffix, size(Suffix));
+			if (g_screenshot_index == 10000) {
+				Sys::DebugStream << "Error: couldn't generate screenshot name.\n";
+				return;
+			}
+		} while (Sys::FileExists(file_name));
+
+		i32 width = Sys::g_window.width;
+		i32 height = Sys::g_window.height;
+		u32* pixels = (u32*)Sys::Alloc(width * height * sizeof(u32));
+		Gfx::ReadBack(Gfx::Backbuffer, pixels);
+		Gfx::SaveTGA(file_name, pixels, width, height);
+		Sys::Free(pixels);
+	}
+
+	////////////////////////////////////////////////////////////////
+
 	void HandleEvent(Sys::Window::Event& event) {
 		using Event = Sys::Window::Event;
 
@@ -204,6 +231,10 @@ namespace Demo {
 			case Event::KeyUp:
 				if (event.data.key_down.code == Key::Escape) {
 					Sys::Exit();
+				}
+				if (event.data.key_down.code == Key::PrintScreen) {
+					TakeScreenshot();
+					return;
 				}
 				g_player.Clear(KeyBindings[event.data.key_up.code]);
 				return;

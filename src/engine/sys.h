@@ -125,6 +125,7 @@ namespace Sys {
 	File::Handle	OpenFile(const char* path, File::Mode mode = File::Mode::Read);
 	bool			IsOpen(File::Handle file);
 	void			CloseFile(File::Handle& file);
+	bool			FileExists(const char* path);
 	bool			ReadFromFile(File::Handle file, void* buffer, u32 size, u32* read = nullptr);
 	bool			WriteToFile(File::Handle file, const void* buffer, u32 size, u32* written = nullptr);
 
@@ -143,6 +144,14 @@ namespace Sys {
 
 Sys::File::Handle::operator bool() const {
 	return IsOpen(*this);
+}
+
+bool Sys::FileExists(const char* path) {
+	File::Handle handle = OpenFile(path);
+	if (!handle)
+		return false;
+	CloseFile(handle);
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////
