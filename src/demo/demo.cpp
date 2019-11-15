@@ -155,7 +155,14 @@ namespace Demo {
 		//	RenderSprite(g_map.lights[li].position, 16.f);
 	}
 
+	float g_delta_time;
+
 	FORCEINLINE void Tick(float dt) {
+		if (g_delta_time == 0.f)
+			g_delta_time = dt;
+		dt = mix(g_delta_time, dt, 0.125f);
+		g_delta_time = dt;
+
 		if (!IsLoading())
 			g_player.Update(dt);
 	}
