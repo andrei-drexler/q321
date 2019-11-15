@@ -434,6 +434,8 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 	source = &packed;
 	num_materials = packed.num_materials;
 
+	assert(num_materials <= Demo::Material::Count);
+
 	// TODO: some data initialization was skipped since we know we already have zeroes everywhere,
 	// this should be fixed if support for loading different maps is ever added
 

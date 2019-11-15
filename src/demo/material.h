@@ -19,6 +19,12 @@ namespace Demo {
 			NeedsUV			= 1 << 4,
 		};
 
+		enum {
+			#define PP_DEMO_MATERIAL_COUNT(path, shader, texture, contents, draw, light)			+1
+			Count = DEMO_MATERIALS(PP_DEMO_MATERIAL_COUNT),
+			#undef PP_DEMO_MATERIAL_COUNT
+		};
+
 		////////////////////////////////////////////////////////////////
 
 		static constexpr u8 Properties[] = {
