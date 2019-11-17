@@ -30,12 +30,12 @@
     <ClInclude Include="src\demo\material.h" />
     <ClInclude Include="src\demo\player.h" />
     <ClInclude Include="src\demo\player_move.h" />
-    <ClInclude Include="src\demo\rect_packer.h" />
     <ClInclude Include="src\demo\resource_def.h" />
     <ClInclude Include="src\engine\aabb.h" />
     <ClInclude Include="src\engine\demo.h" />
     <ClInclude Include="src\engine\gfx.h" />
     <ClInclude Include="src\engine\gfx_opengl.h" />
+    <ClInclude Include="src\engine\rect_packer.h" />
     <ClInclude Include="src\engine\sys.h" />
     <ClInclude Include="src\engine\sys_win32.h" />
     <ClInclude Include="src\engine\math.h" />

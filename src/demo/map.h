@@ -1,7 +1,7 @@
 #pragma once
 
 #include "material.h"
-#include "rect_packer.h"
+#include "../engine/rect_packer.h"
 
 ////////////////////////////////////////////////////////////////
 

@@ -72,11 +72,11 @@
     <ClInclude Include="src\demo\player.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\rect_packer.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
     <ClInclude Include="src\demo\map_lightmap.h">
       <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\rect_packer.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
