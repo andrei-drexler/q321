@@ -271,8 +271,6 @@ int FORCEINLINE demo_main() {
 	Demo::RegisterGfxResources();
 	Demo::Texture::GenerateAll();
 
-	Sys::RasterizeFont("Impact", 32, 0, nullptr, 512, 512);
-
 	auto touch = [](auto& src) { memcpy(Mem::Alloc(sizeof(src)), src, sizeof(src)); };
 	//touch(dm17::lightmap_offsets);
 

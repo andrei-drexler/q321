@@ -367,7 +367,7 @@ FORCEINLINE bool Sys::WriteToFile(File::Handle file, const void* buffer, u32 siz
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height) {
+NOINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, RectPacker& packer, Font::Glyph* glyphs) {
 	using namespace Font;
 
 	HFONT font = CreateFontA(
@@ -419,17 +419,42 @@ NOINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, u32
 	const u32 MAX_GLYPH_SIZE = 64 * 64;
 	u8 buffer[MAX_GLYPH_SIZE];
 
-	for (u16 c = 32; c < 128; ++c) {
+	for (u16 c = Font::Glyph::Begin; c < Font::Glyph::End; ++c) {
 		GLYPHMETRICS metrics;
 		constexpr MAT2 identity = { 0, 1, 0, 0, 0, 0, 0, 1 };
 		DWORD required = GetGlyphOutlineA(hMemDC, c, GGO_GRAY8_BITMAP, &metrics, 0, NULL, &identity);
 		assert(required <= size(buffer));
 		if (required > size(buffer))
 			continue;
-		int abcd = 0;
 		if (GDI_ERROR == GetGlyphOutlineA(hMemDC, c, GGO_GRAY8_BITMAP, &metrics, required, buffer, &identity))
 			Sys::Fatal(Error::Font);
-		u32 pitch = (metrics.gmBlackBoxX + 3) & ~3;
+
+		const u16 Padding = 4;
+
+		auto tile = packer.Add(metrics.gmBlackBoxX + Padding * 2, metrics.gmBlackBoxY + Padding * 2);
+		assert(tile != packer.Full);
+		auto& rect = packer.GetTile(tile);
+
+		u32 src_pitch = (metrics.gmBlackBoxX + 3) & ~3;
+		u8* src_pixels = buffer + (metrics.gmBlackBoxY - 1) * src_pitch; // flip vertically
+		u32* dst_pixels = pixels + (rect.min[1] + Padding) * width + rect.min[0] + Padding;
+		for (u16 y = 0; y < metrics.gmBlackBoxY; ++y, src_pixels -= src_pitch, dst_pixels += width) {
+			for (u16 x = 0; x < metrics.gmBlackBoxX; ++x) {
+				u8 src = src_pixels[x];
+				if (src > 63)
+					src = 63;						// [0-64] to [0-63]
+				src = (src * 65u) >> 4;				// [0-63] to [0-255]
+				dst_pixels[x] = src * 0x01010101u;	// intensity to BGRA premultiplied
+			}
+		}
+
+		auto& g = glyphs[c - Font::Glyph::Begin];
+		g.box_min[0] = rect.min[0] + Padding;
+		g.box_min[1] = rect.min[1] + Padding;
+		g.box_size[0] = metrics.gmBlackBoxX;
+		g.box_size[1] = metrics.gmBlackBoxY;
+		g.anchor[0] = metrics.gmptGlyphOrigin.x;
+		g.anchor[1] = metrics.gmptGlyphOrigin.y + metrics.gmBlackBoxY;
 	}
 
 	::SelectObject(hMemDC, hOldFont);

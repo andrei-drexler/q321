@@ -4,11 +4,15 @@
 
 extern int demo_main();
 
+struct RectPacker;
+
 namespace Sys {
 	using Time = double;
 	Time						GetTime();
 	
 	void*						Alloc(size_t size);
+	template <typename T>
+	T*							Alloc(size_t count) { return (T*)Alloc(sizeof(T) * count); }
 	void						Free(void* alloc);
 
 	[[noreturn]] void			Fatal(int code);
@@ -137,9 +141,21 @@ namespace Sys {
 			Bold		= 1 << 0,
 			Italic		= 1 << 1,
 		};
+
+		struct Glyph {
+			enum : u8 {
+				Begin	= 32,
+				End		= 128,
+				Count	= End - Begin,
+			};
+
+			u16			box_min[2];
+			u8			box_size[2];
+			i8			anchor[2];
+		};
 	}
 
-	void RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height);
+	void RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, RectPacker& packer, Font::Glyph* glyphs);
 }
 
 Sys::File::Handle::operator bool() const {
@@ -222,3 +238,7 @@ namespace Mem {
 		return (T*)Alloc(count * sizeof(T), arena);
 	}
 }
+
+////////////////////////////////////////////////////////////////
+
+#include "rect_packer.h"

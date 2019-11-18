@@ -48,7 +48,23 @@ namespace Demo {
 
 	namespace Uniform {
 		GFX_DECLARE_UNIFORMS(DEMO_UNIFORMS);
-	};
+	}
+
+	namespace UI {
+		enum {
+			LargeFont,
+			SmallFont,
+
+			FontCount,
+		};
+
+		constexpr char FontDescriptors[] =
+			"\x20" "Impact"					"\0"
+			"\x12" "Lucida Console Bold"	"\0"
+		;
+
+		Sys::Font::Glyph	glyphs[FontCount][Sys::Font::Glyph::Count];
+	}
 
 	////////////////////////////////////////////////////////////////
 
@@ -60,14 +76,16 @@ namespace Demo {
 }
 
 FORCEINLINE void Demo::Texture::GenerateAll() {
-	const u32 WhiteTextureSize = Descriptors[Texture::White].width * Descriptors[Texture::White].height;
+	/* solid color textures */
 	for (u16 i = 0; i < 2; ++i) {
+		const u32 WhiteTextureSize = Descriptors[Texture::White].width * Descriptors[Texture::White].height;
 		u32 white[WhiteTextureSize];
 		MemSet(white, 255 >> i, sizeof(white));
 		Gfx::SetTextureContents(Texture::White + i, white);
 		Gfx::GenerateMipMaps(Texture::White + i);
 	}
 
+	/* procedural textures */
 	for (u32 texture_id = 0; texture_id < Texture::Count; ++texture_id) {
 		auto& shader = ProcGen[texture_id];
 		if (shader == Gfx::InvalidID)
@@ -78,4 +96,21 @@ FORCEINLINE void Demo::Texture::GenerateAll() {
 		Gfx::DrawFullScreen();
 		Gfx::GenerateMipMaps(texture_id);
 	}
+
+	/* font texture/glyph data */
+	constexpr auto FontTexDescriptor = Descriptors[Texture::Font];
+	u32* font_pixels = Sys::Alloc<u32>(FontTexDescriptor.width * FontTexDescriptor.height);
+
+	RectPacker packer;
+	packer.Init(FontTexDescriptor.width, FontTexDescriptor.height);
+
+	u8 font_index = 0;
+	for (const char* descriptor = UI::FontDescriptors; *descriptor; descriptor = NextAfter(descriptor), ++font_index) {
+		Sys::RasterizeFont(descriptor + 1, descriptor[0], 0, font_pixels, FontTexDescriptor.width, FontTexDescriptor.height, packer, UI::glyphs[font_index]);
+	}
+	//Gfx::SaveTGA("font.tga", font_pixels, FontTexDescriptor.width, FontTexDescriptor.height);
+	Gfx::SetTextureContents(Texture::Font, font_pixels);
+	Gfx::GenerateMipMaps(Texture::Font);
+
+	Sys::Free(font_pixels);
 }

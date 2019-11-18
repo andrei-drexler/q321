@@ -468,3 +468,4 @@
 23110,screenshot support
 23124,added bailout and tweaked naming scheme
 23118,low-pass delta time filter
+23483,font texture + glyph data initialization
