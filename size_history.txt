@@ -470,3 +470,5 @@
 23118,low-pass delta time filter
 23483,font texture + glyph data initialization
 23427,forceinline rasterizefont
+23441,noinline sys::fatal
+23427,undo
