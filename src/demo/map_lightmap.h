@@ -32,9 +32,9 @@ namespace Demo {
 
 		constexpr u32 PackVec3(const vec3& v) {
 			return 
-				clamp<i32>(v.x * 255.f + 0.5f, 0, 255) << 16 |
-				clamp<i32>(v.y * 255.f + 0.5f, 0, 255) <<  8 |
-				clamp<i32>(v.z * 255.f + 0.5f, 0, 255) <<  0 ;
+				clamp((i32)floor(v.x * 255.f + 0.5f), 0, 255) << 16 |
+				clamp((i32)floor(v.y * 255.f + 0.5f), 0, 255) <<  8 |
+				clamp((i32)floor(v.z * 255.f + 0.5f), 0, 255) <<  0 ;
 		}
 	} // namespace Lightmap
 } // namespace Demo
@@ -385,9 +385,9 @@ void Map::ComputeLighting(bool shadows) {
 						accum *= 0.75f;
 
 					u32 color = 
-						min<i32>(accum.x, 255) << 16 | 
-						min<i32>(accum.y, 255) <<  8 | 
-						min<i32>(accum.z, 255) <<  0 ;
+						min((i32)accum.x, 255) << 16 | 
+						min((i32)accum.y, 255) <<  8 | 
+						min((i32)accum.z, 255) <<  0 ;
 					
 					if (length_squared(nor) > 0.f)
 						color |= 0xff00'0000;
