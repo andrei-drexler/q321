@@ -367,7 +367,7 @@ FORCEINLINE bool Sys::WriteToFile(File::Handle file, const void* buffer, u32 siz
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, RectPacker& packer, Font::Glyph* glyphs) {
+FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, RectPacker& packer, Font::Glyph* glyphs) {
 	using namespace Font;
 
 	HFONT font = CreateFontA(
