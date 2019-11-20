@@ -4,9 +4,11 @@ uniform vec4 Cam;
 layout(location=0) in vec4 P;
 layout(location=1) in vec4 T;
 layout(location=2) in vec3 N;
+layout(location=3) in vec4 C;
 
 out vec3 Pos, Nor, Ref;
 out vec2 UV, LUV;
+out vec4 Clr;
 
 ////////////////////////////////////////////////////////////////
 
@@ -23,9 +25,15 @@ void FS() {
 	gl_Position = P; UV = P.xy * .5 + .5;
 }
 
+void UI() {
+	gl_Position = vec4(2. * P.x - 1., 1. - 2. * P.y, 1, 1);
+	UV = T.xy;
+	Clr = C;
+}
+
 ////////////////////////////////////////////////////////////////
 
-// $protect void[ \t]+([a-zGL][_a-zA-Z0-9]*)\(\)
+// $protect void[ \t]+([a-zGLU][_a-zA-Z0-9]*)\(\)
 
 void cmet52() { FS(); }
 void dmnd2c() { FS(); }

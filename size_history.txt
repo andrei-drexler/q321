@@ -472,3 +472,6 @@
 23427,forceinline rasterizefont
 23441,noinline sys::fatal
 23427,undo
+23484,ui buffer init
+23526,ui shader
+24172,basic font support

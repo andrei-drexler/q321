@@ -17,8 +17,9 @@ namespace Demo {
 
 	namespace Shader {
 		enum {
-			MapVertexBits = Attrib::PositionBit|Attrib::TexCoordBit|Attrib::NormalBit,
-			FSVertexBits = Attrib::PositionBit,
+			MapVertexBits	= Attrib::PositionBit|Attrib::TexCoordBit|Attrib::NormalBit,
+			FSVertexBits	= Attrib::PositionBit,
+			UIVertexBits	= Attrib::PositionBit|Attrib::TexCoordBit|Attrib::ColorBit,
 		};
 		GFX_DECLARE_SHADERS(DEMO_SHADERS);
 	}
@@ -51,19 +52,49 @@ namespace Demo {
 	}
 
 	namespace UI {
-		enum {
+		/* Fonts */
+		
+		enum Font {
 			LargeFont,
 			SmallFont,
 
 			FontCount,
 		};
 
+		Sys::Font::Glyph			glyphs[FontCount][Sys::Font::Glyph::Count];
+		const Sys::Font::Glyph&		GetGlyph(char c, UI::Font font = UI::SmallFont);
+
+		i32							Measure(const char* text, Font font = LargeFont);
+		void						Print(const char* text, const vec2& pos, const vec2& scale = 1.f, u32 color = -1, float align = 0.f, Font font = SmallFont);
+		void						PrintShadowed(const char* text, const vec2& pos, const vec2& scale = 1.f, u32 color = -1, float align = 0.f, Font font = SmallFont);
+
 		constexpr char FontDescriptors[] =
-			"\x20" "Impact"					"\0"
-			"\x12" "Lucida Console Bold"	"\0"
+			"\x30" "Impact"					"\0"
+			"\x10" "Courier New Bold"		"\0"
 		;
 
-		Sys::Font::Glyph	glyphs[FontCount][Sys::Font::Glyph::Count];
+		constexpr auto TexDescriptor = Texture::Descriptors[Texture::Font];
+		
+		/* Geometry buffers */
+
+		enum {
+			MAX_NUM_QUADS		= 2048,
+			MAX_NUM_VERTICES	= MAX_NUM_QUADS * 4,
+			MAX_NUM_INDICES		= MAX_NUM_QUADS * 6,
+		};
+
+		struct VertexFormat {
+			vec2		pos;
+			vec2		uv;
+			u32			color;
+		};
+
+		u16				num_quads;
+		VertexFormat	vertices[MAX_NUM_VERTICES];
+		u16				indices[MAX_NUM_INDICES];
+
+		VertexFormat*	AddQuads(u16 count);
+		void			FlushGeometry();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -72,8 +103,22 @@ namespace Demo {
 		Uniform::RegisterAll();
 		Gfx::RegisterTextures(Texture::Descriptors);
 		Shader::RegisterAll(g_vertex_shaders, g_fragment_shaders);
+		
+		constexpr u8 QuadVertexOrder[6] = {
+			0, 1, 2,
+			0, 2, 3,
+		};
+		
+		for (u16 i = 0, v = 0; i < UI::MAX_NUM_INDICES; v += 4) {
+			for (u16 j = 0; j < 6; ++j)
+				UI::indices[i++] = v + QuadVertexOrder[j];
+		}
 	}
 }
+
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Demo::Texture::GenerateAll() {
 	/* solid color textures */
@@ -98,19 +143,136 @@ FORCEINLINE void Demo::Texture::GenerateAll() {
 	}
 
 	/* font texture/glyph data */
-	constexpr auto FontTexDescriptor = Descriptors[Texture::Font];
-	u32* font_pixels = Sys::Alloc<u32>(FontTexDescriptor.width * FontTexDescriptor.height);
+	u32* font_pixels = Sys::Alloc<u32>(UI::TexDescriptor.width * UI::TexDescriptor.height);
 
 	RectPacker packer;
-	packer.Init(FontTexDescriptor.width, FontTexDescriptor.height);
+	packer.Init(UI::TexDescriptor.width, UI::TexDescriptor.height);
 
 	u8 font_index = 0;
 	for (const char* descriptor = UI::FontDescriptors; *descriptor; descriptor = NextAfter(descriptor), ++font_index) {
-		Sys::RasterizeFont(descriptor + 1, descriptor[0], 0, font_pixels, FontTexDescriptor.width, FontTexDescriptor.height, packer, UI::glyphs[font_index]);
+		Sys::RasterizeFont(descriptor + 1, descriptor[0], 0, font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height, packer, UI::glyphs[font_index]);
 	}
 	//Gfx::SaveTGA("font.tga", font_pixels, FontTexDescriptor.width, FontTexDescriptor.height);
 	Gfx::SetTextureContents(Texture::Font, font_pixels);
 	Gfx::GenerateMipMaps(Texture::Font);
 
 	Sys::Free(font_pixels);
+}
+
+////////////////////////////////////////////////////////////////
+
+const Sys::Font::Glyph& Demo::UI::GetGlyph(char c, Font font) {
+	u8 index = u8(c - Sys::Font::Glyph::Begin);
+	if (index >= Sys::Font::Glyph::Count)
+		index = 0;
+	return glyphs[font][index];
+}
+
+i32 Demo::UI::Measure(const char* text, Font font) {
+	i32 total = 0;
+	while (*text)
+		total += GetGlyph(*text++, font).advance;
+	return total;
+}
+
+void Demo::UI::Print(const char* text, const vec2& pos, const vec2& scale, u32 color, float align, Font font) {
+	vec2 cursor = pos;
+	cursor.x -= align * Measure(text, font) * scale.x;
+
+	u32 num_chars = strlen(text);
+
+	while (num_chars) {
+		i32 batch_chars = min<i32>(num_chars, MAX_NUM_QUADS);
+		num_chars -= batch_chars;
+		
+		VertexFormat* v = AddQuads(batch_chars);
+		
+		while (batch_chars > 0) {
+			auto& glyph = GetGlyph(*text++, font);
+			--batch_chars;
+
+			v[0].pos[0] = cursor[0] + glyph.anchor[0] * scale[0];
+			v[0].pos[1] = cursor[1] - glyph.anchor[1] * scale[1];
+			v[0].uv[0] = glyph.box_min[0] / float(TexDescriptor.width);
+			v[0].uv[1] = glyph.box_min[1] / float(TexDescriptor.height);
+			v[0].color = color;
+
+			v[1].pos[0] = v[0].pos[0] + glyph.box_size[0] * scale[0];
+			v[1].pos[1] = v[0].pos[1];
+			v[1].uv[0] = v[0].uv[0] + glyph.box_size[0] / float(TexDescriptor.width);
+			v[1].uv[1] = v[0].uv[1];
+			v[1].color = color;
+
+			v[2].pos[0] = v[1].pos[0];
+			v[2].pos[1] = v[1].pos[1] - glyph.box_size[1] * scale[1];
+			v[2].uv[0] = v[1].uv[0];
+			v[2].uv[1] = v[1].uv[1] + glyph.box_size[1] / float(TexDescriptor.height);
+			v[2].color = color;
+
+			v[3].pos[0] = v[0].pos[0];
+			v[3].pos[1] = v[2].pos[1];
+			v[3].uv[0] = v[0].uv[0];
+			v[3].uv[1] = v[2].uv[1];
+			v[3].color = color;
+
+			cursor.x += glyph.advance * scale[0];
+			v += 4;
+		}
+	}
+
+	int abcd = 0;
+}
+
+void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const vec2& scale, u32 color, float align, Font font) {
+	for (u16 pass = 0; pass < 2; ++pass) {
+		u32 pass_color = color;
+		vec2 cursor = pos;
+		if (!pass) {
+			cursor += scale * 3.f;
+			pass_color &= 0xFF000000;
+		}
+		Print(text, cursor, scale, pass_color, align, font);
+	}
+}
+
+////////////////////////////////////////////////////////////////
+
+FORCEINLINE Demo::UI::VertexFormat* Demo::UI::AddQuads(u16 count) {
+	assert(count < MAX_NUM_QUADS);
+	if (count + num_quads > MAX_NUM_QUADS)
+		FlushGeometry();
+
+	VertexFormat* first_vertex = vertices + num_quads * 4;
+	num_quads += count;
+	return first_vertex;
+}
+
+NOINLINE void Demo::UI::FlushGeometry() {
+	if (!num_quads)
+		return;
+	assert(num_quads <= MAX_NUM_QUADS);
+
+	Gfx::Mesh mesh;
+	MemSet(&mesh, 0, sizeof(mesh));
+
+	mesh.vertices[Attrib::Position	].SetData(&vertices[0].pos	).stride = sizeof(vertices[0]);
+	mesh.vertices[Attrib::TexCoord	].SetData(&vertices[0].uv	).stride = sizeof(vertices[0]);
+	mesh.vertices[Attrib::Color		].SetData(&vertices[0].color).stride = sizeof(vertices[0]);
+	mesh.vertices[Attrib::Color		].normalized = true;
+
+	mesh.indices		= indices;
+	mesh.num_vertices	= num_quads * 4;
+	mesh.num_indices	= num_quads * 6;
+
+	vec2 scale = 1.f / Gfx::GetResolution();
+	for (u16 i = 0, count = mesh.num_vertices; i < count; ++i)
+		vertices[i].pos *= scale;
+
+	Gfx::SetShader(Shader::UI);
+	Uniform::Texture0 = Texture::Font;
+
+	Gfx::UpdateUniforms();
+	Gfx::Draw(mesh);
+
+	num_quads = 0;
 }

@@ -135,9 +135,10 @@ namespace Gfx {
 			u8					stride;
 
 			template <typename T>
-			FORCEINLINE void SetData(const T* contents) {
+			FORCEINLINE VertexStream& SetData(const T* contents) {
 				data = contents;
 				type = Gfx::Vertex::TypeToEnum<T>::value;
+				return *this;
 			}
 		}						vertices[Vertex::MaxNumAttributes];
 		const u16*				indices;

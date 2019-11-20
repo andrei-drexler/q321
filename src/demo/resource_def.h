@@ -14,11 +14,13 @@
 	x(Position,			vec3)\
 	x(TexCoord,			vec4)\
 	x(Normal,			vec3)\
+	x(Color,			vec4)\
 
 #define DEMO_SHADERS(x)\
 	/*Name,					VertexBits*/\
 	x(Generic,				MapVertexBits)\
 	x(Loading,				FSVertexBits)\
+	x(UI,					UIVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(Lmapped,				MapVertexBits)\
 	x(fixture,				MapVertexBits)\
 	x(shiny,				MapVertexBits)\

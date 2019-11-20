@@ -127,6 +127,9 @@ namespace Demo {
 		Gfx::UpdateUniforms();
 		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
 		Gfx::DrawFullScreen();
+
+		UI::PrintShadowed("LOADING Q3DM17", Gfx::GetResolution() * vec2{0.5f, 0.25f}, {1.125f, 1.f}, -1, 0.5f, UI::LargeFont);
+		UI::FlushGeometry();
 	}
 
 	FORCEINLINE void RenderFrame() {

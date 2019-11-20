@@ -3,6 +3,7 @@ uniform sampler2D Texture0, Texture1;
 
 in vec3 Pos, Nor, Ref;
 in vec2 UV, LUV;
+in vec4 Clr;
 
 out vec4 FCol;
 
@@ -797,4 +798,8 @@ void Loading() {
 	FCol = texture(Texture0, (.5 + UV * 127.) / 128., 2.5);
 	//FCol.xyz *= .7 + .6 * FBMT(UV, vec2(128), .9, 2., 4);
 	FCol.xyz *= .7 + .3 * NT(UV, .5/fwidth(UV));
+}
+
+void UI() {
+	FCol = texture(Texture0, UV) * Clr;
 }
