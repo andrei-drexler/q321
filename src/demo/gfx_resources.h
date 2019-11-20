@@ -250,15 +250,22 @@ NOINLINE void Demo::UI::FlushGeometry() {
 		return;
 	assert(num_quads <= MAX_NUM_QUADS);
 
+	static constexpr Gfx::Mesh BaseMesh = {
+		{
+			{&vertices[0].pos,		false,	sizeof(vertices[0])},
+			{&vertices[0].uv,		false,	sizeof(vertices[0])},
+			{},
+			{&vertices[0].color,	true,	sizeof(vertices[0])},
+		},
+		indices,
+	};
+	static_assert(0 == Attrib::Position,	"Invalid BaseMesh position stream index");
+	static_assert(1 == Attrib::TexCoord,	"Invalid BaseMesh texcoord stream index");
+	static_assert(3 == Attrib::Color,		"Invalid BaseMesh color stream index");
+
 	Gfx::Mesh mesh;
-	MemSet(&mesh, 0, sizeof(mesh));
+	MemCopy(&mesh, &BaseMesh);
 
-	mesh.vertices[Attrib::Position	].SetData(&vertices[0].pos	).stride = sizeof(vertices[0]);
-	mesh.vertices[Attrib::TexCoord	].SetData(&vertices[0].uv	).stride = sizeof(vertices[0]);
-	mesh.vertices[Attrib::Color		].SetData(&vertices[0].color).stride = sizeof(vertices[0]);
-	mesh.vertices[Attrib::Color		].normalized = true;
-
-	mesh.indices		= indices;
 	mesh.num_vertices	= num_quads * 4;
 	mesh.num_indices	= num_quads * 6;
 

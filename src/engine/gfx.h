@@ -134,6 +134,16 @@ namespace Gfx {
 			bool				normalized;
 			u8					stride;
 
+			VertexStream() = default;
+
+			template <typename T>
+			constexpr VertexStream(const T* contents, bool normalized = true, u8 stride = 0) :
+				data		(contents),
+				type		(Gfx::Vertex::TypeToEnum<T>::value),
+				normalized	(normalized),
+				stride		(stride)
+			{ }
+
 			template <typename T>
 			FORCEINLINE VertexStream& SetData(const T* contents) {
 				data = contents;
