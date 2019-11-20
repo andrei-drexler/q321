@@ -127,6 +127,13 @@ FORCEINLINE void* MemSet(void* dest, int c, size_t count) {
 	return dest;
 }
 
+FORCEINLINE size_t StrLen(const char* text) {
+	const char* s = text;
+	while (*s)
+		++s;
+	return s - text;
+}
+
 ////////////////////////////////////////////////////////////////
 
 template <typename T>

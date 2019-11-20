@@ -179,7 +179,7 @@ void Demo::UI::Print(const char* text, const vec2& pos, const vec2& scale, u32 c
 	vec2 cursor = pos;
 	cursor.x -= align * Measure(text, font) * scale.x;
 
-	u32 num_chars = strlen(text);
+	u32 num_chars = StrLen(text);
 
 	while (num_chars) {
 		i32 batch_chars = min<i32>(num_chars, MAX_NUM_QUADS);
