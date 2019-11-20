@@ -475,3 +475,4 @@
 23484,ui buffer init
 23526,ui shader
 24172,basic font support
+24169,noinline texture::generateall

@@ -120,7 +120,7 @@ namespace Demo {
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Demo::Texture::GenerateAll() {
+NOINLINE void Demo::Texture::GenerateAll() {
 	/* solid color textures */
 	for (u16 i = 0; i < 2; ++i) {
 		const u32 WhiteTextureSize = Descriptors[Texture::White].width * Descriptors[Texture::White].height;
