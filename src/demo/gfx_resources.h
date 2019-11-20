@@ -219,8 +219,6 @@ void Demo::UI::Print(const char* text, const vec2& pos, const vec2& scale, u32 c
 			v += 4;
 		}
 	}
-
-	int abcd = 0;
 }
 
 void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const vec2& scale, u32 color, float align, Font font) {
