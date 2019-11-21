@@ -627,7 +627,9 @@ TEX(mtlbk03) {
 }
 
 TEX(cable) {
-    float b = FBMT(uv, vec2(5), .9, 3., 4), h = fract(uv.y * 10.);
+    float
+        b = FBMT(uv, vec2(5), .9, 3., 4),
+        h = fract(uv.y * 10.);
     vec3 c = mix(RGB(53, 48, 42), RGB(38, 38, 36), b);
     c *= .6 + b * .8;
     c *= 1. - .5 * sqr(tri(.5, .5, h));
@@ -637,10 +639,11 @@ TEX(cable) {
 }
 
 TEX(bmtsprt) {
-    float b = FBMT(uv, vec2(7, 3), .9, 3., 4);
+    float
+        b = FBMT(uv, vec2(7, 3), .9, 3., 4),
+        h = uv.y + b * .04,
+        l = 1. - .15;
     vec3 c = mix(RGB(59, 48, 40), RGB(110, 108, 102), b*b);
-    float h = uv.y + b * .04;
-    float l = 1. - .15;
     l = mix(l, .5, tri(.34, .05, uv.y));
     l = mix(l, .5, ls(.08, .05, abs(uv.y-.7)));
     l = mix(l, .3, tri(.7, .03, uv.y));
@@ -657,9 +660,10 @@ TEX(brdr11b) {
     vec3 c = mix(RGB(74, 66, 55), RGB(99, 90, 78), b*b);
     uv.x *= 2.;
     vec2 p = seg(uv, vec2(.5, .625), vec2(1.5, .625));
-    float d = length(p - uv);
-    float m = ls(.22, .20, d);
-    float l = 1. - .15 * m;
+    float
+        d = length(p - uv),
+        m = ls(.22, .20, d),
+        l = 1. - .15 * m;
     l = mix(l, .5, ls(.7, .9, uv.y) * m);
     l = mix(l, 1. - grad(d).y * .5, tri(.22, .04, d));
     l = mix(l, .6, sqr(tri(.19, .05, d)));
@@ -675,9 +679,10 @@ TEXA(blt414k) {
     vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
     uv = .5 - abs(uv - .5);
     uv.y *= 4.;
-    float a = tri(.0, .1, length(uv - seg(uv, vec2(.41, .5), vec2(.42, 3.5))));
-	float d = mn(uv);
-	float l = 1. - .7 * max(0., 1. - d / .15);
+    float
+        a = tri(.0, .1, length(uv - seg(uv, vec2(.41, .5), vec2(.42, 3.5)))),
+        d = mn(uv),
+        l = 1. - .7 * max(0., 1. - d / .15);
     l *= 1. - .8 * ls(.24, .31, min(d, uv.y - .1));
     c += RGB(80, 80, 20) * a;
 	return vec4(c * mix(l, 2.7, a), a);
@@ -688,20 +693,22 @@ TEXA(light5) {
     vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
     uv = .5 - abs(uv - .5);
     uv.y *= 8.;
-    float d = length(uv - seg(uv, vec2(.27, .3), vec2(.27, 7.7)));
-    float a = tri(.0, .17, d);
-	float l = 1. - .5 * tri(.17, .07, d);
+    float
+        d = length(uv - seg(uv, vec2(.27, .3), vec2(.27, 7.7))),
+        a = tri(.0, .17, d),
+        l = 1. - .5 * tri(.17, .07, d);
     c += RGB(80, 80, 20) * a;
 	return vec4(c * mix(l, 2.7, a), a);
 }
 
 TEXA(lt2) {
-    float b = FBMT(uv, vec2(1), .4, 3., 4);
-    vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
     vec2 p = abs(uv - .5);
-    float r = length(p);
-    float a = ls(.37, .33, r) * (.5 + 2. * b);
-    float l = 1. + .0 * ls(.08, .03, abs(r - .41));
+    float
+        b = FBMT(uv, vec2(1), .4, 3., 4),
+        r = length(p),
+        a = ls(.37, .33, r) * (.5 + 2. * b),
+        l = 1. + .0 * ls(.08, .03, abs(r - .41));
+    vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
     l = mix(l, 7., ls(.44, .1 * b, r));
     l *= 1. - .5 * sqr(tri(.46, .04, r));
     l *= 1. - .4 * sqr(tri(.36, .04, r));
