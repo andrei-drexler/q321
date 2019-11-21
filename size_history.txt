@@ -481,3 +481,4 @@
 24141,undo
 24124,pre-filled mesh in ui::flushgeometry
 24158,lowered light intensity threshold
+24125,pre-filled mesh in gfx::drawfullscreen

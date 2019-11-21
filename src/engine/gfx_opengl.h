@@ -751,12 +751,12 @@ void Gfx::DrawFullScreen() {
 		{-1.f,  3.f, -1.f},
 	};
 	
-	Gfx::Mesh mesh;
-	memset(&mesh, 0, sizeof(mesh));
-	mesh.num_vertices = 3;
-	mesh.vertices[0].SetData(positions);
+	static constexpr Gfx::Mesh FSMesh = {
+		{{positions}},
+		0, 3, 0,
+	};
 
-	Draw(mesh);
+	Draw(FSMesh);
 }
 
 FORCEINLINE void Gfx::Sync() {
