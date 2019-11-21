@@ -7,7 +7,7 @@ namespace Demo {
 		/* Lighting parameters */
 		constexpr float
 			PointScale		= 7500.f * 6.f,
-			ThreshIgnore	= 5.f
+			ThreshIgnore	= 4.f
 		;
 
 		/* Metadata */
