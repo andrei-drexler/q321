@@ -745,10 +745,10 @@ NOINLINE void Gfx::Draw(const Mesh& mesh) {
 }
 
 void Gfx::DrawFullScreen() {
-	static constexpr vec3 positions[3] = {
-		{-1.f, -1.f, -1.f},
-		{ 3.f, -1.f, -1.f},
-		{-1.f,  3.f, -1.f},
+	static constexpr vec2 positions[3] = {
+		{-1.f, -1.f},
+		{ 3.f, -1.f},
+		{-1.f,  3.f},
 	};
 	
 	static constexpr Gfx::Mesh FSMesh = {

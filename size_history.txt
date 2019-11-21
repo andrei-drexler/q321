@@ -482,3 +482,4 @@
 24124,pre-filled mesh in ui::flushgeometry
 24158,lowered light intensity threshold
 24125,pre-filled mesh in gfx::drawfullscreen
+24122,vec2 positions in gfx::drawfullscreen
