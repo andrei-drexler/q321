@@ -37,6 +37,7 @@
 	x(mtlt6f,				FSVertexBits)\
 	x(mtlbk03,				FSVertexBits)\
 	x(bmtsprt,				FSVertexBits)\
+	x(cable,				FSVertexBits)\
 	x(brdr11b,				FSVertexBits)\
 	x(blt414k,				FSVertexBits)\
 	x(lt2,					FSVertexBits)\
@@ -72,6 +73,7 @@
 	x(mtlt6f,		Shader::mtlt6f,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(mtlbk03,		Shader::mtlbk03,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bmtsprt,		Shader::bmtsprt,	256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(cable,		Shader::cable,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(brdr11b,		Shader::brdr11b,	64,		32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(blt414k,		Shader::blt414k,	64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(lt2,			Shader::lt2,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -106,6 +108,7 @@
 	x("base_wall/metalblack03",				Lmapped,		mtlbk03,	Solid,		Opaque,					(0))\
 	x("base_trim/basemetalsupport",			Lmapped,		bmtsprt,	Solid,		Opaque,					(0))\
 	x("base_trim/border11b",				Lmapped,		brdr11b,	Solid,		Opaque|NeedsUV,			(0))\
+	x("base_support/cable",					Lmapped,		cable,		Solid,		Opaque,					(0))\
 	x("base_light/baslt4_1_4k",				fixture,		blt414k,	Solid,		Opaque|NeedsUV,			(4000,31,29,26))\
 	x("base_light/lt2_2000",				fixture,		lt2,		Solid,		Opaque|NeedsUV,			(2000,31,22,24))\
 	x("base_light/lt2_8000",				fixture,		lt2,		Solid,		Opaque|NeedsUV,			(8000,31,22,24))\

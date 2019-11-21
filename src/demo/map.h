@@ -27,7 +27,7 @@ struct PackedMap {
 	const u8*			plane_materials;
 	const float*		uv_data;
 	const u8*			plane_uvs;
-	const u16*			patches;
+	const u32*			patches;
 	const float*		patch_vertices;
 	const i16*			light_data;
 
@@ -48,7 +48,7 @@ struct PackedMap {
 		const u8	(&plane_materials)	[NumMaterialEntries],
 		const float (&uv_data)			[NumUVEntries],
 		const u8	(&plane_uvs)		[NumPlaneUVEntries],
-		const u16	(&patches)			[NumPatches],
+		const u32	(&patches)			[NumPatches],
 		const float	(&patch_verts)		[NumPatchVertEntries],
 		const i16	(&light_data)		[NumLightEntries],
 		u8								num_spotlights
@@ -132,7 +132,7 @@ FORCEINLINE PackedMap::UV PackedMap::GetPlaneUV(u32 plane_index) const {
 }
 
 NOINLINE PackedMap::Patch PackedMap::GetPatch(u32 patch_index) const {
-	u16 data = patches[patch_index];
+	u32 data = patches[patch_index];
 
 	Patch patch;
 	patch.width		= ((data & 7) << 1) + 3;

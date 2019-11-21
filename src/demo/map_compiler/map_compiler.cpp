@@ -1095,7 +1095,7 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 	}
 	printf(INDENT "max patch size: %d x %d\n", max_width, max_height);
 
-	print << "\nconst u16 "sv << patch_array_name << "[] = {"sv;
+	print << "\nconst u32 "sv << patch_array_name << "[] = {"sv;
 	for (auto& patch : world.patches) {
 		vec2 max_dist = 0.f;
 

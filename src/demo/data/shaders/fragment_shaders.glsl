@@ -626,6 +626,16 @@ TEX(mtlbk03) {
 	return c;
 }
 
+TEX(cable) {
+    float b = FBMT(uv, vec2(5), .9, 3., 4), h = fract(uv.y * 10.);
+    vec3 c = mix(RGB(53, 48, 42), RGB(38, 38, 36), b);
+    c *= .6 + b * .8;
+    c *= 1. - .5 * sqr(tri(.5, .5, h));
+    c *= 1. + .5 * sqr(tri(.25, .25, h));
+    c *= 1. + .5 * sqr(tri(.65, .35, h));
+	return c;
+}
+
 TEX(bmtsprt) {
     float b = FBMT(uv, vec2(7, 3), .9, 3., 4);
     vec3 c = mix(RGB(59, 48, 40), RGB(110, 108, 102), b*b);
