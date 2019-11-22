@@ -61,6 +61,8 @@ namespace Demo {
 			FontCount,
 		};
 
+		vec2 GetScale()				{ return {float(Sys::g_window.width)/1920.f, float(Sys::g_window.height)/1080.f}; }
+
 		Sys::Font::Glyph			glyphs[FontCount][Sys::Font::Glyph::Count];
 		const Sys::Font::Glyph&		GetGlyph(char c, UI::Font font = UI::SmallFont);
 
@@ -72,6 +74,10 @@ namespace Demo {
 			"\x30" "Impact"					"\0"
 			"\x10" "Courier New Bold"		"\0"
 		;
+		constexpr vec2 FontScale[FontCount] = {
+			{2.f, 1.25f},
+			{1.f, 1.f},
+		};
 
 		constexpr auto TexDescriptor = Texture::Descriptors[Texture::Font];
 		
