@@ -159,15 +159,22 @@ NOINLINE char* IntToString(i32 i, char* out) {
 		*out++ = '-';
 		i = -i;
 	}
-	int count = 0;
-	do {
-		out[count++] = i % 10 + '0';
-		i /= 10;
-	} while (i != 0);
 
-	for (int i = 0, mid = count / 2; i < mid; ++i)
-		Swap(out[i], out[count-i-1]);
+	u32 u = i;
+	u16 count = 0;
+	do {
+		++count;
+		u /= 10;
+	} while (u);
+
 	out[count] = 0;
+
+	u = i;
+	u16 p = count;
+	do {
+		out[--p] = u % 10 + '0';
+		u /= 10;
+	} while (p);
 
 	return out + count;
 }
