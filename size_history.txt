@@ -485,3 +485,17 @@
 24122,vec2 positions in gfx::drawfullscreen
 24223,added base_support/cable
 24180,tweaked shaders
+24224,tweaked ui::print
+24240,v2
+24159,v3
+24233,v4
+24201,v5
+24154,v6
+24180,v7
+24195,v8
+24240,v9
+24154,v6
+24201,v10
+24154,v6
+24160,manual loop using goto
+24154,v6

@@ -191,32 +191,17 @@ void Demo::UI::Print(const char* text, const vec2& pos, const vec2& scale, u32 c
 			auto& glyph = GetGlyph(*text++, font);
 			--batch_chars;
 
-			v[0].pos[0] = cursor[0] + glyph.anchor[0] * scale[0];
-			v[0].pos[1] = cursor[1] - glyph.anchor[1] * scale[1];
-			v[0].uv[0] = glyph.box_min[0] / float(TexDescriptor.width);
-			v[0].uv[1] = glyph.box_min[1] / float(TexDescriptor.height);
-			v[0].color = color;
-
-			v[1].pos[0] = v[0].pos[0] + glyph.box_size[0] * scale[0];
-			v[1].pos[1] = v[0].pos[1];
-			v[1].uv[0] = v[0].uv[0] + glyph.box_size[0] / float(TexDescriptor.width);
-			v[1].uv[1] = v[0].uv[1];
-			v[1].color = color;
-
-			v[2].pos[0] = v[1].pos[0];
-			v[2].pos[1] = v[1].pos[1] - glyph.box_size[1] * scale[1];
-			v[2].uv[0] = v[1].uv[0];
-			v[2].uv[1] = v[1].uv[1] + glyph.box_size[1] / float(TexDescriptor.height);
-			v[2].color = color;
-
-			v[3].pos[0] = v[0].pos[0];
-			v[3].pos[1] = v[2].pos[1];
-			v[3].uv[0] = v[0].uv[0];
-			v[3].uv[1] = v[2].uv[1];
-			v[3].color = color;
+			for (u16 i = 0; i < 4; ++i, ++v) {
+				u16 dx = (6 >> i) & 1;	// 0 1 1 0
+				u16 dy = i >> 1;		// 0 0 1 1
+				v[0].pos[0] = cursor[0] + glyph.anchor[0] * scale[0] + (glyph.box_size[0] * dx) * scale[0];
+				v[0].pos[1] = cursor[1] - glyph.anchor[1] * scale[1] - (glyph.box_size[1] * dy) * scale[1];
+				v[0].uv[0] = (glyph.box_min[0] + (glyph.box_size[0] * dx)) / float(TexDescriptor.width);
+				v[0].uv[1] = (glyph.box_min[1] + (glyph.box_size[1] * dy)) / float(TexDescriptor.height);
+				v[0].color = color;
+			}
 
 			cursor.x += glyph.advance * scale[0];
-			v += 4;
 		}
 	}
 }
