@@ -501,3 +501,4 @@
 24154,v6
 24140,tweaked inttostring
 24153,tweaked ui font scaling
+24297,more loading screen text

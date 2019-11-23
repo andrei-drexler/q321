@@ -75,7 +75,7 @@ namespace Demo {
 			"\x10" "Courier New Bold"		"\0"
 		;
 		constexpr vec2 FontScale[FontCount] = {
-			{2.f, 1.25f},
+			{1.5f, 1.f},
 			{1.f, 1.f},
 		};
 
@@ -217,7 +217,7 @@ void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const vec2& scal
 		u32 pass_color = color;
 		vec2 cursor = pos;
 		if (!pass) {
-			cursor += scale * 3.f;
+			cursor += scale.y * 4.f;
 			pass_color &= 0xFF000000;
 		}
 		Print(text, cursor, scale, pass_color, align, font);

@@ -128,7 +128,26 @@ namespace Demo {
 		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
 		Gfx::DrawFullScreen();
 
-		UI::PrintShadowed("LOADING Q3DM17", Gfx::GetResolution() * vec2{0.5f, 0.25f}, UI::FontScale[UI::LargeFont] * UI::GetScale().y, -1, 0.5f, UI::LargeFont);
+		static constexpr char LoadingText[] = 
+			"LOADING Q3DM17"				"\0"
+			"CONNECTING TO LOCALHOST"		"\0"
+			"PRESS ESC TO ABORT"			"\0"
+			" "								"\0"
+			"LOADING... MAPS/Q3DM17.BSP"	"\0"
+			" "								"\0"
+			"THE LONGEST YARD"				"\0"
+			"CHEATS ARE ENABLED"			"\0"
+			"FREE FOR ALL"					"\0"
+			"FRAGLIMIT 20"					"\0"
+		;
+
+		vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.125f};
+		vec2 ui_scale = UI::GetScale();
+		vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;
+		for (const char* line = LoadingText; *line; line = NextAfter(line)) {
+			UI::PrintShadowed(line, pos, font_scale, -1, 0.5f, UI::LargeFont);
+			pos.y += ui_scale.y * 80.f;
+		}
 		UI::FlushGeometry();
 	}
 
