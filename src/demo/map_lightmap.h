@@ -300,7 +300,7 @@ void Map::ComputeLighting(bool shadows) {
 	shadows = false;
 #endif
 
-	if (Lightmap::Debug == Lightmap::DebugMode::Off) {
+	if constexpr (Lightmap::Debug == Lightmap::DebugMode::Off) {
 		struct Params {
 			Map* map;
 			bool shadows;

@@ -507,3 +507,4 @@
 24303,sharper large font
 24287,noinline nextafter
 24302,increased large font glyph spacing
+24297,if constexpr in map::computelighting
