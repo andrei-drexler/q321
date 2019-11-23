@@ -300,6 +300,9 @@ namespace Demo {
 		u32* pixels = Sys::Alloc<u32>(IconDescriptor.width * IconDescriptor.height);
 		Gfx::ReadBack(Texture::icon, pixels);
 		Sys::SetWindowIcon(&Sys::g_window, pixels, IconDescriptor.width);
+		if constexpr (0) {
+			Gfx::SaveTGA("icon.tga", pixels, IconDescriptor.width, IconDescriptor.height);
+		}
 		Sys::Free(pixels);
 	}
 }
