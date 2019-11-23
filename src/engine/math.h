@@ -650,6 +650,7 @@ struct mat4 {
 };
 
 constexpr mat4 o4x4(0.f);
+constexpr mat4 i4x4(1.f);
 
 constexpr mat3::mat3(const mat4& m) :
 	x(m.x.x, m.x.y, m.x.z),

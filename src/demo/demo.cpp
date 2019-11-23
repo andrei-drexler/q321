@@ -79,25 +79,26 @@ namespace Demo {
 		Gfx::Texture::ID	render_target;
 	};
 
+	static constexpr mat4 ToYUp = {
+			1.f,  0.f,  0.f,  0.f,
+			0.f,  0.f, -1.f,  0.f,
+			0.f,  1.f,  0.f,  0.f,
+			0.f,  0.f,  0.f,  1.f,
+	};
+
 	NOINLINE void RenderWorld(const Frame& frame) {
 		using namespace Math::constants;
 
 		Uniform::Time.x = frame.time;
 
-		mat4 rotation, translation(1.f), projection;
+		mat4 rotation, translation, projection;
 		transpose(MakeRotation(frame.angles * DEG2RAD), rotation);
+		translation = i4x4;
 		translation.SetPosition(-frame.pos);
 
 		vec2 res = Gfx::GetResolution();
 		vec2 fov(frame.fov * DEG2RAD);
 		fov.y = ScaleFov(fov.x, res.y/res.x);
-
-		static constexpr mat4 ToYUp = {
-			 1.f,  0.f,  0.f,  0.f,
-			 0.f,  0.f, -1.f,  0.f,
-			 0.f,  1.f,  0.f,  0.f,
-			 0.f,  0.f,  0.f,  1.f,
-		};
 
 		MakePerspective(fov, 2.f, 8192.f, projection);
 		Uniform::MVP = projection * ToYUp * rotation * translation;
