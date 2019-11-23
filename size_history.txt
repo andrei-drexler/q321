@@ -505,3 +505,4 @@
 24273,made loading text global
 24339,more authentic large text rendering
 24303,sharper large font
+24287,noinline nextafter

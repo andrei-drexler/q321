@@ -179,7 +179,7 @@ NOINLINE char* IntToString(i32 i, char* out) {
 	return out + count;
 }
 
-FORCEINLINE constexpr const char* NextAfter(const char* multistr) {
+NOINLINE constexpr const char* NextAfter(const char* multistr) {
 	if (*multistr) {
 		while (*multistr)
 			++multistr;
