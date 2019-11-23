@@ -422,7 +422,7 @@ FORCEINLINE void Sys::SetWindowIcon(Window* window, const u32* pixels, u16 size)
 	ReleaseDC(NULL, hdc);
 	DeleteObject(hBitmap);
 
-	hIcon = (HICON) SendMessageA((HWND)window->handle, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+	hIcon = (HICON) SendMessageA((HWND)window->handle, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
 	if (hIcon)
 		DestroyIcon(hIcon);
 }
