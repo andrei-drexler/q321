@@ -575,7 +575,6 @@ TEXA(mtlfw15ow) {
 void mtlfw15ow_m() {
 	vec4 c = texture(Texture0, UV, -.5);
 	FCol = vec4(c.xyz * Light() + tri(.5, .125, fract(UV.y * .5 + Time.x * .5)) * c.w * .3, 1);
-	//FCol.rgb *= smoothstep(0., 2., Time.x);
 }
 
 TEX(mtlfb3) {
@@ -752,7 +751,6 @@ void q3bnr_m() {
 	vec3 c = texture(Texture0, UV * 2., -.5).xyz * step(.5, fract(Time.x * .5));
 	c = mix(c * Light(), vec3(.5, 0, 0), tri(fract(Time.x * 2.), 1./64., fract(UV.y)));
 	FCol = vec4(c + env(Ref) * .25 + texture(Texture0, UV + H(Time.xx)).w * .1, 1);
-	//FCol.rgb *= smoothstep(0., 2., Time.x);
 }
 
 void beam() {
@@ -760,34 +758,20 @@ void beam() {
 	uv.x += Time.x / 33.;
 	float b = FBMT(uv, vec2(7), .9, 2.), f = fract(Pos.z/128.-.375);
 	FCol = vec4(2. * RGB(95, 85, 80) * f*f*f*f * mix(1., b, .5), 0.);
-	//FCol *= smoothstep(0., 2., Time.x);
 }
 
 void Generic() {
 	float l = dot(Nor, normalize(vec3(2,0,8)));
 	l = l * .4 + .7;
-	//FCol = vec4(vec3(.5+.5*dot(nor, normalize(vec3(1,4,2)))), 1);
 	vec2 uv = uvmap(Pos, dom(Nor));
-	//vec2 uv = Pos.xy;
-	//uv = floor(uv);
-	//float t = FBM(Pos.xy/64., .7, 3.);
-	//FCol = vec4(fract(uv/16.), 0, 1);
-	//FCol = vec4(vec3(weyl_turb(uv/128.,.5,2.) * d), 1);
-	//FCol = vec4(mix(vec3(.35, .3, .25), vec3(.225, .22, .21), t) * l, 1);
-	//vec3 c = c_met_5_2(fract(uv/128.));
 	vec3 c = vec3(.5);
-	//c = mix(vec3(.75), c, 1.);
-	//c *= mix(vec3(1), fract(vec3(1, .75, .75) + PHI * Time.w), 1.);
 	c *= hsv(vec3(fract(PHI * Time.w + .25), 1., 1.));
-	//c = vec3(fract(uv/128.), 0);
 	FCol = vec4(c * l, 1);
-	//FCol.rgb *= smoothstep(0., 2., Time.x);
 }
 
 void fixture() {
 	vec4 c = texture(Texture0, UV, -.5);
 	FCol = vec4(c.xyz * mix(Light(), vec3(1), c.w), 1);
-	//FCol.rgb *= smoothstep(0., 2., Time.x);
 }
 
 void dmnd2cjp_m() {
@@ -795,25 +779,21 @@ void dmnd2cjp_m() {
     float r = length(fract(UV) - .5);
     float s = mix(.4, 8., fract(Time.x * 1.5));
 	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.37, .32, r), 1);
-	//FCol.rgb *= smoothstep(0., 2., Time.x);
 }
 
 void Lmapped() {
 	vec3 c = texture(Texture0, UV, -.5).xyz;
 	FCol = vec4(c * Light(), 1);
-	//FCol.rgb *= smoothstep(0., 2., Time.x);
 }
 
 void shiny() {
 	vec4 c = texture(Texture0, UV, -.5);
 	c.xyz *= 1. + c.w * env(Ref);
 	FCol = vec4(c.xyz * Light(), 1);
-	//FCol.rgb *= smoothstep(0., 2., Time.x);
 }
 
 void Loading() {
 	FCol = texture(Texture0, (.5 + UV * 127.) / 128., 2.5);
-	//FCol.xyz *= .7 + .6 * FBMT(UV, vec2(128), .9, 2., 4);
 	FCol.xyz *= .7 + .3 * NT(UV, .5/fwidth(UV));
 }
 

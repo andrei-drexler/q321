@@ -8,7 +8,7 @@
 // rename_globals      : true
 // min_macro_savings   : 8
 
-// src/demo/data/shaders/fragment_shaders.glsl: 23153 => 8981 (38.8%)
+// src/demo/data/shaders/fragment_shaders.glsl: 22260 => 8981 (40.3%)
 const char g_fragment_shaders[] =
 "#define j vec2\n"
 "#define u float\n"

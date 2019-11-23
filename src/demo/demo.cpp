@@ -304,7 +304,6 @@ int FORCEINLINE demo_main() {
 	Demo::Texture::GenerateAll();
 
 	auto touch = [](auto& src) { memcpy(Mem::Alloc(sizeof(src)), src, sizeof(src)); };
-	//touch(dm17::lightmap_offsets);
 
 	static_assert(dm17::material_version == Demo::Material::Version, "Material definition mismatch, please recompile the map");
 
@@ -316,16 +315,6 @@ int FORCEINLINE demo_main() {
 	Demo::g_loading_thread.work = &Demo::GenerateLightmap;
 	Sys::SpawnThread(Demo::g_loading_thread);
 
-	// levelshot
-	//Demo::g_player.position		= vec3{-948.f, -396.f, 1220.f};
-	//Demo::g_player.angles		= vec3{296.f, -28.5f, 0.f};
-
-	//Demo::g_player.position	= vec3{488.f, -376.f, 352.f};
-	//Demo::g_player.angles		= vec3(-225.f, 0.f, 0.f);
-	//Demo::g_player.position		= {-712.f, -840.f, 1172.f};
-	//Demo::g_player.angles		= {320.f, -24.f, 0.f};
-	//Demo::g_player.angles		= {199.406784f, -2.4375f, 0.f}; // ray benchmark
-	
 	// lower-left side
 	Demo::g_player.position		= {42.f, 608.f, 80.f};
 	Demo::g_player.angles		= {222.f, 2.25f, 0.f};
