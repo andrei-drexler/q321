@@ -452,12 +452,12 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 				}
 			}
 
-			g.box_min[0] = rect.min[0] + Padding;
-			g.box_min[1] = rect.min[1] + Padding;
-			g.box_size[0] = metrics.gmBlackBoxX;
-			g.box_size[1] = metrics.gmBlackBoxY;
-			g.anchor[0] = metrics.gmptGlyphOrigin.x;
-			g.anchor[1] = metrics.gmptGlyphOrigin.y - metrics.gmBlackBoxY;
+			g.box_min[0] = rect.min[0];
+			g.box_min[1] = rect.min[1];
+			g.box_size[0] = rect.GetWidth();
+			g.box_size[1] = rect.GetHeight();
+			g.anchor[0] = metrics.gmptGlyphOrigin.x - Padding;
+			g.anchor[1] = metrics.gmptGlyphOrigin.y - metrics.gmBlackBoxY - Padding;
 		}
 
 		g.advance = metrics.gmCellIncX;

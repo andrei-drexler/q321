@@ -71,11 +71,11 @@ namespace Demo {
 		void						PrintShadowed(const char* text, const vec2& pos, const vec2& scale = 1.f, u32 color = -1, float align = 0.f, Font font = SmallFont);
 
 		constexpr char FontDescriptors[] =
-			"\x30" "Impact"					"\0"
+			"\x20" "Impact"					"\0"
 			"\x10" "Courier New Bold"		"\0"
 		;
 		constexpr vec2 FontScale[FontCount] = {
-			{1.5f, 1.f},
+			{2.25f, 1.5f},
 			{1.f, 1.f},
 		};
 
@@ -158,6 +158,11 @@ NOINLINE void Demo::Texture::GenerateAll() {
 	for (const char* descriptor = UI::FontDescriptors; *descriptor; descriptor = NextAfter(descriptor), ++font_index) {
 		Sys::RasterizeFont(descriptor + 1, descriptor[0], 0, font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height, packer, UI::glyphs[font_index]);
 	}
+
+	// the space glyph for 'Impact' is too narrow
+	auto& large_space = UI::glyphs[UI::LargeFont][' ' - Sys::Font::Glyph::Begin];
+	large_space.advance <<= 1;
+
 	//Gfx::SaveTGA("font.tga", font_pixels, FontTexDescriptor.width, FontTexDescriptor.height);
 	Gfx::SetTextureContents(Texture::Font, font_pixels);
 	Gfx::GenerateMipMaps(Texture::Font);
@@ -217,7 +222,7 @@ void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const vec2& scal
 		u32 pass_color = color;
 		vec2 cursor = pos;
 		if (!pass) {
-			cursor += scale.y * 4.f;
+			cursor += 6.f * GetScale().y;
 			pass_color &= 0xFF000000;
 		}
 		Print(text, cursor, scale, pass_color, align, font);
