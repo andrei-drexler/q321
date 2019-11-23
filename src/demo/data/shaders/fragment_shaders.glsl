@@ -721,14 +721,15 @@ TEXA(lt2) {
 TEXA(icon) {
     uv.y -= .57;
     uv.x = abs(uv.x - .5);
-    float d = elips(uv, vec2(.31, .1)) / 50.;
-    d = max(d, -elips(uv - vec2(0, .02), vec2(.29, .07)) / 100.);
-    d = max(d, -box(uv - vec2(.0, .1), vec2(.21, .1)));
+    float d = elips(uv, vec2(.31, .12)) / 50.;
+    d = max(d, -elips(uv - vec2(0, .01), vec2(.28, .07)) / 120.);
+    d = max(d, -box(uv - vec2(.0, .1), vec2(.22, .12)));
     d = max(d, -box(uv - vec2(.0, .1), vec2(.09, .31)));
-    d = min(d, box1(uv - vec2(.1, -.2), vec2(tri(-.07, .3, uv.y)*.02, .15)));
-    d = min(d, box1(uv - vec2(.0, -.07), vec2(tri(-.07, .3, uv.y)*.03, .3)));
-    float m = msk(d, 1./64.);
-    vec3 c = vec3(.3, 0, 0);
+    d = min(d, box1(uv - vec2(.0, -.09), vec2(tri(-.09, .32, uv.y)*.04, .32)));
+    d = min(d, box1(uv - vec2(.11, -.21), vec2(tri(-.07, .3, uv.y)*.03, .15)));
+    uv.y += .07;
+    float b = length(uv) - .47, m = msk(b);
+    vec3 c = 1. - vec3(.5, 1, 1) * msk(max(.007 - d, b + .04));
     return vec4(c * m, m);
 }
 

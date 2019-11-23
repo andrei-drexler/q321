@@ -515,3 +515,4 @@
 24489,pre-filled bitmap headers
 24498,getdc before header init
 24489,undo
+24509,tweaked icon shader
