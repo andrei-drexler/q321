@@ -506,3 +506,4 @@
 24339,more authentic large text rendering
 24303,sharper large font
 24287,noinline nextafter
+24302,increased large font glyph spacing

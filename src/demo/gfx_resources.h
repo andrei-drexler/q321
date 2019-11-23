@@ -159,9 +159,16 @@ NOINLINE void Demo::Texture::GenerateAll() {
 		Sys::RasterizeFont(descriptor + 1, descriptor[0], 0, font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height, packer, UI::glyphs[font_index]);
 	}
 
-	// the space glyph for 'Impact' is too narrow
+	// 'Impact' is decent match for the large Q3 font, but it's not perfect.
+	// We can get somewhat closer with a few glyph spacing tweaks, though:
+
+	// increase space glyph advance by 100%
 	auto& large_space = UI::glyphs[UI::LargeFont][' ' - Sys::Font::Glyph::Begin];
 	large_space.advance <<= 1;
+
+	// increase advance a bit for all glyphs
+	for (u16 i = 0; i < size(UI::glyphs[UI::LargeFont]); ++i)
+		++UI::glyphs[UI::LargeFont][i].advance;
 
 	//Gfx::SaveTGA("font.tga", font_pixels, FontTexDescriptor.width, FontTexDescriptor.height);
 	Gfx::SetTextureContents(Texture::Font, font_pixels);
