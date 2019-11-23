@@ -34,7 +34,7 @@ namespace Demo {
 		};
 
 		constexpr u32 Version = Hash(
-			#define PP_DEMO_HASH_MATERIAL_NAME(path, shader, texture, contents, draw, light)		path "*"
+			#define PP_DEMO_HASH_MATERIAL_NAME(path, shader, texture, contents, draw, light)		path "*" #texture "*" #contents "*" #draw "*"
 			DEMO_MATERIALS(PP_DEMO_HASH_MATERIAL_NAME) "\0"
 			#undef PP_DEMO_HASH_MATERIAL_NAME
 		);
