@@ -509,3 +509,9 @@
 24302,increased large font glyph spacing
 24297,if constexpr in map::computelighting
 24294,remove c-style comments from shaders
+24423,added icon shader
+24542,set window icon on startup
+24527,forceinline updatewindowicon
+24489,pre-filled bitmap headers
+24498,getdc before header init
+24489,undo

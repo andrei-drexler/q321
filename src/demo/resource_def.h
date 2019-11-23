@@ -19,6 +19,7 @@
 #define DEMO_SHADERS(x)\
 	/*Name,					VertexBits*/\
 	x(Generic,				MapVertexBits)\
+	x(icon,					FSVertexBits)\
 	x(Loading,				FSVertexBits)\
 	x(UI,					UIVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(Lmapped,				MapVertexBits)\
@@ -55,6 +56,7 @@
 	/*Name,			ProcGenShader,		Width,	Height,	Format,		Flags*/\
 	x(White,		Gfx::InvalidID,		16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
 	x(Grey,			Gfx::InvalidID,		16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
+	x(icon,			Shader::icon,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(Lightmap,		Gfx::InvalidID,		512,	256,	BGRA8,		Gfx::Texture::Flags::Default|Gfx::Texture::Flags::NoMips)\
 	x(LevelshotZ,	Gfx::InvalidID,		512,	512,	Z32F,		Gfx::Texture::Flags::ZBuffer)\
 	x(Levelshot,	Gfx::InvalidID,		512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\

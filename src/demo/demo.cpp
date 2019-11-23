@@ -292,6 +292,16 @@ namespace Demo {
 				return;
 		}
 	}
+
+	static constexpr auto IconDescriptor = Texture::Descriptors[Texture::icon];
+	static_assert(IconDescriptor.width == IconDescriptor.height, "Icon texture must be square");
+
+	FORCEINLINE void UpdateWindowIcon() {
+		u32* pixels = Sys::Alloc<u32>(IconDescriptor.width * IconDescriptor.height);
+		Gfx::ReadBack(Texture::icon, pixels);
+		Sys::SetWindowIcon(&Sys::g_window, pixels, IconDescriptor.width);
+		Sys::Free(pixels);
+	}
 }
 
 ////////////////////////////////////////////////////////////////
@@ -302,6 +312,7 @@ int FORCEINLINE demo_main() {
 	Sys::InitWindow(&Sys::g_window, Demo::HandleEvent, "Q320 - The Shortest Yard");
 	Demo::RegisterGfxResources();
 	Demo::Texture::GenerateAll();
+	Demo::UpdateWindowIcon();
 
 	auto touch = [](auto& src) { memcpy(Mem::Alloc(sizeof(src)), src, sizeof(src)); };
 

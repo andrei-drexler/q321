@@ -367,6 +367,66 @@ FORCEINLINE bool Sys::WriteToFile(File::Handle file, const void* buffer, u32 siz
 
 ////////////////////////////////////////////////////////////////
 
+namespace Win32 {
+	using BitmapHeaderType = BITMAPV4HEADER;
+
+	static constexpr BitmapHeaderType BaseBitmapHeader = {
+		sizeof(BitmapHeaderType),	// DWORD        bV4Size;
+		0,							// LONG         bV4Width;
+		0,							// LONG         bV4Height;
+		1,							// WORD         bV4Planes;
+		32,							// WORD         bV4BitCount;
+		BI_BITFIELDS,				// DWORD        bV4V4Compression;
+		0,							// DWORD        bV4SizeImage;
+		0,							// LONG         bV4XPelsPerMeter;
+		0,							// LONG         bV4YPelsPerMeter;
+		0,							// DWORD        bV4ClrUsed;
+		0,							// DWORD        bV4ClrImportant;
+		0x00FF0000,					// DWORD        bV4RedMask;
+		0x0000FF00,					// DWORD        bV4GreenMask;
+		0x000000FF,					// DWORD        bV4BlueMask;
+		0xFF000000,					// DWORD        bV4AlphaMask;
+		0,							// DWORD        bV4CSType;
+		0,							// CIEXYZTRIPLE bV4Endpoints;
+		0,							// DWORD        bV4GammaRed;
+		0,							// DWORD        bV4GammaGreen;
+		0,							// DWORD        bV4GammaBlue;
+	};
+}
+
+FORCEINLINE void Sys::SetWindowIcon(Window* window, const u32* pixels, u16 size) {
+	Win32::BitmapHeaderType bi;
+	MemCopy(&bi, &Win32::BaseBitmapHeader);
+
+	bi.bV4Width = size;
+	bi.bV4Height = size;
+
+	HDC hdc = GetDC(NULL);
+
+	void *lpBits;
+	HBITMAP hBitmap = CreateDIBSection(hdc, (BITMAPINFO*)&bi, DIB_RGB_COLORS, &lpBits, NULL, 0);
+
+	MemCopy(lpBits, pixels, size * size * sizeof(u32));
+
+	// Create an empty mask bitmap.
+	HBITMAP hMonoBitmap = CreateBitmap(size, size, 1, 1, NULL);
+
+	ICONINFO icon_info;
+	icon_info.fIcon = TRUE;
+	icon_info.xHotspot = 0;
+	icon_info.yHotspot = 0;
+	icon_info.hbmMask = hMonoBitmap;
+	icon_info.hbmColor = hBitmap;
+
+	HICON hIcon = CreateIconIndirect(&icon_info);
+	ReleaseDC(NULL, hdc);
+	DeleteObject(hBitmap);
+
+	hIcon = (HICON) SendMessageA((HWND)window->handle, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+	if (hIcon)
+		DestroyIcon(hIcon);
+}
+
 FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, RectPacker& packer, Font::Glyph* glyphs) {
 	using namespace Font;
 
@@ -391,19 +451,11 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 	if (!font)
 		Sys::Fatal(Error::Font);
 
-	BITMAPV5HEADER bi;
-	ZeroMemory(&bi, sizeof(BITMAPV5HEADER));
+	Win32::BitmapHeaderType bi;
+	MemCopy(&bi, &Win32::BaseBitmapHeader);
 
-	bi.bV5Size = sizeof(BITMAPV5HEADER);
-	bi.bV5Width = width;
-	bi.bV5Height = height;
-	bi.bV5Planes = 1;
-	bi.bV5BitCount = 32;
-	bi.bV5Compression = BI_BITFIELDS;
-	bi.bV5RedMask = 0x00FF0000;
-	bi.bV5GreenMask = 0x0000FF00;
-	bi.bV5BlueMask = 0x000000FF;
-	bi.bV5AlphaMask = 0xFF000000;
+	bi.bV4Width = width;
+	bi.bV4Height = height;
 
 	HDC hdc = GetDC(NULL);
 

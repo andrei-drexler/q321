@@ -343,6 +343,10 @@ float circ(vec2 p, float r) {
     return length(p) - r;
 }
 
+float elips(vec2 p, vec2 r) {
+    return (length(p/r) - 1.) / min(r.x, r.y);
+}
+
 // polynomial smooth min
 // http://www.iquilezles.org/www/articles/smin/smin.htm
 float smin(float a, float b, float k) {
@@ -712,6 +716,20 @@ TEXA(lt2) {
     l *= 1. - .5 * sqr(tri(.46, .04, r));
     l *= 1. - .4 * sqr(tri(.36, .04, r));
     return vec4(c * l, a);
+}
+
+TEXA(icon) {
+    uv.y -= .57;
+    uv.x = abs(uv.x - .5);
+    float d = elips(uv, vec2(.31, .1)) / 50.;
+    d = max(d, -elips(uv - vec2(0, .02), vec2(.29, .07)) / 100.);
+    d = max(d, -box(uv - vec2(.0, .1), vec2(.21, .1)));
+    d = max(d, -box(uv - vec2(.0, .1), vec2(.09, .31)));
+    d = min(d, box1(uv - vec2(.1, -.2), vec2(tri(-.07, .3, uv.y)*.02, .15)));
+    d = min(d, box1(uv - vec2(.0, -.07), vec2(tri(-.07, .3, uv.y)*.03, .3)));
+    float m = msk(d, 1./64.);
+    vec3 c = vec3(.3, 0, 0);
+    return vec4(c * m, m);
 }
 
 TEXA(q3bnr) {

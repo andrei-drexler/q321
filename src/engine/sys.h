@@ -93,6 +93,7 @@ namespace Sys {
 	void InitWindow(Window* window, Window::Event::Handler handler, const char* name = "Demo");
 	void SetFPSMode(Window* window, bool enabled = true);
 	void RedrawWindow(Window* window);
+	void SetWindowIcon(Window* window, const u32* pixels, u16 size);
 	
 	bool PumpMessages(int* error = nullptr);
 	int RunApplication();
