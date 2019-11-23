@@ -517,3 +517,4 @@
 24489,undo
 24509,tweaked icon shader
 24501,shorter window title
+24486,global screenshot prefix/suffix

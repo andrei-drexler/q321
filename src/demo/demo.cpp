@@ -232,13 +232,14 @@ namespace Demo {
 
 	u32 g_screenshot_index;
 
+	constexpr char ScreenshotPrefix[] = "screenshot_";
+	constexpr char ScreenshotSuffix[] = ".tga";
+
 	void TakeScreenshot() {
-		const char Prefix[] = "screenshot_";
-		const char Suffix[] = ".tga";
 		char file_name[32];
-		MemCopy(file_name, Prefix, size(Prefix) - 1);
+		MemCopy(file_name, ScreenshotPrefix, size(ScreenshotPrefix) - 1);
 		do {
-			MemCopy(IntToString(++g_screenshot_index, file_name + (size(Prefix) - 1)), Suffix, size(Suffix));
+			MemCopy(IntToString(++g_screenshot_index, file_name + (size(ScreenshotPrefix) - 1)), ScreenshotSuffix, size(ScreenshotSuffix));
 			if (g_screenshot_index == 10000) {
 				Sys::DebugStream << "Error: couldn't generate screenshot name.\n";
 				return;
