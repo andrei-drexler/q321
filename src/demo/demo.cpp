@@ -79,7 +79,7 @@ namespace Demo {
 		Gfx::Texture::ID	render_target;
 	};
 
-	NOINLINE void RenderFrame(const Frame& frame) {
+	NOINLINE void RenderWorld(const Frame& frame) {
 		using namespace Math::constants;
 
 		Uniform::Time.x = frame.time;
@@ -117,7 +117,7 @@ namespace Demo {
 			3.f,
 			Demo::Texture::Levelshot
 		};
-		RenderFrame(levelshot);
+		RenderWorld(levelshot);
 		Gfx::GenerateMipMaps(Demo::Texture::Levelshot);
 	}
 
@@ -177,7 +177,7 @@ namespace Demo {
 		frame.time			= g_time - g_load_time;
 		frame.render_target	= Gfx::Backbuffer;
 
-		RenderFrame(frame);
+		RenderWorld(frame);
 
 		//for (u16 li = 0; li < g_map.num_lights; ++li)
 		//	RenderSprite(g_map.lights[li].position, 16.f);
