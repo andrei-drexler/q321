@@ -504,3 +504,4 @@
 24297,more loading screen text
 24273,made loading text global
 24339,more authentic large text rendering
+24303,sharper large font

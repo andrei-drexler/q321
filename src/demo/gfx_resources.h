@@ -71,11 +71,11 @@ namespace Demo {
 		void						PrintShadowed(const char* text, const vec2& pos, const vec2& scale = 1.f, u32 color = -1, float align = 0.f, Font font = SmallFont);
 
 		constexpr char FontDescriptors[] =
-			"\x20" "Impact"					"\0"
+			"\x30" "Impact"					"\0"
 			"\x10" "Courier New Bold"		"\0"
 		;
 		constexpr vec2 FontScale[FontCount] = {
-			{2.25f, 1.5f},
+			{1.5f, 1.f},
 			{1.f, 1.f},
 		};
 
