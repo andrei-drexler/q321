@@ -312,7 +312,7 @@ namespace Demo {
 int FORCEINLINE demo_main() {
 	Mem::Init();
 	Demo::Console::Init();
-	Sys::InitWindow(&Sys::g_window, Demo::HandleEvent, "Q320 - The Shortest Yard");
+	Sys::InitWindow(&Sys::g_window, Demo::HandleEvent, "Q320");
 	Demo::RegisterGfxResources();
 	Demo::Texture::GenerateAll();
 	Demo::UpdateWindowIcon();
