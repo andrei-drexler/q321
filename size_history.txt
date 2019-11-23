@@ -508,3 +508,4 @@
 24287,noinline nextafter
 24302,increased large font glyph spacing
 24297,if constexpr in map::computelighting
+24294,remove c-style comments from shaders

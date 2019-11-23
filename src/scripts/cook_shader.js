@@ -79,7 +79,8 @@ for (var srcIndex in srcPaths) {
 
 	source = source.replace(/\r/g, "");						// normalize newline sequences
 	source = source.replace(/\\\n/g, " ");					// merge continued lines (e.g. multi-line macros)
-	source = source.replace(/\/\/.*$/gm, "");				// remove line comments
+	source = source.replace(/\/\/.*$/gm, " ");				// remove single-line (C++-style) comments
+	source = source.replace(/\/\*.*?\*\//gm, " ");			// remove multi-line (C-style) comments
 	source = source.replace(/[ \t]+/g, " ");				// merge whitespace
 	source = source.replace(/([ \t]*\n[ \t]*)+/gm, "\n");	// merge newlines
 
