@@ -502,3 +502,4 @@
 24140,tweaked inttostring
 24153,tweaked ui font scaling
 24297,more loading screen text
+24273,made loading text global

@@ -69,6 +69,8 @@ namespace Demo {
 		Gfx::Draw(mesh);
 	}
 
+	////////////////////////////////////////////////////////////////
+
 	struct Frame {
 		vec3				pos;
 		vec3				angles;
@@ -119,6 +121,21 @@ namespace Demo {
 		Gfx::GenerateMipMaps(Demo::Texture::Levelshot);
 	}
 
+	////////////////////////////////////////////////////////////////
+
+	static constexpr char LoadingText[] = 
+		"LOADING Q3DM17"				"\0"
+		"CONNECTING TO LOCALHOST"		"\0"
+		"PRESS ESC TO ABORT"			"\0"
+		" "								"\0"
+		"LOADING... MAPS/Q3DM17.BSP"	"\0"
+		" "								"\0"
+		"THE LONGEST YARD"				"\0"
+		"CHEATS ARE ENABLED"			"\0"
+		"FREE FOR ALL"					"\0"
+		"FRAGLIMIT 20"					"\0"
+	;
+
 	FORCEINLINE void RenderLoadingScreen() {
 		Gfx::SetRenderTarget(Gfx::Backbuffer);
 		Gfx::SetShader(Demo::Shader::Loading);
@@ -127,19 +144,6 @@ namespace Demo {
 		Gfx::UpdateUniforms();
 		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
 		Gfx::DrawFullScreen();
-
-		static constexpr char LoadingText[] = 
-			"LOADING Q3DM17"				"\0"
-			"CONNECTING TO LOCALHOST"		"\0"
-			"PRESS ESC TO ABORT"			"\0"
-			" "								"\0"
-			"LOADING... MAPS/Q3DM17.BSP"	"\0"
-			" "								"\0"
-			"THE LONGEST YARD"				"\0"
-			"CHEATS ARE ENABLED"			"\0"
-			"FREE FOR ALL"					"\0"
-			"FRAGLIMIT 20"					"\0"
-		;
 
 		vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.125f};
 		vec2 ui_scale = UI::GetScale();
@@ -150,6 +154,8 @@ namespace Demo {
 		}
 		UI::FlushGeometry();
 	}
+
+	////////////////////////////////////////////////////////////////
 
 	FORCEINLINE void RenderFrame() {
 		if (IsLoading()) {
@@ -177,6 +183,8 @@ namespace Demo {
 		//	RenderSprite(g_map.lights[li].position, 16.f);
 	}
 
+	////////////////////////////////////////////////////////////////
+
 	float g_delta_time;
 
 	FORCEINLINE void Tick(float dt) {
@@ -188,6 +196,8 @@ namespace Demo {
 		if (!IsLoading())
 			g_player.Update(dt);
 	}
+
+	////////////////////////////////////////////////////////////////
 
 	constexpr NOINLINE Player::Input GetKeyBinding(int key) {
 		switch (key) {
