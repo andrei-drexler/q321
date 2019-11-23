@@ -170,7 +170,9 @@ NOINLINE void Demo::Texture::GenerateAll() {
 	for (u16 i = 0; i < size(UI::glyphs[UI::LargeFont]); ++i)
 		++UI::glyphs[UI::LargeFont][i].advance;
 
-	//Gfx::SaveTGA("font.tga", font_pixels, FontTexDescriptor.width, FontTexDescriptor.height);
+	if constexpr (0) {
+		Gfx::SaveTGA("font.tga", font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height);
+	}
 	Gfx::SetTextureContents(Texture::Font, font_pixels);
 	Gfx::GenerateMipMaps(Texture::Font);
 
