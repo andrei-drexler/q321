@@ -321,8 +321,6 @@ int FORCEINLINE demo_main() {
 
 	auto touch = [](auto& src) { memcpy(Mem::Alloc(sizeof(src)), src, sizeof(src)); };
 
-	static_assert(dm17::material_version == Demo::Material::Version, "Material definition mismatch, please recompile the map");
-
 	g_map.Load(dm17::map);
 	g_map.UpdateLightmapTexture();
 	Demo::GenerateLevelShot();

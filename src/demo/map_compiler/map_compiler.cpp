@@ -953,9 +953,8 @@ void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options,
 		}
 	}
 
+	/* write plane materials + uv axes */
 	print
-		<< "\nconst u32 material_version = "sv << Demo::Material::Version << ";"sv;
-	print.Flush()
 		<< "\nconst u8 "sv << count_name << " = "sv << i32(std::size(DemoMaterialNames)) << ", "sv
 		<< array_name << "[] = {"sv;
 	for (auto& brush : world.brushes) {
@@ -1590,6 +1589,10 @@ bool CompileMap(Map& map, const Options& options) {
 		"\n"
 	);
 	fprintf(out, "namespace %s {\n", options.map_name);
+
+	/* version and version check */
+	fprintf(out, "const u32 material_version = 0x%08x;\n", Demo::Material::Version);
+	fprintf(out, "static_assert(material_version == Demo::Material::Version, \"Material definition mismatch, please recompile the map\");\n\n");
 
 	ArrayPrinter print(out);
 
