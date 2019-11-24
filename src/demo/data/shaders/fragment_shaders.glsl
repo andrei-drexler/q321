@@ -720,7 +720,7 @@ TEXA(lt2) {
 
 TEXA(icon) {
     uv.y -= .57;
-    uv.x = abs(uv.x - .5);
+    uv.x = abs(uv.x - .48);
     float d = elips(uv, vec2(.31, .12)) / 50.;
     d = max(d, -elips(uv - vec2(0, .01), vec2(.28, .07)) / 120.);
     d = max(d, -box(uv - vec2(.0, .1), vec2(.22, .12)));

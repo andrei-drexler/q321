@@ -519,3 +519,4 @@
 24501,shorter window title
 24486,global screenshot prefix/suffix
 24483,tweaked renderworld matrix init
+24487,sharper small icon
