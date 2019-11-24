@@ -561,6 +561,9 @@ void SortBrushesAndPlanes(Map& map) {
 		//for (auto& brush : range{ent.brushes.begin(), last_axial})
 		//	std::sort(brush.planes.begin(), brush.planes.end(), by_member(&Map::Plane::type));
 	}
+
+	// Keep brush entities first, point entities last
+	std::stable_partition(map.entities.begin() + 1, map.entities.end(), [](Map::Entity& e) { return e.brushes.size() > 0; });
 }
 
 ////////////////////////////////////////////////////////////////
