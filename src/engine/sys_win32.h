@@ -322,19 +322,16 @@ FORCEINLINE bool Sys::IsThreadReady(const Thread& thread) {
 // File handling ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-NOINLINE Sys::File::Handle Sys::OpenFile(const char* path, File::Mode mode) {
-	DWORD access, share, creation;
-	if (mode == File::Mode::Write) {
-		access = GENERIC_WRITE;
-		share = 0;
-		creation = CREATE_ALWAYS;
-	} else {
-		access = GENERIC_READ;
-		share = FILE_SHARE_READ;
-		creation = OPEN_EXISTING;
-	}
+namespace Win32 {
+	static constexpr DWORD FileOpenParams[2][3] = {
+		{GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING},
+		{GENERIC_WRITE, 0, CREATE_ALWAYS},
+	};
+}
 
-	HANDLE handle = CreateFileA(path, access, share, NULL, creation, FILE_ATTRIBUTE_NORMAL, NULL);
+FORCEINLINE Sys::File::Handle Sys::OpenFile(const char* path, File::Mode mode) {
+	const DWORD* arg = Win32::FileOpenParams[mode == File::Write];
+	HANDLE handle = CreateFileA(path, arg[0], arg[1], NULL, arg[2], FILE_ATTRIBUTE_NORMAL, NULL);
 	return {(void*)handle};
 }
 
