@@ -521,3 +521,4 @@
 24483,tweaked renderworld matrix init
 24487,sharper small icon
 24466,tweaked sys::openfile
+24485,nonaxial counts for all brushes

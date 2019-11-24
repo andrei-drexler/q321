@@ -12,7 +12,6 @@ struct PackedMap {
 	u16					num_brushes;
 	u16					num_unaligned_planes;
 	u16					num_planes;
-	u16					num_nonaxial_brushes;
 	u16					num_patches;
 	u16					num_patch_verts;
 	u8					num_uvs;
@@ -33,7 +32,7 @@ struct PackedMap {
 
 	template
 	<
-		int NumBrushBoundEntries, int NumPlaneEntries, int NumNonaxialBrushes,
+		int NumBrushBoundEntries, int NumPlaneEntries, int NumNonaxialEntries,
 		int NumUVEntries, int NumPlaneUVEntries, int NumMaterialEntries,
 		int NumPatches, int NumPatchVertEntries,
 		int NumLightEntries
@@ -43,7 +42,7 @@ struct PackedMap {
 		const i16	(&world_bounds)		[6],
 		const i16	(&brush_bounds)		[NumBrushBoundEntries],
 		const i32	(&plane_data)		[NumPlaneEntries],
-		const u16	(&nonaxial_counts)	[NumNonaxialBrushes],
+		const u16	(&nonaxial_counts)	[NumNonaxialEntries],
 		u8								num_materials,
 		const u8	(&plane_materials)	[NumMaterialEntries],
 		const float (&uv_data)			[NumUVEntries],
@@ -59,7 +58,6 @@ struct PackedMap {
 		plane_data				(plane_data),
 		num_unaligned_planes	(NumPlaneEntries / 2),
 		nonaxial_counts			(nonaxial_counts),
-		num_nonaxial_brushes	(NumNonaxialBrushes),
 		uv_data					(uv_data),
 		num_uvs					(NumUVEntries / 5),
 		plane_uvs				(plane_uvs),
@@ -75,6 +73,7 @@ struct PackedMap {
 		num_spotlights			(num_spotlights)
 	{
 		static_assert(NumPlaneUVEntries == NumMaterialEntries);
+		static_assert(NumBrushBoundEntries / 6 == NumNonaxialEntries);
 	}
 
 	struct UV {
@@ -505,10 +504,10 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				DistScale		= 1 << DistFractBits;
 
 			/* non-axial planes, if any */
-			if (brush_index >= packed.num_brushes - packed.num_nonaxial_brushes) {
+			{
 				auto num_extra_planes = *nonaxial_offset++;
 				assert(brushes.plane_count + 6  + num_extra_planes <= MAX_NUM_PLANES);
-				
+
 				for (u32 i = 0; i < num_extra_planes; ++i) {
 					vec4& plane = brush_planes[num_brush_planes++];
 				

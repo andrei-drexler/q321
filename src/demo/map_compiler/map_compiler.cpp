@@ -806,7 +806,8 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 	auto first_nonaxial = std::find_if_not(world.brushes.begin(), world.brushes.end(), by_member(&Map::Brush::axial));
 	auto num_axial = first_nonaxial - world.brushes.begin();
 	std::vector<int32_t> nonaxial_counts;
-	nonaxial_counts.reserve(world.brushes.size() - num_axial + 1);
+	nonaxial_counts.reserve(world.brushes.size());
+	nonaxial_counts.resize(num_axial, 0);
 	
 	const bool UseQuantization = true;
 
@@ -820,7 +821,7 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 		int32_t max_nonaxial_planes = 0;
 		
 		print << "\nconst i32 "sv << array_name << "[] = {"sv;
-		for (i32 pass = 0; pass < 2; ++pass) {
+		for (i32 pass = 0; pass < 2; ++pass) { // 0: normal; 1: distance
 			for (auto& brush : range{first_nonaxial, world.brushes.end()}) {
 				int32_t count = 0;
 				
