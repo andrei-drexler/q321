@@ -856,6 +856,7 @@ FORCEINLINE u32 EnumerateBrushEdges(const Plane* planes, u32 num_planes, BrushEd
 
 			if (edges) {
 				auto& edge = edges[num_edges++];
+				assert(num_edges <= max_num_edges);
 				edge.first_point	= origin + dir * tmin;
 				edge.first_plane	= i;
 				edge.second_point	= origin + dir * tmax;
@@ -864,10 +865,6 @@ FORCEINLINE u32 EnumerateBrushEdges(const Plane* planes, u32 num_planes, BrushEd
 				++num_edges;
 			}
 		}
-	}
-	
-	if (edges) {
-		assert(num_edges <= max_num_edges);
 	}
 
 	return num_edges;
