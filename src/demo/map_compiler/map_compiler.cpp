@@ -313,6 +313,19 @@ void PrintProgress(size_t current, size_t total) {
 	printf("%s", buf);
 }
 
+bool AppendEntityGeometryToWorld(Map& map, size_t index) {
+	auto& ent = map.entities[index];
+	if (ent.brushes.empty() && ent.patches.empty())
+		return false;
+
+	auto& world = map.entities[0];
+	world.brushes.insert(world.brushes.end(), ent.brushes.begin(), ent.brushes.end());
+	world.patches.insert(world.patches.end(), ent.patches.begin(), ent.patches.end());
+	world.bounds.add(ent.bounds);
+
+	return true;
+}
+
 void MergeFuncGroups(Map& map) {
 	if (map.entities.size() < 2)
 		return;
@@ -328,10 +341,30 @@ void MergeFuncGroups(Map& map) {
 			++i;
 			continue;
 		}
-		world.brushes.insert(world.brushes.end(), ent.brushes.begin(), ent.brushes.end());
-		world.patches.insert(world.patches.end(), ent.patches.begin(), ent.patches.end());
-		world.bounds.add(ent.bounds);
+		AppendEntityGeometryToWorld(map, i - map.entities.begin());
 		i = map.entities.erase(i);
+	}
+}
+
+void MergeBrushEntities(Map& map, const Options& options, std::vector<size_t>& brush_count) {
+	printf("Merging brush entities\n");
+
+	brush_count.resize(map.entities.size());
+	for (size_t i = 0; i < map.entities.size(); ++i) {
+		brush_count[i] = map.entities[i].brushes.size();
+	}
+
+	auto& world = map.entities[0];
+	for (size_t i = 1; i < map.entities.size(); ++i) {
+		if (!AppendEntityGeometryToWorld(map, i))
+			continue;
+		auto& ent = map.entities[i];
+		if (options.verbose) {
+			auto classname = ent.props["classname"];
+			printf(INDENT "Merging %zd brushes from entity %zd (%.*s)\n", ent.brushes.size(), i, int(classname.size()), classname.data());
+		}
+		ent.brushes.clear();
+		ent.patches.clear();
 	}
 }
 
@@ -756,6 +789,77 @@ void RemoveUnneededUVs(Map& map, const Options& options, const ShaderProperties*
 
 ////////////////////////////////////////////////////////////////
 
+void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, const std::vector<size_t>& entity_brushes, string_view array_name) {
+	printf("Writing entities\n");
+
+	std::unordered_map<std::string_view, size_t> type_count;
+	std::unordered_map<std::string_view, bool> type_has_brushes;
+	std::unordered_map<std::string_view, size_t> prop_count;
+	std::unordered_map<std::string_view, std::unordered_set<std::string_view>> type_props;
+	type_count.reserve(map.entities.size());
+	type_has_brushes.reserve(map.entities.size());
+	prop_count.reserve(map.entities.size() * 4);
+	for (auto& ent : map.entities) {
+		auto ent_index = &ent - map.entities.data();
+		auto type = ent.GetProperty("classname"sv);
+		++type_count[type];
+		type_has_brushes[type] |= (ent_index < entity_brushes.size() && entity_brushes[ent_index]);
+		for (auto& p : ent.props) {
+			if (p.first == "classname"sv)
+				continue;
+			type_props[type].insert(p.first);
+			++prop_count[p.first];
+		}
+	}
+
+	std::vector<std::string_view> sorted_types;
+	sorted_types.reserve(type_count.size());
+	for (auto& type : type_count) {
+		sorted_types.push_back(type.first);
+	}
+	std::sort(sorted_types.begin(), sorted_types.end(), [&] (string_view a, string_view b) {
+		bool brushes_a = type_has_brushes[a];
+		bool brushes_b = type_has_brushes[b];
+		if (brushes_a != brushes_b)
+			return brushes_a > brushes_b;
+		return type_count[a] > type_count[b];
+	});
+
+	std::vector<std::string_view> sorted_properties;
+	sorted_properties.reserve(prop_count.size());
+	for (auto& prop : prop_count) {
+		sorted_properties.push_back(prop.first);
+	}
+	std::sort(sorted_properties.begin(), sorted_properties.end(), [&] (string_view a, string_view b) {
+		return prop_count[a] > prop_count[b];
+	});
+
+	DebugPrint("Entity properties:\n");
+	DebugPrint("-----------------\n");
+	for (auto& prop : sorted_properties) {
+		DebugPrint("%.*s\n", int(prop.size()), prop.data());
+	}
+
+	DebugPrint("Entities:\n");
+	DebugPrint("-----------------\n");
+	printf(INDENT "%3zd total:\n", map.entities.size());
+	for (auto& type : sorted_types) {
+		printf(INDENT "%3zd x %.*s\n", type_count[type], int(type.size()), type.data());
+		DebugPrint("%.*s\n", int(type.size()), type.data());
+		for (auto& prop : type_props[type])
+			printf(INDENT "      %.*s\n", int(prop.size()), prop.data());
+	}
+
+	print << "const u16 "sv << array_name << "[] = {"sv;
+	for (auto count : entity_brushes) {
+		if (!count)
+			break;
+		print << u16(count) << ","sv;
+	}
+	print << "};"sv;
+	print.Flush();
+}
+
 void WriteBrushBounds(ArrayPrinter& print, const Map& map, const Options& options, string_view bounds_name, string_view array_name) {
 	printf("Writing brush bounds\n");
 
@@ -764,7 +868,7 @@ void WriteBrushBounds(ArrayPrinter& print, const Map& map, const Options& option
 	AABB world_bounds;
 	world_bounds.mins = floor(world.bounds.mins / 8.f) * 8.f;
 	world_bounds.maxs = ceil (world.bounds.maxs / 8.f) * 8.f;
-	print << "const i16 "sv << bounds_name << "[6] = {"sv;
+	print << "\nconst i16 "sv << bounds_name << "[6] = {"sv;
 	for (u32 i=0; i<6; ++i)
 		print << i16(world_bounds.v[i/3].data[i%3]) << ","sv;
 	print << "}; // xmin/ymin/zmin/xmax/ymax/zmax"sv;
@@ -806,98 +910,75 @@ void WriteBrushBounds(ArrayPrinter& print, const Map& map, const Options& option
 void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& options, string_view array_name) {
 	auto& world = map.entities[0];
 
-	auto first_nonaxial = std::find_if_not(world.brushes.begin(), world.brushes.end(), by_member(&Map::Brush::axial));
-	auto num_axial = first_nonaxial - world.brushes.begin();
-	std::vector<int32_t> nonaxial_counts;
-	nonaxial_counts.reserve(world.brushes.size());
-	nonaxial_counts.resize(num_axial, 0);
+	std::vector<int32_t> nonaxial_counts(world.brushes.size());
 	
-	const bool UseQuantization = true;
+	const i32
+		OctBits			= 12,
+		OctLevels		= 1 << OctBits,
+		DistFractBits	= 4,
+		DistScale		= 1 << DistFractBits;
 
-	if (UseQuantization) {
-		const i32
-			OctBits			= 12,
-			OctLevels		= 1 << OctBits,
-			DistFractBits	= 4,
-			DistScale		= 1 << DistFractBits;
-
-		int32_t max_nonaxial_planes = 0;
+	int32_t max_nonaxial_planes = 0;
 		
-		print << "\nconst i32 "sv << array_name << "[] = {"sv;
-		for (i32 pass = 0; pass < 2; ++pass) { // 0: normal; 1: distance
-			for (auto& brush : range{first_nonaxial, world.brushes.end()}) {
-				int32_t count = 0;
-				
-				const size_t MAX_NUM_EDGES = 256;
-				BrushEdge edges[MAX_NUM_EDGES];
-
-				auto brush_center = brush.bounds.center();
-
-				u32 num_edges;
-				if (pass == 1)
-					num_edges = EnumerateBrushEdges(brush.planes.data(), brush.planes.size(), edges, MAX_NUM_EDGES, 1.f);
-
-				for (size_t plane_index = 0; plane_index < brush.planes.size(); ++plane_index) {
-					auto& plane = brush.planes[plane_index];
-					if (plane.type != Map::Plane::Unaligned)
-						continue;
-					
-					vec2 oct = vec3_to_oct(plane.xyz);
-					i32 x = std::clamp((i32)std::floor(0.5f + oct.x * float((OctLevels >> 1) - 1) + float(OctLevels >> 1)), 0, OctLevels - 1);
-					i32 y = std::clamp((i32)std::floor(0.5f + oct.y * float((OctLevels >> 1) - 1) + float(OctLevels >> 1)), 0, OctLevels - 1);
-					u32 xy = x | (y << 16);
-					
-					if (pass == 0) {
-						print << i32(xy) << ","sv;
-						++count;
-					} else {
-						oct.x = std::max(-1.f, (x - i32(OctLevels >> 1)) * (1.f / float((OctLevels >> 1) - 1)));
-						oct.y = std::max(-1.f, (y - i32(OctLevels >> 1)) * (1.f / float((OctLevels >> 1) - 1)));
-						vec3 snapped_normal = oct_to_vec3(oct);
-						float w = plane.w;
-						
-						vec3 face_center{0.f};
-						u32 num_face_edges = 0;
-						for (u32 edge_index = 0; edge_index < num_edges; ++edge_index) {
-							auto& e = edges[edge_index];
-							if (e.first_plane == plane_index || e.second_plane == plane_index) {
-								face_center += e.first_point;
-								face_center += e.second_point;
-								++num_face_edges;
-							}
-						}
-						if (num_face_edges > 0)
-							face_center /= float(num_face_edges * 2);
-						else
-							face_center = brush_center;
-						vec3 projected_center = face_center - plane.xyz * (dot(plane.xyz, face_center) + plane.w);
-						w = -dot(projected_center, snapped_normal);
-
-						print << i32(w * float(DistScale) + 0.5f) << ","sv;
-					}
-				}
-
-				if (pass == 0) {
-					assert(count > 0);
-					max_nonaxial_planes = std::max(max_nonaxial_planes, count);
-					nonaxial_counts.emplace_back(count);
-				}
-			}
-		}
-	} else {
-		print << "\nconst float nonaxial_planes[] = {"sv;
-		int32_t max_nonaxial_planes = 0;
-		for (auto& brush : range{first_nonaxial, world.brushes.end()}) {
+	print << "\nconst i32 "sv << array_name << "[] = {"sv;
+	for (i32 pass = 0; pass < 2; ++pass) { // 0: normal; 1: distance
+		for (size_t brush_index = 0; brush_index < world.brushes.size(); ++brush_index) {
+			auto& brush = world.brushes[brush_index];
 			int32_t count = 0;
-			for (auto& plane : brush.planes) {
+			
+			const size_t MAX_NUM_EDGES = 256;
+			BrushEdge edges[MAX_NUM_EDGES];
+
+			auto brush_center = brush.bounds.center();
+
+			u32 num_edges;
+			if (pass == 1)
+				num_edges = EnumerateBrushEdges(brush.planes.data(), brush.planes.size(), edges, MAX_NUM_EDGES, 1.f);
+
+			for (size_t plane_index = 0; plane_index < brush.planes.size(); ++plane_index) {
+				auto& plane = brush.planes[plane_index];
 				if (plane.type != Map::Plane::Unaligned)
 					continue;
-				print << plane.x << ","sv << plane.y << ","sv << plane.z << ","sv << plane.w << ","sv;
-				++count;
+					
+				vec2 oct = vec3_to_oct(plane.xyz);
+				i32 x = std::clamp((i32)std::floor(0.5f + oct.x * float((OctLevels >> 1) - 1) + float(OctLevels >> 1)), 0, OctLevels - 1);
+				i32 y = std::clamp((i32)std::floor(0.5f + oct.y * float((OctLevels >> 1) - 1) + float(OctLevels >> 1)), 0, OctLevels - 1);
+				u32 xy = x | (y << 16);
+					
+				if (pass == 0) {
+					print << i32(xy) << ","sv;
+					++count;
+				} else {
+					oct.x = std::max(-1.f, (x - i32(OctLevels >> 1)) * (1.f / float((OctLevels >> 1) - 1)));
+					oct.y = std::max(-1.f, (y - i32(OctLevels >> 1)) * (1.f / float((OctLevels >> 1) - 1)));
+					vec3 snapped_normal = oct_to_vec3(oct);
+					float w = plane.w;
+						
+					vec3 face_center{0.f};
+					u32 num_face_edges = 0;
+					for (u32 edge_index = 0; edge_index < num_edges; ++edge_index) {
+						auto& e = edges[edge_index];
+						if (e.first_plane == plane_index || e.second_plane == plane_index) {
+							face_center += e.first_point;
+							face_center += e.second_point;
+							++num_face_edges;
+						}
+					}
+					if (num_face_edges > 0)
+						face_center /= float(num_face_edges * 2);
+					else
+						face_center = brush_center;
+					vec3 projected_center = face_center - plane.xyz * (dot(plane.xyz, face_center) + plane.w);
+					w = -dot(projected_center, snapped_normal);
+
+					print << i32(w * float(DistScale) + 0.5f) << ","sv;
+				}
 			}
-			assert(count > 0);
-			max_nonaxial_planes = std::max(max_nonaxial_planes, count);
-			nonaxial_counts.emplace_back(count);
+
+			if (pass == 0) {
+				max_nonaxial_planes = std::max(max_nonaxial_planes, count);
+				nonaxial_counts[brush_index] = count;
+			}
 		}
 	}
 	print << "};"sv;
@@ -1572,8 +1653,13 @@ bool CompileMap(Map& map, const Options& options) {
 	auto shader_props = GetShaderProperties(map, options);
 	RemoveSkyNodropBrushes(map, shader_props.data());
 	map.ComputeBounds();
+
 	InsertMissingAxialPlanes(map);
 	SortBrushesAndPlanes(map);
+
+	std::vector<size_t> brush_count;
+	MergeBrushEntities(map, options, brush_count);
+
 	RemoveDuplicatePlanes(map);
 	Snap(map, options);
 	if (options.trim_unwanted_uvs)
@@ -1596,6 +1682,7 @@ bool CompileMap(Map& map, const Options& options) {
 
 	ArrayPrinter print(out);
 
+	WriteEntities			(print, map, options, brush_count,			"entity_brushes"sv);
 	WriteBrushBounds		(print, map, options,						"world_bounds"sv,		"brush_bounds"sv		);
 	WriteUnalignedPlanes	(print, map, options,						"nonaxial_planes"sv								);
 	WriteMaterials			(print, map, options, shader_props.data(),	"num_materials"sv,		"plane_materials"sv		);
@@ -1608,6 +1695,7 @@ bool CompileMap(Map& map, const Options& options) {
 	fprintf(out,
 		"\n"
 		"static constexpr PackedMap map{\n"
+		"    entity_brushes,\n"
 		"    world_bounds, brush_bounds,\n"
 		"    nonaxial_planes, nonaxial_counts,\n"
 		"    num_materials, plane_materials,\n"

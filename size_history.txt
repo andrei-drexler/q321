@@ -523,3 +523,4 @@
 24466,tweaked sys::openfile
 24485,nonaxial counts for all brushes
 24486,darker icon background
+24820,entity brushes

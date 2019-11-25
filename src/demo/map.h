@@ -15,11 +15,13 @@ struct PackedMap {
 	u16					num_planes;
 	u16					num_patches;
 	u16					num_patch_verts;
+	u8					num_brush_entities;
 	u8					num_uvs;
 	u8					num_materials;
 	u8					num_lights;
 	u8					num_spotlights;
 
+	const u16*			entity_brushes;
 	const i16*			world_bounds;
 	const i16*			brush_bounds;
 	const i32*			plane_data;
@@ -33,6 +35,7 @@ struct PackedMap {
 
 	template
 	<
+		int NumBrushEntities,
 		int NumBrushBoundEntries, int NumPlaneEntries, int NumNonaxialEntries,
 		int NumUVEntries, int NumPlaneUVEntries, int NumMaterialEntries,
 		int NumPatches, int NumPatchVertEntries,
@@ -40,6 +43,7 @@ struct PackedMap {
 	>
 	constexpr PackedMap
 	(
+		const u16	(&entity_brushes)	[NumBrushEntities],
 		const i16	(&world_bounds)		[6],
 		const i16	(&brush_bounds)		[NumBrushBoundEntries],
 		const i32	(&plane_data)		[NumPlaneEntries],
@@ -53,6 +57,8 @@ struct PackedMap {
 		const i16	(&light_data)		[NumLightEntries],
 		u8								num_spotlights
 	) :
+		entity_brushes			(entity_brushes),
+		num_brush_entities		(NumBrushEntities),
 		world_bounds			(world_bounds),
 		brush_bounds			(brush_bounds),
 		num_brushes				(NumBrushBoundEntries / 6),
@@ -224,6 +230,7 @@ struct Map {
 		MAX_NUM_NODES		= MAX_NUM_BRUSHES,
 		MIN_NODE_BRUSHES	= 1,
 
+		MAX_NUM_ENTITIES	= 256,
 		MAX_NUM_LIGHTS		= 256,
 	};
 
@@ -288,6 +295,13 @@ struct Map {
 		u16					brushes[MAX_NUM_BRUSHES];
 		u16					num_nodes;
 	}						partition;
+
+	struct {
+		u8					count;
+		u16					brush_start[MAX_NUM_ENTITIES + 1];
+	}						entities;
+
+	bool					IsWorldspawnBrush(u16 index) const { return index < entities.brush_start[1]; }
 
 	vec3					positions			[MAX_NUM_VERTS];
 	vec4					texcoords			[MAX_NUM_VERTS];
@@ -354,6 +368,7 @@ private:
 	void					LoadPatches(const PackedMap& packed, u8 pass);
 	void					CreatePartition();
 
+	void					InitEntities();
 	void					InitLights();
 	void					InitLightmap();
 
@@ -429,11 +444,24 @@ FORCEINLINE void Map::InitLights() {
 	}
 }
 
+FORCEINLINE void Map::InitEntities() {
+	entities.count = source->num_brush_entities;
+
+	u16 brush_offset = 0;
+	for (u8 entity_index = 0; entity_index < entities.count; ++entity_index) {
+		entities.brush_start[entity_index] = brush_offset;
+		brush_offset += source->entity_brushes[entity_index];
+	}
+	entities.brush_start[entities.count] = brush_offset;
+}
+
 NOINLINE void Map::Load(const PackedMap& packed) {
 	source = &packed;
 	num_materials = packed.num_materials;
 
 	assert(num_materials <= Demo::Material::Count);
+
+	InitEntities();
 
 	// TODO: some data initialization was skipped since we know we already have zeroes everywhere,
 	// this should be fixed if support for loading different maps is ever added
@@ -479,7 +507,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 			brush_bounds[1][1] = bounds_src[4] + brush_bounds[0][1];
 			brush_bounds[1][2] = bounds_src[5] + brush_bounds[0][2];
 
-			bool mirrored = brush_bounds[1][1] < symmetry_level + 1;
+			bool mirrored = IsWorldspawnBrush(brush_index) && brush_bounds[1][1] < symmetry_level + 1;
 
 			bounds_src += 6;
 
