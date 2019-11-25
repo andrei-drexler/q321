@@ -22,6 +22,7 @@
     <ClInclude Include="src\demo\console.h" />
     <ClInclude Include="src\demo\cooked\dm17.h" />
     <ClInclude Include="src\demo\cooked\shaders.h" />
+    <ClInclude Include="src\demo\entity.h" />
     <ClInclude Include="src\demo\gfx_resources.h" />
     <ClInclude Include="src\demo\map.h" />
     <ClInclude Include="src\demo\map_lightmap.h" />

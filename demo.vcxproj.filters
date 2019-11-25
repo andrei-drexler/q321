@@ -78,6 +78,9 @@
     <ClInclude Include="src\engine\rect_packer.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\demo\entity.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\demo\demo.cpp">
