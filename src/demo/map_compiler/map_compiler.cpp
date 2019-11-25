@@ -1584,7 +1584,7 @@ void WriteLightmap(ArrayPrinter& print, const Map& map, const Options& options, 
 		Math::assign_min(base_ofs[1], r.min[1] - surf.y);
 	}
 
-	i32 max_ofs[2] = {0x8000'0000, 0x8000'0000};
+	i32 max_ofs[2] = {std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min()};
 	for (auto& surf : surfaces) {
 		auto& r = packer.GetTile(surf.tile);
 		Math::assign_max(max_ofs[0], r.min[0] - surf.x - base_ofs[0]);
