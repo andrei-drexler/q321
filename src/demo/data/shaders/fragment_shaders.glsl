@@ -729,7 +729,7 @@ TEXA(icon) {
     d = min(d, box1(uv - vec2(.11, -.21), vec2(tri(-.07, .3, uv.y)*.03, .15)));
     uv.y += .07;
     float b = length(uv) - .47, m = msk(b);
-    vec3 c = 1. - vec3(.5, 1, 1) * msk(max(.007 - d, b + .04));
+    vec3 c = 1. - vec3(.7, 1, 1) * msk(max(.007 - d, b + .04));
     return vec4(c * m, m);
 }
 
