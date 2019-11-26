@@ -529,3 +529,4 @@
 24862,magnitude/sign bound mins
 24900,center-relative mag/sign brush bound mins
 24875,center-relative sign/mag brush bound mins
+24820,undo
