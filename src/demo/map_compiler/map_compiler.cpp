@@ -1,6 +1,7 @@
 #include "common.h"
 #include "../../demo/resource_def.h"
 #include "../../demo/material.h"
+#include "../../demo/entity.h"
 #include "q3map.h"
 #include "print_array.h"
 #include "export_obj.h"
@@ -105,6 +106,18 @@ bool ReadFile(const char* file_name, std::vector<char>& contents) {
 	}
 
 	return true;
+}
+
+////////////////////////////////////////////////////////////////
+
+template <typename T>
+void Reorder(std::vector<T>& items, const size_t* order) {
+	std::vector<T> sorted_items;
+	sorted_items.reserve(items.size());
+	for (size_t i = 0; i < items.size(); ++i) {
+		sorted_items.emplace_back(std::move(items[order[i]]));
+	}
+	items.swap(sorted_items);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -346,9 +359,126 @@ void MergeFuncGroups(Map& map) {
 	}
 }
 
-void MergeBrushEntities(Map& map, const Options& options, std::vector<size_t>& brush_count) {
-	printf("Merging brush entities\n");
+void RemoveUnknownEntities(Map& map, const Options& options, std::vector<Map::Entity>& lights) {
+	printf("Removing unknown entities\n");
 
+	std::unordered_map<string_view, Demo::Entity::Type> classname_to_type;
+	#define PP_MAP_CLASSNAME_TO_TYPE(name) classname_to_type[#name] = Demo::Entity::Type::name;
+	DEMO_ENTITY_TYPES(PP_MAP_CLASSNAME_TO_TYPE)
+	#undef PP_MAP_CLASSNAME_TO_TYPE
+
+	auto last_known = std::stable_partition(map.entities.begin() + 1, map.entities.end(), [&] (Map::Entity& ent) {
+		auto classname = ent.GetProperty("classname"sv);
+		return classname_to_type.find(classname) != classname_to_type.end();
+	});
+	
+	DebugPrint("Removed entities:\n");
+	DebugPrint("-----------------\n");
+	for (auto i = last_known; i != map.entities.end(); ++i) {
+		auto& ent = *i;
+		auto index = i - map.entities.begin();
+		auto classname = ent.GetProperty("classname"sv);
+		if (classname == "light"sv) {
+			lights.push_back(std::move(ent));
+			continue;
+		}
+		DebugPrint("%.*s\n", int(classname.size()), classname.data());
+		if (options.verbose) {
+			printf(INDENT "%.*s\n", int(classname.size()), classname.data());
+		}
+	}
+
+	printf(INDENT "%zd entities removed\n", map.entities.end() - last_known);
+
+	map.entities.erase(last_known, map.entities.end());
+}
+
+void SortEntities(Map& map, const Options& options) {
+	printf("Sorting entities\n");
+
+	std::unordered_map<std::string_view, size_t> type_count;
+	std::unordered_map<std::string_view, bool> type_has_brushes;
+	std::unordered_map<std::string_view, size_t> prop_count;
+	std::unordered_map<std::string_view, std::unordered_set<std::string_view>> type_props;
+	type_count.reserve(map.entities.size());
+	type_has_brushes.reserve(map.entities.size());
+	prop_count.reserve(map.entities.size() * 4);
+	for (auto& ent : map.entities) {
+		auto ent_index = &ent - map.entities.data();
+		auto type = ent.GetProperty("classname"sv);
+		++type_count[type];
+		type_has_brushes[type] |= !ent.brushes.empty();
+		for (auto& p : ent.props) {
+			if (p.first == "classname"sv)
+				continue;
+			type_props[type].insert(p.first);
+			++prop_count[p.first];
+		}
+	}
+
+	std::vector<std::string_view> sorted_types;
+	sorted_types.reserve(type_count.size());
+	for (auto& type : type_count) {
+		sorted_types.push_back(type.first);
+	}
+	std::sort(sorted_types.begin(), sorted_types.end(), [&] (string_view a, string_view b) {
+		bool brushes_a = type_has_brushes[a];
+		bool brushes_b = type_has_brushes[b];
+		if (brushes_a != brushes_b)
+			return brushes_a > brushes_b;
+		return type_count[a] > type_count[b];
+	});
+
+	std::vector<std::string_view> sorted_properties;
+	sorted_properties.reserve(prop_count.size());
+	for (auto& prop : prop_count) {
+		sorted_properties.push_back(prop.first);
+	}
+	std::sort(sorted_properties.begin(), sorted_properties.end(), [&] (string_view a, string_view b) {
+		return prop_count[a] > prop_count[b];
+	});
+
+	DebugPrint("Entity properties:\n");
+	DebugPrint("-----------------\n");
+	for (auto& prop : sorted_properties) {
+		DebugPrint("%.*s\n", int(prop.size()), prop.data());
+	}
+
+	DebugPrint("Entities:\n");
+	DebugPrint("-----------------\n");
+	printf(INDENT "%3d remaining entities:\n", map.entities.size());
+	for (auto& type : sorted_types) {
+		printf(INDENT "%3zd x %.*s\n", type_count[type], int(type.size()), type.data());
+		DebugPrint("%.*s\n", int(type.size()), type.data());
+		for (auto& prop : type_props[type])
+			printf(INDENT "      %.*s\n", int(prop.size()), prop.data());
+	}
+
+	std::vector<size_t> entity_order(map.entities.size());
+	for (size_t i = 0; i < entity_order.size(); ++i)
+		entity_order[i] = i;
+
+	std::sort(entity_order.begin() + 1, entity_order.end(), [&] (size_t a, size_t b) {
+		i32 delta;
+		auto& ent_a = map.entities[a];
+		auto& ent_b = map.entities[b];
+
+		/* brush entities before point entities */
+		if ((delta = (ent_b.brushes.size() - ent_a.brushes.size())) != 0)
+			return delta < 0;
+
+		/* sort by frequency */
+		auto class_a = ent_a.GetProperty("classname"sv);
+		auto class_b = ent_b.GetProperty("classname"sv);
+		if ((delta = (type_count[class_b] - type_count[class_a])) != 0)
+			return delta < 0;
+		
+		return a < b;
+	});
+	Reorder(map.entities, entity_order.data());
+}
+
+void MergeEntityBrushes(Map& map, const Options& options, std::vector<size_t>& brush_count) {
 	brush_count.resize(map.entities.size());
 	for (size_t i = 0; i < map.entities.size(); ++i) {
 		brush_count[i] = map.entities[i].brushes.size();
@@ -582,13 +712,7 @@ void SortBrushesAndPlanes(Map& map) {
 			return zorder_center[a] < zorder_center[b];
 		});
 
-		std::vector<Map::Brush>		sorted_brushes(ent.brushes.size());
-		std::vector<size_t>			remap(ent.brushes.size());
-		for (size_t i = 0; i < order.size(); ++i) {
-			remap[order[i]] = i;
-			sorted_brushes[i] = std::move(ent.brushes[order[i]]);
-		}
-		std::swap(ent.brushes, sorted_brushes);
+		Reorder(ent.brushes, order.data());
 
 		auto last_axial = std::partition(ent.brushes.begin(), ent.brushes.end(), by_member(&Map::Brush::axial));
 		//for (auto& brush : range{ent.brushes.begin(), last_axial})
@@ -789,72 +913,77 @@ void RemoveUnneededUVs(Map& map, const Options& options, const ShaderProperties*
 
 ////////////////////////////////////////////////////////////////
 
-void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, const std::vector<size_t>& entity_brushes, string_view array_name) {
+void DoSetField(i16 (&value)[3], string_view string_value) {
+	vec3 v;
+	if (string_value.empty() || !ParseVector(string_value, v, false))
+		v = 0.f;
+	value[0] = i16(floor(v[0] + 0.5f));
+	value[1] = i16(floor(v[1] + 0.5f));
+	value[2] = i16(floor(v[2] + 0.5f));
+}
+
+void DoSetField(i16 &value, string_view string_value) {
+	float f;
+	if (string_value.empty() || !ParseValue(string_value, f))
+		f = 0.f;
+	value = i16(floor(f + 0.5f));
+}
+
+template <typename T>
+void SetField(void* ptr, string_view string_value) {
+	DoSetField(*(T*)ptr, string_value);
+}
+
+struct FieldDescriptor {
+	string_view		name;
+	size_t			offset;
+	void			(*set)(void*, string_view);
+};
+
+static constexpr FieldDescriptor EntityFields[] = {
+	#define PP_DEMO_FIELD_DESC(name, type)	{ #name, offsetof(Demo::Entity, name), &SetField<type> },
+	DEMO_ENTITY_PROPERTIES(PP_DEMO_FIELD_DESC)
+	#undef PP_DEMO_FIELD_DESC
+};
+
+void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, const std::vector<size_t>& entity_brushes, string_view entity_brushes_name, string_view entity_data_name) {
 	printf("Writing entities\n");
 
-	std::unordered_map<std::string_view, size_t> type_count;
-	std::unordered_map<std::string_view, bool> type_has_brushes;
-	std::unordered_map<std::string_view, size_t> prop_count;
-	std::unordered_map<std::string_view, std::unordered_set<std::string_view>> type_props;
-	type_count.reserve(map.entities.size());
-	type_has_brushes.reserve(map.entities.size());
-	prop_count.reserve(map.entities.size() * 4);
-	for (auto& ent : map.entities) {
-		auto ent_index = &ent - map.entities.data();
-		auto type = ent.GetProperty("classname"sv);
-		++type_count[type];
-		type_has_brushes[type] |= (ent_index < entity_brushes.size() && entity_brushes[ent_index]);
-		for (auto& p : ent.props) {
-			if (p.first == "classname"sv)
-				continue;
-			type_props[type].insert(p.first);
-			++prop_count[p.first];
+	/* write entity brush count (for brush entities) */
+	print << "const u16 "sv << entity_brushes_name << "[] = {"sv;
+	for (auto brush_count : entity_brushes) {
+		if (!brush_count)
+			break;
+		print << u16(brush_count) << ","sv;
+	}
+	print << "};"sv;
+	print.Flush();
+
+	std::unordered_map<string_view, Demo::Entity::Type> classname_to_type;
+	#define PP_MAP_CLASSNAME_TO_TYPE(name) classname_to_type[#name] = Demo::Entity::Type::name;
+	DEMO_ENTITY_TYPES(PP_MAP_CLASSNAME_TO_TYPE)
+	#undef PP_MAP_CLASSNAME_TO_TYPE
+
+	/* gather entity properties */
+	std::vector<Demo::Entity> compiled_entities(map.entities.size());
+	for (size_t entity_index = 0; entity_index < map.entities.size(); ++entity_index) {
+		auto& src_ent = map.entities[entity_index];
+		auto& dst_ent = compiled_entities[entity_index];
+		dst_ent.type = classname_to_type[src_ent.GetProperty("classname"sv)];
+		for (auto& field : EntityFields) {
+			auto value = src_ent.GetProperty(field.name);
+			field.set(((u8*)&dst_ent) + field.offset, value);
 		}
 	}
 
-	std::vector<std::string_view> sorted_types;
-	sorted_types.reserve(type_count.size());
-	for (auto& type : type_count) {
-		sorted_types.push_back(type.first);
-	}
-	std::sort(sorted_types.begin(), sorted_types.end(), [&] (string_view a, string_view b) {
-		bool brushes_a = type_has_brushes[a];
-		bool brushes_b = type_has_brushes[b];
-		if (brushes_a != brushes_b)
-			return brushes_a > brushes_b;
-		return type_count[a] > type_count[b];
-	});
-
-	std::vector<std::string_view> sorted_properties;
-	sorted_properties.reserve(prop_count.size());
-	for (auto& prop : prop_count) {
-		sorted_properties.push_back(prop.first);
-	}
-	std::sort(sorted_properties.begin(), sorted_properties.end(), [&] (string_view a, string_view b) {
-		return prop_count[a] > prop_count[b];
-	});
-
-	DebugPrint("Entity properties:\n");
-	DebugPrint("-----------------\n");
-	for (auto& prop : sorted_properties) {
-		DebugPrint("%.*s\n", int(prop.size()), prop.data());
-	}
-
-	DebugPrint("Entities:\n");
-	DebugPrint("-----------------\n");
-	printf(INDENT "%3zd total:\n", map.entities.size());
-	for (auto& type : sorted_types) {
-		printf(INDENT "%3zd x %.*s\n", type_count[type], int(type.size()), type.data());
-		DebugPrint("%.*s\n", int(type.size()), type.data());
-		for (auto& prop : type_props[type])
-			printf(INDENT "      %.*s\n", int(prop.size()), prop.data());
-	}
-
-	print << "const u16 "sv << array_name << "[] = {"sv;
-	for (auto count : entity_brushes) {
-		if (!count)
-			break;
-		print << u16(count) << ","sv;
+	/* write entity properties (for all entities) */
+	print << "\nconst i16 "sv << entity_data_name << "[] = {"sv;
+	const size_t NumRawFields = sizeof(Demo::Entity) / sizeof(i16);
+	i16* raw_data = (i16*)compiled_entities.data();
+	for (size_t field = 0; field < NumRawFields; ++field) {
+		for (size_t entity_index = 0; entity_index < compiled_entities.size(); ++entity_index) {
+			print << raw_data[field + entity_index * NumRawFields] << ","sv;
+		}
 	}
 	print << "};"sv;
 	print.Flush();
@@ -1257,7 +1386,13 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 
 ////////////////////////////////////////////////////////////////
 
-void WriteLights(ArrayPrinter& print, const Map& map, const Options& options, const ShaderProperties* shader_props , string_view array_name, string_view spot_count_name) {
+void WriteLights
+(
+	ArrayPrinter& print, const Map& map, const Options& options, const ShaderProperties* shader_props,
+	const std::vector<Map::Entity>& light_entities,
+	string_view array_name, string_view spot_count_name
+)
+{
 	printf("Writing lights\n");
 
 	auto& world = map.World();
@@ -1289,11 +1424,8 @@ void WriteLights(ArrayPrinter& print, const Map& map, const Options& options, co
 	lights.reserve(256);
 
 	size_t num_spotlights = 0;
-	for (size_t i = 1; i < map.entities.size(); ++i) {
-		auto& ent = map.entities[i];
-		auto classname = ent.GetProperty("classname"sv);
-		if (classname != "light"sv)
-			continue;
+	for (size_t i = 1; i < light_entities.size(); ++i) {
+		auto& ent = light_entities[i];
 
 		Light light;
 
@@ -1657,8 +1789,12 @@ bool CompileMap(Map& map, const Options& options) {
 	InsertMissingAxialPlanes(map);
 	SortBrushesAndPlanes(map);
 
+	std::vector<Map::Entity> lights;
+	RemoveUnknownEntities(map, options, lights);
+	SortEntities(map, options);
+
 	std::vector<size_t> brush_count;
-	MergeBrushEntities(map, options, brush_count);
+	MergeEntityBrushes(map, options, brush_count);
 
 	RemoveDuplicatePlanes(map);
 	Snap(map, options);
@@ -1682,20 +1818,20 @@ bool CompileMap(Map& map, const Options& options) {
 
 	ArrayPrinter print(out);
 
-	WriteEntities			(print, map, options, brush_count,			"entity_brushes"sv);
-	WriteBrushBounds		(print, map, options,						"world_bounds"sv,		"brush_bounds"sv		);
-	WriteUnalignedPlanes	(print, map, options,						"nonaxial_planes"sv								);
-	WriteMaterials			(print, map, options, shader_props.data(),	"num_materials"sv,		"plane_materials"sv		);
-	WriteBrushUVs			(print, map, options, shader_props.data(),	"uv_set"sv,				"plane_uvs"sv			);
-	WritePatchData			(print, map, options, shader_props.data(),	"patches"sv,			"patch_verts"sv			);
-	WriteLights				(print, map, options, shader_props.data(),	"light_data"sv,			"num_spotlights"sv		);
-	//WriteLightmap			(print, map, options, shader_props.data(),	"lightmap_offsets"								);
+	WriteEntities			(print, map, options, brush_count,					"entity_brushes"sv,		"entity_data"sv			);
+	WriteBrushBounds		(print, map, options,								"world_bounds"sv,		"brush_bounds"sv		);
+	WriteUnalignedPlanes	(print, map, options,								"nonaxial_planes"sv								);
+	WriteMaterials			(print, map, options, shader_props.data(),			"num_materials"sv,		"plane_materials"sv		);
+	WriteBrushUVs			(print, map, options, shader_props.data(),			"uv_set"sv,				"plane_uvs"sv			);
+	WritePatchData			(print, map, options, shader_props.data(),			"patches"sv,			"patch_verts"sv			);
+	WriteLights				(print, map, options, shader_props.data(),	lights,	"light_data"sv,			"num_spotlights"sv		);
+	//WriteLightmap			(print, map, options, shader_props.data(),	"lightmap_offsets"										);
 
 	/* footer */
 	fprintf(out,
 		"\n"
 		"static constexpr PackedMap map{\n"
-		"    entity_brushes,\n"
+		"    entity_brushes, entity_data,\n"
 		"    world_bounds, brush_bounds,\n"
 		"    nonaxial_planes, nonaxial_counts,\n"
 		"    num_materials, plane_materials,\n"

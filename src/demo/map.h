@@ -15,6 +15,7 @@ struct PackedMap {
 	u16					num_planes;
 	u16					num_patches;
 	u16					num_patch_verts;
+	u8					num_entities;
 	u8					num_brush_entities;
 	u8					num_uvs;
 	u8					num_materials;
@@ -22,6 +23,7 @@ struct PackedMap {
 	u8					num_spotlights;
 
 	const u16*			entity_brushes;
+	const i16*			entity_data;
 	const i16*			world_bounds;
 	const i16*			brush_bounds;
 	const i32*			plane_data;
@@ -35,7 +37,7 @@ struct PackedMap {
 
 	template
 	<
-		int NumBrushEntities,
+		int NumBrushEntities, int NumEntityDataEntries,
 		int NumBrushBoundEntries, int NumPlaneEntries, int NumNonaxialEntries,
 		int NumUVEntries, int NumPlaneUVEntries, int NumMaterialEntries,
 		int NumPatches, int NumPatchVertEntries,
@@ -44,6 +46,7 @@ struct PackedMap {
 	constexpr PackedMap
 	(
 		const u16	(&entity_brushes)	[NumBrushEntities],
+		const i16	(&entity_data)		[NumEntityDataEntries],
 		const i16	(&world_bounds)		[6],
 		const i16	(&brush_bounds)		[NumBrushBoundEntries],
 		const i32	(&plane_data)		[NumPlaneEntries],
@@ -59,6 +62,8 @@ struct PackedMap {
 	) :
 		entity_brushes			(entity_brushes),
 		num_brush_entities		(NumBrushEntities),
+		entity_data				(entity_data),
+		num_entities			(NumEntityDataEntries / (sizeof(Demo::Entity) / sizeof(i16))),
 		world_bounds			(world_bounds),
 		brush_bounds			(brush_bounds),
 		num_brushes				(NumBrushBoundEntries / 6),
@@ -296,12 +301,12 @@ struct Map {
 		u16					num_nodes;
 	}						partition;
 
-	struct {
-		u8					count;
-		u16					brush_start[MAX_NUM_ENTITIES + 1];
-	}						entities;
+	u8						num_entities;
+	u8						num_brush_entities;
+	Demo::Entity			entities[MAX_NUM_ENTITIES];
+	u16						entity_brush_start[MAX_NUM_ENTITIES + 1];
 
-	bool					IsWorldspawnBrush(u16 index) const { return index < entities.brush_start[1]; }
+	bool					IsWorldspawnBrush(u16 index) const { return index < entity_brush_start[1]; }
 
 	vec3					positions			[MAX_NUM_VERTS];
 	vec4					texcoords			[MAX_NUM_VERTS];
@@ -445,14 +450,24 @@ FORCEINLINE void Map::InitLights() {
 }
 
 FORCEINLINE void Map::InitEntities() {
-	entities.count = source->num_brush_entities;
+	num_brush_entities = source->num_brush_entities;
+	num_entities = source->num_entities;
 
 	u16 brush_offset = 0;
-	for (u8 entity_index = 0; entity_index < entities.count; ++entity_index) {
-		entities.brush_start[entity_index] = brush_offset;
+	for (u8 entity_index = 0; entity_index < num_brush_entities; ++entity_index) {
+		entity_brush_start[entity_index] = brush_offset;
 		brush_offset += source->entity_brushes[entity_index];
 	}
-	entities.brush_start[entities.count] = brush_offset;
+	entity_brush_start[num_brush_entities] = brush_offset;
+
+	const u16 NumRawFields = sizeof(Demo::Entity) / sizeof(i16);
+	const i16* src_data = source->entity_data;
+	for (u16 field = 0; field < NumRawFields; ++field, src_data += num_entities) {
+		i16* dst_data = (i16*)&entities[0] + field;
+		for (u16 entity_index = 0; entity_index < num_entities; ++entity_index, dst_data += NumRawFields) {
+			*dst_data = src_data[entity_index];
+		}
+	}
 }
 
 NOINLINE void Map::Load(const PackedMap& packed) {

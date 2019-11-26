@@ -180,8 +180,16 @@ namespace Demo {
 
 		RenderWorld(frame);
 
-		//for (u16 li = 0; li < g_map.num_lights; ++li)
-		//	RenderSprite(g_map.lights[li].position, 16.f);
+		if constexpr (0) {
+			for (u16 i = g_map.num_brush_entities; i < g_map.num_entities; ++i) {
+				auto& e = g_map.entities[i];
+				vec3 pos;
+				pos[0] = e.origin[0];
+				pos[1] = e.origin[1];
+				pos[2] = e.origin[2];
+				RenderSprite(pos, 16.f);
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

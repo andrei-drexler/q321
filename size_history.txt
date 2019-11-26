@@ -530,3 +530,9 @@
 24900,center-relative mag/sign brush bound mins
 24875,center-relative sign/mag brush bound mins
 24820,undo
+25797,entity properties
+25603,deinterleaved entity properties
+25557,memcopy instead of memcpy in touch function
+25510,excluded target_speakers
+25266,removed light entities (already saved separately)
+25300,deinterleave entity properties on load

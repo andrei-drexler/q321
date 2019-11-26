@@ -22,9 +22,9 @@
 	x(trigger_teleport)				\
 	x(trigger_multiple)				\
 	x(trigger_hurt)					\
-	x(light)						\
+	/*x(light)*/					\
 	x(target_position)				\
-	x(target_speaker)				\
+	/*x(target_speaker)*/			\
 	x(trigger_push)					\
 	x(info_player_deathmatch)		\
 	x(item_armor_shard)				\
@@ -50,18 +50,20 @@
 
 namespace Demo {
 	struct Entity {
-		// since 'i16[3] origin;' is invalid, we use helper aliases
-		#define PP_DEMO_PROP_DECLARE(name, type)			using typeof_##name = type; typeof_##name name;
-		DEMO_ENTITY_PROPERTIES(PP_DEMO_PROP_DECLARE)
-		#undef PP_DEMO_PROP_DECLARE
-
 		enum class Type {
+			None,
+
 			#define PP_DEMO_ENTITY_TYPE_DECLARE(name)			name,
 			DEMO_ENTITY_TYPES(PP_DEMO_ENTITY_TYPE_DECLARE)
 			#undef PP_DEMO_ENTITY_TYPE_DECLARE
 
 			Count,
-		};
+		} type;
+
+		// since 'i16[3] origin;' is invalid, we use helper aliases
+		#define PP_DEMO_PROP_DECLARE(name, type)			using typeof_##name = type; typeof_##name name;
+		DEMO_ENTITY_PROPERTIES(PP_DEMO_PROP_DECLARE)
+		#undef PP_DEMO_PROP_DECLARE
 	};
 }
 
