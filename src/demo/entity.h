@@ -62,8 +62,14 @@ namespace Demo {
 
 		enum : u32 {
 			Version = Hash(
-				#define PP_DEMO_HASH_ENTITY_TYPE(name, ...)		#name "*"
+				#define PP_DEMO_HASH_ENTITY_TYPE(name, ...)			#name "*"
+				#define PP_DEMO_HASH_ENTITY_FIELD(name, type)		#name "=" #type ";"
+
 				DEMO_ENTITY_TYPES(PP_DEMO_HASH_ENTITY_TYPE)
+				"/"
+				DEMO_ENTITY_PROPERTIES(PP_DEMO_HASH_ENTITY_FIELD)
+
+				#undef PP_DEMO_HASH_ENTITY_FIELD
 				#undef PP_DEMO_HASH_ENTITY_TYPE
 			)
 		};
