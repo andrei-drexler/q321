@@ -498,6 +498,42 @@ void MergeEntityBrushes(Map& map, const Options& options, std::vector<size_t>& b
 	}
 }
 
+void RebuildEntityLinks(Map& map, const Options& options) {
+	printf("Reindexing entity links");
+
+	std::unordered_map<std::string, size_t> targetname_to_index;
+	targetname_to_index.reserve(map.entities.size());
+	
+	for (size_t i = 1, next_index = 1; i < map.entities.size(); ++i) {
+		auto& ent = map.entities[i];
+		auto targetname = ent.GetProperty("targetname"sv);
+		if (targetname.empty())
+			continue;
+		auto& index = targetname_to_index[std::string{targetname}];
+		if (!index)
+			index = next_index++;
+		char buffer[32];
+		sprintf(buffer, "%zd", index);
+		ent.props["targetname"] = buffer;
+	}
+
+	for (size_t i = 1, next_index = 1; i < map.entities.size(); ++i) {
+		auto& ent = map.entities[i];
+		auto target = ent.GetProperty("target"sv);
+		if (target.empty())
+			continue;
+		auto iter = targetname_to_index.find(std::string{target});
+		if (iter == targetname_to_index.end()) {
+			printf(INDENT "Warning: no entity matching target '%.*s'\n", int(target.size()), target.data());
+			ent.props.erase("target");
+			continue;
+		}
+		char buffer[32];
+		sprintf(buffer, "%zd", iter->second);
+		ent.props["target"] = buffer;
+	}
+}
+
 ////////////////////////////////////////////////////////////////
 
 void InsertMissingAxialPlanes(Map& map) {
@@ -1789,6 +1825,7 @@ bool CompileMap(Map& map, const Options& options) {
 	InsertMissingAxialPlanes(map);
 	SortBrushesAndPlanes(map);
 
+	RebuildEntityLinks(map, options);
 	std::vector<Map::Entity> lights;
 	RemoveUnknownEntities(map, options, lights);
 	SortEntities(map, options);
