@@ -319,7 +319,7 @@ int FORCEINLINE demo_main() {
 	Demo::Texture::GenerateAll();
 	Demo::UpdateWindowIcon();
 
-	auto touch = [](auto& src) { memcpy(Mem::Alloc(sizeof(src)), src, sizeof(src)); };
+	auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), src, sizeof(src)); };
 
 	g_map.Load(dm17::map);
 	g_map.UpdateLightmapTexture();
