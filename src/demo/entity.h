@@ -18,33 +18,33 @@
 	x(dmg,				i16)		\
 
 #define DEMO_ENTITY_TYPES(x)		\
-	x(worldspawn)					\
-	x(trigger_teleport)				\
-	x(trigger_multiple)				\
-	x(trigger_hurt)					\
-	/*x(light)*/					\
-	x(target_position)				\
-	/*x(target_speaker)*/			\
-	x(trigger_push)					\
-	x(info_player_deathmatch)		\
-	x(item_armor_shard)				\
-	x(item_health_large)			\
-	x(misc_model)					\
-	x(ammo_bullets)					\
-	x(info_player_intermission)		\
-	x(ammo_rockets)					\
-	x(ammo_shells)					\
-	x(ammo_slugs)					\
-	x(weapon_rocketlauncher)		\
-	x(weapon_shotgun)				\
-	x(item_health)					\
-	x(item_armor_body)				\
-	x(target_remove_powerups)		\
-	x(item_armor_combat)			\
-	x(item_health_mega)				\
-	x(weapon_railgun)				\
-	x(misc_teleporter_dest)			\
-	x(item_quad)					\
+	x(worldspawn,					"")\
+	x(trigger_teleport,				"")\
+	x(trigger_multiple,				"")\
+	x(trigger_hurt,					"")\
+	/*x(light,						"")*/\
+	x(target_position,				"")\
+	/*x(target_speaker,				"")*/\
+	x(trigger_push,					"")\
+	x(info_player_deathmatch,		"")\
+	x(item_armor_shard,				"Armor Shard")\
+	x(item_health_large,			"50 Health")\
+	x(misc_model,					"")\
+	x(ammo_bullets,					"Bullets")\
+	x(info_player_intermission,		"")\
+	x(ammo_rockets,					"Rockets")\
+	x(ammo_shells,					"Shells")\
+	x(ammo_slugs,					"Slugs")\
+	x(weapon_rocketlauncher,		"Rocket launcher")\
+	x(weapon_shotgun,				"Shotgun")\
+	x(item_health,					"25 Health")\
+	x(item_armor_body,				"Heavy Armor")\
+	x(target_remove_powerups,		"")\
+	x(item_armor_combat,			"Armor")\
+	x(item_health_mega,				"Mega Health")\
+	x(weapon_railgun,				"Railgun")\
+	x(misc_teleporter_dest,			"")\
+	x(item_quad,					"Quad Damage")\
 
 ////////////////////////////////////////////////////////////////
 
@@ -53,7 +53,7 @@ namespace Demo {
 		enum class Type {
 			None,
 
-			#define PP_DEMO_ENTITY_TYPE_DECLARE(name)			name,
+			#define PP_DEMO_ENTITY_TYPE_DECLARE(name,...)	name,
 			DEMO_ENTITY_TYPES(PP_DEMO_ENTITY_TYPE_DECLARE)
 			#undef PP_DEMO_ENTITY_TYPE_DECLARE
 

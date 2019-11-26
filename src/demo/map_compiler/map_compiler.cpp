@@ -363,7 +363,7 @@ void RemoveUnknownEntities(Map& map, const Options& options, std::vector<Map::En
 	printf("Removing unknown entities\n");
 
 	std::unordered_map<string_view, Demo::Entity::Type> classname_to_type;
-	#define PP_MAP_CLASSNAME_TO_TYPE(name) classname_to_type[#name] = Demo::Entity::Type::name;
+	#define PP_MAP_CLASSNAME_TO_TYPE(name, ...) classname_to_type[#name] = Demo::Entity::Type::name;
 	DEMO_ENTITY_TYPES(PP_MAP_CLASSNAME_TO_TYPE)
 	#undef PP_MAP_CLASSNAME_TO_TYPE
 
@@ -960,7 +960,7 @@ void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, 
 	print.Flush();
 
 	std::unordered_map<string_view, Demo::Entity::Type> classname_to_type;
-	#define PP_MAP_CLASSNAME_TO_TYPE(name) classname_to_type[#name] = Demo::Entity::Type::name;
+	#define PP_MAP_CLASSNAME_TO_TYPE(name, ...) classname_to_type[#name] = Demo::Entity::Type::name;
 	DEMO_ENTITY_TYPES(PP_MAP_CLASSNAME_TO_TYPE)
 	#undef PP_MAP_CLASSNAME_TO_TYPE
 
