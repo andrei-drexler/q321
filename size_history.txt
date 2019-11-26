@@ -536,3 +536,4 @@
 25510,excluded target_speakers
 25266,removed light entities (already saved separately)
 25300,deinterleave entity properties on load
+25294,reordered entity types

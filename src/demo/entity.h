@@ -22,29 +22,29 @@
 	x(trigger_teleport,				"")\
 	x(trigger_multiple,				"")\
 	x(trigger_hurt,					"")\
+	x(trigger_push,					"")\
 	/*x(light,						"")*/\
 	x(target_position,				"")\
 	/*x(target_speaker,				"")*/\
-	x(trigger_push,					"")\
-	x(info_player_deathmatch,		"")\
-	x(item_armor_shard,				"Armor Shard")\
-	x(item_health_large,			"50 Health")\
 	x(misc_model,					"")\
-	x(ammo_bullets,					"Bullets")\
+	x(info_player_deathmatch,		"")\
 	x(info_player_intermission,		"")\
+	x(misc_teleporter_dest,			"")\
+	x(ammo_bullets,					"Bullets")\
 	x(ammo_rockets,					"Rockets")\
 	x(ammo_shells,					"Shells")\
 	x(ammo_slugs,					"Slugs")\
 	x(weapon_rocketlauncher,		"Rocket launcher")\
 	x(weapon_shotgun,				"Shotgun")\
-	x(item_health,					"25 Health")\
-	x(item_armor_body,				"Heavy Armor")\
-	x(target_remove_powerups,		"")\
-	x(item_armor_combat,			"Armor")\
-	x(item_health_mega,				"Mega Health")\
 	x(weapon_railgun,				"Railgun")\
-	x(misc_teleporter_dest,			"")\
+	x(item_health,					"25 Health")\
+	x(item_health_large,			"50 Health")\
+	x(item_health_mega,				"Mega Health")\
+	x(item_armor_combat,			"Armor")\
+	x(item_armor_shard,				"Armor Shard")\
+	x(item_armor_body,				"Heavy Armor")\
 	x(item_quad,					"Quad Damage")\
+	x(target_remove_powerups,		"")\
 
 ////////////////////////////////////////////////////////////////
 
