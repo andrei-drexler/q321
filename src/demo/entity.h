@@ -60,6 +60,14 @@ namespace Demo {
 			Count,
 		} type;
 
+		enum : u32 {
+			Version = Hash(
+				#define PP_DEMO_HASH_ENTITY_TYPE(name, ...)		#name "*"
+				DEMO_ENTITY_TYPES(PP_DEMO_HASH_ENTITY_TYPE)
+				#undef PP_DEMO_HASH_ENTITY_TYPE
+			)
+		};
+
 		// since 'i16[3] origin;' is invalid, we use helper aliases
 		#define PP_DEMO_PROP_DECLARE(name, type)			using typeof_##name = type; typeof_##name name;
 		DEMO_ENTITY_PROPERTIES(PP_DEMO_PROP_DECLARE)

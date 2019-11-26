@@ -1814,7 +1814,9 @@ bool CompileMap(Map& map, const Options& options) {
 
 	/* version and version check */
 	fprintf(out, "const u32 material_version = 0x%08x;\n", Demo::Material::Version);
-	fprintf(out, "static_assert(material_version == Demo::Material::Version, \"Material definition mismatch, please recompile the map\");\n\n");
+	fprintf(out, "const u32 entity_version = 0x%08x;\n", Demo::Entity::Version);
+	fprintf(out, "static_assert(material_version == Demo::Material::Version, \"Material definition mismatch, please recompile the map\");\n");
+	fprintf(out, "static_assert(entity_version == Demo::Entity::Version, \"Entity definition mismatch, please recompile the map\");\n\n");
 
 	ArrayPrinter print(out);
 

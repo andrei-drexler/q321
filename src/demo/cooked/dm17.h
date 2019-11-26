@@ -4,7 +4,9 @@
 
 namespace dm17 {
 const u32 material_version = 0x430da440;
+const u32 entity_version = 0xb4514beb;
 static_assert(material_version == Demo::Material::Version, "Material definition mismatch, please recompile the map");
+static_assert(entity_version == Demo::Entity::Version, "Entity definition mismatch, please recompile the map");
 
 const u16 entity_brushes[] = {217,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,};
 
