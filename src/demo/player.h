@@ -61,16 +61,50 @@ namespace Demo {
 		void			Set(Input input)			{ inputs |= InputMask(input); }
 		void			Clear(Input input)			{ inputs &= ~InputMask(input); }
 
-		void			Update(float dt);
+		void			Update(const u8* keys, float dt);
 		void			Spawn();
 	} g_player;
+
+	constexpr NOINLINE Player::Input GetKeyBinding(int key) {
+		switch (key) {
+			case Key::W:		return Player::Input::MoveForward;
+			case Key::S:		return Player::Input::MoveBack;
+			case Key::A:		return Player::Input::MoveLeft;
+			case Key::D:		return Player::Input::MoveRight;
+			
+			case Key::Up:		return Player::Input::MoveForward;
+			case Key::Down:		return Player::Input::MoveBack;
+			case Key::Left:		return Player::Input::LookLeft;
+			case Key::Right:	return Player::Input::LookRight;
+
+			case Key::Space:	return Player::Input::MoveUp;
+			case Key::C:		return Player::Input::MoveDown;
+			case Key::Ctrl:		return Player::Input::MoveDown;
+			
+			case Key::PageDown:	return Player::Input::LookUp;
+			case Key::Del:		return Player::Input::LookDown;
+			case Key::End:		return Player::Input::LookCenter;
+
+			case Key::Shift:	return Player::Input::Run;
+
+			default:			return Player::Input::Invalid;
+		}
+	}
+
+	constexpr auto KeyBindings =
+		MakeLookupTable<int, Player::Input, 0, 255>(GetKeyBinding);
 }
 
 ////////////////////////////////////////////////////////////////
 
 #include "player_move.h"
 
-void Demo::Player::Update(float dt) {
+void Demo::Player::Update(const u8* keys, float dt) {
+	inputs = 0;
+	for (u16 i = 0; i < 256; ++i)
+		if (keys[i])
+			Set(KeyBindings[i]);
+
 	float run = 1.f - 0.5f * Has(Input::Run);
 
 	vec2 wishturn;

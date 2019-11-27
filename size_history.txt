@@ -547,3 +547,4 @@
 25590,entity touch detection
 25809,functional teleporters
 25809,removed worldspawn check
+25788,keyboard polling

@@ -195,47 +195,18 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	float g_delta_time;
-
 	FORCEINLINE void Tick(float dt) {
 		if (g_delta_time == 0.f)
 			g_delta_time = dt;
 		dt = mix(g_delta_time, dt, 0.125f);
 		g_delta_time = dt;
 
+		u8 key_state[256];
+		Sys::GetKeyboardState(key_state);
+
 		if (!IsLoading())
-			g_player.Update(dt);
+			g_player.Update(key_state, dt);
 	}
-
-	////////////////////////////////////////////////////////////////
-
-	constexpr NOINLINE Player::Input GetKeyBinding(int key) {
-		switch (key) {
-			case Key::W:		return Player::Input::MoveForward;
-			case Key::S:		return Player::Input::MoveBack;
-			case Key::A:		return Player::Input::MoveLeft;
-			case Key::D:		return Player::Input::MoveRight;
-			
-			case Key::Up:		return Player::Input::MoveForward;
-			case Key::Down:		return Player::Input::MoveBack;
-			case Key::Left:		return Player::Input::LookLeft;
-			case Key::Right:	return Player::Input::LookRight;
-
-			case Key::Space:	return Player::Input::MoveUp;
-			case Key::C:		return Player::Input::MoveDown;
-			case Key::Ctrl:		return Player::Input::MoveDown;
-			
-			case Key::PageDown:	return Player::Input::LookUp;
-			case Key::Del:		return Player::Input::LookDown;
-			case Key::End:		return Player::Input::LookCenter;
-
-			case Key::Shift:	return Player::Input::Run;
-
-			default:			return Player::Input::Invalid;
-		}
-	}
-
-	constexpr auto KeyBindings =
-		MakeLookupTable<int, Player::Input, 0, 255>(GetKeyBinding);
 
 	////////////////////////////////////////////////////////////////
 
@@ -273,23 +244,13 @@ namespace Demo {
 				RenderFrame();
 				return;
 
-			case Event::KeyDown:
-				g_player.Set(KeyBindings[event.data.key_down.code]);
-				return;
-			
 			case Event::KeyUp:
-				if (event.data.key_down.code == Key::Escape) {
+				if (event.data.key_down.code == Key::Escape)
 					Sys::Exit();
-				}
-				if (event.data.key_down.code == Key::PrintScreen) {
+				else if (event.data.key_down.code == Key::PrintScreen)
 					TakeScreenshot();
-					return;
-				}
-				if (event.data.key_down.code == Key::Backspace) {
+				else if (event.data.key_down.code == Key::Backspace)
 					g_player.Spawn();
-					return;
-				}
-				g_player.Clear(KeyBindings[event.data.key_up.code]);
 				return;
 
 			case Event::MouseMove: {

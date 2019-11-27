@@ -94,6 +94,8 @@ namespace Sys {
 	void SetFPSMode(Window* window, bool enabled = true);
 	void RedrawWindow(Window* window);
 	void SetWindowIcon(Window* window, const u32* pixels, u16 size);
+
+	void GetKeyboardState(u8* state);
 	
 	bool PumpMessages(int* error = nullptr);
 	int RunApplication();
