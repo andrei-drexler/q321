@@ -543,3 +543,4 @@
 25736,cl /Os
 25484,undo
 25464,cl /Gw
+25489,brush-entity mapping

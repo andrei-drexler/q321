@@ -262,6 +262,7 @@ struct Map {
 		u16					start				[MAX_NUM_BRUSHES];
 		vec4				planes				[MAX_NUM_PLANES];
 		u8					plane_mat_uv_axis	[MAX_NUM_PLANES];	// material: 6, uv_axis: 2
+		u8					entity				[MAX_NUM_BRUSHES];
 
 		u8					GetPlaneMaterial(u16 plane_index) const { return plane_mat_uv_axis[plane_index] >> 2; }
 		u8					GetPlaneUVAxis(u16 plane_index) const { return plane_mat_uv_axis[plane_index] & 3; }
@@ -504,12 +505,16 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		brushes.plane_count = 0;
 
 		u16 src_plane_index = 0;
+		u16 entity_index = 0;
 		for (u16 brush_index = 0; brush_index < packed.num_brushes; ++brush_index) {
 			u16 num_brush_planes = 0;
+			if (brush_index >= entity_brush_start[entity_index + 1])
+				++entity_index;
 
 			auto dst_brush_index = brushes.count++;
 			auto& brush_start = brushes.start[dst_brush_index];
 			brush_start = brushes.plane_count;
+			brushes.entity[dst_brush_index] = entity_index;
 			
 			vec4* brush_planes = brushes.planes + brushes.plane_count;
 			assert(brushes.plane_count + 6 <= MAX_NUM_PLANES);
@@ -522,7 +527,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 			brush_bounds[1][1] = bounds_src[4] + brush_bounds[0][1];
 			brush_bounds[1][2] = bounds_src[5] + brush_bounds[0][2];
 
-			bool mirrored = IsWorldspawnBrush(brush_index) && brush_bounds[1][1] < symmetry_level + 1;
+			bool mirrored = entity_index == 0 && brush_bounds[1][1] < symmetry_level + 1;
 
 			bounds_src += 6;
 
