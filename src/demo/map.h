@@ -308,6 +308,7 @@ struct Map {
 	u16						entity_brush_start[MAX_NUM_ENTITIES + 1];
 
 	bool					IsWorldspawnBrush(u16 index) const { return index < entity_brush_start[1]; }
+	Demo::Entity*			PickTarget(i16 target);
 
 	vec3					positions			[MAX_NUM_VERTS];
 	vec4					texcoords			[MAX_NUM_VERTS];
@@ -457,6 +458,28 @@ FORCEINLINE void Map::InitLights() {
 	}
 }
 
+////////////////////////////////////////////////////////////////
+
+Demo::Entity* Map::PickTarget(i16 target) {
+	const u16 MaxChoices = 32;
+	u16 choices[MaxChoices];
+	u16 num_choices = 0;
+
+	if (target) {
+		for (auto *entity = &entities[num_brush_entities], *end = &entities[num_entities]; entity != end; ++entity) {
+			if (entity->targetname == target) {
+				choices[num_choices++] = entity - &entities[0];
+				if (num_choices == MaxChoices)
+					break;
+			}
+		}
+	}
+
+	if (num_choices > 0)
+		return &entities[choices[Random() % num_choices]];
+	return nullptr;
+}
+
 FORCEINLINE void Map::InitEntities() {
 	num_brush_entities = source->num_brush_entities;
 	num_entities = source->num_entities;
@@ -477,6 +500,8 @@ FORCEINLINE void Map::InitEntities() {
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////
 
 NOINLINE void Map::Load(const PackedMap& packed) {
 	source = &packed;

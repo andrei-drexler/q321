@@ -6,12 +6,14 @@ namespace Demo {
 			MoveSpeed		= 320.f,
 			StepUpSpeed		= 32.f,
 			TurnSpeed		= 90.f,
+			TeleportSpeed	= 400.f,
 
 			Height			= 56.f,
 			HalfHeight		= Height * 0.5f,
 			HalfWidth		= 15.f,
 			EyeLevel		= 48.f,
-			EyeCenterOffset	= EyeLevel - HalfHeight
+			EyeCenterOffset	= EyeLevel - HalfHeight,
+			SpawnOffset		= HalfHeight - 4.f
 		;
 
 		static constexpr vec3
@@ -104,6 +106,36 @@ void Demo::Player::Update(float dt) {
 	else
 		//SlideMove(*this, dt);
 		StepSlideMove(*this, dt);
+
+	for (u16 i = 0; i < num_touch_ents; ++i) {
+		u16 entity_index = touch_ents[i];
+		Entity& entity = g_map.entities[entity_index];
+		switch (entity.type) {
+			case Entity::Type::trigger_teleport: {
+				auto target = g_map.PickTarget(entity.target);
+				if (target) {
+					position[0] = target->origin[0];
+					position[1] = target->origin[1];
+					position[2] = target->origin[2] + SpawnOffset;
+					angles[0] = target->angle;
+					angles[1] = 0.f;
+					angles[2] = 0.f;
+					velocity.y = cos(angles[0] * -Math::DEG2RAD) * TeleportSpeed;
+					velocity.x = sin(angles[0] * -Math::DEG2RAD) * TeleportSpeed;
+					velocity.z = 0.f;
+					step = 0.f;
+				}
+				break;
+			}
+
+			case Entity::Type::trigger_push: {
+				break;
+			}
+
+			default:
+				break;
+		}
+	}
 		
 	assert(!isnan(position.x));
 }
@@ -118,7 +150,7 @@ void Demo::Player::Spawn() {
 			auto& spawn = spawn_points[num_spawn_points++];
 			spawn[0] = e.origin[0];
 			spawn[1] = e.origin[1];
-			spawn[2] = e.origin[2] + (HalfHeight - 4.f);
+			spawn[2] = e.origin[2] + SpawnOffset;
 			spawn[3] = e.angle;
 		}
 	}
