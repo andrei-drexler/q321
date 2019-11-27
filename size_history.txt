@@ -540,3 +540,6 @@
 25336,exported entity links
 25490,spawn/respawn at random info_player_deathmatch
 25484,baked -90 deg entity angle offset
+25736,cl /Os
+25484,undo
+25464,cl /Gw

@@ -57,7 +57,7 @@ set obj_files=
 for %%f in (src\demo\*.cpp) do (
 	set obj=!obj_folder!%%~nf.obj
 	:: https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-alphabetically
- 	cl /c %%f /std:c++latest /Oi /arch:IA32 /QIfist /W1 /Zc:wchar_t /Zi /Gm- /O2 /Oy /GS- /Zc:inline /fp:fast /D "NDEBUG" /errorReport:prompt /GF /WX- /Zc:forScope /Gs65536 /GR- /Gr /MD /FC /nologo /diagnostics:classic /Fo!obj!
+ 	cl /c %%f /std:c++latest /Oi /arch:IA32 /QIfist /W1 /Zc:wchar_t /Zi /Gm- /O2 /Oy /GS- /Zc:inline /fp:fast /D "NDEBUG" /errorReport:prompt /GF /WX- /Zc:forScope /Gs65536 /GR- /Gr /Gw /MD /FC /nologo /diagnostics:classic /Fo!obj!
 	if ERRORLEVEL 1 goto clerror
 	set obj_files=!obj_files! !obj!
 )
