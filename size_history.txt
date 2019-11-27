@@ -549,3 +549,4 @@
 25809,removed worldspawn check
 25788,keyboard polling
 25840,very basic trigger_hurt
+25805,noinline random

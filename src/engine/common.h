@@ -205,11 +205,11 @@ constexpr u32 Hash(const char* text) {
 
 u32 g_random_seed;
 
-void Seed(u32 seed) {
+FORCEINLINE void Seed(u32 seed) {
 	g_random_seed = seed;
 }
 
-u32 Random() {
+NOINLINE u32 Random() {
 	u32 r = g_random_seed * 0x45d9f3b;
 	g_random_seed = r;
 
