@@ -15,7 +15,7 @@ namespace Demo {
 
 	bool GroundTrace(Player& player) {
 		Map::TraceInfo trace;
-		trace.SetCollision(player.position, {0.f, 0.f, -0.25f}, Player::CollisionBounds);
+		trace.SetCollision(player.position, {0.f, 0.f, -1.f}, Player::CollisionBounds);
 		trace.start.z -= Player::EyeCenterOffset;
 		trace.max_touch_ents = Player::MaxTouchEnts;
 		trace.touch_ents = player.touch_ents;
@@ -106,6 +106,11 @@ namespace Demo {
 				continue;
 
 			planes[num_planes++] = trace.hit_normal;
+			if (num_planes == MaxClipPlanes) {
+				// this shouldn't really happen
+				player.velocity = 0.f;
+				return true;
+			}
 
 			//
 			// modify velocity so it parallels all of the clip planes
@@ -226,5 +231,7 @@ namespace Demo {
 		float delta = player.position.z - pos.z;
 		if (delta > 0.5f)
 			player.step += delta;
+
+		GroundTrace(player);
 	}
 } // namespace Demo

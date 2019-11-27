@@ -550,3 +550,4 @@
 25788,keyboard polling
 25840,very basic trigger_hurt
 25805,noinline random
+25889,basic player movement (gravity/jumping)

@@ -13,6 +13,7 @@ namespace Demo {
 		x(com_maxFps,		0)				\
 		x(cl_fov,			90)				\
 		x(r_lightmap,		0)				\
+		x(g_gravity,		800)			\
 
 	////////////////////////////////////////////////////////////////
 	

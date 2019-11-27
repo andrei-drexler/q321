@@ -7,6 +7,7 @@ namespace Demo {
 			StepUpSpeed		= 32.f,
 			TurnSpeed		= 90.f,
 			TeleportSpeed	= 400.f,
+			JumpSpeed		= 270.f,
 
 			Height			= 56.f,
 			HalfHeight		= Height * 0.5f,
@@ -37,6 +38,10 @@ namespace Demo {
 			Invalid = Count,
 		};
 
+		enum Flag {
+			NoJump		= 1 << 0,
+		};
+
 		static constexpr u32 InputMask(Input i)	{
 			bool valid = u8(i) < u8(Input::Invalid);
 			return valid << (u8)i;
@@ -48,9 +53,8 @@ namespace Demo {
 		const vec4*		ground;
 		vec3			angles;
 		u32				inputs;
+		u32				flags;
 		i16				health;
-
-		mat4			orientation;
 
 		enum {
 			MaxTouchEnts = 16,
@@ -108,6 +112,9 @@ void Demo::Player::Update(const u8* keys, float dt) {
 		if (keys[i])
 			Set(KeyBindings[i]);
 
+	if (!(inputs & (InputMask(Input::MoveUp) | InputMask(Input::MoveDown))))
+		flags &= ~NoJump;
+
 	float run = 1.f - 0.5f * Has(Input::Run);
 
 	vec2 wishturn;
@@ -120,19 +127,32 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	angles.x = mod(angles.x, 360.f);
 	angles.y = clamp(angles.y, -85.f, 85.f);
 
-	orientation = MakeRotation(angles * Math::DEG2RAD);
+	float yaw = angles.x * Math::DEG2RAD;
+	vec2 forward, side;
+	side.x = cos(yaw);
+	side.y = sin(yaw);
+	forward.x = -side.y;
+	forward.y = side.x;
 
 	vec3 wishdir;
 	wishdir.y = float(Has(Input::MoveForward) - Has(Input::MoveBack));
 	wishdir.x = float(Has(Input::MoveRight) - Has(Input::MoveLeft));
 	wishdir.z = float(Has(Input::MoveUp) - Has(Input::MoveDown));
 
-	vec3 new_velocity = wishdir.x * orientation[0].xyz;
-	new_velocity += wishdir.y * orientation[1].xyz;
-	new_velocity.z += wishdir.z;
+	vec2 new_velocity = wishdir.x * side;
+	new_velocity += wishdir.y * forward;
 	new_velocity *= MoveSpeed * run;
 
-	mix_into(velocity, new_velocity, min(1.f, dt * 8.f));
+	float f = min(1.f, dt * (ground ? 8.f : 2.f));
+	velocity.x += (new_velocity.x - velocity.x) * f;
+	velocity.y += (new_velocity.y - velocity.y) * f;
+	if (ground && wishdir.z > 0.f && !(flags & NoJump)) {
+		ground = nullptr;
+		velocity.z += JumpSpeed;
+		flags |= NoJump;
+	} else {
+		velocity.z -= g_gravity.value * dt;
+	}
 
 	step -= step * dt * 8.f;
 	if (step < 0.f)
@@ -141,7 +161,6 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	if (length_squared(velocity) < 1.f)
 		velocity = 0.f;
 	else
-		//SlideMove(*this, dt);
 		StepSlideMove(*this, dt);
 
 	for (u16 i = 0; i < num_touch_ents; ++i) {
@@ -211,4 +230,5 @@ NOINLINE void Demo::Player::Spawn() {
 	velocity = 0.f;
 	step = 16.f;
 	health = 100;
+	flags = Flag::NoJump;
 }
