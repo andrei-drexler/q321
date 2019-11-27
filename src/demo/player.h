@@ -48,6 +48,7 @@ namespace Demo {
 		const vec4*		ground;
 		vec3			angles;
 		u32				inputs;
+		i16				health;
 
 		mat4			orientation;
 
@@ -64,6 +65,8 @@ namespace Demo {
 		void			Update(const u8* keys, float dt);
 		void			Spawn();
 	} g_player;
+
+	////////////////////////////////////////////////////////////////
 
 	constexpr NOINLINE Player::Input GetKeyBinding(int key) {
 		switch (key) {
@@ -166,6 +169,14 @@ void Demo::Player::Update(const u8* keys, float dt) {
 				break;
 			}
 
+			case Entity::Type::trigger_hurt: {
+				// TODO: handle random, wait
+				health -= entity.dmg;
+				if (health < 0)
+					Spawn();
+				break;
+			}
+
 			default:
 				break;
 		}
@@ -174,7 +185,7 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	assert(!isnan(position.x));
 }
 
-void Demo::Player::Spawn() {
+NOINLINE void Demo::Player::Spawn() {
 	vec4 spawn_points[Map::MAX_NUM_ENTITIES];
 	u16 num_spawn_points = 0;
 
@@ -199,4 +210,5 @@ void Demo::Player::Spawn() {
 	angles.z = 0.f;
 	velocity = 0.f;
 	step = 16.f;
+	health = 100;
 }
