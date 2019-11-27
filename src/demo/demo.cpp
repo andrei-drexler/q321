@@ -174,7 +174,7 @@ namespace Demo {
 		frame.pos			= g_player.position;
 		frame.pos.z			-= g_player.step;
 		frame.angles		= g_player.angles;
-		frame.fov			= cl_fov.f;
+		frame.fov			= cl_fov.value;
 		frame.time			= g_time - g_load_time;
 		frame.render_target	= Gfx::Backbuffer;
 
@@ -296,7 +296,7 @@ namespace Demo {
 				if (IsLoading())
 					return;
 				vec2 delta(event.data.mouse_move.pt.x, event.data.mouse_move.pt.y);
-				delta *= (sensitivity.f * -90.f) / event.window->height;
+				delta *= (sensitivity.value * -90.f) / event.window->height;
 				g_player.angles.xy += delta;
 				g_player.angles.y = clamp(g_player.angles.y, -85.f, 85.f);
 				return;
@@ -356,7 +356,7 @@ int FORCEINLINE demo_main() {
 
 		Sys::RedrawWindow(&Sys::g_window);
 
-		float fps = Demo::com_maxFps.f;
+		float fps = Demo::com_maxFps.value;
 		if (fps == 0.f)
 			fps = Sys::g_window.refresh;
 		float interval = fps > 0.f ? 1.f / fps : 0.f;

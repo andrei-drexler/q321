@@ -2,8 +2,8 @@
 
 namespace Demo {
 	struct Cvar {
-		i32 i;
-		f32 f;
+		i32 integer;
+		f32 value;
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -93,8 +93,8 @@ FORCEINLINE void Demo::Console::Init() {
 	for (u32 cvar_index = 0; cvar_index < NumCvars; ++cvar_index) {
 		auto& cvar = CvarData[cvar_index];
 		iptr advance = 0;
-		cvar.f = ParseFloat(value, &advance);
-		cvar.i = ftoi(cvar.f);
+		cvar.value = ParseFloat(value, &advance);
+		cvar.integer = ftoi(cvar.value);
 		assert(advance > 0 && value[advance] == 0);
 		value += advance;
 		++value;

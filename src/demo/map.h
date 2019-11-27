@@ -900,7 +900,7 @@ void Map::Render() {
 		Uniform::Texture0 = MaterialTextures[material];
 		Uniform::Texture1 = Texture::Lightmap;
 		
-		if (r_lightmap.i)
+		if (r_lightmap.integer)
 			Uniform::Texture0 = Texture::Grey;
 
 		Gfx::UpdateUniforms();
