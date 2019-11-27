@@ -551,3 +551,4 @@
 25840,very basic trigger_hurt
 25805,noinline random
 25889,basic player movement (gravity/jumping)
+26009,functional trigger_push

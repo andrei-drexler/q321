@@ -177,12 +177,9 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	void StepSlideMove(Player& player, float dt) {
-		if (player.velocity.z <= 0.f) {
-			if (GroundTrace(player)) {
-				ClipVelocity(player.velocity, player.ground->xyz);
-			}
-		} else {
-			player.ground = nullptr;
+		GroundTrace(player);
+		if (player.ground && player.velocity.z <= 0.f) {
+			ClipVelocity(player.velocity, player.ground->xyz);
 		}
 
 		vec3 pos = player.position;

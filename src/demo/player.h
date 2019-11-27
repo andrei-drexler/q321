@@ -139,18 +139,24 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	wishdir.x = float(Has(Input::MoveRight) - Has(Input::MoveLeft));
 	wishdir.z = float(Has(Input::MoveUp) - Has(Input::MoveDown));
 
-	vec2 new_velocity = wishdir.x * side;
-	new_velocity += wishdir.y * forward;
-	new_velocity *= MoveSpeed * run;
-
-	float f = min(1.f, dt * (ground ? 8.f : 2.f));
-	velocity.x += (new_velocity.x - velocity.x) * f;
-	velocity.y += (new_velocity.y - velocity.y) * f;
 	if (ground && wishdir.z > 0.f && !(flags & NoJump)) {
 		ground = nullptr;
 		velocity.z += JumpSpeed;
 		flags |= NoJump;
+	}
+
+	vec2 new_velocity = wishdir.x * side;
+	new_velocity += wishdir.y * forward;
+	new_velocity *= MoveSpeed * run;
+
+	if (ground) {
+		float f = min(1.f, dt * 8.f);
+		velocity.x += (new_velocity.x - velocity.x) * f;
+		velocity.y += (new_velocity.y - velocity.y) * f;
 	} else {
+		float f = dt * 0.75f;
+		velocity.x += new_velocity.x * f;
+		velocity.y += new_velocity.y * f;
 		velocity.z -= g_gravity.value * dt;
 	}
 
@@ -166,9 +172,10 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	for (u16 i = 0; i < num_touch_ents; ++i) {
 		u16 entity_index = touch_ents[i];
 		Entity& entity = g_map.entities[entity_index];
+		Entity* target = g_map.PickTarget(entity.target);
+
 		switch (entity.type) {
 			case Entity::Type::trigger_teleport: {
-				auto target = g_map.PickTarget(entity.target);
 				if (target) {
 					position[0] = target->origin[0];
 					position[1] = target->origin[1];
@@ -185,6 +192,17 @@ void Demo::Player::Update(const u8* keys, float dt) {
 			}
 
 			case Entity::Type::trigger_push: {
+				if (target) {
+					vec3 target_pos;
+					target_pos[0] = target->origin[0];
+					target_pos[1] = target->origin[1];
+					target_pos[2] = target->origin[2] + SpawnOffset;
+					float height = target_pos.z - position.z;
+					float time = sqrt(height / (0.5f * g_gravity.value));
+					velocity[0] = (target_pos[0] - position[0]) / time;
+					velocity[1] = (target_pos[1] - position[1]) / time;
+					velocity[2] = time * g_gravity.value;
+				}
 				break;
 			}
 
