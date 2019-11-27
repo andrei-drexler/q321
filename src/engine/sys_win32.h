@@ -525,6 +525,7 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 	QueryPerformanceFrequency(&frequency);
 	QueryPerformanceCounter(&Win32::g_startTime);
 	Win32::g_rcpFrequency = 1. / frequency.QuadPart;
+	Seed(Win32::g_startTime.LowPart);
 	int code = demo_main();
 	ExitProcess(code);
 }

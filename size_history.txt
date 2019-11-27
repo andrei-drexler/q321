@@ -538,3 +538,4 @@
 25300,deinterleave entity properties on load
 25294,reordered entity types
 25336,exported entity links
+25490,spawn/respawn at random info_player_deathmatch

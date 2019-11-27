@@ -285,6 +285,10 @@ namespace Demo {
 					TakeScreenshot();
 					return;
 				}
+				if (event.data.key_down.code == Key::Backspace) {
+					g_player.Spawn();
+					return;
+				}
 				g_player.Clear(KeyBindings[event.data.key_up.code]);
 				return;
 
@@ -323,6 +327,7 @@ int FORCEINLINE demo_main() {
 	Mem::Init();
 	Demo::Console::Init();
 	Sys::InitWindow(&Sys::g_window, Demo::HandleEvent, "Q320");
+	Sys::SetFPSMode(&Sys::g_window);
 	Demo::RegisterGfxResources();
 	Demo::Texture::GenerateAll();
 	Demo::UpdateWindowIcon();
@@ -337,11 +342,7 @@ int FORCEINLINE demo_main() {
 	Demo::g_loading_thread.work = &Demo::GenerateLightmap;
 	Sys::SpawnThread(Demo::g_loading_thread);
 
-	// lower-left side
-	Demo::g_player.position		= {42.f, 608.f, 80.f};
-	Demo::g_player.angles		= {222.f, 2.25f, 0.f};
-
-	Sys::SetFPSMode(&Sys::g_window);
+	Demo::g_player.Spawn();
 
 	auto last_tick = Sys::GetTime();
 	auto next_time = last_tick;

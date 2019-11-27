@@ -203,6 +203,26 @@ constexpr u32 Hash(const char* text) {
 
 ////////////////////////////////////////////////////////////////
 
+u32 g_random_seed;
+
+void Seed(u32 seed) {
+	g_random_seed = seed;
+}
+
+u32 Random() {
+	u32 r = g_random_seed * 0x45d9f3b;
+	g_random_seed = r;
+
+	// xorshift step
+	r ^= r << 13;
+	r ^= r >> 17;
+	r ^= r << 5;
+
+	return r;
+}
+
+////////////////////////////////////////////////////////////////
+
 FORCEINLINE u32 SelectBits(u32 condition, u32 true_value, u32 false_value) {
 	return false_value ^ ((true_value ^ false_value) & condition);
 }

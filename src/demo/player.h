@@ -54,6 +54,7 @@ namespace Demo {
 		void			Clear(Input input)			{ inputs &= ~InputMask(input); }
 
 		void			Update(float dt);
+		void			Spawn();
 	} g_player;
 }
 
@@ -99,4 +100,31 @@ void Demo::Player::Update(float dt) {
 		StepSlideMove(*this, dt);
 		
 	assert(!isnan(position.x));
+}
+
+void Demo::Player::Spawn() {
+	vec4 spawn_points[Map::MAX_NUM_ENTITIES];
+	u16 num_spawn_points = 0;
+
+	for (u16 i = g_map.num_brush_entities; i < g_map.num_entities; ++i) {
+		auto& e = g_map.entities[i];
+		if (e.type == Entity::Type::info_player_deathmatch) {
+			auto& spawn = spawn_points[num_spawn_points++];
+			spawn[0] = e.origin[0];
+			spawn[1] = e.origin[1];
+			spawn[2] = e.origin[2] + (HalfHeight - 4.f);
+			spawn[3] = e.angle;
+		}
+	}
+
+	assert(num_spawn_points > 0);
+	u32 index = Random() % num_spawn_points;
+	auto& spawn = spawn_points[index];
+
+	position = spawn.xyz;
+	angles.x = spawn.w - 90.f;
+	angles.y = 0.f;
+	angles.z = 0.f;
+	velocity = 0.f;
+	step = 16.f;
 }
