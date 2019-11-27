@@ -544,3 +544,4 @@
 25484,undo
 25464,cl /Gw
 25489,brush-entity mapping
+25590,entity touch detection

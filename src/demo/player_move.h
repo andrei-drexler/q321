@@ -17,6 +17,8 @@ namespace Demo {
 		Map::TraceInfo trace;
 		trace.SetCollision(player.position, {0.f, 0.f, -0.25f}, Player::CollisionBounds);
 		trace.start.z -= Player::EyeCenterOffset;
+		trace.max_touch_ents = Player::MaxTouchEnts;
+		trace.touch_ents = player.touch_ents;
 
 		bool hit = g_map.TraceRay(trace);
 		trace.hit_point.z += Player::EyeCenterOffset;
@@ -25,6 +27,7 @@ namespace Demo {
 		} else {
 			player.ground = nullptr;
 		}
+		player.num_touch_ents = trace.num_touch_ents;
 
 		return hit;
 	}

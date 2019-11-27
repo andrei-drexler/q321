@@ -5,14 +5,12 @@
 FORCEINLINE void Map::TraceInfo::SetBullet(const vec3& a, const vec3& b) {
 	MemCopy(&start, &a);
 	MemCopy(&delta, &(b - a));
-	MemSet(&box_half_size, 0, sizeof(box_half_size));
 	type = Type::Bullet;
 }
 
 FORCEINLINE void Map::TraceInfo::SetLightmap(const vec3& a, const vec3& b) {
 	MemCopy(&start, &a);
 	MemCopy(&delta, &(b - a));
-	MemSet(&box_half_size, 0, sizeof(box_half_size));
 	type = Type::Lightmap;
 }
 
@@ -147,7 +145,7 @@ beginning:
 		for (auto i = node.data[0], endi = node.data[1]; i < endi; ++i) {
 			auto brush_index = partition.brushes[i];
 			i16 best_brush_plane = -1;
-			float t_enter = -1.f;
+			float t_enter = -FLT_MAX;
 			float t_exit = tmax;
 
 			auto plane_index = brushes.start[brush_index];
@@ -193,6 +191,18 @@ beginning:
 				auto visibility = props & Material::MaskVisibility;
 
 				if (trace.type == TraceType::Collision) {
+					if (trace.num_touch_ents < trace.max_touch_ents) {
+						u16 entity = brushes.entity[brush_index];
+						u16 touch_index = 0;
+						while (touch_index < trace.num_touch_ents) {
+							if (trace.touch_ents[touch_index] == entity)
+								break;
+							else
+								++touch_index;
+						}
+						if (touch_index == trace.num_touch_ents)
+							trace.touch_ents[trace.num_touch_ents++] = entity;
+					}
 					if (contents < Material::PlayerClip)
 						continue;
 				} else if (trace.type == TraceType::Bullet) {

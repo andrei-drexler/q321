@@ -315,6 +315,8 @@ void Map::ComputeLighting(bool shadows) {
 			vec3* texel_pos = map->lightmap.pos + y * Lightmap::Width;
 			vec3* texel_nor = map->lightmap.nor + y * Lightmap::Width;
 
+			TraceInfo trace;
+
 			for (; y < yend; ++y) {
 				for (u16 x = 0; x < Lightmap::Width; ++x, ++texel_pos, ++texel_nor, ++texel) {
 					vec3 pos = *texel_pos;
@@ -327,8 +329,6 @@ void Map::ComputeLighting(bool shadows) {
 						4.f * 7.f,
 					};
 					vec3 accum = Ambient;
-
-					TraceInfo trace;
 
 					if (length_squared(nor) > 0.f) {
 						for (u16 light_index = 0; light_index < map->num_lights; ++light_index) {

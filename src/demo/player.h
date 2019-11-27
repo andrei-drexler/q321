@@ -49,6 +49,12 @@ namespace Demo {
 
 		mat4			orientation;
 
+		enum {
+			MaxTouchEnts = 16,
+		};
+		u16				touch_ents[MaxTouchEnts];
+		u16				num_touch_ents;
+
 		bool			Has(Input input) const		{ return inputs & InputMask(input); }
 		void			Set(Input input)			{ inputs |= InputMask(input); }
 		void			Clear(Input input)			{ inputs &= ~InputMask(input); }

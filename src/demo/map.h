@@ -347,6 +347,13 @@ struct Map {
 		bool				start_solid;
 		vec3				hit_point;
 		vec3				hit_normal;
+		u16*				touch_ents;
+		u16					max_touch_ents;
+		u16					num_touch_ents;
+
+		TraceInfo() {
+			MemSet(this, 0, sizeof(*this));
+		}
 
 		void				SetBullet(const vec3& a, const vec3& b);
 		void				SetLightmap(const vec3& a, const vec3& b);
