@@ -1009,6 +1009,9 @@ void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, 
 		for (auto& field : EntityFields) {
 			auto value = src_ent.GetProperty(field.name);
 			field.set(((u8*)&dst_ent) + field.offset, value);
+			if (field.name == "angle"sv && !value.empty()) {
+				dst_ent.angle = (dst_ent.angle + 270) % 360;
+			}
 		}
 	}
 

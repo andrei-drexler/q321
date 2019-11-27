@@ -122,7 +122,7 @@ void Demo::Player::Spawn() {
 	auto& spawn = spawn_points[index];
 
 	position = spawn.xyz;
-	angles.x = spawn.w - 90.f;
+	angles.x = spawn.w;
 	angles.y = 0.f;
 	angles.z = 0.f;
 	velocity = 0.f;
