@@ -145,7 +145,7 @@ beginning:
 		for (auto i = node.data[0], endi = node.data[1]; i < endi; ++i) {
 			auto brush_index = partition.brushes[i];
 			i16 best_brush_plane = -1;
-			float t_enter = -FLT_MAX;
+			float t_enter = trace.max_touch_ents ? -FLT_MAX : -1.f;
 			float t_exit = tmax;
 
 			auto plane_index = brushes.start[brush_index];
