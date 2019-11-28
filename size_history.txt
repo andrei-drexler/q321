@@ -572,3 +572,4 @@
 26301,keep sky/nodrop brushes
 26295,invisible sky
 26258,tweaked slope constant
+26222,optimized slidemove trace setup

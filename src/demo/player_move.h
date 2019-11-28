@@ -189,21 +189,22 @@ namespace Demo {
 			return;
 		
 		const float StepSize = 18.f;
-		const vec3 up = {0.f, 0.f, StepSize};
-		const vec3 down = {0.f, 0.f, -StepSize};
 
+		// zeroed out in constructor
 		Map::TraceInfo trace;
-#if 1
-		trace.SetCollision(pos, down, Player::CollisionBounds);
+
+		trace.start = pos;
 		trace.start.z -= Player::EyeCenterOffset;
+		trace.delta.z = -StepSize;
+		trace.box_half_size = Player::CollisionBounds;
+		trace.type = Map::TraceInfo::Type::Collision;
 		g_map.TraceRay(trace);
 		
 		// never step up when you still have up velocity
 		if (player.velocity.z > 0.f && (trace.fraction == 1.f || trace.hit_normal.z < 0.71875f)) // 0.7
 			return;
-#endif
 
-		trace.delta = up;
+		trace.delta.z = StepSize;
 		g_map.TraceRay(trace);
 		trace.hit_point.z += Player::EyeCenterOffset;
 		if (trace.fraction < 1.f)
@@ -215,7 +216,7 @@ namespace Demo {
 
 		trace.start = player.position;
 		trace.start.z -= Player::EyeCenterOffset;
-		trace.delta = down;
+		trace.delta.z = -StepSize;
 		g_map.TraceRay(trace);
 		trace.hit_point.z += Player::EyeCenterOffset;
 		if (trace.fraction > 0.f) {
