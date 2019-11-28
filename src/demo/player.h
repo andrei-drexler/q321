@@ -166,13 +166,8 @@ void Demo::Player::Update(const u8* keys, float dt) {
 		velocity.z -= g_gravity.value * dt;
 	}
 
-	step -= step * dt * 8.f;
-	if (step < 0.f)
-		step = 0.f;
-
-	land_time -= dt;
-	if (land_time < 0.f)
-		land_time = 0.f;
+	step = max(0.f, step - step * dt * 8.f);
+	land_time = max(0.f, land_time - dt);
 
 	float prev_z_speed = velocity.z;
 	if (length_squared(velocity) < 1.f)
@@ -183,9 +178,9 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	if (prev_z_speed < -JumpSpeed && velocity.z > -1.f) {
 		float severity = (velocity.z - prev_z_speed) / JumpSpeed;
 		if (severity >= 1.f) {
+			if (severity > 3.f)
+				severity = 3.f;
 			land_change = severity * 8.f;
-			if (land_change > 24.f)
-				land_change = 24.f;
 			land_time = LandTime;
 		}
 	}
@@ -204,8 +199,9 @@ void Demo::Player::Update(const u8* keys, float dt) {
 					angles[0] = target->angle;
 					angles[1] = 0.f;
 					angles[2] = 0.f;
-					velocity.y = cos(angles[0] * -Math::DEG2RAD) * TeleportSpeed;
-					velocity.x = sin(angles[0] * -Math::DEG2RAD) * TeleportSpeed;
+					float yaw = angles[0] * Math::DEG2RAD;
+					velocity.y = cos(yaw) * -TeleportSpeed;
+					velocity.x = sin(yaw) * -TeleportSpeed;
 					velocity.z = 0.f;
 					step = 0.f;
 				}

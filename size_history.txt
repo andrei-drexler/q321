@@ -554,3 +554,8 @@
 26009,functional trigger_push
 25977,minor robustness tweaks
 26118,added landing animation
+26106,tweaked trigger_teleport code
+26110,tweaked trigger_push code
+26106,undo
+26093,tweaked landing init
+26091,tweaked land time update
