@@ -565,3 +565,4 @@
 26097,simplified acceleration
 26098,clear keyboard state when inactive
 26150,optional viewport in gfx::setrendertarget
+26151,tweaked gfx::setrendertarget

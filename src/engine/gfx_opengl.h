@@ -620,24 +620,27 @@ NOINLINE void Gfx::SetRenderTarget(Texture::ID id, const IRect* viewport) {
 	u32 bits = id << GL::State::ShiftRenderTargetID;
 	GL::ChangeState(bits, State::MaskRenderTargetID);
 
-	IRect full;
+	GLint x, y;
+	GLsizei w, h;
 	if (!viewport) {
-		full.x = 0;
-		full.y = 0;
-
-		auto fbo = id < g_state.num_textures ? g_state.texture_state[id].fbo : 0;
-		if (fbo) {
-			full.w = g_state.texture_state[id].width;
-			full.h = g_state.texture_state[id].height;
+		x = 0;
+		y = 0;
+		if (id < g_state.num_textures) {
+			assert(g_state.texture_state[id].fbo);
+			w = g_state.texture_state[id].width;
+			h = g_state.texture_state[id].height;
 		} else {
-			full.w = Sys::g_window.width;
-			full.h = Sys::g_window.height;
+			w = Sys::g_window.width;
+			h = Sys::g_window.height;
 		}
-
-		viewport = &full;
+	} else {
+		x = viewport->x;
+		y = viewport->y;
+		w = viewport->w;
+		h = viewport->h;
 	}
 
-	glViewport(viewport->x, viewport->y, viewport->w, viewport->h);
+	glViewport(x, y, w, h);
 }
 
 ////////////////////////////////////////////////////////////////
