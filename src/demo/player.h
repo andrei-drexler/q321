@@ -8,6 +8,11 @@ namespace Demo {
 			TurnSpeed		= 90.f,
 			TeleportSpeed	= 400.f,
 			JumpSpeed		= 270.f,
+			StopSpeed		= 100.f,
+
+			GroundAccel		= 10.f,
+			AirAccel		= 1.f,
+			Friction		= 6.f,
 
 			LandDeflectTime	= 0.15625f,		// 0.15 in Q3
 			LandReturnTime	= 0.3125f,		// 0.3
@@ -123,6 +128,7 @@ void Demo::Player::Update(const u8* keys, float dt) {
 
 	float run = 1.f - 0.5f * Has(Input::Run);
 
+	/* turn with keyboard */
 	vec2 wishturn;
 	wishturn.x = float(Has(Input::LookLeft) - Has(Input::LookRight));
 	wishturn.y = float(Has(Input::LookUp) - Has(Input::LookDown));
@@ -133,48 +139,72 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	angles.x = mod(angles.x, 360.f);
 	angles.y = clamp(angles.y, -85.f, 85.f);
 
+	/* movement input */
 	float yaw = angles.x * Math::DEG2RAD;
-	vec2 forward, side;
-	side.x = cos(yaw);
-	side.y = sin(yaw);
-	forward.x = -side.y;
-	forward.y = side.x;
+	vec2 forward, right;
+	right.x = cos(yaw);
+	right.y = sin(yaw);
+	forward.x = -right.y;
+	forward.y = right.x;
 
-	vec3 wishdir;
-	wishdir.y = float(Has(Input::MoveForward) - Has(Input::MoveBack));
-	wishdir.x = float(Has(Input::MoveRight) - Has(Input::MoveLeft));
-	wishdir.z = float(Has(Input::MoveUp) - Has(Input::MoveDown));
+	vec3 cmd;
+	cmd.y = float(Has(Input::MoveForward) - Has(Input::MoveBack));
+	cmd.x = float(Has(Input::MoveRight) - Has(Input::MoveLeft));
+	cmd.z = float(Has(Input::MoveUp) - Has(Input::MoveDown));
 
-	if (ground && wishdir.z > 0.f && !(flags & NoJump)) {
+	if (ground && cmd.z > 0.f && !(flags & NoJump)) {
 		ground = nullptr;
 		velocity.z += JumpSpeed;
 		flags |= NoJump;
 	}
 
-	vec2 new_velocity = wishdir.x * side;
-	new_velocity += wishdir.y * forward;
-	new_velocity *= MoveSpeed * run;
-
+	/* apply friction */
 	if (ground) {
-		float f = min(1.f, dt * 8.f);
-		velocity.x += (new_velocity.x - velocity.x) * f;
-		velocity.y += (new_velocity.y - velocity.y) * f;
-	} else {
-		float f = dt * 0.75f;
-		velocity.x += new_velocity.x * f;
-		velocity.y += new_velocity.y * f;
-		velocity.z -= g_gravity.value * dt;
+		vec2 vel = velocity.xy;
+		float speed = length(vel);
+		if (speed < 1.f) {
+			velocity.xy = 0.f;
+		} else {
+			float drop = max(speed, StopSpeed) * Friction * dt;
+			velocity.xy *= max(0.f, speed - drop) / speed;
+		}
 	}
 
+	/* accelerate */
+	{
+		vec3 wishdir;
+		wishdir.x = cmd.x * right.x + cmd.y * forward.x;
+		wishdir.y = cmd.x * right.y + cmd.y * forward.y;
+		wishdir.z = cmd.z;
+		float scale = length(cmd);
+		if (scale > 0.f)
+			wishdir /= scale;
+
+		float wish_speed = MoveSpeed * run;
+		float current_speed = dot(velocity, wishdir);
+		float add_speed = wish_speed - current_speed;
+		if (add_speed > 0.f) {
+			float accel = ground ? GroundAccel : AirAccel;
+			float accel_speed = min(add_speed, accel * dt * wish_speed);
+			velocity.x += wishdir.x * accel_speed;
+			velocity.y += wishdir.y * accel_speed;
+		}
+		if (!ground)
+			velocity.z -= g_gravity.value * dt;
+	}
+
+	/* animate stair-stepping & landing */
 	step = max(0.f, step - step * dt * 8.f);
 	land_time = max(0.f, land_time - dt);
 
+	/* move */
 	float prev_z_speed = velocity.z;
 	if (length_squared(velocity) < 1.f)
 		velocity = 0.f;
 	else
 		StepSlideMove(*this, dt);
 
+	/* land */
 	if (prev_z_speed < -JumpSpeed && velocity.z > -1.f) {
 		float severity = (velocity.z - prev_z_speed) / JumpSpeed;
 		if (severity >= 1.f) {
@@ -185,6 +215,7 @@ void Demo::Player::Update(const u8* keys, float dt) {
 		}
 	}
 
+	/* touch entities */
 	for (u16 i = 0; i < num_touch_ents; ++i) {
 		u16 entity_index = touch_ents[i];
 		Entity& entity = g_map.entities[entity_index];
