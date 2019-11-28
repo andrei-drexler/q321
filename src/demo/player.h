@@ -172,16 +172,15 @@ void Demo::Player::Update(const u8* keys, float dt) {
 
 	/* accelerate */
 	{
-		vec3 wishdir;
+		vec2 wishdir;
 		wishdir.x = cmd.x * right.x + cmd.y * forward.x;
 		wishdir.y = cmd.x * right.y + cmd.y * forward.y;
-		wishdir.z = cmd.z;
-		float scale = length(cmd);
+		float scale = length(cmd.xy);
 		if (scale > 0.f)
 			wishdir /= scale;
 
 		float wish_speed = MoveSpeed * run;
-		float current_speed = dot(velocity, wishdir);
+		float current_speed = dot(velocity.xy, wishdir);
 		float add_speed = wish_speed - current_speed;
 		if (add_speed > 0.f) {
 			float accel = ground ? GroundAccel : AirAccel;
