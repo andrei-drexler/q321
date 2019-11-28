@@ -9,6 +9,10 @@ namespace Demo {
 			TeleportSpeed	= 400.f,
 			JumpSpeed		= 270.f,
 
+			LandDeflectTime	= 0.15625f,		// 0.15 in Q3
+			LandReturnTime	= 0.3125f,		// 0.3
+			LandTime		= LandDeflectTime + LandReturnTime,
+
 			Height			= 56.f,
 			HalfHeight		= Height * 0.5f,
 			HalfWidth		= 15.f,
@@ -50,6 +54,8 @@ namespace Demo {
 		vec3			position;
 		vec3			velocity;
 		float			step;
+		float			land_change;
+		float			land_time;
 		const vec4*		ground;
 		vec3			angles;
 		u32				inputs;
@@ -164,10 +170,25 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	if (step < 0.f)
 		step = 0.f;
 
+	land_time -= dt;
+	if (land_time < 0.f)
+		land_time = 0.f;
+
+	float prev_z_speed = velocity.z;
 	if (length_squared(velocity) < 1.f)
 		velocity = 0.f;
 	else
 		StepSlideMove(*this, dt);
+
+	if (prev_z_speed < -JumpSpeed && velocity.z > -1.f) {
+		float severity = (velocity.z - prev_z_speed) / JumpSpeed;
+		if (severity >= 1.f) {
+			land_change = severity * 8.f;
+			if (land_change > 24.f)
+				land_change = 24.f;
+			land_time = LandTime;
+		}
+	}
 
 	for (u16 i = 0; i < num_touch_ents; ++i) {
 		u16 entity_index = touch_ents[i];
@@ -247,6 +268,7 @@ NOINLINE void Demo::Player::Spawn() {
 	angles.z = 0.f;
 	velocity = 0.f;
 	step = 16.f;
+	land_time = 0.f;
 	health = 100;
 	flags = Flag::NoJump;
 }

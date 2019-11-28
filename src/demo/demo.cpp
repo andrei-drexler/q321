@@ -173,6 +173,17 @@ namespace Demo {
 		Frame frame;
 		frame.pos			= g_player.position;
 		frame.pos.z			-= g_player.step;
+
+		if (g_player.land_time > 0.f) {
+			float land_frac;
+			if (g_player.land_time > g_player.LandReturnTime) {
+				land_frac = 1.f - (g_player.land_time - g_player.LandReturnTime) / g_player.LandDeflectTime;
+			} else {
+				land_frac = g_player.land_time / g_player.LandReturnTime;
+			}
+			frame.pos.z -= land_frac * g_player.land_change;
+		}
+
 		frame.angles		= g_player.angles;
 		frame.fov			= cl_fov.value;
 		frame.time			= g_time - g_load_time;
