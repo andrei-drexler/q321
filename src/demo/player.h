@@ -152,12 +152,6 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	cmd.x = float(Has(Input::MoveRight) - Has(Input::MoveLeft));
 	cmd.z = float(Has(Input::MoveUp) - Has(Input::MoveDown));
 
-	if (ground && cmd.z > 0.f && !(flags & NoJump)) {
-		ground = nullptr;
-		velocity.z += JumpSpeed;
-		flags |= NoJump;
-	}
-
 	/* apply friction */
 	if (ground) {
 		vec2 vel = velocity.xy;
@@ -190,6 +184,12 @@ void Demo::Player::Update(const u8* keys, float dt) {
 		}
 		if (!ground)
 			velocity.z -= g_gravity.value * dt;
+	}
+
+	if (ground && cmd.z > 0.f && !(flags & NoJump)) {
+		ground = nullptr;
+		velocity.z += JumpSpeed;
+		flags |= NoJump;
 	}
 
 	/* animate stair-stepping & landing */
