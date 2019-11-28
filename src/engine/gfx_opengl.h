@@ -228,7 +228,7 @@ namespace GL {
 		enum : u32 {
 			ShaderIDBits					= 8,
 			RenderTargetIDBits				= 8,
-			
+
 			MaxNumShaders					= 1 << ShaderIDBits,
 			MaxNumRenderTargets				= 1 << RenderTargetIDBits,
 
@@ -244,7 +244,7 @@ namespace GL {
 			TextureIDBits					= 8,
 			MaxNumTextures					= 1 << TextureIDBits,
 		};
-		
+
 		u32									current_bits;
 		u16									GetShader() { return (current_bits & MaskShaderID) >> ShiftShaderID; }
 		u16									GetRenderTarget() { return (current_bits & MaskRenderTargetID) >> ShiftRenderTargetID; }
@@ -551,15 +551,6 @@ NOINLINE void GL::SetState(u32 bits, u32 force_change) {
 		auto id = (bits & GL::State::MaskRenderTargetID) >> GL::State::ShiftRenderTargetID;
 		auto fbo = id < g_state.num_textures ? g_state.texture_state[id].fbo : 0;
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		GLsizei width, height;
-		if (fbo) {
-			width = g_state.texture_state[id].width;
-			height = g_state.texture_state[id].height;
-		} else {
-			width = Sys::g_window.width;
-			height = Sys::g_window.height;
-		}
-		glViewport(0, 0, width, height);
 	}
 
 	if (changed_bits & GL::State::MaskShaderID) {
@@ -624,10 +615,29 @@ FORCEINLINE void Gfx::SetShader(Shader::ID id) {
 	GL::ChangeState(bits, State::MaskShaderIDAndState);
 }
 
-FORCEINLINE void Gfx::SetRenderTarget(Texture::ID id) {
+NOINLINE void Gfx::SetRenderTarget(Texture::ID id, const IRect* viewport) {
 	using namespace GL;
 	u32 bits = id << GL::State::ShiftRenderTargetID;
 	GL::ChangeState(bits, State::MaskRenderTargetID);
+
+	IRect full;
+	if (!viewport) {
+		full.x = 0;
+		full.y = 0;
+
+		auto fbo = id < g_state.num_textures ? g_state.texture_state[id].fbo : 0;
+		if (fbo) {
+			full.w = g_state.texture_state[id].width;
+			full.h = g_state.texture_state[id].height;
+		} else {
+			full.w = Sys::g_window.width;
+			full.h = Sys::g_window.height;
+		}
+
+		viewport = &full;
+	}
+
+	glViewport(viewport->x, viewport->y, viewport->w, viewport->h);
 }
 
 ////////////////////////////////////////////////////////////////

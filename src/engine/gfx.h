@@ -233,7 +233,7 @@ namespace Gfx {
 	void ReadBack(Texture::ID id, void* pixels);
 	bool SaveTGA(const char* path, const u32* pixels, u16 width, u16 height);
 	
-	void SetRenderTarget(Texture::ID id);
+	void SetRenderTarget(Texture::ID id, const IRect* viewport = nullptr);
 	void SetShader(Shader::ID id);
 	void UpdateUniforms();
 	
