@@ -182,7 +182,9 @@ void Demo::Player::Update(const u8* keys, float dt) {
 			velocity.x += wishdir.x * accel_speed;
 			velocity.y += wishdir.y * accel_speed;
 		}
-		if (!ground)
+		
+		// apply gravity if airborne or on a very steep slope
+		if (!ground || ground->z < 0.6875f) // 0.707
 			velocity.z -= g_gravity.value * dt;
 	}
 

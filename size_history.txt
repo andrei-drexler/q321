@@ -567,3 +567,4 @@
 26150,optional viewport in gfx::setrendertarget
 26151,tweaked gfx::setrendertarget
 26177,tweaked jumping code
+26196,slide off steep slopes
