@@ -210,14 +210,10 @@ void Demo::Player::Update(const u8* keys, float dt) {
 
 			case Entity::Type::trigger_push: {
 				if (target) {
-					vec3 target_pos;
-					target_pos[0] = target->origin[0];
-					target_pos[1] = target->origin[1];
-					target_pos[2] = target->origin[2] + SpawnOffset;
-					float height = target_pos.z - position.z;
+					float height = target->origin[2] - position[2] + SpawnOffset;
 					float time = sqrt(height / (0.5f * g_gravity.value));
-					velocity[0] = (target_pos[0] - position[0]) / time;
-					velocity[1] = (target_pos[1] - position[1]) / time;
+					velocity[0] = (target->origin[0] - position[0]) / time;
+					velocity[1] = (target->origin[1] - position[1]) / time;
 					velocity[2] = time * g_gravity.value;
 				}
 				break;
