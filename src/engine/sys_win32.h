@@ -647,9 +647,13 @@ FORCEINLINE int Sys::RunApplication() {
 }
 
 FORCEINLINE void Sys::GetKeyboardState(u8* state) {
-	::GetKeyboardState(state);
-	for (u16 i = 0; i < 256; ++i)
-		state[i] = state[i] >> 7;
+	if (g_window.flags & Window::Flags::Active) {
+		::GetKeyboardState(state);
+		for (u16 i = 0; i < 256; ++i)
+			state[i] = state[i] >> 7;
+	} else {
+		MemSet(state, 0, sizeof(state[0]) * 256);
+	}
 }
 
 ////////////////////////////////////////////////////////////////

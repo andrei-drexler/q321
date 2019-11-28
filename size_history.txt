@@ -563,3 +563,4 @@
 26176,more accurate friction/accel
 26122,tweaked map sky brushes/fall triggers
 26097,simplified acceleration
+26098,clear keyboard state when inactive
