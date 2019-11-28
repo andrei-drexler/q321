@@ -199,7 +199,7 @@ namespace Demo {
 		g_map.TraceRay(trace);
 		
 		// never step up when you still have up velocity
-		if (player.velocity.z > 0.f && (trace.fraction == 1.f || trace.hit_normal.z < 0.7f))
+		if (player.velocity.z > 0.f && (trace.fraction == 1.f || trace.hit_normal.z < 0.71875f)) // 0.7
 			return;
 #endif
 

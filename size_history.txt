@@ -571,3 +571,4 @@
 26187,tweaked slope threshold
 26301,keep sky/nodrop brushes
 26295,invisible sky
+26258,tweaked slope constant
