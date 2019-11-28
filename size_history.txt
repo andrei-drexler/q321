@@ -568,3 +568,4 @@
 26151,tweaked gfx::setrendertarget
 26177,tweaked jumping code
 26196,slide off steep slopes
+26187,tweaked slope threshold
