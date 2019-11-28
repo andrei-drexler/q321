@@ -118,7 +118,7 @@
 	x("sfx/diamond2cjumppad",				dmnd2cjp_m,		dmnd2cjp,	Solid,		Opaque|NeedsUV,			(200,100,0))\
 	x("sfx/launchpad_diamond",				Lmapped,		lpdmnd,		Solid,		Opaque|NeedsUV,			(0))\
 	x("base_wall/main_q3abanner",			q3bnr_m,		q3bnr,		Solid,		Opaque|NeedsUV,			(20,2,0,0))\
-	x("skies/blacksky",						Generic,		White,		Solid,		Sky,					(0))\
+	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
 	x("sfx/beam",							beam,			White,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("common/weapclip",					Generic,		White,		Solid,		Invisible,				(0))\
 	x("common/clip",						Generic,		White,		Solid,		Invisible,				(0))\

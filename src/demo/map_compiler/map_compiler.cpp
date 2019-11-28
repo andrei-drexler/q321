@@ -1822,7 +1822,7 @@ bool CompileMap(Map& map, const Options& options) {
 		SortMaterialsByUsage(map, options);
 
 	auto shader_props = GetShaderProperties(map, options);
-	RemoveSkyNodropBrushes(map, shader_props.data());
+	//RemoveSkyNodropBrushes(map, shader_props.data());
 	map.ComputeBounds();
 
 	InsertMissingAxialPlanes(map);
