@@ -1,12 +1,12 @@
-#include "common.h"
+#include "../common.h"
 #include "../../demo/resource_def.h"
 #include "../../demo/material.h"
 #include "../../demo/entity.h"
 #include "q3map.h"
-#include "print_array.h"
+#include "../print_array.h"
 #include "export_obj.h"
 #include "export_map.h"
-#include "rect_packer.h"
+#include "../rect_packer.h"
 
 #include <cstdarg>
 
