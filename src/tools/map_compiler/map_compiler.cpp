@@ -30,8 +30,8 @@ struct Options {
 	};
 
 	const char*	map_name			= "dm17.map";
-	const char* map_path			= "../data/q3dm17sample.map";
-	const char* out_path			= "../cooked/dm17.h";
+	const char* map_path			= "../../demo/data/q3dm17sample.map";
+	const char* out_path			= "../../demo/cooked/dm17.h";
 
 	UVSort		sort_uv				= UVSort::ByMapOrder;
 	Snap		snap;
