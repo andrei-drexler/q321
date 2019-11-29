@@ -15,8 +15,11 @@ namespace Demo {
 
 	bool GroundTrace(Player& player) {
 		Map::TraceInfo trace;
-		trace.SetCollision(player.position, {0.f, 0.f, -0.5f}, Player::CollisionBounds);
+		trace.start = player.position;
 		trace.start.z -= Player::EyeCenterOffset;
+		trace.delta.z = -0.5f;
+		trace.box_half_size = Player::CollisionBounds;
+		trace.type = Map::TraceType::Collision;
 		trace.max_touch_ents = Player::MaxTouchEnts;
 		trace.touch_ents = player.touch_ents;
 
