@@ -1890,8 +1890,8 @@ bool CompileMap(Map& map, const Options& options) {
 
 int main() {
 	Options options;
-	options.map_path			= "../data/q3dm17sample.map";
-	options.out_path			= "../cooked/dm17.h";
+	options.map_path			= "../../demo/data/q3dm17sample.map";
+	options.out_path			= "../../demo/cooked/dm17.h";
 	options.map_name			= "dm17";
 	options.snap.uv_angle		= 1.f;
 	options.snap.uv_offset		= 4.f;
