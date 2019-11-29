@@ -202,7 +202,7 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	/* move */
 	float prev_z_speed = velocity.z;
 	if (length_squared(velocity) < 1.f) {
-		velocity = 0.f;
+		MemSet(&velocity);
 	} else {
 		shadow_angle = atan2(velocity.y, velocity.x);
 		StepSlideMove(*this, dt);
@@ -293,7 +293,7 @@ NOINLINE void Demo::Player::Spawn() {
 	angles.x = spawn.w;
 	angles.y = 0.f;
 	angles.z = 0.f;
-	velocity = 0.f;
+	MemSet(&velocity);
 	step = 16.f;
 	land_time = 0.f;
 	health = 100;

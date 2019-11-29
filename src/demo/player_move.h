@@ -88,7 +88,7 @@ namespace Demo {
 
 			if (num_planes >= MaxClipPlanes) {
 				// this shouldn't really happen
-				player.velocity = 0.f;
+				MemSet(&player.velocity);
 				return true;
 			}
 
@@ -108,7 +108,7 @@ namespace Demo {
 			planes[num_planes++] = trace.hit_normal;
 			if (num_planes == MaxClipPlanes) {
 				// this shouldn't really happen
-				player.velocity = 0.f;
+				MemSet(&player.velocity);
 				return true;
 			}
 
@@ -160,7 +160,7 @@ namespace Demo {
 						}
 
 						// stop dead at a triple plane interaction
-						player.velocity = 0.f;
+						MemSet(&player.velocity);
 						return true;
 					}
 				}

@@ -577,3 +577,4 @@
 26335,player shadow
 26330,tweaked shadow shader code
 26328,tweaked player shadow angle update
+26252,zero out vectors with memset
