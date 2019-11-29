@@ -142,11 +142,18 @@ void Demo::Player::Update(const u8* keys, float dt) {
 
 	/* movement input */
 	float yaw = angles.x * Math::DEG2RAD;
-	vec2 forward, right;
+	vec3 forward, right;
 	right.x = cos(yaw);
 	right.y = sin(yaw);
+	right.z = 0.f;
 	forward.x = -right.y;
 	forward.y = right.x;
+	forward.z = 0.f;
+
+	if (ground) {
+		ClipVelocity(right, ground->xyz);
+		ClipVelocity(forward, ground->xyz);
+	}
 
 	vec3 cmd;
 	cmd.y = float(Has(Input::MoveForward) - Has(Input::MoveBack));
@@ -167,25 +174,27 @@ void Demo::Player::Update(const u8* keys, float dt) {
 
 	/* accelerate */
 	{
-		vec2 wishdir;
+		vec3 wishdir;
 		wishdir.x = cmd.x * right.x + cmd.y * forward.x;
 		wishdir.y = cmd.x * right.y + cmd.y * forward.y;
+		wishdir.z = cmd.x * right.z + cmd.y * forward.z;
 		float scale = length(cmd.xy);
 		if (scale > 0.f)
 			wishdir /= scale;
 
 		float wish_speed = MoveSpeed * run;
-		float current_speed = dot(velocity.xy, wishdir);
+		float current_speed = dot(velocity, wishdir);
 		float add_speed = wish_speed - current_speed;
 		if (add_speed > 0.f) {
 			float accel = ground ? GroundAccel : AirAccel;
 			float accel_speed = min(add_speed, accel * dt * wish_speed);
 			velocity.x += wishdir.x * accel_speed;
 			velocity.y += wishdir.y * accel_speed;
+			velocity.z += wishdir.z * accel_speed;
 		}
 		
 		// apply gravity if airborne or on a very steep slope
-		if (!ground || ground->z < 0.71875f) // 0.707
+		if (!ground || ground->z < 0.5f)
 			velocity.z -= g_gravity.value * dt;
 	}
 
