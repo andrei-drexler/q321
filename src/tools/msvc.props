@@ -6,6 +6,10 @@
     <OutDir>$(SolutionDir)output\$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>..\..\..\output\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemGroup />
 </Project>
