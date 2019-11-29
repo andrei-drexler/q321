@@ -8,8 +8,6 @@
 #include "export_map.h"
 #include "../rect_packer.h"
 
-#include <cstdarg>
-
 using namespace Q3;
 
 #define INDENT "   "
