@@ -278,7 +278,7 @@ bool Gfx::SaveTGA(const char* path, const u32* pixels, u16 width, u16 height) {
 		return false;
 
 	TGA::Header header;
-	MemSet(&header, 0, sizeof(header));
+	MemSet(&header);
 
 	header.colorBits = 32;
 	header.imageType = TGA::Uncompressed;

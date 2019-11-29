@@ -131,7 +131,7 @@ NOINLINE void Demo::Texture::GenerateAll() {
 	for (u16 i = 0; i < 2; ++i) {
 		const u32 WhiteTextureSize = Descriptors[Texture::White].width * Descriptors[Texture::White].height;
 		u32 white[WhiteTextureSize];
-		MemSet(white, 255 >> i, sizeof(white));
+		MemSet(white, 255 >> i, WhiteTextureSize);
 		Gfx::SetTextureContents(Texture::White + i, white);
 		Gfx::GenerateMipMaps(Texture::White + i);
 	}

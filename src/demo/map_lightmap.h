@@ -48,8 +48,8 @@ FORCEINLINE void Map::InitLightmap() {
 	lightmap.pos = Mem::Alloc<vec3>(Lightmap::Width * Lightmap::Height);
 	lightmap.nor = Mem::Alloc<vec3>(Lightmap::Width * Lightmap::Height);
 
-	MemSet(lightmap.pos, 0, sizeof(vec3) * Lightmap::Width * Lightmap::Height);
-	MemSet(lightmap.nor, 0, sizeof(vec3) * Lightmap::Width * Lightmap::Height);
+	MemSet(lightmap.pos, 0, Lightmap::Width * Lightmap::Height);
+	MemSet(lightmap.nor, 0, Lightmap::Width * Lightmap::Height);
 
 	lightmap.packer.Init(Lightmap::Width, Lightmap::Height);
 

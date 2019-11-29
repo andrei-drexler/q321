@@ -468,7 +468,7 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 	const u32 MAX_GLYPH_SIZE = 64 * 64;
 	u8 buffer[MAX_GLYPH_SIZE];
 
-	MemSet(glyphs, 0, sizeof(Font::Glyph) * Font::Glyph::Count);
+	MemSet(glyphs, 0, Font::Glyph::Count);
 
 	for (u16 c = Font::Glyph::Begin; c < Font::Glyph::End; ++c) {
 		GLYPHMETRICS metrics;
@@ -652,7 +652,7 @@ FORCEINLINE void Sys::GetKeyboardState(u8* state) {
 		for (u16 i = 0; i < 256; ++i)
 			state[i] = state[i] >> 7;
 	} else {
-		MemSet(state, 0, sizeof(state[0]) * 256);
+		MemSet(state, 0, 256);
 	}
 }
 

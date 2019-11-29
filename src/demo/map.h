@@ -353,7 +353,7 @@ struct Map {
 		u16					num_touch_ents;
 
 		TraceInfo() {
-			MemSet(this, 0, sizeof(*this));
+			MemSet(this);
 		}
 
 		void				SetBullet(const vec3& a, const vec3& b);
