@@ -10,36 +10,6 @@
 
 #include <cstdarg>
 
-////////////////////////////////////////////////////////////////
-
-#ifdef _WIN32
-	#define WIN32_LEAN_AND_MEAN
-	#define WIN32_EXTRA_LEAN
-	#define NOMINMAX
-	#define _WIN32_WINNT 0x0603
-	#include <Windows.h>
-
-	void DebugPrint(const char* format, ...) {
-		char buf[8192];
-
-		va_list args;
-		va_start(args, format);
-		vsnprintf(buf, std::size(buf), format, args);
-		va_end(args);
-	
-		buf[std::size(buf)-1] = 0;
-		
-		OutputDebugStringA(buf);
-	}
-#else
-	void DebugPrint(const char* format, ...) {
-		va_list args;
-		va_start(args, format);
-		vfprintf(stderr, format, args);
-		va_end(args);
-	}
-#endif
-
 using namespace Q3;
 
 #define INDENT "   "
@@ -82,31 +52,6 @@ struct Options {
 	bool		verbose				= false;
 
 };
-
-////////////////////////////////////////////////////////////////
-
-bool ReadFile(const char* file_name, std::vector<char>& contents) {
-	contents.clear();
-
-	FILE* file = fopen(file_name, "rb");
-	if (!file) {
-		fprintf(stderr, "ERROR: Could not open file '%s'.\n", file_name);
-		return false;
-	}
-	auto close_file = scope_exit { fclose(file); file = NULL; };
-
-	fseek(file, 0, SEEK_END);
-	auto file_size = ftell(file);
-	fseek(file, 0, SEEK_SET);
-
-	contents.resize(file_size);
-	if (!fread(contents.data(), file_size, 1, file)) {
-		fprintf(stderr, "ERROR: Could not read file '%s'.\n", file_name);
-		return false;
-	}
-
-	return true;
-}
 
 ////////////////////////////////////////////////////////////////
 
