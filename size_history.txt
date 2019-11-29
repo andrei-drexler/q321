@@ -579,3 +579,4 @@
 26328,tweaked player shadow angle update
 26252,zero out vectors with memset
 26374,slope movement tweaks
+26371,unconditional ground trace after slidemove

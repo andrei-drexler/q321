@@ -216,6 +216,7 @@ void Demo::Player::Update(const u8* keys, float dt) {
 		shadow_angle = atan2(velocity.y, velocity.x);
 		StepSlideMove(*this, dt);
 	}
+	GroundTrace(*this);
 
 	/* land */
 	if (prev_z_speed < -JumpSpeed && velocity.z > -1.f) {

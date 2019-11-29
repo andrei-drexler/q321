@@ -229,7 +229,5 @@ namespace Demo {
 		float delta = player.position.z - pos.z;
 		if (delta > 0.5f)
 			player.step += delta;
-
-		GroundTrace(player);
 	}
 } // namespace Demo
