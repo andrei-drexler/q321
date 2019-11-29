@@ -26,7 +26,7 @@
     <ClInclude Include="..\..\engine\common.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\material.h">
+    <ClInclude Include="..\..\demo\material.h">
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="parse.h" />
