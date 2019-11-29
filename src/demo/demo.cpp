@@ -76,6 +76,7 @@ namespace Demo {
 		vec3				angles;
 		float				fov;
 		float				time;
+		float				shadow_angle;
 		Gfx::Texture::ID	render_target;
 	};
 
@@ -103,7 +104,7 @@ namespace Demo {
 		MakePerspective(fov, 2.f, 8192.f, projection);
 		Uniform::MVP = projection * ToYUp * rotation * translation;
 		Uniform::Cam.xyz = frame.pos;
-		Uniform::Cam.w = 1.f;
+		Uniform::Cam.w = frame.shadow_angle;
 
 		Gfx::SetRenderTarget(frame.render_target);
 		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
@@ -116,6 +117,7 @@ namespace Demo {
 			{296.f, -22.f, 0.f},
 			90.f,
 			3.f,
+			0.f,
 			Demo::Texture::Levelshot
 		};
 		RenderWorld(levelshot);
@@ -187,6 +189,7 @@ namespace Demo {
 		frame.angles		= g_player.angles;
 		frame.fov			= cl_fov.value;
 		frame.time			= g_time - g_load_time;
+		frame.shadow_angle	= g_player.shadow_angle;
 		frame.render_target	= Gfx::Backbuffer;
 
 		RenderWorld(frame);

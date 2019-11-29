@@ -1,4 +1,4 @@
-uniform vec4 Time;
+uniform vec4 Time, Cam;
 uniform sampler2D Texture0, Texture1;
 
 in vec3 Pos, Nor, Ref;
@@ -472,7 +472,11 @@ vec3 hsv(vec3 c) {
 }
 
 vec3 Light() {
-	return texture(Texture1, LUV).xyz * 2.;
+    vec3 d = Cam.xyz - Pos;
+    float
+        b = FBMT(d.xy/256.*rot(Cam.w), vec2(3), .9, 3., 4),
+        l = 1. - ls(14., -6., length(d.xy) - b * 8.) * ls(128., 48., d.z) * step(.1, Nor.z);
+    return texture(Texture1, LUV).xyz * 2. * l;
 }
 
 // $protect ^void[ \t]+([_a-zA-Z][_a-zA-Z0-9]*)\(\)
