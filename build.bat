@@ -55,11 +55,10 @@ set obj_folder=!out_folder!obj\
 if not exist "!obj_folder!" md "!obj_folder!"
 set obj_files=
 for %%f in (src\demo\*.cpp) do (
-	set obj=!obj_folder!%%~nf.obj
 	:: https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-alphabetically
- 	cl /c %%f /std:c++latest /Oi /arch:IA32 /QIfist /W1 /Zc:wchar_t /Zi /Gm- /O2 /Oy /GS- /Zc:inline /fp:fast /D "NDEBUG" /errorReport:prompt /GF /WX- /Zc:forScope /Gs65536 /GR- /Gr /Gw /MD /FC /nologo /diagnostics:classic /Fo!obj!
+ 	cl /std:c++latest /Oi /arch:IA32 /QIfist /W1 /Zc:wchar_t /Zi /Gm- /O2 /Oy /GS- /Zc:inline /fp:fast /D "NDEBUG" /errorReport:prompt /GF /WX- /Zc:forScope /Gs65536 /GR- /Gr /Gw /MD /FC /nologo /diagnostics:classic /Fo!obj_folder! /c %%f
 	if ERRORLEVEL 1 goto clerror
-	set obj_files=!obj_files! !obj!
+	set obj_files=!obj_files! !obj_folder!%%~nf.obj
 )
 
 %crinkler% /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /CRINKLER /TRUNCATEFLOATS /COMPMODE:%mode% /SATURATE /NOINITIALIZERS /TRANSFORM:CALLS %obj_files% %libs% %range_libs% /REPORT:!out_folder!report.html /NODEFAULTLIB /OUT:%exe_path%

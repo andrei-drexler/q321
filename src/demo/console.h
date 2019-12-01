@@ -18,8 +18,8 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 	
 	namespace Console {
-		#define PP_CVAR_ADD_NAME(name, init)		#name ## "\0"
-		#define PP_CVAR_ADD_INIT(name, init)		#init ## "\0"
+		#define PP_CVAR_ADD_NAME(name, init)		#name "\0"
+		#define PP_CVAR_ADD_INIT(name, init)		#init "\0"
 		#define PP_CVAR_COUNT(name, init)			+1
 		
 		static constexpr char	CvarNames[]			= CVAR_LIST(PP_CVAR_ADD_NAME) "\0";

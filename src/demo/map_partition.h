@@ -3,14 +3,14 @@
 ////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Map::TraceInfo::SetBullet(const vec3& a, const vec3& b) {
-	MemCopy(&start, &a);
-	MemCopy(&delta, &(b - a));
+	start = a;
+	delta = b - a;
 	type = Type::Bullet;
 }
 
 FORCEINLINE void Map::TraceInfo::SetLightmap(const vec3& a, const vec3& b) {
-	MemCopy(&start, &a);
-	MemCopy(&delta, &(b - a));
+	start = a;
+	delta = b - a;
 	type = Type::Lightmap;
 }
 

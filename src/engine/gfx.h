@@ -75,7 +75,7 @@ namespace Gfx {
 	}
 
 	#define PP_GFX_DECLARE_UNIFORM_VARIABLE(name, type)			type name;
-	#define PP_GFX_UNIFORM_NAME(name, type)						#name ## "\0"
+	#define PP_GFX_UNIFORM_NAME(name, type)						#name "\0"
 	#define PP_GFX_UNIFORM_ADDRESS(name, type)					&name,
 	#define PP_GFX_UNIFORM_TYPE(name, type)						Gfx::Uniform::TypeToEnum<decltype(name)>::value,
 		
@@ -84,7 +84,7 @@ namespace Gfx {
 			list(PP_GFX_DECLARE_UNIFORM_VARIABLE)											\
 		}																					\
 		namespace Metadata {																\
-			static constexpr char Names[] =	list(PP_GFX_UNIFORM_NAME) ## "\0";				\
+			static constexpr char Names[] =	list(PP_GFX_UNIFORM_NAME) "\0";					\
 			static constexpr Gfx::Uniform::Type Types[] = { list(PP_GFX_UNIFORM_TYPE) };	\
 			static constexpr void const* Addresses[] = { list(PP_GFX_UNIFORM_ADDRESS) };	\
 			enum { Count = size(Addresses) };												\
