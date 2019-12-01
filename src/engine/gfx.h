@@ -84,7 +84,7 @@ namespace Gfx {
 			list(PP_GFX_DECLARE_UNIFORM_VARIABLE)											\
 		}																					\
 		namespace Metadata {																\
-			static constexpr char Names[] =	list(PP_GFX_UNIFORM_NAME) "\0";					\
+			static constexpr char Names[] =	list(PP_GFX_UNIFORM_NAME);						\
 			static constexpr Gfx::Uniform::Type Types[] = { list(PP_GFX_UNIFORM_TYPE) };	\
 			static constexpr void const* Addresses[] = { list(PP_GFX_UNIFORM_ADDRESS) };	\
 			enum { Count = size(Addresses) };												\
@@ -195,7 +195,7 @@ namespace Gfx {
 			Count,																					\
 		};																							\
 		namespace Metadata {																		\
-			static constexpr char Names[] =	list(PP_GFX_SHADER_NAME) "\0";							\
+			static constexpr char Names[] =	list(PP_GFX_SHADER_NAME);								\
 			static constexpr Gfx::Shader::Flags Properties[] = {									\
 				list(PP_GFX_SHADER_FLAGS)															\
 			};																						\

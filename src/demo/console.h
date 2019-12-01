@@ -22,8 +22,8 @@ namespace Demo {
 		#define PP_CVAR_ADD_INIT(name, init)		#init "\0"
 		#define PP_CVAR_COUNT(name, init)			+1
 		
-		static constexpr char	CvarNames[]			= CVAR_LIST(PP_CVAR_ADD_NAME) "\0";
-		static constexpr char	CvarInit[]			= CVAR_LIST(PP_CVAR_ADD_INIT) "\0";
+		static constexpr char	CvarNames[]			= CVAR_LIST(PP_CVAR_ADD_NAME);
+		static constexpr char	CvarInit[]			= CVAR_LIST(PP_CVAR_ADD_INIT);
 		enum { NumCvars = CVAR_LIST(PP_CVAR_COUNT) };
 
 		#undef PP_CVAR_ADD_NAME

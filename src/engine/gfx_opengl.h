@@ -107,7 +107,7 @@ using GLintptr = iptr;
 
 namespace GL {
 	constexpr u32 NumFunctions = GL_FUNCTIONS(PP_COUNT_FUNC) 0;
-	constexpr const char* FunctionNames = GL_FUNCTIONS(PP_APPEND_FUNC_NAME) "\0";
+	constexpr const char* FunctionNames = GL_FUNCTIONS(PP_APPEND_FUNC_NAME);
 }
 
 static union {
@@ -373,7 +373,7 @@ FORCEINLINE void Gfx::RegisterShaders(const char* names, const Shader::Flags* fl
 #if 0
 		{
 			#define PP_ADD_GFX_ATTRIB_SHADER_NAME(name, type)	"v" ## #name ## "\0"
-			static constexpr char AttributeNames[] = GFX_VERTEX_ATTRIBUTES(PP_ADD_GFX_ATTRIB_SHADER_NAME) "\0";
+			static constexpr char AttributeNames[] = GFX_VERTEX_ATTRIBUTES(PP_ADD_GFX_ATTRIB_SHADER_NAME);
 			#undef PP_ADD_GFX_ATTRIB_SHADER_NAME
 
 			GLuint index = 0;
