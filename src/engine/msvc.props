@@ -21,7 +21,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <MapExports>true</MapExports>
-      <StackCommitSize>16384</StackCommitSize>
+      <StackCommitSize>1048576</StackCommitSize>
+      <StackReserveSize>1048576</StackReserveSize>
     </Link>
     <ClCompile>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -37,7 +38,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <AdditionalOptions>/QIfist /Gs65536 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/QIfist /Gs1048576 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
