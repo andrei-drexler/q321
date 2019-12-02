@@ -8,6 +8,7 @@ namespace Demo {
 			TurnSpeed		= 90.f,
 			TeleportSpeed	= 400.f,
 			JumpSpeed		= 270.f,
+			LandSpeed		= 200.f,
 			StopSpeed		= 100.f,
 
 			GroundAccel		= 10.f,
@@ -219,8 +220,8 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	GroundTrace(*this);
 
 	/* land */
-	if (prev_z_speed < -JumpSpeed && velocity.z > -1.f) {
-		float severity = (velocity.z - prev_z_speed) / JumpSpeed;
+	if (prev_z_speed < -LandSpeed && velocity.z > -1.f) {
+		float severity = (velocity.z - prev_z_speed) / LandSpeed;
 		if (severity >= 1.f) {
 			if (severity > 3.f)
 				severity = 3.f;
