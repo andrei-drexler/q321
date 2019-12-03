@@ -583,3 +583,4 @@
 26346,tweaked ground trace setup
 26337,removed extraneous nul terminators
 26339,lowered landing speed threshold
+26345,movement/spawn tweaks

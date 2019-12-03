@@ -125,8 +125,19 @@ void Demo::Player::Update(const u8* keys, float dt) {
 		if (keys[i])
 			Set(KeyBindings[i]);
 
-	if (!(inputs & (InputMask(Input::MoveUp) | InputMask(Input::MoveDown))))
+	const u32 MaskJump = InputMask(Input::MoveUp);
+	const u32 MaskCrouch = InputMask(Input::MoveDown);
+	if (inputs & MaskJump) {
+		if (flags & NoJump) {
+			inputs &= ~(MaskJump | MaskCrouch);
+		} else if (ground) {
+			ground = nullptr;
+			velocity.z += JumpSpeed;
+			flags |= NoJump;
+		}
+	} else {
 		flags &= ~NoJump;
+	}
 
 	float run = 1.f - 0.5f * Has(Input::Run);
 
@@ -151,11 +162,6 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	forward.y = right.x;
 	forward.z = 0.f;
 
-	if (ground) {
-		ClipVelocity(right, ground->xyz);
-		ClipVelocity(forward, ground->xyz);
-	}
-
 	vec3 cmd;
 	cmd.y = float(Has(Input::MoveForward) - Has(Input::MoveBack));
 	cmd.x = float(Has(Input::MoveRight) - Has(Input::MoveLeft));
@@ -163,6 +169,9 @@ void Demo::Player::Update(const u8* keys, float dt) {
 
 	/* apply friction */
 	if (ground) {
+		ClipVelocity(right, ground->xyz);
+		ClipVelocity(forward, ground->xyz);
+
 		vec2 vel = velocity.xy;
 		float speed = length(vel);
 		if (speed < 1.f) {
@@ -197,12 +206,6 @@ void Demo::Player::Update(const u8* keys, float dt) {
 		// apply gravity if airborne or on a very steep slope
 		if (!ground || ground->z < 0.5f)
 			velocity.z -= g_gravity.value * dt;
-	}
-
-	if (ground && cmd.z > 0.f && !(flags & NoJump)) {
-		ground = nullptr;
-		velocity.z += JumpSpeed;
-		flags |= NoJump;
 	}
 
 	/* animate stair-stepping & landing */
@@ -296,17 +299,15 @@ NOINLINE void Demo::Player::Spawn() {
 		}
 	}
 
+	MemSet(this);
+
 	assert(num_spawn_points > 0);
 	u32 index = Random() % num_spawn_points;
 	auto& spawn = spawn_points[index];
 
 	position = spawn.xyz;
 	angles.x = spawn.w;
-	angles.y = 0.f;
-	angles.z = 0.f;
-	MemSet(&velocity);
 	step = 16.f;
-	land_time = 0.f;
 	health = 100;
 	flags = Flag::NoJump;
 }

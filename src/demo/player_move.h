@@ -180,7 +180,6 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	void StepSlideMove(Player& player, float dt) {
-		GroundTrace(player);
 		if (player.ground && player.velocity.z <= 0.f) {
 			ClipVelocity(player.velocity, player.ground->xyz);
 		}
