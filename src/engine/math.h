@@ -744,7 +744,7 @@ NOINLINE void MakeRotation(const vec3& angles, mat3& out) {
 }
 
 FORCEINLINE void MakePerspective(vec2 fov, float znear, float zfar, mat4& out) {
-	out = o4x4;
+	MemSet(&out);
 
 	float zrange = zfar - znear;
 	for (u32 i=0; i<2; ++i)
