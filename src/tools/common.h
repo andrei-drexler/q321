@@ -102,6 +102,86 @@ bool ReadFile(const char* file_name, std::vector<char>& contents) {
 
 ////////////////////////////////////////////////////////////////
 
+string_view ExtractFileName(string_view path) {
+	auto i = path.rfind('/');
+	if (i != path.npos)
+		path.remove_prefix(i + 1);
+	i = path.rfind('\\');
+	if (i != path.npos)
+		path.remove_prefix(i + 1);
+	
+	i = path.find('.');
+	if (i != path.npos)
+		path.remove_suffix(path.size() - i);
+	
+	return path;
+}
+
+////////////////////////////////////////////////////////////////
+
+void Snap(float& value, float inc) {
+	value = round(value / inc) * inc;
+}
+
+void RemoveNegativeZero(float& value) {
+	if (value == -0.f)
+		value = 0.f;
+}
+
+void SnapMantissa(float& value, int bits) {
+	u32& v = *reinterpret_cast<u32*>(&value);
+	u32 mask = (1 << bits) - 1;
+	v = (v + (mask >> 1)) & ~mask;
+}
+
+// Morton order ////////////////////////////////////////////////
+
+/*
+.F.E.D.C.B.A.9.8.7.6.5.4.3.2.1.0	0x55555555
+..FE..DC..BA..98..76..54..32..10	0x33333333
+....FEDC....BA98....7654....3210	0x0F0F0F0F
+........FEDCBA98........76543210	0x00FF00FF
+................FEDCBA9876543210	0x0000FFFF
+*/
+
+// interleaves zeroes between the bits of the supplied number
+inline constexpr u32 Spread2(u32 x) {
+	x &= 0x0000FFFF;
+	x = (x ^ (x << 8)) & 0x00FF00FF;
+	x = (x ^ (x << 4)) & 0x0F0F0F0F;
+	x = (x ^ (x << 2)) & 0x33333333;
+	x = (x ^ (x << 1)) & 0x55555555;
+	return x;
+}
+
+// interleaves the low 16 bits of the two numbers
+inline constexpr u32 Interleave2(u32 lo, u32 hi) {
+	return Spread2(lo) | (Spread2(hi) << 1);
+}
+
+/*
+......................9876543210
+............98765..........43210
+........987....65......432....10
+......98..7....65....43..2....10
+....9..8..7..6..5..4..3..2..1..0
+*/
+
+inline constexpr u32 Spread3(u32 x) {
+	x &= 1023;
+	x = (x ^ (x << 10)) & 0xF801F;
+	x = (x ^ (x <<  4)) & 0xE181C3;
+	x = (x ^ (x <<  2)) & 0x3218643;
+	x = (x ^ (x <<  2)) & 0x9249249;
+	return x;
+}
+
+inline constexpr u32 Interleave3(u32 x, u32 y, u32 z) {
+	return Spread3(x) | (Spread3(y) << 1) | (Spread3(z) << 2);
+}
+
+////////////////////////////////////////////////////////////////
+
 template <typename Signature>
 class Function;
 

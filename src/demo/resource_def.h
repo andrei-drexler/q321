@@ -129,6 +129,20 @@
 
 ////////////////////////////////////////////////////////////////
 
+#define DEMO_MODELS(x)\
+	x(mega_cross)\
+	x(small_cross)\
+	x(ammo)\
+	x(shard)\
+	x(quad)\
+	x(armor_red)\
+	x(machinegun_barrel)\
+	x(railgun)\
+	x(rocketl)\
+	x(shotgun)\
+
+////////////////////////////////////////////////////////////////
+
 #define DEMO_UNIFORMS(x)\
 	/*Name,					Type*/\
 	x(Texture0,				Gfx::Texture::ID)\

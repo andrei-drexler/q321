@@ -585,3 +585,14 @@
 26339,lowered landing speed threshold
 26345,movement/spawn tweaks
 26333,tweaked makeperspective
+36543,basic model export
+35360,morton order model verts
+35225,sorted model tris
+35394,magnitude/sign pos encoding
+35323,mag/sign + sort by center offset
+35171,mag/sign + sort y by center offset/xz by offset
+34741,sorted individual tris
+35070,preserve winding
+35185,sorted uvs
+34567,8-bit uvs instead of 10
+34287,7-bit uvs

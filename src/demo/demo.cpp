@@ -4,6 +4,7 @@
 #include "gfx_resources.h"
 #include "map.h"
 #include "cooked/dm17.h"
+#include "cooked/models.h"
 #include "player.h"
 
 ////////////////////////////////////////////////////////////////
@@ -308,6 +309,9 @@ int FORCEINLINE demo_main() {
 	Demo::UpdateWindowIcon();
 
 	auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), src, sizeof(src)); };
+	#define PP_DEMO_MODEL_TOUCH(name)	touch(name::vertices); touch(name::uvs); touch(name::indices);
+	DEMO_MODELS(PP_DEMO_MODEL_TOUCH)
+	#undef PP_DEMO_MODEL_TOUCH
 
 	g_map.Load(dm17::map);
 	g_map.UpdateLightmapTexture();
