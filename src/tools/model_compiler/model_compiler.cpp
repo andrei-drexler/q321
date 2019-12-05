@@ -257,6 +257,8 @@ void SortVertices(MD3::Header& model, const Options& options) {
 }
 
 void SortIndices(MD3::Header& model, const Options& options) {
+	printf(INDENT "Sorting indices\n");
+
 	auto* surf = model.GetSurfaces();
 	for (u32 i = 0; i < model.num_surfaces; ++i, surf = surf->GetNext()) {
 		auto* tris = surf->GetTris();
