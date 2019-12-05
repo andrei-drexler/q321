@@ -596,3 +596,4 @@
 35185,sorted uvs
 34567,8-bit uvs instead of 10
 34287,7-bit uvs
+34288,fixed jump velocity

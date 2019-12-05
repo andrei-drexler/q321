@@ -129,10 +129,11 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	const u32 MaskCrouch = InputMask(Input::MoveDown);
 	if (inputs & MaskJump) {
 		if (flags & NoJump) {
+			// prevent speed loss
 			inputs &= ~(MaskJump | MaskCrouch);
 		} else if (ground) {
 			ground = nullptr;
-			velocity.z += JumpSpeed;
+			velocity.z = JumpSpeed;
 			flags |= NoJump;
 		}
 	} else {
