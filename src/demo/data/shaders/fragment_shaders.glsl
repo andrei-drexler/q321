@@ -474,7 +474,7 @@ vec3 hsv(vec3 c) {
 vec3 Light() {
     vec3 d = Cam.xyz - Pos;
     float
-        b = FBMT(d.xy/256.*rot(Cam.w), vec2(3), .9, 3., 4),
+        b = FBMT(d.xy/256.*rot(Cam.w), vec2(3), .7, 3., 4),
         l = 1. - ls(14., -6., length(d.xy) - b * 8.) * ls(128., 48., d.z) * step(.1, Nor.z);
     return texture(Texture1, LUV).xyz * 2. * l;
 }
