@@ -598,3 +598,4 @@
 34287,7-bit uvs
 34288,fixed jump velocity
 34290,tweaked player shadow
+34258,simplified landing code

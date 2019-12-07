@@ -224,14 +224,12 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	GroundTrace(*this);
 
 	/* land */
-	if (prev_z_speed < -LandSpeed && velocity.z > -1.f) {
-		float severity = (velocity.z - prev_z_speed) / LandSpeed;
-		if (severity >= 1.f) {
-			if (severity > 3.f)
-				severity = 3.f;
-			land_change = severity * 8.f;
-			land_time = LandTime;
-		}
+	if (prev_z_speed < -LandSpeed && ground) {
+		float severity = prev_z_speed / (-LandSpeed / 8.f);
+		if (severity > 24.f)
+			severity = 24.f;
+		land_change = severity;
+		land_time = LandTime;
 	}
 
 	/* touch entities */
