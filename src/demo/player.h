@@ -60,6 +60,7 @@ namespace Demo {
 		vec3			position;
 		vec3			velocity;
 		float			step;
+		float			walk_cycle;
 		float			land_change;
 		float			land_time;
 		float			shadow_angle;
@@ -180,6 +181,7 @@ void Demo::Player::Update(const u8* keys, float dt) {
 		} else {
 			float drop = max(speed, StopSpeed) * Friction * dt;
 			velocity.xy *= max(0.f, speed - drop) / speed;
+			walk_cycle += dt;
 		}
 	}
 
@@ -230,6 +232,7 @@ void Demo::Player::Update(const u8* keys, float dt) {
 			severity = 24.f;
 		land_change = severity;
 		land_time = LandTime;
+		walk_cycle = 0.f;
 	}
 
 	/* touch entities */

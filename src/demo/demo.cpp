@@ -187,7 +187,10 @@ namespace Demo {
 			frame.pos.z -= land_frac * g_player.land_change;
 		}
 
+		float speed = length(g_player.velocity.xy);
+
 		frame.angles		= g_player.angles;
+		frame.angles.z		+= speed / (g_player.MoveSpeed * 2.f) * sin(g_player.walk_cycle * 9.5f);
 		frame.fov			= cl_fov.value;
 		frame.time			= g_time - g_load_time;
 		frame.shadow_angle	= g_player.shadow_angle;
