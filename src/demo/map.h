@@ -342,8 +342,9 @@ struct Map {
 		vec3				start;
 		vec3				delta;
 		vec3				box_half_size;
-		float				fraction;
 		Type				type;
+		float				z_offset;
+		float				fraction;
 		i16					plane;
 		bool				start_solid;
 		vec3				hit_point;

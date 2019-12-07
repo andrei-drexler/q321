@@ -599,3 +599,4 @@
 34288,fixed jump velocity
 34290,tweaked player shadow
 34258,simplified landing code
+34232,simplified collision trace eye offset handling

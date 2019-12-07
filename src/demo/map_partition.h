@@ -272,7 +272,9 @@ NOINLINE bool Map::TraceRay(TraceInfo& trace) const {
 	trace.plane = -1;
 
 	float travel = length(trace.delta);
+	trace.start.z -= trace.z_offset;
 	bool result = TraceRayStep(trace, 0, 0.f, 1.f);
+	trace.start.z += trace.z_offset;
 	trace.start_solid = trace.fraction < 0.f;
 	if (trace.start_solid)
 		trace.fraction = 0.f;

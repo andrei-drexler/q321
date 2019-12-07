@@ -16,7 +16,7 @@ namespace Demo {
 	bool GroundTrace(Player& player) {
 		Map::TraceInfo trace;
 		trace.start = player.position;
-		trace.start.z -= Player::EyeCenterOffset;
+		trace.z_offset = Player::EyeCenterOffset;
 		trace.delta.z = -0.5f;
 		trace.box_half_size = Player::CollisionBounds;
 		trace.type = Map::TraceType::Collision;
@@ -24,7 +24,6 @@ namespace Demo {
 		trace.touch_ents = player.touch_ents;
 
 		bool hit = g_map.TraceRay(trace);
-		trace.hit_point.z += Player::EyeCenterOffset;
 		if (hit) {
 			player.ground = g_map.brushes.planes + trace.plane;
 		} else {
@@ -68,10 +67,9 @@ namespace Demo {
 
 			Map::TraceInfo trace;
 			trace.SetCollision(player.position, advance, Player::CollisionBounds);
-			trace.start.z -= Player::EyeCenterOffset;
+			trace.z_offset = Player::EyeCenterOffset;
 
 			bool hit = g_map.TraceRay(trace);
-			trace.hit_point.z += Player::EyeCenterOffset;
 
 			if (trace.fraction > 0.f) {
 				// actually covered some distance
@@ -196,7 +194,7 @@ namespace Demo {
 		Map::TraceInfo trace;
 
 		trace.start = pos;
-		trace.start.z -= Player::EyeCenterOffset;
+		trace.z_offset = Player::EyeCenterOffset;
 		trace.delta.z = -StepSize;
 		trace.box_half_size = Player::CollisionBounds;
 		trace.type = Map::TraceInfo::Type::Collision;
@@ -208,7 +206,6 @@ namespace Demo {
 
 		trace.delta.z = StepSize;
 		g_map.TraceRay(trace);
-		trace.hit_point.z += Player::EyeCenterOffset;
 		if (trace.fraction < 1.f)
 			return;
 
@@ -217,10 +214,8 @@ namespace Demo {
 		SlideMove(player, dt);
 
 		trace.start = player.position;
-		trace.start.z -= Player::EyeCenterOffset;
 		trace.delta.z = -StepSize;
 		g_map.TraceRay(trace);
-		trace.hit_point.z += Player::EyeCenterOffset;
 		if (trace.fraction > 0.f) {
 			player.position = trace.hit_point;
 		}
