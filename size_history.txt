@@ -601,3 +601,6 @@
 34258,simplified landing code
 34232,simplified collision trace eye offset handling
 34279,added view bobbing
+34289,more accurate bobbing
+34290,bithack abs for bobbing pitch
+34289,undo

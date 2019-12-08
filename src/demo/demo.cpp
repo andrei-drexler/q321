@@ -188,9 +188,12 @@ namespace Demo {
 		}
 
 		float speed = length(g_player.velocity.xy);
+		float bob = speed / 640.f * sin(g_player.walk_cycle * 10.f);
+		float bob_pitch = bob;
 
 		frame.angles		= g_player.angles;
-		frame.angles.z		+= speed / (g_player.MoveSpeed * 2.f) * sin(g_player.walk_cycle * 9.5f);
+		frame.angles.y		-= abs(bob);
+		frame.angles.z		+= bob;
 		frame.fov			= cl_fov.value;
 		frame.time			= g_time - g_load_time;
 		frame.shadow_angle	= g_player.shadow_angle;
