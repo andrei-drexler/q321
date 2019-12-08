@@ -205,10 +205,6 @@ void Demo::Player::Update(const u8* keys, float dt) {
 			velocity.y += wishdir.y * accel_speed;
 			velocity.z += wishdir.z * accel_speed;
 		}
-		
-		// apply gravity if airborne or on a very steep slope
-		if (!ground || ground->z < 0.5f)
-			velocity.z -= g_gravity.value * dt;
 	}
 
 	/* animate stair-stepping & landing */

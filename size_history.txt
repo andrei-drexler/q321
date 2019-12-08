@@ -604,3 +604,4 @@
 34289,more accurate bobbing
 34290,bithack abs for bobbing pitch
 34289,undo
+34449,more accurate gravity handling

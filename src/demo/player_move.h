@@ -43,9 +43,19 @@ namespace Demo {
 			return false;
 		}
 
+		// apply gravity if airborne or on a very steep slope
+		bool gravity = !player.ground || player.ground->z < 0.5f;
+
 		const u8 MaxClipPlanes = 5;
-		vec3 planes[MaxClipPlanes];
+		vec3 planes[MaxClipPlanes], end_velocity;
 		u8 num_planes, bump, i;
+
+		end_velocity = player.velocity;
+		if (gravity) {
+			float delta = g_gravity.value * dt;
+			player.velocity.z -= delta * 0.5f;
+			end_velocity.z -= delta;
+		}
 
 		// never turn against the ground plane
 		if (player.ground) {
@@ -125,9 +135,11 @@ namespace Demo {
 				}
 
 				vec3 clip_velocity = player.velocity;
+				vec3 end_clip_velocity = end_velocity;
 
 				// slide along the plane
 				ClipVelocity(clip_velocity, planes[i]);
+				ClipVelocity(end_clip_velocity, planes[i]);
 
 				// see if there is a second plane that the new move enters
 				for (u8 j = 0; j < num_planes; ++j) {
@@ -141,6 +153,7 @@ namespace Demo {
 
 					// try clipping the move to the plane
 					ClipVelocity(clip_velocity, planes[j]);
+					ClipVelocity(end_clip_velocity, planes[j]);
 
 					// see if it goes back into the first clip plane
 					if (dot(clip_velocity, planes[i]) >= 0.f)
@@ -148,7 +161,10 @@ namespace Demo {
 
 					// slide the original velocity along the crease
 					safe_normalize(cross(planes[i], planes[j]), clip_velocity);
+					end_clip_velocity = clip_velocity;
+
 					clip_velocity *= dot(clip_velocity, player.velocity);
+					end_clip_velocity *= dot(end_clip_velocity, end_velocity);
 
 					// see if there is a third plane that the new move enters
 					for (u8 k = 0; k < num_planes; ++k) {
@@ -168,9 +184,13 @@ namespace Demo {
 
 				// if we have fixed all interactions, try another move
 				player.velocity = clip_velocity;
+				end_velocity = end_clip_velocity;
 				break;
 			}
 		}
+
+		if (gravity)
+			player.velocity = end_velocity;
 
 		return bump != 0;
 	}
