@@ -205,9 +205,9 @@ namespace Demo {
 		vec3 pos = player.position;
 		vec3 vel = player.velocity;
 
-		if (!SlideMove(player, dt) || !player.ground)
+		if (!SlideMove(player, dt))
 			return;
-		
+
 		const float StepSize = 18.f;
 
 		// zeroed out in constructor

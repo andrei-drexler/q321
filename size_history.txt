@@ -605,3 +605,4 @@
 34290,bithack abs for bobbing pitch
 34289,undo
 34449,more accurate gravity handling
+34451,allow stepping up when close to ground but not touching
