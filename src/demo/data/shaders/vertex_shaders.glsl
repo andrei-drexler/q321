@@ -61,6 +61,7 @@ void Loading() { FS(); }
 void Lmapped() { Generic(); }
 void mtlfw15ow_m() { Generic(); }
 void dmnd2cjp_m() { Generic(); }
+void lpdmnd_m() { Generic(); }
 void fixture() { Generic(); }
 void beam() { Generic(); }
 void q3bnr_m() { Generic(); }

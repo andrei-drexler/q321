@@ -540,9 +540,36 @@ TEX(dmnd2cjp) {
     return c;
 }
 
-TEX(lpdmnd) {
-	vec3 c = dmnd2c(uv);
-	return c;
+TEXA(lpdmnd) {
+    float b = FBMT(uv, vec2(5), .9, 3.), t, o;
+    vec3 c = dmnd2c(uv);
+    vec2 u = uv;
+    u.y = min(u.y, .4);
+    t = length(u - vec2(.5, .4)) - (.18 - .06 * ls(.4, 1., uv.y));
+    t = max(t, uv.y - .96);
+    o = abs(t - .07 + uv.y * .04) - .07;
+    o = max(o, uv.y - 1.02 + abs(u.x - .5) * .4);
+    o = max(o, uv.y - .96);
+    c = mix(c, vec3(.5, .45, .44) - uv.y * .3 + b * .4, msk(o));
+    c *= 1. - .8 * tri(.0, .015, o);
+    o = abs(t - .02) - .03;
+    o = max(o, uv.y - 1.02 + abs(u.x - .5) * .4);
+    o = max(o, uv.y - .96);
+    c = mix(c, vec3(.9, .9, .83) - uv.y * .3, tri(-.01, .02, o));
+    c = mix(c, vec3(.2 * b + .1), msk(t, .01));
+    return vec4(c, msk(t + .05, .1));
+}
+
+void lpdmnd_m() {
+	vec4 c = texture(Texture0, UV, -.5);
+    vec2 u = fract(UV);
+    u.x = abs(.5 - u.x);
+    float l =
+        ls(.03, .01, abs(fract(u.y + u.x * .5 - Time.x) - .1)) *
+        ls(.12, .1, u.x) * ls(.37, .3, abs(u.y - .6)),
+        r = length(u - vec2(0, .4));
+    l += fract(.1 - Time.x) * pow(max(0., 1.02 - r), 8.) * c.w;
+	FCol = vec4(c.xyz * Light() + RGB(120, 65, 3) * l, 1);
 }
 
 TEX(mtlfw10) {
