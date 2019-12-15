@@ -611,3 +611,4 @@
 34815,sfx/launchpad_diamond
 34916,basic sfx/pentfloor_diamond2c
 34920,more irregular pentagram
+34919,flipped pentagram
