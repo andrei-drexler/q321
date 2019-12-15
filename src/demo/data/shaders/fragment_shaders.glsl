@@ -522,12 +522,12 @@ TEX(dmnd2cow) {
 TEXA(dmnd2pnt) {
     vec3 c = dmnd2cow(uv);
     uv = fract(uv) - .5;
-    float d = abs(length(uv) - .4), i = 0.;
+    float b = FBMT(uv, vec2(3), .9, 3.), d = abs(length(uv) - .4), i = 0.;
     for (/**/; i < 360.; i += 72.) {
         vec2 p = vec2(0, .35) * rot(i);
         d = min(d, length(uv - seg(uv, p, p * rot(144.))));
     }
-    return vec4(c, msk(d - .015));
+    return vec4(c, msk(d - .02 + b * .02, .01));
 }
 
 void dmnd2pnt_m() {
