@@ -551,37 +551,42 @@ TEXA(lpdmnd) {
     u.x = abs(uv.x - .5);
     u.y = min(uv.y, .4);
     r = length(u - vec2(0, .4)) - (.18 - .06 * ls(.4, 1., uv.y));
-    t = max(r, uv.y - .96);
-    o = abs(t - .07 + uv.y * .04) - .07;
-    o = max(o, uv.y - 1.02 + u.x * .4);
-    o = max(o, uv.y - .96);
-    k = box(v = rot(45.) * (u - vec2(.21)), vec2(.08, .06)) - .03;
-    o = min(o, k);
+    k = .25
+        - .15 * ls(.9, .96, uv.y)
+        + .03 * sqr(ls(.82, .86, uv.y))
+        + .07 * ls(.8, .2, uv.y)
+        + .07 * sqr(ls(.35, .22, uv.y))
+        - .07 * ls(.22, .0, uv.y);
+    o = box(uv - vec2(.5, .5), vec2(k, .46));
+    o = max(o, -box(u, vec2(.15, .03)) + .06);
     c = mix(c, vec3(.6, .55, .55) - uv.y * .3 + b * .2, msk(o));
     c *= 1. - .7 * tri(.0, .013, o);
+    c *= 1. - (r / .5 - .1) * msk(o);
+    t = max(r, uv.y - .96);
     o = abs(t - .02) - .03;
     o = max(o, uv.y - 1. + u.x * .5);
     o = max(o, uv.y - .96);
     c = mix(c, vec3(1, 1, .9) - uv.y * .55, tri(-.01, .01, o));
     c = mix(c, vec3(.2 * b + .1), msk(t, .01));
-    c *= 1. - .2 * tri(.0, .1, t) * msk(o);
-    c *= 1. - (r / .3 - .5) * msk(k + .01, .02);
+    c *= 1. - .2 * tri(.0, .05, t) * msk(o);
     v = knob(u = uv - vec2(.5, .4), .02);
-    c *= 1. + .5 * tri(.03, .01, length(u));
+    c *= 1. + RGB(111, 80, 70) * tri(.03, .01, length(u));
+    //c *= 1. - ls(.04, .02, length(u)) * clamp(u.y / .02, -1., 1.);
     c *= 1. - .5 * tri(.02, .01, length(u));
-    c = mix(c, vec3(v.x * .5 + .2), v.y);
-    return vec4(c, msk(t - .03, .03));
+    c = mix(c, RGB(111, 66, 44) * (v.x * 1.5 + .2), v.y);
+    return vec4(c, msk(t - .03, .02));
 }
 
 void lpdmnd_m() {
 	vec4 c = texture(Texture0, UV, -.5);
-    vec2 u = fract(UV);
-    u.x = abs(.5 - u.x);
-    float l =
-        ls(.03, .01, abs(fract(u.y + u.x * .5 - Time.x) - .1)) *
-        ls(.12, .1, u.x) * ls(.37, .3, abs(u.y - .6)),
-        r = length(u - vec2(0, .4));
-    l += fract(.1 - Time.x) * pow(max(0., 1. - r), 4.) * c.w;
+    vec2 uv = fract(UV);
+    uv.x = abs(.5 - uv.x);
+    float
+        t = fract(-Time.x),
+        r = length(uv - vec2(0, .4)),
+    	l = t * pow(max(0., 1. - r), 4.) * c.w;
+   	if (t > .75)
+    	l += ls(.03, .01, abs(fract(uv.y + uv.x * .5 + t * 2.) - .45)) * ls(.1, .08, uv.x);
 	FCol = vec4(c.xyz * Light() + RGB(180, 150, 5) * l, 1);
 }
 
