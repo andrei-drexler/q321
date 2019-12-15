@@ -128,7 +128,8 @@ for (var srcIndex in srcPaths) {
 			'location','main','if','else','for','while','do','switch','case','default','break','continue','return','discard',
 			'texture','textureLod','textureProj','texelFetch','textureGrad','textureSize','floor','round','fract','mod','sin','asin','cos',
 			'acos','tan','atan','radians','degrees','mix','smoothstep','step','abs','max','min','clamp','reflect','normalize','length','sqrt',
-			'pow','dot','fwidth','dFdx','dFdy','any','all','not','equal','notEqual','lessThan','lessThanEqual','greaterThan','greaterThanEqual',
+			'pow','exp','exp2','log','log2','dot','fwidth','dFdx','dFdy',
+			'any','all','not','equal','notEqual','lessThan','lessThanEqual','greaterThan','greaterThanEqual',
 			'gl_Position','gl_FragCoord',
 		];
 		
