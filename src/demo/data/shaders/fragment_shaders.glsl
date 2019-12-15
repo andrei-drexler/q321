@@ -519,6 +519,22 @@ TEX(dmnd2cow) {
 	return c;
 }
 
+TEXA(dmnd2pnt) {
+    vec3 c = dmnd2cow(uv);
+    uv = fract(uv) - .5;
+    float d = abs(length(uv) - .4), i = 0.;
+    for (/**/; i < 360.; i += 72.) {
+        vec2 p = vec2(0, .35) * rot(i);
+        d = min(d, length(uv - seg(uv, p, p * rot(144.))));
+    }
+    return vec4(c, msk(d - .015));
+}
+
+void dmnd2pnt_m() {
+	vec4 c = texture(Texture0, UV, -.5);
+    FCol = vec4(c.xyz * Light() + RGB(111, 55, 0) * c.w * (sin(Time.x * PI) * .5 + .5), 1);
+}
+
 TEX(dmnd2cjp) {
     float b = FBMT(uv, vec2(7), .9, 3., 4);
 	vec3 c = dmnd2c(uv);

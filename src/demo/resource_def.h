@@ -29,6 +29,8 @@
 	x(ptrshn,				FSVertexBits)\
 	x(dmnd2c,				FSVertexBits)\
 	x(dmnd2cow,				FSVertexBits)\
+	x(dmnd2pnt,				FSVertexBits)\
+	x(dmnd2pnt_m,			MapVertexBits)\
 	x(mtlfw10,				FSVertexBits)\
 	x(mtlfw15,				FSVertexBits)\
 	x(mtlfw15ow,			FSVertexBits)\
@@ -64,6 +66,7 @@
 	x(Font,			Gfx::InvalidID,		512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2c,		Shader::dmnd2c,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2cow,		Shader::dmnd2cow,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(dmnd2pnt,		Shader::dmnd2pnt,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(cmet52,		Shader::cmet52,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(ptrshn,		Shader::ptrshn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2cjp,		Shader::dmnd2cjp,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -101,7 +104,7 @@
 	x("base_trim/pewter_shiney",			shiny,			ptrshn,		Solid,		Opaque,					(0))\
 	x("base_floor/diamond2c",				Lmapped,		dmnd2c,		Solid,		Opaque,					(0))\
 	x("base_floor/diamond2c_ow",			Lmapped,		dmnd2cow,	Solid,		Opaque|NeedsUV,			(0))\
-	x("sfx/pentfloor_diamond2c",			Lmapped,		dmnd2cow,	Solid,		Opaque|NeedsUV,			(0))\
+	x("sfx/pentfloor_diamond2c",			dmnd2pnt_m,		dmnd2pnt,	Solid,		Opaque|NeedsUV,			(0))\
 	x("base_wall/metalfloor_wall_10",		Lmapped,		mtlfw10,	Solid,		Opaque,					(0))\
 	x("base_wall/metalfloor_wall_15",		Lmapped,		mtlfw15,	Solid,		Opaque|NeedsUV,			(0))\
 	x("base_wall/metalfloor_wall_15ow",		mtlfw15ow_m,	mtlfw15ow,	Solid,		Opaque|NeedsUV,			(0))\

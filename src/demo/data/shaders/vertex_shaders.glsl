@@ -39,6 +39,7 @@ void cmet52() { FS(); }
 void dmnd2c() { FS(); }
 void dmnd2cow() { FS(); }
 void dmnd2cjp() { FS(); }
+void dmnd2pnt() { FS(); }
 void lpdmnd() { FS(); }
 void ptrshn() { FS(); }
 void mtlfw10() { FS(); }
@@ -61,6 +62,7 @@ void Loading() { FS(); }
 void Lmapped() { Generic(); }
 void mtlfw15ow_m() { Generic(); }
 void dmnd2cjp_m() { Generic(); }
+void dmnd2pnt_m() { Generic(); }
 void lpdmnd_m() { Generic(); }
 void fixture() { Generic(); }
 void beam() { Generic(); }
