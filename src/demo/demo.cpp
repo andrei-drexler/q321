@@ -105,7 +105,7 @@ namespace Demo {
 		MakePerspective(fov, 2.f, 8192.f, projection);
 		Uniform::MVP = projection * ToYUp * rotation * translation;
 		Uniform::Cam.xyz = frame.pos;
-		Uniform::Cam.w = frame.shadow_angle;
+		Uniform::Cam.w = frame.shadow_angle * RAD2DEG;
 
 		Gfx::SetRenderTarget(frame.render_target);
 		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);

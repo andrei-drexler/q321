@@ -607,3 +607,4 @@
 34449,more accurate gravity handling
 34451,allow stepping up when close to ground but not touching
 34653,some sfx/launchpad_diamond work
+34775,more sfx/launchpad_diamond work
