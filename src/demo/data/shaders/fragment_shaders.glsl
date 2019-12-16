@@ -62,11 +62,11 @@ float sum(vec2 v) {
 ////////////////////////////////////////////////////////////////
 
 float tri(float center, float max_dist, float x) {
-	return 1. - clamp(abs(x - center) / max_dist, 0., 1.);
+	return 1. - sat(abs(x - center) / max_dist);
 }
 
 float ls(float lo, float hi, float x) {
-	return clamp((x - lo) / (hi - lo), 0., 1.);
+	return sat((x - lo) / (hi - lo));
 }
 
 ////////////////////////////////////////////////////////////////
@@ -326,7 +326,7 @@ float FBMT(vec2 p, vec2 scale, float gain, float lac) {
 
 vec2 seg(vec2 p, vec2 a, vec2 b) {
     vec2 ab = b-a, ap = p-a;
-    float t = clamp(dot(ap, ab)/dot(ab, ab), 0., 1.);
+    float t = sat(dot(ap, ab)/dot(ab, ab));
     return ab*t + a;
 }
 
@@ -350,7 +350,7 @@ float elips(vec2 p, vec2 r) {
 // polynomial smooth min
 // http://www.iquilezles.org/www/articles/smin/smin.htm
 float smin(float a, float b, float k) {
-    float h = clamp(.5 + 0.5 * (b - a) / k, .0, 1.);
+    float h = sat(.5 + 0.5 * (b - a) / k);
     return mix(b, a, h) - k * h * (1. - h);
 }
 
@@ -360,11 +360,11 @@ vec2 grad(float x) {
 }
 
 float msk(float s, float d) {
-	return clamp(1. - s/d, 0., 1.);
+	return sat(1. - s/d);
 }
 
 float msk(float s) {
-	return clamp(1. - s/fwidth(s), 0., 1.);
+	return sat(1. - s/fwidth(s));
 }
 
 vec2 mirr(vec2 v, float m) {
@@ -466,7 +466,7 @@ int dom(vec3 n) {
 
 // https://www.shadertoy.com/view/MsS3Wc
 vec3 hsv(vec3 c) {
-	vec3 rgb = clamp(abs(mod(c.x * 6. + vec3(0, 4, 2), 6.) - 3.) - 1., 0., 1.);
+	vec3 rgb = sat(abs(mod(c.x * 6. + vec3(0, 4, 2), 6.) - 3.) - 1.);
 	rgb *= rgb * (3. - 2. * rgb); // cubic smoothing	
 	return c.z * mix(vec3(1.), rgb, c.y);
 }
@@ -523,8 +523,8 @@ TEXA(dmnd2pnt) {
     vec3 c = dmnd2cow(uv);
     uv = fract(uv) - .5;
     float b = FBMT(uv, vec2(3), .9, 3.), d = abs(length(uv) - .4), i = 0.;
-    for (/**/; i < 360.; i += 72.) {
-        vec2 p = vec2(0, -.35) * rot(i);
+    for (/**/; i < 5.; ++i) {
+        vec2 p = vec2(0, -.35) * rot(i * 72.);
         d = min(d, length(uv - seg(uv, p, p * rot(144.))));
     }
     return vec4(c, msk(d - .02 + b * .02, .01));

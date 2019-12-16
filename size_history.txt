@@ -612,3 +612,5 @@
 34916,basic sfx/pentfloor_diamond2c
 34920,more irregular pentagram
 34919,flipped pentagram
+34917,minor sfx/launchpad_diamond tweak
+34903,sat instead of clamp(0,1)
