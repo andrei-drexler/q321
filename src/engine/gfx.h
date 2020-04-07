@@ -50,8 +50,6 @@ namespace Gfx {
 	////////////////////////////////////////////////////////////////
 
 	namespace Uniform {
-		using ID = Gfx::ID;
-
 		#define GFX_UNIFORM_TYPES(x)		\
 			x(Sampler,		Texture::ID)	\
 			x(Vec4,			vec4)			\
