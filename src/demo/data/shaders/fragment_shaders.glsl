@@ -531,7 +531,7 @@ TEXA(dmnd2pnt) {
 }
 
 void dmnd2pnt_m() {
-	vec4 c = texture(Texture0, UV, -.5);
+	vec4 c = texture(Texture0, UV);
     FCol = vec4(c.xyz * Light() + RGB(111, 55, 0) * c.w * (sin(Time.x * PI) * .5 + .5), 1);
 }
 
@@ -594,7 +594,7 @@ TEXA(lpdmnd) {
 }
 
 void lpdmnd_m() {
-	vec4 c = texture(Texture0, UV, -.5);
+	vec4 c = texture(Texture0, UV);
     vec2 uv = fract(UV);
     uv.x = abs(.5 - uv.x);
     float
@@ -642,7 +642,7 @@ TEXA(mtlfw15ow) {
 }
 
 void mtlfw15ow_m() {
-	vec4 c = texture(Texture0, UV, -.5);
+	vec4 c = texture(Texture0, UV);
 	FCol = vec4(c.xyz * Light() + tri(.5, .125, fract(UV.y * .5 + Time.x * .5)) * c.w * .3, 1);
 }
 
@@ -832,7 +832,7 @@ TEXA(q3bnr) {
 }
 
 void q3bnr_m() {
-	vec3 c = texture(Texture0, UV * 2., -.5).xyz * step(.5, fract(Time.x * .5));
+	vec3 c = texture(Texture0, UV * 2.).xyz * step(.5, fract(Time.x * .5));
 	c = mix(c * Light(), vec3(.5, 0, 0), tri(fract(Time.x * 2.), 1./64., fract(UV.y)));
 	FCol = vec4(c + env(Ref) * .25 + texture(Texture0, UV + H(Time.xx)).w * .1, 1);
 }
@@ -854,24 +854,24 @@ void Generic() {
 }
 
 void fixture() {
-	vec4 c = texture(Texture0, UV, -.5);
+	vec4 c = texture(Texture0, UV);
 	FCol = vec4(c.xyz * mix(Light(), vec3(1), c.w), 1);
 }
 
 void dmnd2cjp_m() {
-	vec4 c = texture(Texture0, UV, -.5);
+	vec4 c = texture(Texture0, UV);
     float r = length(fract(UV) - .5);
     float s = mix(.4, 8., fract(Time.x * 1.5));
 	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.37, .32, r), 1);
 }
 
 void Lmapped() {
-	vec3 c = texture(Texture0, UV, -.5).xyz;
+	vec3 c = texture(Texture0, UV).xyz;
 	FCol = vec4(c * Light(), 1);
 }
 
 void shiny() {
-	vec4 c = texture(Texture0, UV, -.5);
+	vec4 c = texture(Texture0, UV);
 	c.xyz *= 1. + c.w * env(Ref);
 	FCol = vec4(c.xyz * Light(), 1);
 }
