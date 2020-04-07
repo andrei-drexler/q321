@@ -615,3 +615,4 @@
 34917,minor sfx/launchpad_diamond tweak
 34903,sat instead of clamp(0,1)
 34894,pre-filled window class
+34871,optimized u16[2] copy

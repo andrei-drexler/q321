@@ -1,6 +1,6 @@
 #pragma once
 
-struct RectPacker {
+struct alignas(u32) RectPacker {
 	using Dimension			= u16;
 	using Index				= u16;
 	static const Index Full	= -1;

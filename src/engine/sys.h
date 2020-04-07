@@ -145,7 +145,7 @@ namespace Sys {
 			Italic		= 1 << 1,
 		};
 
-		struct Glyph {
+		struct alignas(u32) Glyph {
 			enum : u8 {
 				Begin	= 32,
 				End		= 128,

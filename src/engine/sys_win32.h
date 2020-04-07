@@ -501,8 +501,10 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 				}
 			}
 
-			g.box_min[0] = rect.min[0];
-			g.box_min[1] = rect.min[1];
+			static_assert(sizeof(g.box_min) == sizeof(u32));
+			static_assert(sizeof(rect.min) == sizeof(u32));
+
+			*(u32*)g.box_min = *(u32*)rect.min;
 			g.box_size[0] = rect.GetWidth();
 			g.box_size[1] = rect.GetHeight();
 			g.anchor[0] = metrics.gmptGlyphOrigin.x - Padding;
