@@ -263,16 +263,35 @@ public:
 	constexpr End				end() const							{ return m_end; }
 	constexpr bool				empty() const						{ return m_begin == m_end; }
 
-	constexpr decltype(auto)	front() const						{ return *m_begin; }
-	constexpr decltype(auto)	back() const						{ return *--End(m_end); }
+	constexpr decltype(auto)	front() const						{ assert(!empty()); return *m_begin; }
+	constexpr decltype(auto)	back() const						{ assert(!empty()); return *--End(m_end); }
 
-	constexpr decltype(auto)	operator[] (size_t index) const		{ return m_begin[index]; }
-	constexpr decltype(auto)	operator[] (size_t index)			{ return m_begin[index]; }
 	constexpr size_t			size() const						{ return m_end - m_begin; }
+	constexpr decltype(auto)	operator[] (size_t index) const		{ assert(index < size()); return m_begin[index]; }
+	constexpr decltype(auto)	operator[] (size_t index)			{ assert(index < size()); return m_begin[index]; }
 
 protected:
 	Begin						m_begin;
 	End							m_end;
+};
+
+////////////////////////////////////////////////////////////////
+template <typename T>
+class array_view : range<T*>
+////////////////////////////////////////////////////////////////
+{
+	using super = range<T*>;
+public:
+	constexpr array_view(T* begin, size_t count) :
+		super(begin, begin + count)
+	{ }
+
+	template <size_t Count>
+	constexpr array_view(T (&arr)[Count]) :
+		super(arr, arr + Count)
+	{ }
+
+	constexpr array_view() = default;
 };
 
 ////////////////////////////////////////////////////////////////
