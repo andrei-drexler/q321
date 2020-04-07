@@ -530,19 +530,34 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 	ExitProcess(code);
 }
 
-FORCEINLINE void* CreateSystemWindow(Sys::Window* window) {
-	const CHAR* ClassName		= window->title;
+namespace Win32 {
 	const DWORD WindowStyle		= WS_POPUP | WS_VISIBLE;
 	const DWORD WindowStyleEx	= 0;
+	const DWORD ClassStyle		= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+
+	static constexpr WNDCLASSEXA BaseWindowClass = {
+		sizeof(WNDCLASSEXA),	// UINT        cbSize;
+		ClassStyle,				// UINT        style;
+		&WndProc,				// WNDPROC     lpfnWndProc;
+		0,						// int         cbClsExtra;
+		sizeof(Sys::Window*),	// int         cbWndExtra;
+		NULL,					// HINSTANCE   hInstance;
+		NULL,					// HICON       hIcon;
+		NULL,					// HCURSOR     hCursor;
+		NULL,					// HBRUSH      hbrBackground;
+		NULL,					// LPCSTR      lpszMenuName;
+		NULL,					// LPCSTR      lpszClassName;
+		NULL,					// HICON       hIconSm;
+	};
+}
+
+FORCEINLINE void* CreateSystemWindow(Sys::Window* window) {
+	const CHAR* ClassName		= window->title;
 
 	HINSTANCE hInstance = GetModuleHandleA(NULL);
 
 	WNDCLASSEXA wndClassEx;
-	ZeroMemory(&wndClassEx, sizeof(wndClassEx));
-	wndClassEx.cbSize           = sizeof(wndClassEx);
-	wndClassEx.style            = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wndClassEx.lpfnWndProc      = &Win32::WndProc;
-	wndClassEx.cbWndExtra       = sizeof(window);
+	MemCopy(&wndClassEx, &Win32::BaseWindowClass);
 	wndClassEx.hInstance        = hInstance;
 	wndClassEx.hCursor          = LoadCursor(NULL, IDC_ARROW);
 	wndClassEx.hbrBackground    = (HBRUSH)GetStockObject(BLACK_BRUSH);
@@ -563,7 +578,7 @@ FORCEINLINE void* CreateSystemWindow(Sys::Window* window) {
 	window->width = rect.right - rect.left;
 	window->height = rect.bottom - rect.top;
 
-	auto handle = CreateWindowExA(WindowStyleEx, ClassName, window->title, WindowStyle,
+	auto handle = CreateWindowExA(Win32::WindowStyleEx, ClassName, window->title, Win32::WindowStyle,
 		rect.left, rect.top, rect.right-rect.left, rect.bottom-rect.top,
 		NULL, NULL, hInstance, window);
 

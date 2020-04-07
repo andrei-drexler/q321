@@ -614,3 +614,4 @@
 34919,flipped pentagram
 34917,minor sfx/launchpad_diamond tweak
 34903,sat instead of clamp(0,1)
+34894,pre-filled window class
