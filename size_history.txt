@@ -617,3 +617,4 @@
 34894,pre-filled window class
 34871,optimized u16[2] copy
 34867,removed texture lod bias
+34866,tweaked asymmetric blocks shader function

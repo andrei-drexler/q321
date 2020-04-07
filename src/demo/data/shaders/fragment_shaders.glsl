@@ -377,51 +377,49 @@ vec2 mirr(vec2 v, float m) {
 // https://www.shadertoy.com/view/Ws3GRs
 
 vec3 pattern(vec2 p, float sc, float bv) {
-    vec2 ip = floor(p*sc); 
+	vec2 ip = floor(p*sc), tileID = vec2(0);
 	p -= (ip + .5) / sc; 
-	vec3 e = vec3(-1, 0, 1); 
+	vec3 e = vec3(-1, 0, 1), r = vec3(1e5); 
 
-	float h11 = HT(ip, vec2(sc)) * .5;
-	float h10 = HT(ip + e.xy, vec2(sc)) * .5; 
-	float h01 = HT(ip + e.yz, vec2(sc)) * .5; 
-	float h12 = HT(ip + e.zy, vec2(sc)) * .5; 
-	float h21 = HT(ip + e.yx, vec2(sc)) * .5; 
-	float h00 = HT(ip + e.xz, vec2(sc)) * .5; 
-	float h02 = HT(ip + e.zz, vec2(sc)) * .5; 
-	float h22 = HT(ip + e.zx, vec2(sc)) * .5; 
-	float h20 = HT(ip + e.xx, vec2(sc)) * .5; 
+	float h11 = .5 * HT(ip + e.yy, vec2(sc));
+	float h10 = .5 * HT(ip + e.xy, vec2(sc));
+	float h01 = .5 * HT(ip + e.yz, vec2(sc));
+	float h12 = .5 * HT(ip + e.zy, vec2(sc));
+	float h21 = .5 * HT(ip + e.yx, vec2(sc));
+	float h00 = .5 * HT(ip + e.xz, vec2(sc));
+	float h02 = .5 * HT(ip + e.zz, vec2(sc));
+	float h22 = .5 * HT(ip + e.zx, vec2(sc));
+	float h20 = .5 * HT(ip + e.xx, vec2(sc));
 
 	vec2[4] ctr, l;
-	if(mod((ip.x + ip.y), 2.)<.5){ 
-		l[0] = vec2(h01 - h10, h00 - h11) + 1.;
-		l[1] = vec2(-h01 + h12, h02 - h11) + 1.;
-		l[2] = vec2(-h21 + h12, -h22 + h11) + 1.;
-		l[3] = vec2(h21 - h10, -h20 + h11) + 1.;
+	if (mod((ip.x + ip.y), 2.) < .5) { 
+		l[0] = 1. + vec2(h01 - h10, h00 - h11);
+		l[1] = 1. + vec2(-h01 + h12, h02 - h11);
+		l[2] = 1. + vec2(-h21 + h12, -h22 + h11);
+		l[3] = 1. + vec2(h21 - h10, -h20 + h11);
 		ctr[0] = vec2(h01, h11) + l[0]*vec2(-.5, .5);
 		ctr[1] = vec2(h01, h11) + l[1]*vec2(.5, .5);
 		ctr[2] = vec2(h21, h11) + l[2]*vec2(.5, -.5);
 		ctr[3] = vec2(h21, h11) + l[3]*vec2(-.5, -.5); 
 	} else { 
-		l[0] = vec2(-h00 + h11, h01 - h10) + 1.;
-		l[1] = vec2(h02 - h11, h01 - h12) + 1.;
-		l[2] = vec2(h22 - h11, -h21 + h12) + 1.;
-		l[3] = vec2(-h20 + h11, -h21 + h10) + 1.;
+		l[0] = 1. + vec2(-h00 + h11, h01 - h10);
+		l[1] = 1. + vec2(h02 - h11, h01 - h12);
+		l[2] = 1. + vec2(h22 - h11, -h21 + h12);
+		l[3] = 1. + vec2(-h20 + h11, -h21 + h10);
 		ctr[0] = vec2(h11, h10) + l[0]*vec2(-.5, .5);
 		ctr[1] = vec2(h11, h12) + l[1]*vec2(.5, .5);
 		ctr[2] = vec2(h11, h12) + l[2]*vec2(.5, -.5);
 		ctr[3] = vec2(h11, h10) + l[3]*vec2(-.5, -.5); 
 	}
-	float d = 1e5;
-	vec2 tileID = vec2(0);
-	for(int i = 0; i<4; i++){
+
+	for (int i=0; i<4; i++) {
 		l[i] /= sc;
 		float bx = box1(p - ctr[i]/sc, l[i]/2. - bv/sc);
-		if(bx<d) {
-			d = bx;
-			tileID = ip + ctr[i];
-		}
+		if (bx < r.x)
+			r = vec3(bx, ip + ctr[i]);
 	}
-	return vec3(d, tileID);
+
+	return r;
 }
 
 vec2 voro1(vec2 p, vec2 grid) {
