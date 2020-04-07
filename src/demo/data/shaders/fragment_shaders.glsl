@@ -377,9 +377,9 @@ vec2 mirr(vec2 v, float m) {
 // https://www.shadertoy.com/view/Ws3GRs
 
 vec3 pattern(vec2 p, float sc, float bv) {
-	vec2 ip = floor(p*sc), tileID = vec2(0);
+	vec3 e = vec3(-1, 0, 1), r = vec3(1e5);
+	vec2 ip = floor(p*sc), tileID = e.yy;
 	p -= (ip + .5) / sc; 
-	vec3 e = vec3(-1, 0, 1), r = vec3(1e5); 
 
 	float h11 = .5 * HT(ip + e.yy, vec2(sc));
 	float h10 = .5 * HT(ip + e.xy, vec2(sc));
