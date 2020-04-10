@@ -306,6 +306,8 @@ namespace Demo {
 ////////////////////////////////////////////////////////////////
 
 int FORCEINLINE demo_main() {
+	Sys::Printf("%s", "Starting up...\n");
+
 	Mem::Init();
 	Demo::Console::Init();
 	Sys::InitWindow(&Sys::g_window, Demo::HandleEvent, "Q320");

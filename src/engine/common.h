@@ -185,6 +185,56 @@ NOINLINE char* IntToString(i32 i, char* out) {
 	return out + count;
 }
 
+NOINLINE char* FloatToString(float f, char* out) {
+	u32 bits = *(u32*)&f;
+
+	if (bits & 0x8000'0000) {
+		bits ^= 0x8000'0000;
+		*out++ = '-';
+	}
+
+	i32 exp2		= i32((bits >> 23) & 0xFF) - 127;
+	u32 mantissa	= (bits & 0x00FF'FFFF) | 0x0080'0000;
+
+	if (exp2 >= 31) {
+		*out++ = 'I';
+		*out++ = 'N';
+		*out++ = 'F';
+		return out;
+	}
+
+	u32 int_part, frac_part;
+	if (exp2 >= 23) {
+		int_part = mantissa << (exp2 - 23);
+		frac_part = 0;
+	} else if (exp2 >= 0) {
+		int_part = mantissa >> (23 - exp2);
+		frac_part = (mantissa << (exp2 + 1)) & 0x00FF'FFFF;
+	} else if (exp2 >= -23) {
+		int_part = 0;
+		frac_part = (mantissa & 0x00FF'FFFF) >> -(exp2 + 1);
+	} else {
+		int_part = 0;
+		frac_part = 0;
+	}
+
+	out = IntToString(int_part, out);
+	*out++ = '.';
+
+	const u16 NumDecimals = 8;
+	for (u16 i = 0; i < NumDecimals; ++i) {
+		frac_part *= 10;
+		*out++ = '0' + (frac_part >> 24);
+		frac_part &= 0x00FF'FFFF;
+	}
+
+	*out = '\0';
+
+	return out;
+}
+
+////////////////////////////////////////////////////////////////
+
 NOINLINE constexpr const char* NextAfter(const char* multistr) {
 	if (*multistr) {
 		while (*multistr)

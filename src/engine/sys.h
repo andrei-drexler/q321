@@ -20,6 +20,13 @@ namespace Sys {
 	
 	void						Log(const char* text);
 	void						DebugLog(const char* text);
+
+	void						PrintfEx(const char* format, const void* const* args, size_t count);
+
+	template <typename... Args>
+	FORCEINLINE void			Printf(const char* format, const Args&... args) { const void* list[] = {&args...}; PrintfEx(format, list, sizeof...(Args)); }
+	FORCEINLINE void			Printf(const char* format) { Log(format); }
+
 	void						Breakpoint();
 
 	namespace details {
@@ -172,6 +179,51 @@ bool Sys::FileExists(const char* path) {
 		return false;
 	CloseFile(handle);
 	return true;
+}
+
+NOINLINE void Sys::PrintfEx(const char* format, const void* const* args, size_t count) {
+	const size_t BufferSize = 4096;
+	char buffer[BufferSize];
+
+	#define ARG_PTR(type)		(type const*)(*args++)
+	#define ARG(type)			(*ARG_PTR(type))
+
+	size_t write_cursor = 0;
+	while (*format) {
+		while (*format && write_cursor < BufferSize - 1 && *format != '%')
+			buffer[write_cursor++] = *format++;
+
+		if (write_cursor > 0) {
+			buffer[write_cursor] = '\0';
+			write_cursor = 0;
+			Log(buffer);
+		}
+		
+		if (*format == '%') {
+			++format;
+			if (*format == 'd') {
+				assert(count--);
+				IntToString(ARG(i32), buffer);
+				Log(buffer);
+			} else if (*format == 'f') {
+				assert(count--);
+				FloatToString(ARG(float), buffer);
+				Log(buffer);
+			} else if (*format == 's') {
+				assert(count--);
+				Log(ARG_PTR(char));
+			} else if (*format == '%') {
+				Log("%");
+			} else if (*format == '\0') {
+				Log("%");
+				break;
+			}
+			++format;
+		}
+	}
+
+	#undef ARG
+	#undef ARG_PTR
 }
 
 ////////////////////////////////////////////////////////////////
