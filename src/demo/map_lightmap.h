@@ -30,7 +30,7 @@ namespace Demo {
 		};
 		constexpr DebugMode Debug = DebugMode::Off;
 
-		constexpr u32 PackVec3(const vec3& v) {
+		u32 PackVec3(const vec3& v) {
 			return 
 				clamp((i32)floor(v.x * 255.f + 0.5f), 0, 255) << 16 |
 				clamp((i32)floor(v.y * 255.f + 0.5f), 0, 255) <<  8 |
