@@ -619,3 +619,4 @@
 34867,removed texture lod bias
 34866,tweaked asymmetric blocks shader function
 35175,added sys::printf
+35167,tweaked gfx::setrendertarget
