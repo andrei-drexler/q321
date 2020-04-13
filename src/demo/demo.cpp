@@ -280,6 +280,7 @@ namespace Demo {
 				float scale = (sensitivity.value * -90.f) / event.window->height;
 				g_player.angles.x += event.data.mouse_move.pt.x * scale;
 				g_player.angles.y += event.data.mouse_move.pt.y * scale;
+				g_player.angles.x = mod(g_player.angles.x, 360.f);
 				g_player.angles.y = clamp(g_player.angles.y, -85.f, 85.f);
 				return;
 			}

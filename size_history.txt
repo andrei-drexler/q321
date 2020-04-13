@@ -621,3 +621,4 @@
 35175,added sys::printf
 35167,tweaked gfx::setrendertarget
 35164,tweaked player angle update
+35213,wrap player yaw
