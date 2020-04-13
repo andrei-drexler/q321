@@ -69,7 +69,7 @@ namespace Math {
 			return f - floor(f);
 		}
 
-		inline float mod(float f, float interval) {
+		NOINLINE float mod(float f, float interval) {
 			return fract(f / interval) * interval;
 		}
 
