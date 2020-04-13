@@ -290,6 +290,7 @@ const i16 light_data[] = {-632,-1208,656,75,32767,-664,-1176,656,75,32767,-600,-
 const u8 num_spotlights = 0;
 
 static constexpr PackedMap map{
+    1, 64,
     entity_brushes, entity_data,
     world_bounds, brush_bounds,
     nonaxial_planes, nonaxial_counts,

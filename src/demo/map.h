@@ -35,6 +35,9 @@ struct PackedMap {
 	const float*		patch_vertices;
 	const i16*			light_data;
 
+	i8					symmetry_axis;
+	i16					symmetry_level;
+
 	template
 	<
 		int NumBrushEntities, int NumEntityDataEntries,
@@ -45,6 +48,8 @@ struct PackedMap {
 	>
 	constexpr PackedMap
 	(
+		i8								symmetry_axis,
+		i16								symmetry_level,
 		const u16	(&entity_brushes)	[NumBrushEntities],
 		const i16	(&entity_data)		[NumEntityDataEntries],
 		const i16	(&world_bounds)		[6],
@@ -82,7 +87,9 @@ struct PackedMap {
 		num_materials			(num_materials),
 		light_data				(light_data),
 		num_lights				((NumLightEntries - num_spotlights * 3) / 5),
-		num_spotlights			(num_spotlights)
+		num_spotlights			(num_spotlights),
+		symmetry_axis			(symmetry_axis),
+		symmetry_level			(symmetry_level)
 	{
 		static_assert(NumPlaneUVEntries == NumMaterialEntries);
 		static_assert(NumBrushBoundEntries / 6 == NumNonaxialEntries);
@@ -247,14 +254,10 @@ struct Map {
 		RecomputePlanes		= false,	// broken
 	};
 
-	// HACK: hardcoded! Should be read from packed map
-	enum {
-		use_symmetry		= true,
-		symmetry_level		= 64,
-		symmetry_axis		= 1,
-	};
-
 	u8						num_materials;
+	i8						symmetry_axis;
+	i16						symmetry_level;
+	bool					UseSymmetry() const { return u8(symmetry_axis) < 3; }
 
 	struct {
 		u32					count;
@@ -420,7 +423,7 @@ FORCEINLINE void Map::InitLights() {
 	for (u16 light_index = 0; light_index < source->num_lights; ++light_index) {
 		auto& light = lights[num_lights++];
 		source->GetLight(light_index, light);
-		if (use_symmetry && light.position[symmetry_axis] < symmetry_level - 1) {
+		if (UseSymmetry() && light.position[symmetry_axis] < symmetry_level - 1) {
 			auto& light2 = lights[num_lights++];
 			MemCopy(&light2, &light, sizeof(light));
 			light2.position[symmetry_axis] = 2.f * symmetry_level - light2.position[symmetry_axis];
@@ -508,6 +511,8 @@ FORCEINLINE void Map::InitEntities() {
 NOINLINE void Map::Load(const PackedMap& packed) {
 	source = &packed;
 	num_materials = packed.num_materials;
+	symmetry_axis = packed.symmetry_axis;
+	symmetry_level = packed.symmetry_level;
 
 	assert(num_materials <= Demo::Material::Count);
 
@@ -561,7 +566,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 			brush_bounds[1][1] = bounds_src[4] + brush_bounds[0][1];
 			brush_bounds[1][2] = bounds_src[5] + brush_bounds[0][2];
 
-			bool mirrored = use_symmetry && entity_index == 0 && brush_bounds[1][symmetry_axis] < symmetry_level + 1;
+			bool mirrored = UseSymmetry() && entity_index == 0 && brush_bounds[1][symmetry_axis] < symmetry_level + 1;
 
 			bounds_src += 6;
 

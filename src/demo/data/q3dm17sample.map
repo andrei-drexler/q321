@@ -5,6 +5,7 @@
 "classname" "worldspawn"
 "ambient" "7"
 "_color" ".9 .9 1"
+"_symmetry" "1 64"
 // brush 0
 {
 ( -102 -908 400 ) ( -102 -908 544 ) ( -102 -980 544 ) common/weapclip 4 0 0 0.500000 0.500000 0 0 0

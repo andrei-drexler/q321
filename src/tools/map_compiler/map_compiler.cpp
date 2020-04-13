@@ -43,10 +43,6 @@ struct Options {
 	bool		use_spotlights		= false;
 	bool		use_area_lights		= true;
 
-	i8			symmetry_axis		= -1;
-	float		symmetry_value		= 0.f;
-	bool		ForceSymmetry() const { return u8(symmetry_axis) < 3; }
-
 	bool		verbose				= false;
 
 };
@@ -189,21 +185,27 @@ std::vector<ShaderProperties> GetShaderProperties(Map& map, const Options& optio
 
 ////////////////////////////////////////////////////////////////
 
-void ExploitSymmetry(Map& map, const Options& options) {
-	if (!options.ForceSymmetry())
-		return;
+struct Symmetry {
+	i16 axis = -1;
+	i16 level = 0;
 
-	printf("Exploiting symmetry (%c axis / %g)\n", 'X' + options.symmetry_axis, options.symmetry_value);
+	constexpr explicit operator bool() const { return u16(axis) < 3; }
+};
 
+void ExploitSymmetry(Map& map, const Options& options, Symmetry& symmetry) {
 	auto& world = map.World();
+	auto text = world.GetProperty("_symmetry"sv);
+	if (!ParseValue(text, symmetry.axis) || symmetry.axis >= 3 || !ParseValue(text, symmetry.level)) {
+		symmetry = {};
+		return;
+	}
 
-	auto world_center = world.bounds.center();
-	float symmetry = world_center.y;
+	printf("Exploiting symmetry (%c = %d)\n", 'X' + symmetry.axis, symmetry.level);
 
 	auto trim = [&](auto& list) {
 		size_t before = list.size();
 		list.erase(std::remove_if(list.begin(), list.end(), [&](auto& item) {
-			return item.bounds.mins[options.symmetry_axis] > options.symmetry_value - 1.f;
+			return item.bounds.mins[symmetry.axis] > symmetry.level - 1.f;
 		}), list.end());
 		return before - list.size();
 	};
@@ -1311,6 +1313,7 @@ void WriteLights
 (
 	ArrayPrinter& print, const Map& map, const Options& options, const ShaderProperties* shader_props,
 	const std::vector<Map::Entity>& light_entities,
+	const Symmetry& symmetry,
 	string_view array_name, string_view spot_count_name
 )
 {
@@ -1356,7 +1359,7 @@ void WriteLights
 			continue;
 		}
 
-		if (options.ForceSymmetry() && light.pos[options.symmetry_axis] > options.symmetry_value + 1.f)
+		if (symmetry && light.pos[symmetry.axis] > symmetry.level + 1.f)
 			continue;
 
 		auto target_str = ent.GetProperty("target"sv);
@@ -1698,7 +1701,8 @@ bool CompileMap(Map& map, const Options& options) {
 	MergeFuncGroups(map);
 	map.ComputeBounds();
 
-	ExploitSymmetry(map, options);
+	Symmetry symmetry;
+	ExploitSymmetry(map, options, symmetry);
 
 	if (options.reorder_materials)
 		SortMaterialsByUsage(map, options);
@@ -1742,19 +1746,20 @@ bool CompileMap(Map& map, const Options& options) {
 
 	ArrayPrinter print(out);
 
-	WriteEntities			(print, map, options, brush_count,					"entity_brushes"sv,		"entity_data"sv			);
-	WriteBrushBounds		(print, map, options,								"world_bounds"sv,		"brush_bounds"sv		);
-	WriteUnalignedPlanes	(print, map, options,								"nonaxial_planes"sv								);
-	WriteMaterials			(print, map, options, shader_props.data(),			"num_materials"sv,		"plane_materials"sv		);
-	WriteBrushUVs			(print, map, options, shader_props.data(),			"uv_set"sv,				"plane_uvs"sv			);
-	WritePatchData			(print, map, options, shader_props.data(),			"patches"sv,			"patch_verts"sv			);
-	WriteLights				(print, map, options, shader_props.data(),	lights,	"light_data"sv,			"num_spotlights"sv		);
+	WriteEntities			(print, map, options, brush_count,								"entity_brushes"sv,		"entity_data"sv			);
+	WriteBrushBounds		(print, map, options,											"world_bounds"sv,		"brush_bounds"sv		);
+	WriteUnalignedPlanes	(print, map, options,											"nonaxial_planes"sv								);
+	WriteMaterials			(print, map, options, shader_props.data(),						"num_materials"sv,		"plane_materials"sv		);
+	WriteBrushUVs			(print, map, options, shader_props.data(),						"uv_set"sv,				"plane_uvs"sv			);
+	WritePatchData			(print, map, options, shader_props.data(),						"patches"sv,			"patch_verts"sv			);
+	WriteLights				(print, map, options, shader_props.data(),	lights,	symmetry,	"light_data"sv,			"num_spotlights"sv		);
 	//WriteLightmap			(print, map, options, shader_props.data(),	"lightmap_offsets"										);
 
 	/* footer */
 	fprintf(out,
 		"\n"
 		"static constexpr PackedMap map{\n"
+		"    %d, %d,\n"
 		"    entity_brushes, entity_data,\n"
 		"    world_bounds, brush_bounds,\n"
 		"    nonaxial_planes, nonaxial_counts,\n"
@@ -1762,7 +1767,9 @@ bool CompileMap(Map& map, const Options& options) {
 		"    uv_set, plane_uvs,\n"
 		"    patches, patch_verts,\n"
 		"    light_data, num_spotlights\n"
-		"};\n");
+		"};\n",
+		symmetry.axis, symmetry.level
+	);
 	fprintf(out, "} // namespace %s\n", options.map_name);
 
 	return true;
@@ -1786,11 +1793,6 @@ int main() {
 	options.wrap_uvs			= false;	// minor net loss
 	options.sort_lights			= true;
 	options.verbose				= false;
-
-	// FIXME: hardcoded!
-	// TODO: actually find the symmetry axis, or at least read a worldspawn field
-	options.symmetry_axis		= 1;
-	options.symmetry_value		= 64.f;
 	
 	std::vector<char> contents;
 	if (!ReadFile(options.map_path, contents))
@@ -1803,7 +1805,8 @@ int main() {
 	if (0) {
 		MergeFuncGroups(map);
 		map.ComputeBounds();
-		ExploitSymmetry(map, options);
+		Symmetry symmetry;
+		ExploitSymmetry(map, options, symmetry);
 		ExportMap(map, "d:\\q3dm17.map");
 		return 0;
 	}
