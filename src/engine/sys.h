@@ -185,7 +185,12 @@ NOINLINE void Sys::PrintfEx(const char* format, const void* const* args, size_t 
 	const size_t BufferSize = 4096;
 	char buffer[BufferSize];
 
-	#define ARG_PTR(type)		(type const*)(*args++)
+	auto next_arg = [&] () {
+		assert(count--);
+		return *args++;
+	};
+
+	#define ARG_PTR(type)		((type const*)next_arg())
 	#define ARG(type)			(*ARG_PTR(type))
 
 	size_t write_cursor = 0;
@@ -202,15 +207,12 @@ NOINLINE void Sys::PrintfEx(const char* format, const void* const* args, size_t 
 		if (*format == '%') {
 			++format;
 			if (*format == 'd') {
-				assert(count--);
 				IntToString(ARG(i32), buffer);
 				Log(buffer);
 			} else if (*format == 'f') {
-				assert(count--);
 				FloatToString(ARG(float), buffer);
 				Log(buffer);
 			} else if (*format == 's') {
-				assert(count--);
 				Log(ARG_PTR(char));
 			} else if (*format == '%') {
 				Log("%");
