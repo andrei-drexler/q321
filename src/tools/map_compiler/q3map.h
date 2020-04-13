@@ -363,7 +363,7 @@ bool Q3::Map::Parse(string_view source) {
 		if (!ParseEntity(source))
 			return false;
 	}
-	return true;
+	return !entities.empty();
 }
 
 void Q3::Map::ComputeBounds() {
