@@ -97,7 +97,7 @@ namespace Demo {
 
 		u16				num_quads;
 		VertexFormat	vertices[MAX_NUM_VERTICES];
-		u16				indices[MAX_NUM_INDICES];
+		u32				indices[MAX_NUM_INDICES];
 
 		VertexFormat*	AddQuads(u16 count);
 		void			FlushGeometry();

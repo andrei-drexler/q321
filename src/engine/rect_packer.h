@@ -49,8 +49,8 @@ private:
 	bool					DoAdd(u16 node_index, Rectangle node_rect, const Dimension wanted[2]);
 
 	enum {
-		MaxTiles			= 2048,
-		MaxNodes			= 4096,
+		MaxTiles			= 8192,
+		MaxNodes			= 16384,
 	};
 
 	Dimension				m_width;

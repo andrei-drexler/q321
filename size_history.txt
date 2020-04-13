@@ -623,3 +623,4 @@
 35164,tweaked player angle update
 35213,wrap player yaw
 35184,noinline float mod
+35213,made accommodations for q3dm1

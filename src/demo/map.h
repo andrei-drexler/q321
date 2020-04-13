@@ -222,15 +222,15 @@ namespace Demo {
 
 struct Map {
 	enum {
-		MAX_NUM_VERTS		= 16 * 1024,
-		MAX_NUM_TRIS		= 16 * 1024,
+		MAX_NUM_VERTS		= 96 * 1024,
+		MAX_NUM_TRIS		= 128 * 1024,
 		MAX_NUM_INDICES		= MAX_NUM_TRIS * 3,
 		MAX_NUM_MATERIALS	= 256,
 		
 		MAX_NUM_BRUSHES		= 1024,
 		MAX_NUM_PLANES		= 8192,
 
-		MAX_NUM_PATCHES		= 128,
+		MAX_NUM_PATCHES		= 256,
 		
 		MAX_NUM_NODES		= MAX_NUM_BRUSHES,
 		MIN_NODE_BRUSHES	= 1,
@@ -249,6 +249,7 @@ struct Map {
 
 	// HACK: hardcoded! Should be read from packed map
 	enum {
+		use_symmetry		= true,
 		symmetry_level		= 64,
 		symmetry_axis		= 1,
 	};
@@ -256,16 +257,16 @@ struct Map {
 	u8						num_materials;
 
 	struct {
-		u16					count;
-		u16					plane_count;
+		u32					count;
+		u32					plane_count;
 		i16					bounds				[MAX_NUM_BRUSHES][2][3];
 		u16					start				[MAX_NUM_BRUSHES];
 		vec4				planes				[MAX_NUM_PLANES];
 		u8					plane_mat_uv_axis	[MAX_NUM_PLANES];	// material: 6, uv_axis: 2
 		u8					entity				[MAX_NUM_BRUSHES];
 
-		u8					GetPlaneMaterial(u16 plane_index) const { return plane_mat_uv_axis[plane_index] >> 2; }
-		u8					GetPlaneUVAxis(u16 plane_index) const { return plane_mat_uv_axis[plane_index] & 3; }
+		u8					GetPlaneMaterial(u32 plane_index) const { return plane_mat_uv_axis[plane_index] >> 2; }
+		u8					GetPlaneUVAxis(u32 plane_index) const { return plane_mat_uv_axis[plane_index] & 3; }
 
 		struct {
 			u32				data;
@@ -279,7 +280,7 @@ struct Map {
 		u16					count;
 		u8					source[MAX_NUM_PATCHES];
 		u16					control_start[MAX_NUM_PATCHES];
-		u16					vertex_start[MAX_NUM_PATCHES];
+		u32					vertex_start[MAX_NUM_PATCHES];
 		u16					vertex_count[MAX_NUM_PATCHES];
 
 		u16					GetSourceIndex(u16 patch_index) const { return source[patch_index] >> 1; }
@@ -313,7 +314,7 @@ struct Map {
 	vec3					positions			[MAX_NUM_VERTS];
 	vec4					texcoords			[MAX_NUM_VERTS];
 	vec3					normals				[MAX_NUM_VERTS];
-	u16						indices				[MAX_NUM_INDICES];
+	u32						indices				[MAX_NUM_INDICES];
 	u32						num_mat_verts		[MAX_NUM_MATERIALS];
 	u32						mat_vertex_offset	[MAX_NUM_MATERIALS];
 	u32						num_mat_indices		[MAX_NUM_MATERIALS];
@@ -419,7 +420,7 @@ FORCEINLINE void Map::InitLights() {
 	for (u16 light_index = 0; light_index < source->num_lights; ++light_index) {
 		auto& light = lights[num_lights++];
 		source->GetLight(light_index, light);
-		if (light.position[symmetry_axis] < symmetry_level - 1) {
+		if (use_symmetry && light.position[symmetry_axis] < symmetry_level - 1) {
 			auto& light2 = lights[num_lights++];
 			MemCopy(&light2, &light, sizeof(light));
 			light2.position[symmetry_axis] = 2.f * symmetry_level - light2.position[symmetry_axis];
@@ -560,7 +561,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 			brush_bounds[1][1] = bounds_src[4] + brush_bounds[0][1];
 			brush_bounds[1][2] = bounds_src[5] + brush_bounds[0][2];
 
-			bool mirrored = entity_index == 0 && brush_bounds[1][1] < symmetry_level + 1;
+			bool mirrored = use_symmetry && entity_index == 0 && brush_bounds[1][symmetry_axis] < symmetry_level + 1;
 
 			bounds_src += 6;
 
@@ -613,20 +614,16 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				brushes.start[brushes.count] = brushes.plane_count;
 				
 				auto& dst_bounds = brushes.bounds[brushes.count];
-				dst_bounds[0][0] = brush_bounds[0][0];
-				dst_bounds[0][1] = 2 * symmetry_level - brush_bounds[1][1];
-				dst_bounds[0][2] = brush_bounds[0][2];
-				dst_bounds[1][0] = brush_bounds[1][0];
-				dst_bounds[1][1] = 2 * symmetry_level - brush_bounds[0][1];
-				dst_bounds[1][2] = brush_bounds[1][2];
+				MemCopy(&dst_bounds, &brush_bounds);
+				dst_bounds[0][symmetry_axis] = 2 * symmetry_level - brush_bounds[1][symmetry_axis];
+				dst_bounds[1][symmetry_axis] = 2 * symmetry_level - brush_bounds[0][symmetry_axis];
 				
 				for (u16 i = 0; i < num_brush_planes; ++i) {
 					auto& dst_plane = brush_planes[i + num_brush_planes];
 					auto& src_plane = brush_planes[MirrorPlaneIndex(i)];
-					dst_plane.x = src_plane.x;
-					dst_plane.y = -src_plane.y;
-					dst_plane.z = src_plane.z;
-					dst_plane.w = src_plane.w + 2.f * src_plane.y * symmetry_level;
+					dst_plane.xyz = src_plane.xyz;
+					dst_plane[symmetry_axis] = -dst_plane[symmetry_axis];
+					dst_plane.w = src_plane.w + 2.f * src_plane[symmetry_axis] * symmetry_level;
 				}
 				
 				brushes.plane_count += num_brush_planes;
@@ -791,9 +788,8 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 						u32 src_index = mat_vertex_offset[material] + j + first_vertex;
 						vec3& dst_pos = positions[dst_index];
 						vec3& src_pos = positions[src_index];
-						dst_pos.x = src_pos.x;
-						dst_pos.y = 2 * symmetry_level - src_pos.y;
-						dst_pos.z = src_pos.z;
+						dst_pos = src_pos;
+						dst_pos[symmetry_axis] = 2 * symmetry_level - src_pos[symmetry_axis];
 						if (needs_uv)
 							texcoords[dst_index] = texcoords[src_index];
 						else
@@ -826,11 +822,10 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 	for (u8 material = 0; material < num_materials; ++material) {
 		vec3* pos = positions + mat_vertex_offset[material];
 		vec3* nor = normals + mat_vertex_offset[material];
-		u16* idx = indices + mat_index_offset[material];
+		u32* idx = indices + mat_index_offset[material];
 
 		u32 num_verts = num_mat_verts[material];
 		u32 num_indices = num_mat_indices[material];
-		assert(num_verts <= 0x10000u);
 
 		total_verts += num_verts;
 		total_indices += num_indices;
@@ -839,9 +834,9 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 
 		for (u32 i = 0; i < num_indices; i += 3, idx += 3) {
 			for (u8 j = 0; j < 3; ++j) {
-				u16 i0 = idx[j];
-				u16 i1 = idx[(j + 1) % 3];
-				u16 i2 = idx[(j + 2) % 3];
+				u32 i0 = idx[j];
+				u32 i1 = idx[(j + 1) % 3];
+				u32 i2 = idx[(j + 2) % 3];
 				nor[i0] += cross(pos[i1] - pos[i0], pos[i2] - pos[i1]);
 			}
 		}
@@ -880,9 +875,6 @@ void Map::Render() {
 		if (draw == Material::Invisible && !ShowClipping)
 			continue;
 
-		assert(num_mat_verts[material] < 0x10000u);
-		assert(num_mat_indices[material] < 0x10000u);
-
 		auto offset = mat_vertex_offset[material];
 		mesh.vertices[Attrib::Position	].SetData(offset + positions);
 		mesh.vertices[Attrib::TexCoord	].SetData(offset + texcoords);
@@ -915,8 +907,8 @@ void Map::Render() {
 		auto material = brushes.GetPlaneMaterial(plane_index);
 		
 		const u16 MaxIndices = 64 * 3;
-		u16 indices[MaxIndices];
-		u16 num_indices = 0;
+		u32 indices[MaxIndices];
+		u32 num_indices = 0;
 
 		const u16 MaxVerts = 64;
 		vec3 pos[MaxVerts];
@@ -928,7 +920,7 @@ void Map::Render() {
 		mesh.vertices[Attrib::TexCoord	].SetData(vtx_range.GetOffset() + texcoords);
 		mesh.vertices[Attrib::Normal	].SetData(vtx_range.GetOffset() + normals);
 
-		for (u16 i = 2; i < vtx_range.GetCount(); ++i) {
+		for (u32 i = 2; i < vtx_range.GetCount(); ++i) {
 			indices[num_indices++] = 0;
 			indices[num_indices++] = i - 1;
 			indices[num_indices++] = i;

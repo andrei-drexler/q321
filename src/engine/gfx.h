@@ -149,10 +149,10 @@ namespace Gfx {
 				return *this;
 			}
 		}						vertices[Vertex::MaxNumAttributes];
-		const u16*				indices;
+		const u32*				indices;
 
-		u16						num_vertices;
-		u16						num_indices;
+		u32						num_vertices;
+		u32						num_indices;
 	};
 
 	////////////////////////////////////////////////////////////////

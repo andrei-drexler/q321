@@ -51,7 +51,7 @@ namespace Demo {
 		uv[2] = vec2{1.f, 1.f};
 		uv[3] = vec2{0.f, 1.f};
 
-		u16 idx[6] = { 0, 1, 2, 0, 2, 3 };
+		u32 idx[6] = { 0, 1, 2, 0, 2, 3 };
 	
 		mesh.vertices[Attrib::Position	].SetData(pos);
 		mesh.vertices[Attrib::TexCoord	].SetData(uv);

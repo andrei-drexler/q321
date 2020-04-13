@@ -28,10 +28,10 @@ NOINLINE void Map::LoadPatches(const PackedMap& packed, u8 pass) {
 		for (u16 i = 0; i < num_control_points; ++i)
 			ctrl[i] = packed.GetPatchVertex(current_patch_vertex++);
 
-		for (u8 mirror_side = 0; mirror_side < 2; ++mirror_side) {
+		for (u8 mirror_side = 0; mirror_side < 1 + use_symmetry; ++mirror_side) {
 			if (mirror_side == 1) {
 				for (u16 i = 0; i < num_control_points; ++i)
-					ctrl[i].pos.y = 2 * symmetry_level - ctrl[i].pos.y;
+					ctrl[i].pos[symmetry_axis] = 2 * symmetry_level - ctrl[i].pos[symmetry_axis];
 			}
 
 			auto first_vertex = num_mat_verts[patch.material];

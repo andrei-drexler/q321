@@ -744,7 +744,7 @@ NOINLINE void Gfx::Draw(const Mesh& mesh) {
 	}
 
 	if (mesh.num_indices) {
-		glDrawElements(GL_TRIANGLES, mesh.num_indices, GL_UNSIGNED_SHORT, mesh.indices);
+		glDrawElements(GL_TRIANGLES, mesh.num_indices, GL_UNSIGNED_INT, mesh.indices);
 	} else {
 		glDrawArrays(GL_TRIANGLES, 0, mesh.num_vertices);
 	}

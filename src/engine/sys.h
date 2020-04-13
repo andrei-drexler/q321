@@ -269,7 +269,7 @@ namespace Mem {
 	
 	Arena g_main_arena;
 
-	FORCEINLINE void Init(Arena* arena = &g_main_arena, u32 size = 32 * MB) {
+	FORCEINLINE void Init(Arena* arena = &g_main_arena, u32 size = 128 * MB) {
 		arena->buffer	= (u8*)Sys::Alloc(size);
 		arena->low		= 0;
 		arena->high		= size;
