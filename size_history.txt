@@ -624,3 +624,4 @@
 35213,wrap player yaw
 35184,noinline float mod
 35213,made accommodations for q3dm1
+35203,gravity when stationary

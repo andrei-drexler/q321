@@ -213,12 +213,11 @@ void Demo::Player::Update(const u8* keys, float dt) {
 
 	/* move */
 	float prev_z_speed = velocity.z;
-	if (length_squared(velocity) < 1.f) {
-		MemSet(&velocity);
-	} else {
+	if (length_squared(velocity.xy) < 1.f)
+		MemSet(&velocity.xy);
+	else
 		shadow_angle = atan2(velocity.y, velocity.x);
-		StepSlideMove(*this, dt);
-	}
+	StepSlideMove(*this, dt);
 	GroundTrace(*this);
 
 	/* land */
