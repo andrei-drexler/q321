@@ -229,7 +229,9 @@ namespace Gfx {
 	void SetTextureContents(Texture::ID id, const void* pixels, const IRect* rect = nullptr);
 	void GenerateMipMaps(Texture::ID id);
 	void ReadBack(Texture::ID id, void* pixels);
+	const Texture::Descriptor& GetTextureDescriptor(Texture::ID id);
 	bool SaveTGA(const char* path, const u32* pixels, u16 width, u16 height);
+	bool SaveTGA(const char* path, Texture::ID id);
 	
 	void SetRenderTarget(Texture::ID id, const IRect* viewport = nullptr);
 	void SetShader(Shader::ID id);
@@ -270,7 +272,8 @@ namespace Gfx {
 
 ////////////////////////////////////////////////////////////////
 
-bool Gfx::SaveTGA(const char* path, const u32* pixels, u16 width, u16 height) {
+// forceinline, assuming it's only called from one place (for screenshots)
+FORCEINLINE bool Gfx::SaveTGA(const char* path, const u32* pixels, u16 width, u16 height) {
 	Sys::File::Handle file = Sys::OpenFile(path, Sys::File::Write);
 	if (!file)
 		return false;
@@ -289,5 +292,14 @@ bool Gfx::SaveTGA(const char* path, const u32* pixels, u16 width, u16 height) {
 
 	Sys::CloseFile(file);
 
+	return result;
+}
+
+bool Gfx::SaveTGA(const char* path, Texture::ID id) {
+	const Texture::Descriptor& descriptor = GetTextureDescriptor(id);
+	u32* pixels = Sys::Alloc<u32>(descriptor.width * descriptor.height);
+	Gfx::ReadBack(id, pixels);
+	bool result = Gfx::SaveTGA(path, pixels, descriptor.width, descriptor.height);
+	Sys::Free(pixels);
 	return result;
 }

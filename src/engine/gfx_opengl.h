@@ -527,6 +527,10 @@ void Gfx::GenerateMipMaps(Texture::ID id) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
+FORCEINLINE const Gfx::Texture::Descriptor& Gfx::GetTextureDescriptor(Texture::ID id) {
+	return GL::g_state.texture_descriptors[id];
+}
+
 NOINLINE void Gfx::ReadBack(Texture::ID id, void* pixels) {
 	using namespace GL;
 
