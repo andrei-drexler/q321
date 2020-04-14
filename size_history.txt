@@ -628,3 +628,4 @@
 35307,worldspawn symmetry
 35359,conditional patch mirroring
 35146,changed map from struct to namespace
+35135,larger lightmap
