@@ -285,14 +285,35 @@ FORCEINLINE u32 SelectBits(u32 condition, u32 true_value, u32 false_value) {
 
 ////////////////////////////////////////////////////////////////
 
-template <size_t Size, typename T>
-struct FixedArray {
+template <typename T, size_t Size>
+struct StaticArray {
 	T data[Size];
 
-	static constexpr size_t		size()						{ return Size; }
-	constexpr T&				operator[](size_t i)		{ return data[i]; }
-	constexpr const T&			operator[](size_t i) const	{ return data[i]; }
+	constexpr T&							operator[](size_t i)									{ assert(i < Size); return data[i]; }
+	constexpr const T&						operator[](size_t i) const								{ assert(i < Size); return data[i]; }
+
+	constexpr explicit operator T*			()														{ return data; }
+	constexpr explicit operator const T*	() const												{ return data; }
+
+	// Note: we allow pointers to one past last item. Bad idea?
+	friend static constexpr T*				operator+(StaticArray& array, size_t offset)			{ assert(offset <= Size); return array.data + offset; }
+	friend static constexpr T*				operator+(size_t offset, StaticArray& array)			{ assert(offset <= Size); return array.data + offset; }
+	friend static constexpr const T*		operator+(const StaticArray& array, size_t offset)		{ assert(offset <= Size); return array.data + offset; }
+	friend static constexpr const T*		operator+(size_t offset, const StaticArray& array)		{ assert(offset <= Size); return array.data + offset; }
+
+	// Note: non-member size() to allow the same code to work with both built-in arrays and our custom type
+	friend static constexpr size_t			size(const StaticArray&)								{ return Size; }
 };
+
+#ifdef DEV
+	template <typename T, size_t Size>
+	using Array = StaticArray<T, Size>;		// Bounds-checked (DEV build)
+#else
+	template <typename T, size_t Size>
+	using Array = T[Size];					// Raw (no bounds checking)
+#endif
+
+////////////////////////////////////////////////////////////////
 
 template <size_t Size, typename Value, typename Key = size_t, Key First = Key{}>
 struct LookupTable {

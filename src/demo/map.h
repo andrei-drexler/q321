@@ -254,41 +254,52 @@ struct Map {
 		RecomputePlanes		= false,	// broken
 	};
 
+	void					Load(const PackedMap& packed);
+
 	u8						num_materials;
 	i8						symmetry_axis;
 	i16						symmetry_level;
 	bool					UseSymmetry() const { return u8(symmetry_axis) < 3; }
 
-	struct {
-		u32					count;
-		u32					plane_count;
-		i16					bounds				[MAX_NUM_BRUSHES][2][3];
-		u16					start				[MAX_NUM_BRUSHES];
-		vec4				planes				[MAX_NUM_PLANES];
-		u8					plane_mat_uv_axis	[MAX_NUM_PLANES];	// material: 6, uv_axis: 2
-		u8					entity				[MAX_NUM_BRUSHES];
+	/* Unpacked brush data */
 
-		u8					GetPlaneMaterial(u32 plane_index) const { return plane_mat_uv_axis[plane_index] >> 2; }
-		u8					GetPlaneUVAxis(u32 plane_index) const { return plane_mat_uv_axis[plane_index] & 3; }
+	struct {
+		using BoundsList				= Array<i16[2][3], MAX_NUM_BRUSHES>;
+
+		u32								count;
+		u32								plane_count;
+
+		BoundsList 						bounds;
+		Array<u16,  MAX_NUM_BRUSHES>	start;
+		Array<vec4, MAX_NUM_PLANES>		planes;
+		Array<u8,   MAX_NUM_PLANES>		plane_mat_uv_axis;	// material: 6, uv_axis: 2
+		Array<u8,   MAX_NUM_BRUSHES>	entity;
+
+		u8								GetPlaneMaterial(u32 plane_index) const { return plane_mat_uv_axis[plane_index] >> 2; }
+		u8								GetPlaneUVAxis(u32 plane_index) const { return plane_mat_uv_axis[plane_index] & 3; }
 
 		struct {
-			u32				data;
-			void			Set(u32 offset, u8 count)	{ data = (offset << 8) | count; }
-			u32				GetOffset() const			{ return data >> 8; }
-			u32				GetCount() const			{ return data & 255; }
-		}					plane_vertex_range	[MAX_NUM_PLANES];
-	}						brushes;
+			u32							data;
+			void						Set(u32 offset, u8 count)	{ data = (offset << 8) | count; }
+			u32							GetOffset() const			{ return data >> 8; }
+			u32							GetCount() const			{ return data & 255; }
+		}								plane_vertex_range	[MAX_NUM_PLANES];
+	} brushes;
+
+	/* Unpacked patch data */
 
 	struct {
-		u16					count;
-		u8					source[MAX_NUM_PATCHES];
-		u16					control_start[MAX_NUM_PATCHES];
-		u32					vertex_start[MAX_NUM_PATCHES];
-		u16					vertex_count[MAX_NUM_PATCHES];
+		u16								count;
+		Array<u8,  MAX_NUM_PATCHES>		source;
+		Array<u16, MAX_NUM_PATCHES>		control_start;
+		Array<u32, MAX_NUM_PATCHES>		vertex_start;
+		Array<u16, MAX_NUM_PATCHES>		vertex_count;
 
-		u16					GetSourceIndex(u16 patch_index) const { return source[patch_index] >> 1; }
-		bool				IsMirrored(u16 patch_index) const { return source[patch_index] & 1; }
-	}						patches;
+		u16								GetSourceIndex(u16 patch_index) const { return source[patch_index] >> 1; }
+		bool							IsMirrored(u16 patch_index) const { return source[patch_index] & 1; }
+	} patches;
+
+	/* Brush partition (BIH) */
 
 	struct Partition {
 		struct Node {
@@ -301,38 +312,13 @@ struct Map {
 			u16				GetChild(bool second) const { return -data[0] + second; }
 		};
 
-		Node				nodes[MAX_NUM_NODES];
-		u16					brushes[MAX_NUM_BRUSHES];
+		using NodeList		= Array<Node, MAX_NUM_NODES>;
+		using BrushList		= Array<u16, MAX_NUM_BRUSHES>;
+
+		NodeList			nodes;
+		BrushList			brushes;
 		u16					num_nodes;
-	}						partition;
-
-	u8						num_entities;
-	u8						num_brush_entities;
-	Demo::Entity			entities[MAX_NUM_ENTITIES];
-	u16						entity_brush_start[MAX_NUM_ENTITIES + 1];
-
-	bool					IsWorldspawnBrush(u16 index) const { return index < entity_brush_start[1]; }
-	Demo::Entity*			PickTarget(i16 target);
-
-	vec3					positions			[MAX_NUM_VERTS];
-	vec4					texcoords			[MAX_NUM_VERTS];
-	vec3					normals				[MAX_NUM_VERTS];
-	u32						indices				[MAX_NUM_INDICES];
-	u32						num_mat_verts		[MAX_NUM_MATERIALS];
-	u32						mat_vertex_offset	[MAX_NUM_MATERIALS];
-	u32						num_mat_indices		[MAX_NUM_MATERIALS];
-	u32						mat_index_offset	[MAX_NUM_MATERIALS];
-
-	const PackedMap*		source;
-
-	struct {
-		u32*				data;
-		vec3*				pos;
-		vec3*				nor;
-		RectPacker			packer;
-	}						lightmap;
-
-	void					Load(const PackedMap& packed);
+	} partition;
 
 	struct TraceInfo {
 		enum Type : u8 {
@@ -370,28 +356,63 @@ struct Map {
 
 	bool					TraceRay(TraceInfo& trace) const;
 
-	using Light				= PackedMap::Light;
-	Light					lights[MAX_NUM_LIGHTS];
-	u16						num_lights;
+	/* Entity data */
 
-	void					ComputeLighting(bool shadows = true);
-	void					UpdateLightmapTexture();
+	using EntityList				= Array<Demo::Entity, MAX_NUM_ENTITIES>;
+	using EntityBrushOffsets		= Array<u16, MAX_NUM_ENTITIES + 1>;
 
-	void					Render();
+	u8								num_entities;
+	u8								num_brush_entities;
+	EntityList						entities;
+	EntityBrushOffsets				entity_brush_start;
 
+	bool							IsWorldspawnBrush(u16 index) const { return index < entity_brush_start[1]; }
+	Demo::Entity*					PickTarget(i16 target);
+
+	/* Renderable geometry */
+
+	Array<vec3, MAX_NUM_VERTS>		positions;
+	Array<vec4, MAX_NUM_VERTS>		texcoords;
+	Array<vec3, MAX_NUM_VERTS>		normals;
+	Array<u32,  MAX_NUM_INDICES>	indices;
+	Array<u32,  MAX_NUM_MATERIALS>	num_mat_verts;
+	Array<u32,  MAX_NUM_MATERIALS>	mat_vertex_offset;
+	Array<u32,  MAX_NUM_MATERIALS>	num_mat_indices;
+	Array<u32,  MAX_NUM_MATERIALS>	mat_index_offset;
+
+	void							Render();
+
+	const PackedMap*				source;
+
+	struct {
+		u32*						data;
+		vec3*						pos;
+		vec3*						nor;
+		RectPacker					packer;
+	} lightmap;
+
+	/* Light data */
+
+	using Light						= PackedMap::Light;
+	using LightList					= Array<Light, MAX_NUM_LIGHTS>;
+	LightList						lights;
+	u16								num_lights;
+
+	void							ComputeLighting(bool shadows = true);
+	void							UpdateLightmapTexture();
 
 private:
-	bool					TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax) const;
-	void					SplitNode(u16 index, i16 bounds[2][3]);
-	void					DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid);
-	void					LoadPatches(const PackedMap& packed, u8 pass);
-	void					CreatePartition();
+	bool							TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax) const;
+	void							SplitNode(u16 index, i16 bounds[2][3]);
+	void							DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid);
+	void							LoadPatches(const PackedMap& packed, u8 pass);
+	void							CreatePartition();
 
-	void					InitEntities();
-	void					InitLights();
-	void					InitLightmap();
+	void							InitEntities();
+	void							InitLights();
+	void							InitLightmap();
 
-	static u16				MirrorPlaneIndex(u16 original);
+	static u16						MirrorPlaneIndex(u16 original);
 } g_map;
 
 ////////////////////////////////////////////////////////////////

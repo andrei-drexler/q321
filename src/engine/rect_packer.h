@@ -1,64 +1,64 @@
 #pragma once
 
 struct alignas(u32) RectPacker {
-	using Dimension			= u16;
-	using Index				= u16;
-	static const Index Full	= -1;
+	using Dimension				= u16;
+	using Index					= u16;
+	static const Index Full		= -1;
 
 	struct Rectangle {
-		Dimension			min[2];
-		Dimension			max[2];
+		Dimension				min[2];
+		Dimension				max[2];
 
-		Dimension			GetWidth() const { return max[0] - min[0]; }
-		Dimension			GetHeight() const { return max[1] - min[1]; }
+		Dimension				GetWidth() const { return max[0] - min[0]; }
+		Dimension				GetHeight() const { return max[1] - min[1]; }
 	};
 
-	void					Init(Dimension width, Dimension height);
+	void						Init(Dimension width, Dimension height);
 
-	Index					Add(Dimension width, Dimension height);
-	const Rectangle&		GetTile(Index index) const	{ return m_tiles[index]; }
-	Index					GetNumTiles() const			{ return m_numTiles; }
+	Index						Add(Dimension width, Dimension height);
+	const Rectangle&			GetTile(Index index) const	{ return m_tiles[index]; }
+	Index						GetNumTiles() const			{ return m_numTiles; }
 
-	Dimension				GetWidth() const			{ return m_width; }
-	Dimension				GetHeight() const			{ return m_height; }
+	Dimension					GetWidth() const			{ return m_width; }
+	Dimension					GetHeight() const			{ return m_height; }
 
 private:
 	struct Node {
-		using Field			= Dimension;
+		using Field				= Dimension;
 
-		Field				flags;
-		Field				data;
+		Field					flags;
+		Field					data;
 
-		static const Field	Empty = -1;
-		static const Field	AxisBits = 2;
-		static const Field	AxisMask = (1 << AxisBits) - 1;
-		static const Field	LeafTag = AxisMask;
-		static const Field	MaxIndex = Field(-1) >> AxisBits;
+		static const Field		Empty = -1;
+		static const Field		AxisBits = 2;
+		static const Field		AxisMask = (1 << AxisBits) - 1;
+		static const Field		LeafTag = AxisMask;
+		static const Field		MaxIndex = Field(-1) >> AxisBits;
 
-		Field				GetAxis() const				{ return flags & AxisMask; }
-		bool				IsLeaf() const				{ return (flags & AxisMask) == LeafTag; }
-		Field				GetNodeSplitPos() const		{ return data; }
-		Field				GetNodeFirstChild() const	{ return flags >> AxisBits; }
-		Field				IsLeafEmpty() const			{ return data == Empty; }
-		Field				GetLeafImageIndex() const	{ return data; }
+		Field					GetAxis() const				{ return flags & AxisMask; }
+		bool					IsLeaf() const				{ return (flags & AxisMask) == LeafTag; }
+		Field					GetNodeSplitPos() const		{ return data; }
+		Field					GetNodeFirstChild() const	{ return flags >> AxisBits; }
+		Field					IsLeafEmpty() const			{ return data == Empty; }
+		Field					GetLeafImageIndex() const	{ return data; }
 
-		void				MakeLeaf(Field data = Empty)								{ this->flags = LeafTag; this->data = data; }
-		void				MakeInternal(bool axis, Field split_pos, Field child)		{ this->flags = Field((child << AxisBits) | Field(axis)); this->data = split_pos; }
+		void					MakeLeaf(Field data = Empty)								{ this->flags = LeafTag; this->data = data; }
+		void					MakeInternal(bool axis, Field split_pos, Field child)		{ this->flags = Field((child << AxisBits) | Field(axis)); this->data = split_pos; }
 	};
 
-	bool					DoAdd(u16 node_index, Rectangle node_rect, const Dimension wanted[2]);
+	bool						DoAdd(u16 node_index, Rectangle node_rect, const Dimension wanted[2]);
 
 	enum {
-		MaxTiles			= 8192,
-		MaxNodes			= 16384,
+		MaxTiles				= 8192,
+		MaxNodes				= 16384,
 	};
 
-	Dimension				m_width;
-	Dimension				m_height;
-	u16						m_numNodes;
-	u16						m_numTiles;
-	Node					m_nodes[MaxNodes];
-	Rectangle				m_tiles[MaxTiles];
+	Dimension					m_width;
+	Dimension					m_height;
+	u16							m_numNodes;
+	u16							m_numTiles;
+	Array<Node, MaxNodes>		m_nodes;
+	Array<Rectangle, MaxTiles>	m_tiles;
 };
 
 ////////////////////////////////////////////////////////////////
