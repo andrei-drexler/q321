@@ -463,4 +463,7 @@ void Map::ComputeLighting(bool shadows) {
 
 FORCEINLINE void Map::UpdateLightmapTexture() {
 	Gfx::SetTextureContents(Demo::Texture::Lightmap, lightmap.data);
+	if constexpr (0) {
+		Gfx::SaveTGA("lightmap.tga", Demo::Texture::Lightmap);
+	}
 }
