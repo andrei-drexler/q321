@@ -627,3 +627,4 @@
 35203,gravity when stationary
 35307,worldspawn symmetry
 35359,conditional patch mirroring
+35146,changed map from struct to namespace

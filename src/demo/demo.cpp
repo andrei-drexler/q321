@@ -21,7 +21,7 @@ namespace Demo {
 
 	void GenerateLightmap(void*) {
 		g_updated_lightmap = false;
-		g_map.ComputeLighting();
+		Map::ComputeLighting();
 	}
 
 	void RenderSprite(const vec3& point, float size) {
@@ -109,7 +109,7 @@ namespace Demo {
 
 		Gfx::SetRenderTarget(frame.render_target);
 		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
-		g_map.Render();
+		Map::Render();
 	}
 
 	FORCEINLINE void GenerateLevelShot() {
@@ -168,7 +168,7 @@ namespace Demo {
 		}
 
 		if (!g_updated_lightmap) {
-			g_map.UpdateLightmapTexture();
+			Map::UpdateLightmapTexture();
 			g_updated_lightmap = true;
 			g_load_time = g_time;
 		}
@@ -202,8 +202,8 @@ namespace Demo {
 		RenderWorld(frame);
 
 		if constexpr (0) {
-			for (u16 i = g_map.num_brush_entities; i < g_map.num_entities; ++i) {
-				auto& e = g_map.entities[i];
+			for (u16 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
+				auto& e = Map::entities[i];
 				vec3 pos;
 				pos[0] = e.origin[0];
 				pos[1] = e.origin[1];
@@ -322,8 +322,8 @@ int FORCEINLINE demo_main() {
 	DEMO_MODELS(PP_DEMO_MODEL_TOUCH)
 	#undef PP_DEMO_MODEL_TOUCH
 
-	g_map.Load(dm17::map);
-	g_map.UpdateLightmapTexture();
+	Map::Load(dm17::map);
+	Map::UpdateLightmapTexture();
 	Demo::GenerateLevelShot();
 	
 	Demo::g_updated_lightmap = false;

@@ -302,18 +302,16 @@ void Map::ComputeLighting(bool shadows) {
 
 	if constexpr (Lightmap::Debug == Lightmap::DebugMode::Off) {
 		struct Params {
-			Map* map;
 			bool shadows;
-		} params{this, shadows};
+		} params{shadows};
 
 		//for (u16 y = 0; y < Lightmap::Height; ++y) {
 		ParallelFor(Lightmap::Height, &params, [](u32 y, u32 yend, void* data) {
 			Params* params = (Params*)data;
-			Map* map = params->map;
 
-			u32* texel = map->lightmap.data + y * Lightmap::Width;
-			vec3* texel_pos = map->lightmap.pos + y * Lightmap::Width;
-			vec3* texel_nor = map->lightmap.nor + y * Lightmap::Width;
+			u32* texel = Map::lightmap.data + y * Lightmap::Width;
+			vec3* texel_pos = Map::lightmap.pos + y * Lightmap::Width;
+			vec3* texel_nor = Map::lightmap.nor + y * Lightmap::Width;
 
 			TraceInfo trace;
 
@@ -331,8 +329,8 @@ void Map::ComputeLighting(bool shadows) {
 					vec3 accum = Ambient;
 
 					if (length_squared(nor) > 0.f) {
-						for (u16 light_index = 0; light_index < map->num_lights; ++light_index) {
-							const auto& light = map->lights[light_index];
+						for (u16 light_index = 0; light_index < Map::num_lights; ++light_index) {
+							const auto& light = Map::lights[light_index];
 							vec3 light_pos = light.position;
 							if (EnableSunLight && light_index == 0)
 								light_pos += pos;
@@ -373,7 +371,7 @@ void Map::ComputeLighting(bool shadows) {
 								// if the trace almost made it to its destination, accept it anyway
 								// this eliminates some dark edges/splotchy corners
 								const float ShadowTolerance = 2.f;
-								if (map->TraceRay(trace) && length_squared(pos - trace.hit_point) >= ShadowTolerance * ShadowTolerance)
+								if (Map::TraceRay(trace) && length_squared(pos - trace.hit_point) >= ShadowTolerance * ShadowTolerance)
 									continue;
 							}
 

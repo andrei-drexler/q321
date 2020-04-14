@@ -123,7 +123,7 @@ NOINLINE void Map::CreatePartition() {
 	SplitNode(0, bounds);
 }
 
-FORCEINLINE bool Map::TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax) const {
+FORCEINLINE bool Map::TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax) {
 	bool hit = false;
 
 	struct StackEntry {
@@ -267,7 +267,7 @@ pop:
 	goto pop;
 }
 
-NOINLINE bool Map::TraceRay(TraceInfo& trace) const {
+NOINLINE bool Map::TraceRay(TraceInfo& trace) {
 	trace.fraction = 1.f;
 	trace.plane = -1;
 

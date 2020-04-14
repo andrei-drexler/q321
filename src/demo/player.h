@@ -233,8 +233,8 @@ void Demo::Player::Update(const u8* keys, float dt) {
 	/* touch entities */
 	for (u16 i = 0; i < num_touch_ents; ++i) {
 		u16 entity_index = touch_ents[i];
-		Entity& entity = g_map.entities[entity_index];
-		Entity* target = g_map.PickTarget(entity.target);
+		Entity& entity = Map::entities[entity_index];
+		Entity* target = Map::PickTarget(entity.target);
 
 		switch (entity.type) {
 			case Entity::Type::trigger_teleport: {
@@ -285,8 +285,8 @@ NOINLINE void Demo::Player::Spawn() {
 	vec4 spawn_points[Map::MAX_NUM_ENTITIES];
 	u16 num_spawn_points = 0;
 
-	for (u16 i = g_map.num_brush_entities; i < g_map.num_entities; ++i) {
-		auto& e = g_map.entities[i];
+	for (u16 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
+		auto& e = Map::entities[i];
 		if (e.type == Entity::Type::info_player_deathmatch) {
 			auto& spawn = spawn_points[num_spawn_points++];
 			spawn[0] = e.origin[0];

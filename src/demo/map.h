@@ -227,7 +227,7 @@ namespace Demo {
 
 ////////////////////////////////////////////////////////////////
 
-struct Map {
+namespace Map {
 	enum {
 		MAX_NUM_VERTS		= 96 * 1024,
 		MAX_NUM_TRIS		= 128 * 1024,
@@ -259,7 +259,7 @@ struct Map {
 	u8						num_materials;
 	i8						symmetry_axis;
 	i16						symmetry_level;
-	bool					UseSymmetry() const { return u8(symmetry_axis) < 3; }
+	bool					UseSymmetry() { return u8(symmetry_axis) < 3; }
 
 	/* Unpacked brush data */
 
@@ -354,7 +354,7 @@ struct Map {
 
 	using TraceType			= TraceInfo::Type;
 
-	bool					TraceRay(TraceInfo& trace) const;
+	bool					TraceRay(TraceInfo& trace);
 
 	/* Entity data */
 
@@ -366,7 +366,7 @@ struct Map {
 	EntityList						entities;
 	EntityBrushOffsets				entity_brush_start;
 
-	bool							IsWorldspawnBrush(u16 index) const { return index < entity_brush_start[1]; }
+	bool							IsWorldspawnBrush(u16 index) { return index < entity_brush_start[1]; }
 	Demo::Entity*					PickTarget(i16 target);
 
 	/* Renderable geometry */
@@ -401,8 +401,9 @@ struct Map {
 	void							ComputeLighting(bool shadows = true);
 	void							UpdateLightmapTexture();
 
-private:
-	bool							TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax) const;
+	/* Internal functions */
+
+	bool							TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax);
 	void							SplitNode(u16 index, i16 bounds[2][3]);
 	void							DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid);
 	void							LoadPatches(const PackedMap& packed, u8 pass);
@@ -413,7 +414,7 @@ private:
 	void							InitLightmap();
 
 	static u16						MirrorPlaneIndex(u16 original);
-} g_map;
+} // namespace Map
 
 ////////////////////////////////////////////////////////////////
 
@@ -895,7 +896,7 @@ void Map::Render() {
 	// but it seems to help crinkler and it does no harm...
 	mesh.vertices[Attrib::Normal].normalized = true;
 
-	auto num_materials = min<u8>(size(Material::Properties), this->num_materials);
+	auto num_materials = min<u8>(size(Material::Properties), Map::num_materials);
 	for (u8 material = 0; material < num_materials; ++material) {
 		auto draw = Material::Properties[material] & Material::MaskVisibility;
 		if (draw == Material::Invisible && !ShowClipping)

@@ -23,9 +23,9 @@ namespace Demo {
 		trace.max_touch_ents = Player::MaxTouchEnts;
 		trace.touch_ents = player.touch_ents;
 
-		bool hit = g_map.TraceRay(trace);
+		bool hit = Map::TraceRay(trace);
 		if (hit) {
-			player.ground = g_map.brushes.planes + trace.plane;
+			player.ground = Map::brushes.planes + trace.plane;
 		} else {
 			player.ground = nullptr;
 		}
@@ -79,7 +79,7 @@ namespace Demo {
 			trace.SetCollision(player.position, advance, Player::CollisionBounds);
 			trace.z_offset = Player::EyeCenterOffset;
 
-			bool hit = g_map.TraceRay(trace);
+			bool hit = Map::TraceRay(trace);
 
 			if (trace.fraction > 0.f) {
 				// actually covered some distance
@@ -218,14 +218,14 @@ namespace Demo {
 		trace.delta.z = -StepSize;
 		trace.box_half_size = Player::CollisionBounds;
 		trace.type = Map::TraceInfo::Type::Collision;
-		g_map.TraceRay(trace);
+		Map::TraceRay(trace);
 		
 		// never step up when you still have up velocity
 		if (player.velocity.z > 0.f && (trace.fraction == 1.f || trace.hit_normal.z < 0.71875f)) // 0.7
 			return;
 
 		trace.delta.z = StepSize;
-		g_map.TraceRay(trace);
+		Map::TraceRay(trace);
 		if (trace.fraction < 1.f)
 			return;
 
@@ -235,7 +235,7 @@ namespace Demo {
 
 		trace.start = player.position;
 		trace.delta.z = -StepSize;
-		g_map.TraceRay(trace);
+		Map::TraceRay(trace);
 		if (trace.fraction > 0.f) {
 			player.position = trace.hit_point;
 		}
