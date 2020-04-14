@@ -3,32 +3,34 @@
 NOINLINE void Map::LoadPatches(const PackedMap& packed, u8 pass) {
 	u16 current_patch_vertex = 0;
 	for (u16 patch_index = 0; patch_index < packed.num_patches; ++patch_index) {
-		// HACK: we always mirror patches, instead of checking if we have to
-		const bool Mirror = true;
 
 		auto patch = packed.GetPatch(patch_index);
 		u16 num_control_points = patch.width * patch.height;
-
-		u8 prim_x = patch.width >> 1;
-		u8 prim_y = patch.height >> 1;
-		u32 verts_x = prim_x * patch.divx + 1;
-		u32 verts_y = prim_y * patch.divy + 1;
-		u32 num_verts = verts_x * verts_y * (1 + Mirror);
-
-		if (pass == 0) {
-			num_mat_verts[patch.material] += num_verts;
-			num_mat_indices[patch.material] += (verts_x - 1) * (verts_y - 1) * (6 * (1 + Mirror));
-			continue;
-		}
+		bool mirror = UseSymmetry();
 
 		const u16 MaxPatchVertices = 64;
 		PackedMap::PatchVertex ctrl[MaxPatchVertices];
 
 		assert(num_control_points <= MaxPatchVertices);
-		for (u16 i = 0; i < num_control_points; ++i)
+		for (u16 i = 0; i < num_control_points; ++i) {
 			ctrl[i] = packed.GetPatchVertex(current_patch_vertex++);
+			if (mirror)
+				mirror = ctrl[i].pos[symmetry_axis] < symmetry_level + 1;
+		}
 
-		for (u8 mirror_side = 0; mirror_side < 1 + UseSymmetry(); ++mirror_side) {
+		u8 prim_x = patch.width >> 1;
+		u8 prim_y = patch.height >> 1;
+		u32 verts_x = prim_x * patch.divx + 1;
+		u32 verts_y = prim_y * patch.divy + 1;
+		u32 num_verts = verts_x * verts_y * (1 + mirror);
+
+		if (pass == 0) {
+			num_mat_verts[patch.material] += num_verts;
+			num_mat_indices[patch.material] += (verts_x - 1) * (verts_y - 1) * (6 * (1 + mirror));
+			continue;
+		}
+
+		for (u8 mirror_side = 0; mirror_side < 1 + mirror; ++mirror_side) {
 			if (mirror_side == 1) {
 				for (u16 i = 0; i < num_control_points; ++i)
 					ctrl[i].pos[symmetry_axis] = 2 * symmetry_level - ctrl[i].pos[symmetry_axis];

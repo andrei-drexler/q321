@@ -626,3 +626,4 @@
 35213,made accommodations for q3dm1
 35203,gravity when stationary
 35307,worldspawn symmetry
+35359,conditional patch mirroring
