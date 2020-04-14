@@ -739,7 +739,7 @@ static FORCEINLINE HGLRC CreateGLContext(Sys::Window* window) {
 	HWND hwnd = (HWND)window->handle;
 	HDC dc = GetDC(hwnd);
 
-#ifdef DEV
+#ifdef ENABLE_RENDERDOC
 	HWND dummy_window = Win32::CreateDummyWindow();
 	HDC dummy_dc = GetDC(dummy_window);
 	HGLRC dummy_rc = Win32::CreateGLContext(dummy_dc);
