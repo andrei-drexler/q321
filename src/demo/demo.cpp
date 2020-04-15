@@ -317,7 +317,7 @@ int FORCEINLINE demo_main() {
 	Demo::Texture::GenerateAll();
 	Demo::UpdateWindowIcon();
 
-	auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), src, sizeof(src)); };
+	auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
 	#define PP_DEMO_MODEL_TOUCH(name)	touch(name::vertices); touch(name::uvs); touch(name::indices);
 	DEMO_MODELS(PP_DEMO_MODEL_TOUCH)
 	#undef PP_DEMO_MODEL_TOUCH
