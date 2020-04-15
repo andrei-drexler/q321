@@ -630,3 +630,4 @@
 35146,changed map from struct to namespace
 35135,larger lightmap
 37846,load dm1 instead of dm17
+37820,dm1 optimizations
