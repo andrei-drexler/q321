@@ -367,11 +367,8 @@ void Map::ComputeLighting(bool shadows) {
 							}
 
 							if (params->shadows) {
-								trace.SetLightmap(light_pos, pos);
-								// if the trace almost made it to its destination, accept it anyway
-								// this eliminates some dark edges/splotchy corners
-								const float ShadowTolerance = 2.f;
-								if (Map::TraceRay(trace) && length_squared(pos - trace.hit_point) >= ShadowTolerance * ShadowTolerance)
+								trace.SetLightmap(pos, light_pos);
+								if (Map::TraceRay(trace))
 									continue;
 							}
 
