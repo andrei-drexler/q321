@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\demo\console.h" />
-    <ClInclude Include="src\demo\cooked\dm17.h" />
+    <ClInclude Include="src\demo\cooked\maps.h" />
     <ClInclude Include="src\demo\cooked\shaders.h" />
     <ClInclude Include="src\demo\entity.h" />
     <ClInclude Include="src\demo\gfx_resources.h" />

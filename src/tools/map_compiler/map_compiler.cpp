@@ -29,9 +29,7 @@ struct Options {
 		float	patch_vertex		= 1.f;
 	};
 
-	const char*	map_name			= "dm17.map";
-	const char* map_path			= "../../demo/data/q3dm17sample.map";
-	const char* out_path			= "../../demo/cooked/dm17.h";
+	const char* out_path			= "../../demo/cooked/maps.h";
 
 	UVSort		sort_uv				= UVSort::ByMapOrder;
 	Snap		snap;
@@ -1689,14 +1687,9 @@ void WriteLightmap(ArrayPrinter& print, const Map& map, const Options& options, 
 
 ////////////////////////////////////////////////////////////////
 
-bool CompileMap(Map& map, const Options& options) {
+bool CompileMap(Map& map, const char* name, const char* source_name, const Options& options, FILE* out) {
 	if (map.entities.empty())
 		return false;
-
-	FILE* out = fopen(options.out_path, "w");
-	if (!out)
-		return false;
-	auto close_output = scope_exit { fclose(out); out = NULL; };
 
 	MergeFuncGroups(map);
 	map.ComputeBounds();
@@ -1730,19 +1723,17 @@ bool CompileMap(Map& map, const Options& options) {
 	auto& world = map.entities[0];
 
 	/* header */
+	auto description = world.GetProperty("message"sv);
 	fprintf(out,
-		"#pragma once\n"
 		"\n"
-		"// auto-generated, do not modify\n"
+		"////////////////////////////////////////////////////////////////\n"
+		"// %.*s (%s)\n"
+		"////////////////////////////////////////////////////////////////\n"
 		"\n"
+		"namespace %s {\n",
+		int(description.size()), description.data(), source_name,
+		name
 	);
-	fprintf(out, "namespace %s {\n", options.map_name);
-
-	/* version and version check */
-	fprintf(out, "const u32 material_version = 0x%08x;\n", Demo::Material::Version);
-	fprintf(out, "const u32 entity_version = 0x%08x;\n", Demo::Entity::Version);
-	fprintf(out, "static_assert(material_version == Demo::Material::Version, \"Material definition mismatch, please recompile the map\");\n");
-	fprintf(out, "static_assert(entity_version == Demo::Entity::Version, \"Entity definition mismatch, please recompile the map\");\n\n");
 
 	ArrayPrinter print(out);
 
@@ -1770,18 +1761,30 @@ bool CompileMap(Map& map, const Options& options) {
 		"};\n",
 		symmetry.axis, symmetry.level
 	);
-	fprintf(out, "} // namespace %s\n", options.map_name);
+	fprintf(out, "} // namespace %s\n", name);
 
 	return true;
 }
 
 ////////////////////////////////////////////////////////////////
 
+struct MapEntry {
+	const char* map_name;
+	const char* src_file_name;
+	const char* src_path;
+};
+
+static constexpr MapEntry DemoMaps[] = {
+	#define PP_DEMO_MAP_DEF(name, source, ...)		{#name, #source, "../../demo/data/" #source},
+	DEMO_MAPS(PP_DEMO_MAP_DEF)
+	#undef PP_DEMO_MAP_DEF
+};
+
+////////////////////////////////////////////////////////////////
+
 int main() {
 	Options options;
-	options.map_path			= "../../demo/data/q3dm17sample.map";
-	options.out_path			= "../../demo/cooked/dm17.h";
-	options.map_name			= "dm17";
+	options.out_path			= "../../demo/cooked/maps.h";
 	options.snap.uv_angle		= 1.f;
 	options.snap.uv_offset		= 4.f;
 	options.snap.uv_scale_bits	= 16;
@@ -1793,30 +1796,39 @@ int main() {
 	options.wrap_uvs			= false;	// minor net loss
 	options.sort_lights			= true;
 	options.verbose				= false;
-	
-	std::vector<char> contents;
-	if (!ReadFile(options.map_path, contents))
-		return 1;
 
-	Map map;
-	if (!map.Parse({contents.data(), contents.size()}))
+	FILE* out = fopen(options.out_path, "w");
+	if (!out)
 		return 1;
+	auto close_output = scope_exit { fclose(out); out = nullptr; };
 
-	if (0) {
-		MergeFuncGroups(map);
-		map.ComputeBounds();
-		Symmetry symmetry;
-		ExploitSymmetry(map, options, symmetry);
-		ExportMap(map, "d:\\q3dm17.map");
-		return 0;
+	/* header/version check */
+	fprintf(out,
+		"#pragma once\n"
+		"\n"
+		"// auto-generated, do not modify\n"
+	);
+	fprintf(out, "static_assert(0x%08xU == Demo::Material::Version, \"Material definition mismatch, please recompile the maps\");\n", Demo::Material::Version);
+	fprintf(out, "static_assert(0x%08xU == Demo::Entity::Version, \"Entity definition mismatch, please recompile the maps\");\n", Demo::Entity::Version);
+
+	std::vector<char> source;
+	for (auto& map_entry : DemoMaps) {
+		printf("\n--- Compiling %s ---\n\n", map_entry.map_name);
+		printf("Reading %s\n", map_entry.src_path);
+
+		if (!ReadFile(map_entry.src_path, source))
+			return 1;
+
+		Map map;
+		printf("Parsing map (%zd bytes)\n", source.size());
+		if (!map.Parse({source.data(), source.size()}))
+			return 1;
+
+		if (!CompileMap(map, map_entry.map_name, map_entry.src_file_name, options, out))
+			return 1;
 	}
 
-	//MergeFuncGroups(map);
-	//ExportObj(map, "d:\\q3dm17.obj");
-	//return 0;
-
-	if (!CompileMap(map, options))
-		return 1;
+	fflush(out);
 
 	return 0;
 }

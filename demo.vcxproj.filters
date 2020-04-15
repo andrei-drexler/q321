@@ -12,9 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\demo\cooked\dm17.h">
-      <Filter>Cooked</Filter>
-    </ClInclude>
     <ClInclude Include="src\demo\cooked\shaders.h">
       <Filter>Cooked</Filter>
     </ClInclude>
@@ -80,6 +77,9 @@
     </ClInclude>
     <ClInclude Include="src\demo\entity.h">
       <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\cooked\maps.h">
+      <Filter>Cooked</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

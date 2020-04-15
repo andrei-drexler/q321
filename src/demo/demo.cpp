@@ -3,7 +3,7 @@
 #include "resource_def.h"
 #include "gfx_resources.h"
 #include "map.h"
-#include "cooked/dm17.h"
+#include "cooked/maps.h"
 #include "cooked/models.h"
 #include "player.h"
 
