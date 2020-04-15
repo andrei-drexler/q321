@@ -25,7 +25,7 @@ struct Options {
 		float	uv_offset			= 2.f;
 		float	uv_angle			= 1.f;
 		int		uv_scale_bits		= 16;
-		float	patch_uv_bits		= 12;
+		int		patch_uv_bits		= 12;
 		float	patch_vertex		= 1.f;
 	};
 
