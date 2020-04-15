@@ -322,7 +322,7 @@ int FORCEINLINE demo_main() {
 	DEMO_MODELS(PP_DEMO_MODEL_TOUCH)
 	#undef PP_DEMO_MODEL_TOUCH
 
-	Map::Load(dm17::map);
+	Map::Load(dm1::map);
 	Map::UpdateLightmapTexture();
 	Demo::GenerateLevelShot();
 	
