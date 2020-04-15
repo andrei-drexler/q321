@@ -638,3 +638,4 @@
 37675,more dm1 optimizations
 37609,and more
 37628,increased lightmap surface bias
+37566,more dm1 tweaks
