@@ -640,3 +640,4 @@
 37628,increased lightmap surface bias
 37566,more dm1 tweaks
 37549,sign/magnitude oct encoding
+37540,more dm1 tweaks
