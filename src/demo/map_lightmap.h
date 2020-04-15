@@ -7,7 +7,8 @@ namespace Demo {
 		/* Lighting parameters */
 		constexpr float
 			PointScale		= 7500.f * 6.f,
-			ThreshIgnore	= 4.f
+			ThreshIgnore	= 4.f,
+			SurfaceBias		= 4.f
 		;
 
 		/* Metadata */
@@ -319,7 +320,8 @@ void Map::ComputeLighting(bool shadows) {
 				for (u16 x = 0; x < Lightmap::Width; ++x, ++texel_pos, ++texel_nor, ++texel) {
 					vec3 pos = *texel_pos;
 					const vec3& nor = *texel_nor;
-					pos += nor;
+
+					mad(pos, nor, Lightmap::SurfaceBias);
 
 					constexpr vec3 Ambient = {
 						4.f * 6.25f,
