@@ -964,9 +964,24 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 	
 	const i32
 		OctBits			= 12,
-		OctLevels		= 1 << OctBits,
+		OctMask			= (1 << OctBits) - 1,
+		OctMaxValue		= OctMask >> 1,
 		DistFractBits	= 4,
 		DistScale		= 1 << DistFractBits;
+
+	auto encode_sign_mag = [=] (float f) {
+		bool negative = f < 0.f;
+		if (negative)
+			f = -f;
+		i32 i = std::clamp((i32)std::floor(f * OctMaxValue + 0.5f), 0, OctMaxValue);
+		return (i << 1) | negative;
+	};
+
+	auto decode_sign_mag = [=] (i32 i) {
+		bool negative = i & 1;
+		float f = (i >> 1) * (1.f / OctMaxValue);
+		return negative ? -f : f;
+	};
 
 	int32_t max_nonaxial_planes = 0;
 		
@@ -991,16 +1006,16 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 					continue;
 					
 				vec2 oct = vec3_to_oct(plane.xyz);
-				i32 x = std::clamp((i32)std::floor(0.5f + oct.x * float((OctLevels >> 1) - 1) + float(OctLevels >> 1)), 0, OctLevels - 1);
-				i32 y = std::clamp((i32)std::floor(0.5f + oct.y * float((OctLevels >> 1) - 1) + float(OctLevels >> 1)), 0, OctLevels - 1);
+				i32 x = encode_sign_mag(oct.x);
+				i32 y = encode_sign_mag(oct.y);
 				u32 xy = x | (y << 16);
-					
+
 				if (pass == 0) {
 					print << i32(xy) << ","sv;
 					++count;
 				} else {
-					oct.x = std::max(-1.f, (x - i32(OctLevels >> 1)) * (1.f / float((OctLevels >> 1) - 1)));
-					oct.y = std::max(-1.f, (y - i32(OctLevels >> 1)) * (1.f / float((OctLevels >> 1) - 1)));
+					oct.x = decode_sign_mag(x);
+					oct.y = decode_sign_mag(y);
 					vec3 snapped_normal = oct_to_vec3(oct);
 					float w = plane.w;
 						

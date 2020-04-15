@@ -609,9 +609,16 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 
 			const i32
 				OctBits			= 12,
-				OctLevels		= 1 << OctBits,
+				OctMask			= (1 << OctBits) - 1,
+				OctMaxValue		= OctMask >> 1,
 				DistFractBits	= 4,
 				DistScale		= 1 << DistFractBits;
+
+			auto decode_sign_mag = [] (i32 i) {
+				bool negative = i & 1;
+				float f = (i >> 1);
+				return negative ? -f : f;
+			};
 
 			/* non-axial planes, if any */
 			{
@@ -626,10 +633,12 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 					++plane_data;
 				
 					vec2 oct;
-					i32 x = xy & (OctLevels - 1);
+					i32 x = xy & OctMask;
 					i32 y = xy >> 16;
-					oct.x = max(-1.f, (x - i32(OctLevels >> 1)) * (1.f / float((OctLevels >> 1) - 1)));
-					oct.y = max(-1.f, (y - i32(OctLevels >> 1)) * (1.f / float((OctLevels >> 1) - 1)));
+					oct.x = decode_sign_mag(x) * (1.f / OctMaxValue);
+					oct.y = decode_sign_mag(y) * (1.f / OctMaxValue);
+					assert(oct.x >= -1.f && oct.x <= 1.f);
+					assert(oct.y >= -1.f && oct.y <= 1.f);
 
 					plane.xyz = oct_to_vec3(oct);
 					plane.w = float(w) * (1.f / float(DistScale));
