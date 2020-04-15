@@ -634,3 +634,4 @@
 37854,made caulk block light
 37884,skies/tim_hell stub
 37855,reversed light trace dir
+37852,caulked flag sides
