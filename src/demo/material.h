@@ -17,6 +17,7 @@ namespace Demo {
 			MaskContents	= 3 << 2,
 
 			NeedsUV			= 1 << 4,
+			BlocksLight		= 1 << 5, // for caulk
 		};
 
 		enum {

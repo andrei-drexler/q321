@@ -105,7 +105,7 @@
 #define DEMO_MATERIALS(x)\
 	/*Path									Shader			Texture		Contents	Draw					Light*/\
 	DEMO_FALLBACK_MATERIAL(x)\
-	x("common/caulk",						Generic,		White,		Solid,		Invisible,				(0))\
+	x("common/caulk",						Generic,		White,		Solid,		Invisible|BlocksLight,	(0))\
 	x("base_wall/c_met5_2",					Lmapped,		cmet52,		Solid,		Opaque,					(0))\
 	x("base_trim/pewter_shiney",			shiny,			ptrshn,		Solid,		Opaque,					(0))\
 	x("base_floor/diamond2c",				Lmapped,		dmnd2c,		Solid,		Opaque,					(0))\
