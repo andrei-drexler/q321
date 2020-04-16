@@ -1406,6 +1406,9 @@ void WriteLights
 		auto color_str = ent.GetProperty("_color"sv);
 		if (color_str.empty() || !ParseVector(color_str, light.color, false))
 			light.color = 1.f;
+		float max_value = std::max(light.color.r, std::max(light.color.g, light.color.b));
+		if (max_value != 0.f)
+			light.color /= max_value;
 
 		light_values.Add(light.intensity);
 		lights.push_back(light);

@@ -645,3 +645,4 @@
 37586,dm1 clip brush tweaks
 37659,basic skies/tim_hell shader
 38129,added a few more shader stubs
+38131,normalized light colors
