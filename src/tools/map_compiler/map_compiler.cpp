@@ -1093,8 +1093,8 @@ void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options,
 			auto& material = map.materials[mat_index];
 			auto& value = shader_props[mat_index].map_material;
 			if (value < 0) {
-				printf(INDENT "defaulting %s\n", material.name.c_str());
-				DebugPrint("%s\n", material.name.c_str());
+				printf(INDENT "defaulting %s (%zdx)\n", material.name.c_str(), usage[mat_index]);
+				DebugPrint("%s (%zdx)\n", material.name.c_str(), usage[mat_index]);
 			}
 		}
 	}
