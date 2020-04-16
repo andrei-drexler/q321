@@ -643,3 +643,4 @@
 37540,more dm1 tweaks
 37580,bias lightmap ray start towards light
 37586,dm1 clip brush tweaks
+37659,basic skies/tim_hell shader

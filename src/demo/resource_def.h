@@ -55,6 +55,7 @@
 	x(dmnd2cjp_m,			MapVertexBits)\
 	x(lpdmnd,				FSVertexBits)\
 	x(lpdmnd_m,				MapVertexBits)\
+	x(timhel,				MapVertexBits)\
 	x(q3bnr,				FSVertexBits)\
 	x(q3bnr_m,				MapVertexBits)\
 	x(beam,					Demo::Attrib::PositionBit|Demo::Attrib::TexCoordBit|Demo::Attrib::NormalBit|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
@@ -129,7 +130,7 @@
 	x("sfx/launchpad_diamond",				lpdmnd_m,		lpdmnd,		Solid,		Opaque|NeedsUV,			(0))\
 	x("base_wall/main_q3abanner",			q3bnr_m,		q3bnr,		Solid,		Opaque|NeedsUV,			(20,2,0,0))\
 	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
-	x("skies/tim_hell",						Generic,		White,		Solid,		Invisible,				(0))\
+	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\
 	x("sfx/beam",							beam,			White,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("common/weapclip",					Generic,		White,		Solid,		Invisible,				(0))\
 	x("common/clip",						Generic,		White,		Solid,		Invisible,				(0))\

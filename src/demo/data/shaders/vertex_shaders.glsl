@@ -68,3 +68,4 @@ void fixture() { Generic(); }
 void beam() { Generic(); }
 void q3bnr_m() { Generic(); }
 void shiny() { Generic(); }
+void timhel() { Generic(); }

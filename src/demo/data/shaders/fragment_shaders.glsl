@@ -874,6 +874,16 @@ void shiny() {
 	FCol = vec4(c.xyz * Light(), 1);
 }
 
+void timhel() {
+	vec3 d = normalize(Pos - Cam.xyz);
+	d.z = d.z * 4. + 2.;
+	vec2 uv = normalize(d).xy * 2.;
+	float b = FBMT(uv - Time.x * vec2(.1, .2), vec2(5), .5, 2., 4);
+	uv.y *= 1.5;
+	float s = ls(.3, 1., FBMT(uv - Time.x * vec2(.1, .18), vec2(5), .6, 2., 4));
+	FCol = vec4(RGB(128, 0, 0) * b + RGB(80, 30, 8) * s * s, 1);
+}
+
 void Loading() {
 	FCol = texture(Texture0, (.5 + UV * 127.) / 128., 2.5);
 	FCol.xyz *= .7 + .3 * NT(UV, .5/fwidth(UV));
