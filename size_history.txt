@@ -642,3 +642,4 @@
 37549,sign/magnitude oct encoding
 37540,more dm1 tweaks
 37580,bias lightmap ray start towards light
+37586,dm1 clip brush tweaks
