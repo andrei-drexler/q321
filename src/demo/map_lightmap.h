@@ -382,6 +382,11 @@ void Map::ComputeLighting(bool shadows) {
 					if (!params->shadows)
 						accum *= 0.75f;
 
+					// maintain hue instead of clamping to white
+					float max_value = max_component(accum);
+					if (max_value > 255.f)
+						accum *= 255.f / max_value;
+
 					u32 color = 
 						min((i32)accum.x, 255) << 16 | 
 						min((i32)accum.y, 255) <<  8 | 
