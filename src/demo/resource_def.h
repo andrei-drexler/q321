@@ -45,6 +45,10 @@
 	x(mtlt12f,				FSVertexBits)\
 	x(mtlt6f,				FSVertexBits)\
 	x(mtlbk03,				FSVertexBits)\
+	x(gmtlbg6,				FSVertexBits)\
+	x(glrgbk3b,				FSVertexBits)\
+	x(gblks15,				FSVertexBits)\
+	x(gtprst3,				FSVertexBits)\
 	x(bmtsprt,				FSVertexBits)\
 	x(cable,				FSVertexBits)\
 	x(brdr11b,				FSVertexBits)\
@@ -85,6 +89,10 @@
 	x(mtlt12f,		Shader::mtlt12f,	128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(mtlt6f,		Shader::mtlt6f,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(mtlbk03,		Shader::mtlbk03,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gmtlbg6,		Shader::gmtlbg6,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(glrgbk3b,		Shader::glrgbk3b,	512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gblks15,		Shader::gblks15,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gtprst3,		Shader::gtprst3,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bmtsprt,		Shader::bmtsprt,	256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(cable,		Shader::cable,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(brdr11b,		Shader::brdr11b,	64,		32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -129,6 +137,12 @@
 	x("sfx/diamond2cjumppad",				dmnd2cjp_m,		dmnd2cjp,	Solid,		Opaque|NeedsUV,			(200,100,0))\
 	x("sfx/launchpad_diamond",				lpdmnd_m,		lpdmnd,		Solid,		Opaque|NeedsUV,			(0))\
 	x("base_wall/main_q3abanner",			q3bnr_m,		q3bnr,		Solid,		Opaque|NeedsUV,			(20,2,0,0))\
+	x("gothic_floor/metalbridge06",			Lmapped,		gmtlbg6,	Solid,		Opaque,					(0))\
+	x("gothic_floor/largerblock3b",			Lmapped,		glrgbk3b,	Solid,		Opaque,					(0))\
+	x("gothic_block/blocks15",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
+	x("gothic_trim/pitted_rust3",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
+	x("gothic_trim/pitted_rust2",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
+	x("gothic_trim/pitted_rust",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
 	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
 	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\
 	x("sfx/beam",							beam,			White,		NonSolid,	Translucent|NeedsUV,	(0))\

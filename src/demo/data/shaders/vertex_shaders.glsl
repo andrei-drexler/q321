@@ -49,6 +49,10 @@ void mtlfb3() { FS(); }
 void mtlt12f() { FS(); }
 void mtlt6f() { FS(); }
 void mtlbk03() { FS(); }
+void gmtlbg6() { FS(); }
+void glrgbk3b() { FS(); }
+void gblks15() { FS(); }
+void gtprst3() { FS(); }
 void bmtsprt() { FS(); }
 void cable() { FS(); }
 void brdr11b() { FS(); }

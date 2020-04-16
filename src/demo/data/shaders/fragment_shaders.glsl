@@ -692,6 +692,45 @@ TEX(mtlbk03) {
 	return c;
 }
 
+TEX(gmtlbg6) {
+	float b = FBMT(uv, vec2(13), 1., 3., 4);
+	vec3 c = mix(RGB(36, 35, 31), RGB(132, 132, 132), b);
+	return c;
+}
+
+TEX(glrgbk3b) {
+	float b = FBMT(uv, vec2(13), 1., 3., 4);
+	vec3 c = mix(RGB(67, 37, 27), RGB(152, 117, 85), b);
+	return c;
+}
+
+TEX(gblks15) {
+	float
+		b = FBMT(uv, vec2(5), .9, 3., 4),
+		t = FBMT(uv, vec2(5), 1., 2., 5),
+		n = NT(uv + sin(uv.yx * PI * 4.) * .05, vec2(9)),
+		id;
+	vec3
+		pt = pattern(uv, 4., .1 + n * t * .05),
+		c = RGB(80, 70, 68) * sqrt(b) / .7;
+	vec2 d = grad(pt.x);
+	id = H(fract(pt.yz));
+	c *= 1. - tri(.5, .4, n) * ls(.5, .7, t) * .3;
+	c = mix(c, RGB(66, 66, 75), tri(.5, .1, b) * tri(.7, .3, id) * .7);
+	c = mix(c, RGB(105, 90, 70), tri(.3, .1, t) * tri(.3, .3, id) * .3);
+	c *= 1. - b * t * ls(.015, .022, pt.x) + tri(.02, .007, pt.x) * b * d.y * .6;
+	c *= .9 + .2 * id;
+	return c;
+}
+
+TEX(gtprst3) {
+	float
+		b = FBMT(uv, vec2(13), .9, 3., 4),
+		n = NT(uv + sin(uv.yx * PI * 4.) * .05, vec2(9));
+	vec3 c = mix(RGB(56, 48, 49), RGB(100, 50, 40), .7 * (n + b) * .5) * (.875 + b * b);
+	return c;
+}
+
 TEX(cable) {
     float
         b = FBMT(uv, vec2(5), .9, 3., 4),
