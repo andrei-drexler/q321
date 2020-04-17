@@ -1,3 +1,5 @@
+//#define ENABLE_RENDERDOC
+
 #include "../engine/demo.h"
 #include "console.h"
 #include "resource_def.h"
