@@ -647,3 +647,4 @@
 38129,added a few more shader stubs
 38131,normalized light colors
 38140,hue-preserving lightmap clamp
+38153,tweaked light scale

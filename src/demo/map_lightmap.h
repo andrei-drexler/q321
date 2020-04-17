@@ -6,8 +6,8 @@ namespace Demo {
 	namespace Lightmap {
 		/* Lighting parameters */
 		constexpr float
-			PointScale		= 7500.f * 6.f,
-			ThreshIgnore	= 4.f,
+			PointScale		= 7500.f * 3.f,
+			ThreshIgnore	= 2.f,
 			SurfaceBias		= 4.f
 		;
 
@@ -322,9 +322,9 @@ void Map::ComputeLighting(bool shadows) {
 					const vec3& nor = *texel_nor;
 
 					constexpr vec3 Ambient = {
-						4.f * 6.25f,
-						4.f * 6.25f,
-						4.f * 7.f,
+						2.f * 6.25f,
+						2.f * 6.25f,
+						2.f * 7.f,
 					};
 					vec3 accum = Ambient;
 
