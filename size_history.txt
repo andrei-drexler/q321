@@ -649,3 +649,4 @@
 38140,hue-preserving lightmap clamp
 38153,tweaked light scale
 38153,fixed overzealous caulk
+38164,curve lod tweaks

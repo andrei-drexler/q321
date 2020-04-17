@@ -1258,22 +1258,32 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 			}
 		}
 
-		const u32
-			SizeBits		= 3,
-			MaxPatchSize	= (((1 << SizeBits) - 1) << 1) + 3,
-			MaterialBits	= 6,
-			MaxMaterial		= (1 << MaterialBits) - 1;
+		const i32
+			SizeBits			= 3,
+			MaxPatchSize		= (((1 << SizeBits) - 1) << 1) + 3,
+			MaterialBits		= 6,
+			MaxMaterial			= (1 << MaterialBits) - 1,
+			MaxLevel			= 4,
+			MaxCombinedLevels	= 6;
 
-		// TODO: find a better function
+		// TODO: better LOD model
 		auto lod_level = [](float dist) {
-			return std::clamp((int)(log2f(std::max(dist, 1.f))), 0, 4);
+			return std::max((int)(log2f(std::max(dist, 1.f)) - 1.5f), 0);
 		};
 
-		i16 material = std::max<i16>(props[patch.material].map_material, 0);
-		u32 width	= (patch.width - 3) >> 1;
-		u32 height	= (patch.height - 3) >> 1;
-		u32 divx	= lod_level(max_dist.x);
-		u32 divy	= lod_level(max_dist.y);
+		i16 material	= std::max<i16>(props[patch.material].map_material, 0);
+		u32 width		= (patch.width - 3) >> 1;
+		u32 height		= (patch.height - 3) >> 1;
+		i32 divx		= lod_level(max_dist.x);
+		i32 divy		= lod_level(max_dist.y);
+
+		// clamp level of detail
+		i32 overflow	= std::max(divx + divy - MaxCombinedLevels, 0) >> 1;
+		if (options.verbose && overflow > 0)
+			printf(INDENT "clamping patch divs: %d %d\n", divx, divy);
+		divx = std::clamp(divx - overflow, 0, MaxLevel);
+		divy = std::clamp(divy - overflow, 0, MaxLevel);
+
 		u32 packed	= width | (height << 3) | (divx << 6) | (divy << 9) | (material << 12);
 
 		assert(patch.width >= 3);
