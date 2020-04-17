@@ -15,6 +15,8 @@ namespace Demo {
 			AirAccel		= 1.f,
 			Friction		= 6.f,
 
+			NoClipAccel		= 8.f,
+
 			LandDeflectTime	= 0.15625f,		// 0.15 in Q3
 			LandReturnTime	= 0.3125f,		// 0.3
 			LandTime		= LandDeflectTime + LandReturnTime,
@@ -29,6 +31,20 @@ namespace Demo {
 
 		static constexpr vec3
 			CollisionBounds = {HalfWidth, HalfWidth, HalfHeight};
+
+		enum Flag {
+			EnableNoClip	= true, // disable to save ~86 bytes
+			
+			NoJump			= 1 << 0,
+			NoClip			= EnableNoClip << 1,
+		};
+
+		bool NoClipping() const {
+			if constexpr (EnableNoClip)
+				return (flags & Flag::NoClip) != 0;
+			else
+				return false;
+		}
 
 		enum class Input : u8 {
 			MoveForward,
@@ -48,40 +64,36 @@ namespace Demo {
 			Invalid = Count,
 		};
 
-		enum Flag {
-			NoJump		= 1 << 0,
-		};
-
 		static constexpr u32 InputMask(Input i)	{
 			bool valid = u8(i) < u8(Input::Invalid);
 			return valid << (u8)i;
 		}
 
-		vec3			position;
-		vec3			velocity;
-		float			step;
-		float			walk_cycle;
-		float			land_change;
-		float			land_time;
-		float			shadow_angle;
-		const vec4*		ground;
-		vec3			angles;
-		u32				inputs;
-		u32				flags;
-		i16				health;
+		vec3				position;
+		vec3				velocity;
+		float				step;
+		float				walk_cycle;
+		float				land_change;
+		float				land_time;
+		float				shadow_angle;
+		const vec4*			ground;
+		vec3				angles;
+		u32					inputs;
+		u32					flags;
+		i16					health;
 
 		enum {
 			MaxTouchEnts = 16,
 		};
-		u16				touch_ents[MaxTouchEnts];
-		u16				num_touch_ents;
+		u16					touch_ents[MaxTouchEnts];
+		u16					num_touch_ents;
 
-		bool			Has(Input input) const		{ return inputs & InputMask(input); }
-		void			Set(Input input)			{ inputs |= InputMask(input); }
-		void			Clear(Input input)			{ inputs &= ~InputMask(input); }
+		bool				Has(Input input) const		{ return inputs & InputMask(input); }
+		void				Set(Input input)			{ inputs |= InputMask(input); }
+		void				Clear(Input input)			{ inputs &= ~InputMask(input); }
 
-		void			Update(const u8* keys, float dt);
-		void			Spawn();
+		void				Update(const u8* keys, float dt);
+		void				Spawn();
 	} g_player;
 
 	////////////////////////////////////////////////////////////////
@@ -128,17 +140,21 @@ void Demo::Player::Update(const u8* keys, float dt) {
 
 	const u32 MaskJump = InputMask(Input::MoveUp);
 	const u32 MaskCrouch = InputMask(Input::MoveDown);
-	if (inputs & MaskJump) {
-		if (flags & NoJump) {
-			// prevent speed loss
-			inputs &= ~(MaskJump | MaskCrouch);
-		} else if (ground) {
-			ground = nullptr;
-			velocity.z = JumpSpeed;
-			flags |= NoJump;
+
+	bool noclip = NoClipping();
+	if (!noclip) {
+		if (inputs & MaskJump) {
+			if (flags & NoJump) {
+				// prevent speed loss
+				inputs &= ~(MaskJump | MaskCrouch);
+			} else if (ground) {
+				ground = nullptr;
+				velocity.z = JumpSpeed;
+				flags |= NoJump;
+			}
+		} else {
+			flags &= ~NoJump;
 		}
-	} else {
-		flags &= ~NoJump;
 	}
 
 	float run = 1.f - 0.5f * Has(Input::Run);
@@ -156,13 +172,17 @@ void Demo::Player::Update(const u8* keys, float dt) {
 
 	/* movement input */
 	float yaw = angles.x * Math::DEG2RAD;
+	float pitch = noclip ? angles.y * Math::DEG2RAD : 0.f;
+	float sin_pitch = sin(pitch);
+	float cos_pitch = cos(pitch);
+
 	vec3 forward, right;
 	right.x = cos(yaw);
 	right.y = sin(yaw);
 	right.z = 0.f;
-	forward.x = -right.y;
-	forward.y = right.x;
-	forward.z = 0.f;
+	forward.x = -right.y * cos_pitch;
+	forward.y = right.x * cos_pitch;
+	forward.z = sin_pitch;
 
 	vec3 cmd;
 	cmd.y = float(Has(Input::MoveForward) - Has(Input::MoveBack));
@@ -185,12 +205,17 @@ void Demo::Player::Update(const u8* keys, float dt) {
 		}
 	}
 
+	vec3 wishdir;
+	wishdir.x = cmd.x * right.x + cmd.y * forward.x;
+	wishdir.y = cmd.x * right.y + cmd.y * forward.y;
+	wishdir.z = cmd.x * right.z + cmd.y * forward.z;
+
 	/* accelerate */
-	{
-		vec3 wishdir;
-		wishdir.x = cmd.x * right.x + cmd.y * forward.x;
-		wishdir.y = cmd.x * right.y + cmd.y * forward.y;
-		wishdir.z = cmd.x * right.z + cmd.y * forward.z;
+	if (noclip) {
+		wishdir.z += cmd.z;
+		wishdir *= MoveSpeed * run;
+		mix_into(velocity, wishdir, min(1.f, dt * NoClipAccel));
+	} else {
 		float scale = length(cmd.xy);
 		if (scale > 0.f)
 			wishdir /= scale;
@@ -217,8 +242,17 @@ void Demo::Player::Update(const u8* keys, float dt) {
 		MemSet(&velocity.xy);
 	else
 		shadow_angle = atan2(velocity.y, velocity.x);
-	StepSlideMove(*this, dt);
-	GroundTrace(*this);
+
+	if (noclip) {
+		position.x += velocity.x * dt;
+		position.y += velocity.y * dt;
+		position.z += velocity.z * dt;
+		ground = nullptr;
+		num_touch_ents = 0;
+	} else {
+		StepSlideMove(*this, dt);
+		GroundTrace(*this);
+	}
 
 	/* land */
 	if (prev_z_speed < -LandSpeed && ground) {
@@ -306,5 +340,5 @@ NOINLINE void Demo::Player::Spawn() {
 	angles.x = spawn.w;
 	step = 16.f;
 	health = 100;
-	flags = Flag::NoJump;
+	flags = Flag::NoJump /*| Flag::NoClip*/;
 }

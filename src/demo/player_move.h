@@ -37,12 +37,6 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 	
 	bool SlideMove(Player& player, float dt) {
-		bool noclip = false;
-		if (noclip) {
-			player.position += player.velocity * dt;
-			return false;
-		}
-
 		// apply gravity if airborne or on a very steep slope
 		bool gravity = !player.ground || player.ground->z < 0.5f;
 
