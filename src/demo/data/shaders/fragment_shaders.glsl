@@ -897,6 +897,10 @@ void beam() {
 	FCol = vec4(2. * RGB(95, 85, 80) * f*f*f*f * mix(1., b, .5), 0.);
 }
 
+void flame() {
+	FCol = vec4(0);
+}
+
 void Generic() {
 	float l = dot(Nor, normalize(vec3(2,0,8)));
 	l = l * .4 + .7;

@@ -63,6 +63,7 @@
 	x(q3bnr,				FSVertexBits)\
 	x(q3bnr_m,				MapVertexBits)\
 	x(beam,					Demo::Attrib::PositionBit|Demo::Attrib::TexCoordBit|Demo::Attrib::NormalBit|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(flame,				Demo::Attrib::PositionBit|Demo::Attrib::TexCoordBit|Demo::Attrib::NormalBit|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 
 ////////////////////////////////////////////////////////////////
 
@@ -100,6 +101,8 @@
 	x(lt2,			Shader::lt2,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(light5,		Shader::light5,		16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(q3bnr,		Shader::q3bnr,		512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
+	x(_128x256,		Gfx::InvalidID,		128,	256,	BGRA8,		Gfx::Texture::Flags::NoMips)\
 
 ////////////////////////////////////////////////////////////////
 
@@ -146,6 +149,7 @@
 	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
 	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\
 	x("sfx/beam",							beam,			White,		NonSolid,	Translucent|NeedsUV,	(0))\
+	x("sfx/flame1_hell",					flame,			_128x256,	NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
 	x("common/weapclip",					Generic,		White,		Solid,		Invisible,				(0))\
 	x("common/clip",						Generic,		White,		Solid,		Invisible,				(0))\
 	x("common/nodraw",						Generic,		White,		Solid,		Invisible,				(0))\

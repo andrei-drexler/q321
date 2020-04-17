@@ -70,6 +70,7 @@ void dmnd2pnt_m() { Generic(); }
 void lpdmnd_m() { Generic(); }
 void fixture() { Generic(); }
 void beam() { Generic(); }
+void flame() { Generic(); }
 void q3bnr_m() { Generic(); }
 void shiny() { Generic(); }
 void timhel() { Generic(); }
