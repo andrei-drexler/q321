@@ -652,3 +652,4 @@
 38164,curve lod tweaks
 38233,tweaked gblks15 and timhel
 38295,added flame shader stub
+38371,basic flame shader
