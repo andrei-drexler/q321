@@ -322,6 +322,19 @@ float FBMT(vec2 p, vec2 scale, float gain, float lac) {
 	return FBMT(p, scale, gain, lac, 4);
 }
 
+#define ridged(v) tri(.5,.5,v)
+
+float FBMT_ridged(vec2 p, vec2 scale, float gain, float lac, int lyrs) {
+	float acc = ridged(NT(p, scale)), ow = 1., tw = 1.;
+	for (int i=0; i<lyrs; ++i) {
+		p = fract(p + PHI);
+		scale *= lac; ow *= gain;
+		acc += ridged(NT(p, scale)) * ow;
+		tw += ow;
+	}
+	return acc / tw;
+}
+
 ////////////////////////////////////////////////////////////////
 
 vec2 seg(vec2 p, vec2 a, vec2 b) {
@@ -707,18 +720,21 @@ TEX(glrgbk3b) {
 TEX(gblks15) {
 	float
 		b = FBMT(uv, vec2(5), .9, 3., 4),
-		t = FBMT(uv, vec2(5), 1., 2., 5),
+		t = FBMT_ridged(uv + sin(uv.yx * PI * 4.) * .01, vec2(5), 1., 2., 5),
 		n = NT(uv + sin(uv.yx * PI * 4.) * .05, vec2(9)),
-		id;
+		id, e;
 	vec3
 		pt = pattern(uv, 4., .1 + n * t * .05),
-		c = RGB(80, 70, 68) * sqrt(b) / .7;
+		c;
 	vec2 d = grad(pt.x);
 	id = H(fract(pt.yz));
-	c *= 1. - tri(.5, .4, n) * ls(.5, .7, t) * .3;
-	c = mix(c, RGB(66, 66, 75), tri(.5, .1, b) * tri(.7, .3, id) * .7);
+	c = RGB(91, 67, 61) * (.8 + b * b * .8);
+	c += tri(.6, .3, n) * ls(.3, .9, b * t) * .3;
+	c *= 1. - tri(.5, .4, n) * ls(.5, .7, t) * .2;
+	c = mix(c, RGB(86, 74, 78), tri(.5, .1, b) * tri(.7, .3, id) * .7);
 	c = mix(c, RGB(105, 90, 70), tri(.3, .1, t) * tri(.3, .3, id) * .3);
-	c *= 1. - b * t * ls(.015, .022, pt.x) + tri(.02, .007, pt.x) * b * d.y * .6;
+	e = max(tri(.02, .007, pt.x), tri(.4, .03, n * t));
+	c *= 1. - b * t * ls(.015, .022, pt.x) + e * b * d.y * .6;
 	c *= .9 + .2 * id;
 	return c;
 }
@@ -920,7 +936,7 @@ void timhel() {
 	float b = FBMT(uv - Time.x * vec2(.1, .2), vec2(5), .5, 2., 4);
 	uv.y *= 1.5;
 	float s = ls(.3, 1., FBMT(uv - Time.x * vec2(.1, .18), vec2(5), .6, 2., 4));
-	FCol = vec4(RGB(128, 0, 0) * b + RGB(80, 30, 8) * s * s, 1);
+	FCol = vec4(vec3(b, 0, 0) + RGB(80, 30, 8) * s * s * 2., 1);
 }
 
 void Loading() {
