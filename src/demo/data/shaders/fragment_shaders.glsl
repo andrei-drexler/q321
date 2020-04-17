@@ -15,18 +15,18 @@ out vec4 FCol;
 #define RGB(r,g,b)	(vec3(r,g,b)/255.)
 
 float
-    PI		= 3.1415927,
-    TAU		= 2. * PI,
-    PHI		= 1.618034;
+	PI		= 3.1415927,
+	TAU		= 2. * PI,
+	PHI		= 1.618034;
 
 // http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/
 vec2 R2(float i) {
-    float G = 1.324718;
-    return fract(.5 + i / vec2(G, G * G));
+	float G = 1.324718;
+	return fract(.5 + i / vec2(G, G * G));
 }
 
 float R1(float i) {
-    return fract(.5 + i * PHI);
+	return fract(.5 + i * PHI);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ float mx(vec4 v) {
 }
 
 float sum(vec2 v) {
-    return v.x + v.y;
+	return v.x + v.y;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ float ls(float lo, float hi, float x) {
 ////////////////////////////////////////////////////////////////
 
 vec2 sc(float x) {
-    return vec2(sin(x), cos(x));
+	return vec2(sin(x), cos(x));
 }
 
 mat2 rot(float x) {
@@ -110,10 +110,10 @@ float H(vec2 p) {
 }
 
 float H(float p) {
-    p = fract(p * .1031);
-    p *= p + 33.33;
-    p *= p + p;
-    return fract(p);
+	p = fract(p * .1031);
+	p *= p + 33.33;
+	p *= p + p;
+	return fract(p);
 }
 
 vec3 H3(float p) {
@@ -124,18 +124,18 @@ vec3 H3(float p) {
 
 vec2 H2(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
-    p3 += dot(p3, p3.yzx+33.33);
-    return fract((p3.xx+p3.yz)*p3.zy);
+	p3 += dot(p3, p3.yzx+33.33);
+	return fract((p3.xx+p3.yz)*p3.zy);
 }
 
 vec4 H4(float p) {
 	vec4 p4 = fract(vec4(p) * vec4(.1031, .1030, .0973, .1099));
-    p4 += dot(p4, p4.wzxy + 33.33);
-    return fract((p4.xxyz + p4.yzzw) * p4.zywx);
+	p4 += dot(p4, p4.wzxy + 33.33);
+	return fract((p4.xxyz + p4.yzzw) * p4.zywx);
 }
 
 float HT(float x, float p) {
-    return H(mod(x, p));
+	return H(mod(x, p));
 }
 
 float N(float x) {
@@ -292,42 +292,42 @@ float NT(float x, float p) {
 // }
 
 float HT(vec2 p, vec2 s) {
-    return H(mod(p, s));
+	return H(mod(p, s));
 }
 
 float NT(vec2 p, vec2 s) {
-    p *= s;
-    vec2 i = floor(p);
-    p -= i;
-    p *= p * (3. - 2. * p);
-    float s00 = HT(i + vec2(0, 0), s);
-    float s01 = HT(i + vec2(0, 1), s);
-    float s11 = HT(i + vec2(1, 1), s);
-    float s10 = HT(i + vec2(1, 0), s);
-    return mix(mix(s00, s10, p.x), mix(s01, s11, p.x), p.y);
+	p *= s;
+	vec2 i = floor(p);
+	p -= i;
+	p *= p * (3. - 2. * p);
+	float s00 = HT(i + vec2(0, 0), s);
+	float s01 = HT(i + vec2(0, 1), s);
+	float s11 = HT(i + vec2(1, 1), s);
+	float s10 = HT(i + vec2(1, 0), s);
+	return mix(mix(s00, s10, p.x), mix(s01, s11, p.x), p.y);
 }
 
 float FBMT(vec2 p, vec2 scale, float gain, float lac, int lyrs) {
-    float acc = NT(p, scale), ow = 1., tw = 1.;
+	float acc = NT(p, scale), ow = 1., tw = 1.;
 	for (int i=0; i<lyrs; ++i) {
-        p = fract(p + PHI);
+		p = fract(p + PHI);
 		scale *= lac; ow *= gain;
 		acc += NT(p, scale) * ow;
 		tw += ow;
 	}
-    return acc / tw;
+	return acc / tw;
 }
 
 float FBMT(vec2 p, vec2 scale, float gain, float lac) {
-    return FBMT(p, scale, gain, lac, 4);
+	return FBMT(p, scale, gain, lac, 4);
 }
 
 ////////////////////////////////////////////////////////////////
 
 vec2 seg(vec2 p, vec2 a, vec2 b) {
-    vec2 ab = b-a, ap = p-a;
-    float t = sat(dot(ap, ab)/dot(ab, ab));
-    return ab*t + a;
+	vec2 ab = b-a, ap = p-a;
+	float t = sat(dot(ap, ab)/dot(ab, ab));
+	return ab*t + a;
 }
 
 float box(vec2 p, vec2 b) {
@@ -340,23 +340,23 @@ float box1(vec2 p, vec2 b) {
 }
 
 float circ(vec2 p, float r) {
-    return length(p) - r;
+	return length(p) - r;
 }
 
 float elips(vec2 p, vec2 r) {
-    return (length(p/r) - 1.) / min(r.x, r.y);
+	return (length(p/r) - 1.) / min(r.x, r.y);
 }
 
 // polynomial smooth min
 // http://www.iquilezles.org/www/articles/smin/smin.htm
 float smin(float a, float b, float k) {
-    float h = sat(.5 + 0.5 * (b - a) / k);
-    return mix(b, a, h) - k * h * (1. - h);
+	float h = sat(.5 + 0.5 * (b - a) / k);
+	return mix(b, a, h) - k * h * (1. - h);
 }
 
 vec2 grad(float x) {
-    vec2 d = vec2(dFdx(x), dFdy(x));
-    return d / max(length(d), 1e-8);
+	vec2 d = vec2(dFdx(x), dFdy(x));
+	return d / max(length(d), 1e-8);
 }
 
 float msk(float s, float d) {
@@ -368,7 +368,7 @@ float msk(float s) {
 }
 
 vec2 mirr(vec2 v, float m) {
-    return vec2(m - abs(v.x - m), v.y);
+	return vec2(m - abs(v.x - m), v.y);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -423,29 +423,29 @@ vec3 pattern(vec2 p, float sc, float bv) {
 }
 
 vec2 voro1(vec2 p, vec2 grid) {
-    p *= grid;
-    vec2 n = floor(p), f = p - n, mr, g, o, r;
+	p *= grid;
+	vec2 n = floor(p), f = p - n, mr, g, o, r;
 
-    float md = 8.0, d;
-    for (int i=0; i<9; ++i) {
-        g = vec2(i % 3 - 1, i / 3 - 1);
+	float md = 8.0, d;
+	for (int i=0; i<9; ++i) {
+		g = vec2(i % 3 - 1, i / 3 - 1);
 		o = H2(mod(n + g, grid));
-        r = g + o - f;
-        d = sum(abs(r));
+		r = g + o - f;
+		d = sum(abs(r));
 
-        if (d < md) {
-            md = d;
-            mr = r;
-        }
-    }
+		if (d < md) {
+			md = d;
+			mr = r;
+		}
+	}
 
-    return mr;
+	return mr;
 }
 
 float env(vec3 p) {
 	p = normalize(p);
-    vec3 a = mod(degrees(atan(p, p.yzx)), 360.);
-    return NT(a.x / 8., 45.) * ls(.9, .0, abs(p.z)) + NT(a.y / 8., 45.) * ls(.7, .0, abs(p.x));
+	vec3 a = mod(degrees(atan(p, p.yzx)), 360.);
+	return NT(a.x / 8., 45.) * ls(.9, .0, abs(p.z)) + NT(a.y / 8., 45.) * ls(.7, .0, abs(p.x));
 }
 
 ////////////////////////////////////////////////////////////////
@@ -453,13 +453,13 @@ float env(vec3 p) {
 ////////////////////////////////////////////////////////////////
 
 vec2 uvmap(vec3 p, int ax) {
-    return (ax==0) ? p.yz : (ax==1) ? p.xz : p.xy;
+	return (ax==0) ? p.yz : (ax==1) ? p.xz : p.xy;
 }
 
 int dom(vec3 n) {
-    n = abs(n) + vec3(.01, .02, .03);
-    float m = mx(n);
-    return (m==n.x) ? 0 : (m==n.y) ? 1 : 2;
+	n = abs(n) + vec3(.01, .02, .03);
+	float m = mx(n);
+	return (m==n.x) ? 0 : (m==n.y) ? 1 : 2;
 }
 
 // https://www.shadertoy.com/view/MsS3Wc
@@ -470,11 +470,11 @@ vec3 hsv(vec3 c) {
 }
 
 vec3 Light() {
-    vec3 d = Cam.xyz - Pos;
-    float
-        b = FBMT(d.xy/256.*rot(Cam.w), vec2(3), .7, 3., 4),
-        l = 1. - ls(14., -6., length(d.xy) - b * 8.) * ls(128., 48., d.z) * step(.1, Nor.z);
-    return texture(Texture1, LUV).xyz * 3. * l;
+	vec3 d = Cam.xyz - Pos;
+	float
+		b = FBMT(d.xy/256.*rot(Cam.w), vec2(3), .7, 3., 4),
+		l = 1. - ls(14., -6., length(d.xy) - b * 8.) * ls(128., 48., d.z) * step(.1, Nor.z);
+	return texture(Texture1, LUV).xyz * 3. * l;
 }
 
 // $protect ^void[ \t]+([_a-zA-Z][_a-zA-Z0-9]*)\(\)
@@ -484,158 +484,158 @@ vec3 Light() {
 #define TEXA(name)	vec4 name(vec2); void name() { FCol = name(UV); } vec4 name(vec2 uv)
 
 TEX(cmet52) {
-    float b = FBMT(uv, vec2(5), .9, 3., 4);
-    vec3 c = mix(RGB(48, 41, 33), RGB(103, 101, 104), b);
+	float b = FBMT(uv, vec2(5), .9, 3., 4);
+	vec3 c = mix(RGB(48, 41, 33), RGB(103, 101, 104), b);
 	return c;
 }
 
 TEX(ptrshn) {
-    float b = FBMT(uv, vec2(3), .9, 3., 4);
-    vec3 c = mix(RGB(49, 45, 43), RGB(81, 75, 78), b * b);
+	float b = FBMT(uv, vec2(3), .9, 3., 4);
+	vec3 c = mix(RGB(49, 45, 43), RGB(81, 75, 78), b * b);
 	return c;
 }
 
 TEX(dmnd2c) {
-    float b = FBMT(uv, vec2(7), .9, 3.);
-    uv.x *= -1.5;
-    uv.y += uv.x * .5;
-    uv.x = 1. - uv.x + uv.y;
-    uv = fract(uv * 28.);
-    float f = sat(1. - length(.1 - uv));
-    f *= ls(.6, .2, length(.6 - uv));
-    f *= ls(.6, .8, length(.1 - uv));
-    f *= ls(.2, .6, b) * 2. + 1.;
-    float l = 1. - ls(.2, b + 2., mx(abs(uv - .5)));
-    return vec3((f + 1.) * mix(.21, .29, b * b) * l);
+	float b = FBMT(uv, vec2(7), .9, 3.);
+	uv.x *= -1.5;
+	uv.y += uv.x * .5;
+	uv.x = 1. - uv.x + uv.y;
+	uv = fract(uv * 28.);
+	float f = sat(1. - length(.1 - uv));
+	f *= ls(.6, .2, length(.6 - uv));
+	f *= ls(.6, .8, length(.1 - uv));
+	f *= ls(.2, .6, b) * 2. + 1.;
+	float l = 1. - ls(.2, b + 2., mx(abs(uv - .5)));
+	return vec3((f + 1.) * mix(.21, .29, b * b) * l);
 }
 
 TEX(dmnd2cow) {
-    float b = FBMT(uv, vec2(7), .9, 3.);
+	float b = FBMT(uv, vec2(7), .9, 3.);
 	vec3 c = dmnd2c(uv);
-    float r = length(uv - .5);
-    c = mix(c, c * RGB(70, 61, 53), ls(.5, .2, r + b*b*b));
+	float r = length(uv - .5);
+	c = mix(c, c * RGB(70, 61, 53), ls(.5, .2, r + b*b*b));
 	return c;
 }
 
 TEXA(dmnd2pnt) {
-    vec3 c = dmnd2cow(uv);
-    uv = fract(uv) - .5;
-    float b = FBMT(uv, vec2(3), .9, 3.), d = abs(length(uv) - .4), i = 0.;
-    for (/**/; i < 5.; ++i) {
-        vec2 p = vec2(0, -.35) * rot(i * 72.);
-        d = min(d, length(uv - seg(uv, p, p * rot(144.))));
-    }
-    return vec4(c, msk(d - .02 + b * .02, .01));
+	vec3 c = dmnd2cow(uv);
+	uv = fract(uv) - .5;
+	float b = FBMT(uv, vec2(3), .9, 3.), d = abs(length(uv) - .4), i = 0.;
+	for (/**/; i < 5.; ++i) {
+		vec2 p = vec2(0, -.35) * rot(i * 72.);
+		d = min(d, length(uv - seg(uv, p, p * rot(144.))));
+	}
+	return vec4(c, msk(d - .02 + b * .02, .01));
 }
 
 void dmnd2pnt_m() {
 	vec4 c = texture(Texture0, UV);
-    FCol = vec4(c.xyz * Light() + RGB(111, 55, 0) * c.w * (sin(Time.x * PI) * .5 + .5), 1);
+	FCol = vec4(c.xyz * Light() + RGB(111, 55, 0) * c.w * (sin(Time.x * PI) * .5 + .5), 1);
 }
 
 TEX(dmnd2cjp) {
-    float b = FBMT(uv, vec2(7), .9, 3., 4);
+	float b = FBMT(uv, vec2(7), .9, 3., 4);
 	vec3 c = dmnd2c(uv);
-    float r = length(uv - .5);
-    float m = ls(.46, .45, r);
-    float l = 1.5 - 1.5 * ls(.0, .3, r * r);
-    l = mix(l, 2.5, tri(.42, .07, r));
-    l = mix(l, 3.5, tri(.44, .05, r));
-    l = mix(l, 2.6, tri(.36, .03, r));
-    float n = .3 + .2 * ls(.35, .30, r);
-    l *= 1. - n * ls(.3, .7, b);
-    l *= 1. - .3 * sqr(ls(.13, .05, r));
-    l = mix(l, 2.5, ls(.04, .01, r));
-    l -= l * tri(.03, .01, r) * .7;
-    c = mix(c, RGB(68, 66, 54) * l, m);
-    c *= 1.-sqr(tri(.34, .02, r));
-    c *= 1.-sqr(tri(.46, .03, r));
-    c *= 1.-tri(.41, .03, r) * .7;
-    return c;
+	float r = length(uv - .5);
+	float m = ls(.46, .45, r);
+	float l = 1.5 - 1.5 * ls(.0, .3, r * r);
+	l = mix(l, 2.5, tri(.42, .07, r));
+	l = mix(l, 3.5, tri(.44, .05, r));
+	l = mix(l, 2.6, tri(.36, .03, r));
+	float n = .3 + .2 * ls(.35, .30, r);
+	l *= 1. - n * ls(.3, .7, b);
+	l *= 1. - .3 * sqr(ls(.13, .05, r));
+	l = mix(l, 2.5, ls(.04, .01, r));
+	l -= l * tri(.03, .01, r) * .7;
+	c = mix(c, RGB(68, 66, 54) * l, m);
+	c *= 1.-sqr(tri(.34, .02, r));
+	c *= 1.-sqr(tri(.46, .03, r));
+	c *= 1.-tri(.41, .03, r) * .7;
+	return c;
 }
 
 vec2 knob(vec2 uv, float s) {
-    return vec2(1. - length(uv) / s, msk(length(uv) - s));
+	return vec2(1. - length(uv) / s, msk(length(uv) - s));
 }
 
 TEXA(lpdmnd) {
-    float b = FBMT(uv, vec2(5), .9, 3.), t, o, k, r;
-    vec3 c = dmnd2c(uv);
-    vec2 u, v;
-    u.x = abs(uv.x - .5);
-    u.y = min(uv.y, .4);
-    r = length(u - vec2(0, .4)) - (.18 - .06 * ls(.4, 1., uv.y));
-    k = .25
-        - .15 * ls(.9, .96, uv.y)
-        + .03 * sqr(ls(.82, .86, uv.y))
-        + .07 * ls(.8, .2, uv.y)
-        + .07 * sqr(ls(.35, .22, uv.y))
-        - .07 * ls(.22, .0, uv.y);
-    o = box(uv - vec2(.5, .5), vec2(k, .46));
-    o = max(o, -box(u, vec2(.15, .03)) + .06);
-    c = mix(c, vec3(.6, .55, .55) - uv.y * .3 + b * .2, msk(o));
-    c *= 1. - .7 * tri(.0, .013, o);
-    c *= 1. - (r / .5 - .1) * msk(o);
-    t = max(r, uv.y - .96);
-    o = abs(t - .02) - .03;
-    o = max(o, uv.y - 1. + u.x * .5);
-    o = max(o, uv.y - .96);
-    c = mix(c, vec3(1, 1, .9) - uv.y * .55, tri(-.01, .01, o));
-    c = mix(c, vec3(.2 * b + .1), msk(t, .01));
-    c *= 1. - .2 * tri(.0, .05, t) * msk(o);
-    v = knob(u = uv - vec2(.5, .4), .02);
-    c *= 1. + RGB(111, 80, 70) * tri(.03, .01, length(u));
-    //c *= 1. - ls(.04, .02, length(u)) * clamp(u.y / .02, -1., 1.);
-    c *= 1. - .5 * tri(.02, .01, length(u));
-    c = mix(c, RGB(111, 66, 44) * (v.x * 1.5 + .2), v.y);
-    return vec4(c, msk(t - .03, .02));
+	float b = FBMT(uv, vec2(5), .9, 3.), t, o, k, r;
+	vec3 c = dmnd2c(uv);
+	vec2 u, v;
+	u.x = abs(uv.x - .5);
+	u.y = min(uv.y, .4);
+	r = length(u - vec2(0, .4)) - (.18 - .06 * ls(.4, 1., uv.y));
+	k = .25
+		- .15 * ls(.9, .96, uv.y)
+		+ .03 * sqr(ls(.82, .86, uv.y))
+		+ .07 * ls(.8, .2, uv.y)
+		+ .07 * sqr(ls(.35, .22, uv.y))
+		- .07 * ls(.22, .0, uv.y);
+	o = box(uv - vec2(.5, .5), vec2(k, .46));
+	o = max(o, -box(u, vec2(.15, .03)) + .06);
+	c = mix(c, vec3(.6, .55, .55) - uv.y * .3 + b * .2, msk(o));
+	c *= 1. - .7 * tri(.0, .013, o);
+	c *= 1. - (r / .5 - .1) * msk(o);
+	t = max(r, uv.y - .96);
+	o = abs(t - .02) - .03;
+	o = max(o, uv.y - 1. + u.x * .5);
+	o = max(o, uv.y - .96);
+	c = mix(c, vec3(1, 1, .9) - uv.y * .55, tri(-.01, .01, o));
+	c = mix(c, vec3(.2 * b + .1), msk(t, .01));
+	c *= 1. - .2 * tri(.0, .05, t) * msk(o);
+	v = knob(u = uv - vec2(.5, .4), .02);
+	c *= 1. + RGB(111, 80, 70) * tri(.03, .01, length(u));
+	//c *= 1. - ls(.04, .02, length(u)) * clamp(u.y / .02, -1., 1.);
+	c *= 1. - .5 * tri(.02, .01, length(u));
+	c = mix(c, RGB(111, 66, 44) * (v.x * 1.5 + .2), v.y);
+	return vec4(c, msk(t - .03, .02));
 }
 
 void lpdmnd_m() {
 	vec4 c = texture(Texture0, UV);
-    vec2 uv = fract(UV);
-    uv.x = abs(.5 - uv.x);
-    float
-        t = fract(-Time.x),
-        r = length(uv - vec2(0, .4)),
-    	l = t * pow(max(0., 1. - r), 4.) * c.w;
+	vec2 uv = fract(UV);
+	uv.x = abs(.5 - uv.x);
+	float
+		t = fract(-Time.x),
+		r = length(uv - vec2(0, .4)),
+		l = t * pow(max(0., 1. - r), 4.) * c.w;
    	if (t > .75)
-    	l += ls(.03, .01, abs(fract(uv.y + uv.x * .5 + t * 2.) - .45)) * ls(.1, .08, uv.x);
+		l += ls(.03, .01, abs(fract(uv.y + uv.x * .5 + t * 2.) - .45)) * ls(.1, .08, uv.x);
 	FCol = vec4(c.xyz * Light() + RGB(180, 150, 5) * l, 1);
 }
 
 TEX(mtlfw10) {
-    float b = FBMT(uv, vec2(5), .9, 3., 4);
-    vec3 c = mix(RGB(44, 14, 16), RGB(93, 63, 63), b * b);
+	float b = FBMT(uv, vec2(5), .9, 3., 4);
+	vec3 c = mix(RGB(44, 14, 16), RGB(93, 63, 63), b * b);
 	return c;
 }
 
 // xy = tile id, z = edge
 vec3 mtlfw15_d(vec2 uv) {
-    float e = 3e-3, a = 0.;
-    vec2 g = vec2(6), r = voro1(uv, g);
-    for (int i=0; i<9; ++i)
-        a += sum(abs(voro1(vec2(i % 3 - 1, i / 3 - 1) * e + uv, g) - r));
-    return vec3(uv + r.xy / g, a);
+	float e = 3e-3, a = 0.;
+	vec2 g = vec2(6), r = voro1(uv, g);
+	for (int i=0; i<9; ++i)
+		a += sum(abs(voro1(vec2(i % 3 - 1, i / 3 - 1) * e + uv, g) - r));
+	return vec3(uv + r.xy / g, a);
 }
 
 TEX(mtlfw15) {
-    float b = FBMT(uv, vec2(3), .9, 3., 4);
-    vec3 c = mix(RGB(80, 70, 72), RGB(128, 120, 120), b * b);
-    vec3 v = mtlfw15_d(uv);
-    c *= mix(.95, 1.1, NT(v.xy, vec2(6)));
-    c = mix(c, RGB(168, 128, 120), ls(.5, 1., v.z) * b * .7);
+	float b = FBMT(uv, vec2(3), .9, 3., 4);
+	vec3 c = mix(RGB(80, 70, 72), RGB(128, 120, 120), b * b);
+	vec3 v = mtlfw15_d(uv);
+	c *= mix(.95, 1.1, NT(v.xy, vec2(6)));
+	c = mix(c, RGB(168, 128, 120), ls(.5, 1., v.z) * b * .7);
 	return c;
 }
 
 TEXA(mtlfw15ow) {
-    float b = FBMT(uv, vec2(3), .9, 3., 4);
-    vec3 c = mix(RGB(80, 70, 72), RGB(128, 120, 120), b * b);
-    vec3 v = mtlfw15_d(uv);
-    float m = ls(.5, 1., v.z);
-    float r = ls(.4, .2, length(.5 - fract(v.xy)));
-    c *= mix(.95, 1.1, NT(v.xy, vec2(6))) - 2. * r * b * b;
-    c = mix(c, RGB(168, 128, 120), m * b * .7);
+	float b = FBMT(uv, vec2(3), .9, 3., 4);
+	vec3 c = mix(RGB(80, 70, 72), RGB(128, 120, 120), b * b);
+	vec3 v = mtlfw15_d(uv);
+	float m = ls(.5, 1., v.z);
+	float r = ls(.4, .2, length(.5 - fract(v.xy)));
+	c *= mix(.95, 1.1, NT(v.xy, vec2(6))) - 2. * r * b * b;
+	c = mix(c, RGB(168, 128, 120), m * b * .7);
 	return vec4(c, m * r);
 }
 
@@ -645,50 +645,50 @@ void mtlfw15ow_m() {
 }
 
 TEX(mtlfb3) {
-    float b = FBMT(uv, vec2(5), .9, 3., 4);
-    vec3 pt = pattern(uv, 8., .31);
-    vec3 c = mix(RGB(66, 58, 55), RGB(118, 107, 105), b);
-    float l = 1. - .5 * ls(.034, .036, pt.x);
-    l = mix(l, 1.4, tri(.033, .004, pt.x));
+	float b = FBMT(uv, vec2(5), .9, 3., 4);
+	vec3 pt = pattern(uv, 8., .31);
+	vec3 c = mix(RGB(66, 58, 55), RGB(118, 107, 105), b);
+	float l = 1. - .5 * ls(.034, .036, pt.x);
+	l = mix(l, 1.4, tri(.033, .004, pt.x));
 	return c * l;
 }
 
 // Base SDF
 float mtltech(vec2 uv) {
-    float b = NT(uv, vec2(64)), f = 0., d = 1e6;
-    for (/**/; f < 11.; ++f)
-        d = smin(d, abs(length(.5 - abs(uv - R2(f))) - mix(.36, .29, R1(f + .7))) - mix(.015, .03, b), .01);
-    return d * 1e2;
+	float b = NT(uv, vec2(64)), f = 0., d = 1e6;
+	for (/**/; f < 11.; ++f)
+		d = smin(d, abs(length(.5 - abs(uv - R2(f))) - mix(.36, .29, R1(f + .7))) - mix(.015, .03, b), .01);
+	return d * 1e2;
 }
 
 // Gradient (xy) + SDF (z)
 vec3 mtltech_d(vec2 uv) {
-    vec3 s, p;
-    for (int i=0; i<3; ++i) {
-        p = vec3(uv, 0);
-        p[i] += 1e-4;
-        s[i] = mtltech(p.xy);
-    }
-    return vec3(normalize(s.xy - s.z), s.z);
+	vec3 s, p;
+	for (int i=0; i<3; ++i) {
+		p = vec3(uv, 0);
+		p[i] += 1e-4;
+		s[i] = mtltech(p.xy);
+	}
+	return vec3(normalize(s.xy - s.z), s.z);
 }
 
 TEX(mtlt12f) {
-    float b = FBMT(uv, vec2(5), .9, 3., 4), l;
-    vec3 c = mix(RGB(51, 46, 43), RGB(165, 147, 143), b * b), d = mtltech_d(uv);
-    l = 1. - .5 * (d.y - d.x) * tri(.5, 3., d.z) * ls(1., .0, d.z);
-    return c * l * .8;
+	float b = FBMT(uv, vec2(5), .9, 3., 4), l;
+	vec3 c = mix(RGB(51, 46, 43), RGB(165, 147, 143), b * b), d = mtltech_d(uv);
+	l = 1. - .5 * (d.y - d.x) * tri(.5, 3., d.z) * ls(1., .0, d.z);
+	return c * l * .8;
 }
 
 TEX(mtlt6f) {
-    float b = FBMT(uv, vec2(3), 1.1, 3., 4), l;
-    vec3 c = mix(RGB(51, 46, 43), RGB(165, 147, 143), b * b), d = mtltech_d(uv);
-    l = 1. - .5 * (d.y - d.x) * tri(.5, 3., d.z) * ls(1., .0, d.z);
-    return c * l;
+	float b = FBMT(uv, vec2(3), 1.1, 3., 4), l;
+	vec3 c = mix(RGB(51, 46, 43), RGB(165, 147, 143), b * b), d = mtltech_d(uv);
+	l = 1. - .5 * (d.y - d.x) * tri(.5, 3., d.z) * ls(1., .0, d.z);
+	return c * l;
 }
 
 TEX(mtlbk03) {
-    float b = FBMT(uv, vec2(5), .9, 3., 4);
-    vec3 c = mix(RGB(36, 35, 33), RGB(56, 54, 52), b * b);
+	float b = FBMT(uv, vec2(5), .9, 3., 4);
+	vec3 c = mix(RGB(36, 35, 33), RGB(56, 54, 52), b * b);
 	return c;
 }
 
@@ -732,140 +732,140 @@ TEX(gtprst3) {
 }
 
 TEX(cable) {
-    float
-        b = FBMT(uv, vec2(5), .9, 3., 4),
-        h = fract(uv.y * 10.);
-    vec3 c = mix(RGB(53, 48, 42), RGB(38, 38, 36), b);
-    c *= .6 + b * .8;
-    c *= 1. - .5 * sqr(tri(.5, .5, h));
-    c *= 1. + .5 * sqr(tri(.25, .25, h));
-    c *= 1. + .5 * sqr(tri(.65, .35, h));
+	float
+		b = FBMT(uv, vec2(5), .9, 3., 4),
+		h = fract(uv.y * 10.);
+	vec3 c = mix(RGB(53, 48, 42), RGB(38, 38, 36), b);
+	c *= .6 + b * .8;
+	c *= 1. - .5 * sqr(tri(.5, .5, h));
+	c *= 1. + .5 * sqr(tri(.25, .25, h));
+	c *= 1. + .5 * sqr(tri(.65, .35, h));
 	return c;
 }
 
 TEX(bmtsprt) {
-    float
-        b = FBMT(uv, vec2(7, 3), .9, 3., 4),
-        h = uv.y + b * .04,
-        l = 1. - .15;
-    vec3 c = mix(RGB(59, 48, 40), RGB(110, 108, 102), b*b);
-    l = mix(l, .5, tri(.34, .05, uv.y));
-    l = mix(l, .5, ls(.08, .05, abs(uv.y-.7)));
-    l = mix(l, .3, tri(.7, .03, uv.y));
-    l = mix(l, 1.5, tri(.01, .03, uv.y));
-    l = mix(l, 2.2, tri(.89, .1, h));
-    l = mix(l, 1.6, ls(.07, .04, abs(uv.y-.44)));
-    l = mix(l, 2.5, tri(.5, .04, h));
-    l = mix(l, 1.7, tri(.18, .04, h));
+	float
+		b = FBMT(uv, vec2(7, 3), .9, 3., 4),
+		h = uv.y + b * .04,
+		l = 1. - .15;
+	vec3 c = mix(RGB(59, 48, 40), RGB(110, 108, 102), b*b);
+	l = mix(l, .5, tri(.34, .05, uv.y));
+	l = mix(l, .5, ls(.08, .05, abs(uv.y-.7)));
+	l = mix(l, .3, tri(.7, .03, uv.y));
+	l = mix(l, 1.5, tri(.01, .03, uv.y));
+	l = mix(l, 2.2, tri(.89, .1, h));
+	l = mix(l, 1.6, ls(.07, .04, abs(uv.y-.44)));
+	l = mix(l, 2.5, tri(.5, .04, h));
+	l = mix(l, 1.7, tri(.18, .04, h));
 	return c * l;
 }
 
 TEX(brdr11b) {
-    float b = FBMT(uv, vec2(5, 3), .9, 3., 4);
-    vec3 c = mix(RGB(74, 66, 55), RGB(99, 90, 78), b*b);
-    uv.x *= 2.;
-    vec2 p = seg(uv, vec2(.5, .625), vec2(1.5, .625));
-    float
-        d = length(p - uv),
-        m = ls(.22, .20, d),
-        l = 1. - .15 * m;
-    l = mix(l, .5, ls(.7, .9, uv.y) * m);
-    l = mix(l, 1. - grad(d).y * .5, tri(.22, .04, d));
-    l = mix(l, .6, sqr(tri(.19, .05, d)));
-    l = mix(l, .5, ls(.05, 0., uv.y));
-    l = mix(l, .5, tri(.26, .05, uv.y));
-    l = mix(l, 1.7, ls(.93, 1., uv.y));
-    l = mix(l, 1.7, tri(.23, .04, uv.y));
+	float b = FBMT(uv, vec2(5, 3), .9, 3., 4);
+	vec3 c = mix(RGB(74, 66, 55), RGB(99, 90, 78), b*b);
+	uv.x *= 2.;
+	vec2 p = seg(uv, vec2(.5, .625), vec2(1.5, .625));
+	float
+		d = length(p - uv),
+		m = ls(.22, .20, d),
+		l = 1. - .15 * m;
+	l = mix(l, .5, ls(.7, .9, uv.y) * m);
+	l = mix(l, 1. - grad(d).y * .5, tri(.22, .04, d));
+	l = mix(l, .6, sqr(tri(.19, .05, d)));
+	l = mix(l, .5, ls(.05, 0., uv.y));
+	l = mix(l, .5, tri(.26, .05, uv.y));
+	l = mix(l, 1.7, ls(.93, 1., uv.y));
+	l = mix(l, 1.7, tri(.23, .04, uv.y));
 	return c * l;
 }
 
 TEXA(blt414k) {
-    float b = FBMT(uv, vec2(1, 5), .4, 3., 4);
-    vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
-    uv = .5 - abs(uv - .5);
-    uv.y *= 4.;
-    float
-        a = tri(.0, .1, length(uv - seg(uv, vec2(.41, .5), vec2(.42, 3.5)))),
-        d = mn(uv),
-        l = 1. - .7 * max(0., 1. - d / .15);
-    l *= 1. - .8 * ls(.24, .31, min(d, uv.y - .1));
-    c += RGB(80, 80, 20) * a;
+	float b = FBMT(uv, vec2(1, 5), .4, 3., 4);
+	vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
+	uv = .5 - abs(uv - .5);
+	uv.y *= 4.;
+	float
+		a = tri(.0, .1, length(uv - seg(uv, vec2(.41, .5), vec2(.42, 3.5)))),
+		d = mn(uv),
+		l = 1. - .7 * max(0., 1. - d / .15);
+	l *= 1. - .8 * ls(.24, .31, min(d, uv.y - .1));
+	c += RGB(80, 80, 20) * a;
 	return vec4(c * mix(l, 2.7, a), a);
 }
 
 TEXA(light5) {
-    float b = FBMT(uv, vec2(1, 5), .4, 3., 4);
-    vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
-    uv = .5 - abs(uv - .5);
-    uv.y *= 8.;
-    float
-        d = length(uv - seg(uv, vec2(.27, .3), vec2(.27, 7.7))),
-        a = tri(.0, .17, d),
-        l = 1. - .5 * tri(.17, .07, d);
-    c += RGB(80, 80, 20) * a;
+	float b = FBMT(uv, vec2(1, 5), .4, 3., 4);
+	vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
+	uv = .5 - abs(uv - .5);
+	uv.y *= 8.;
+	float
+		d = length(uv - seg(uv, vec2(.27, .3), vec2(.27, 7.7))),
+		a = tri(.0, .17, d),
+		l = 1. - .5 * tri(.17, .07, d);
+	c += RGB(80, 80, 20) * a;
 	return vec4(c * mix(l, 2.7, a), a);
 }
 
 TEXA(lt2) {
-    vec2 p = abs(uv - .5);
-    float
-        b = FBMT(uv, vec2(1), .4, 3., 4),
-        r = length(p),
-        a = ls(.37, .33, r) * (.5 + 2. * b),
-        l = 1. + .0 * ls(.08, .03, abs(r - .41));
-    vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
-    l = mix(l, 7., ls(.44, .1 * b, r));
-    l *= 1. - .5 * sqr(tri(.46, .04, r));
-    l *= 1. - .4 * sqr(tri(.36, .04, r));
-    return vec4(c * l, a);
+	vec2 p = abs(uv - .5);
+	float
+		b = FBMT(uv, vec2(1), .4, 3., 4),
+		r = length(p),
+		a = ls(.37, .33, r) * (.5 + 2. * b),
+		l = 1. + .0 * ls(.08, .03, abs(r - .41));
+	vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
+	l = mix(l, 7., ls(.44, .1 * b, r));
+	l *= 1. - .5 * sqr(tri(.46, .04, r));
+	l *= 1. - .4 * sqr(tri(.36, .04, r));
+	return vec4(c * l, a);
 }
 
 TEXA(icon) {
-    uv.y -= .57;
-    uv.x = abs(uv.x - .48);
-    float d = elips(uv, vec2(.31, .12)) / 50.;
-    d = max(d, -elips(uv - vec2(0, .01), vec2(.28, .07)) / 120.);
-    d = max(d, -box(uv - vec2(.0, .1), vec2(.22, .12)));
-    d = max(d, -box(uv - vec2(.0, .1), vec2(.09, .31)));
-    d = min(d, box1(uv - vec2(.0, -.09), vec2(tri(-.09, .32, uv.y)*.04, .32)));
-    d = min(d, box1(uv - vec2(.11, -.21), vec2(tri(-.07, .3, uv.y)*.03, .15)));
-    uv.y += .07;
-    float b = length(uv) - .47, m = msk(b);
-    vec3 c = 1. - vec3(.7, 1, 1) * msk(max(.007 - d, b + .04));
-    return vec4(c * m, m);
+	uv.y -= .57;
+	uv.x = abs(uv.x - .48);
+	float d = elips(uv, vec2(.31, .12)) / 50.;
+	d = max(d, -elips(uv - vec2(0, .01), vec2(.28, .07)) / 120.);
+	d = max(d, -box(uv - vec2(.0, .1), vec2(.22, .12)));
+	d = max(d, -box(uv - vec2(.0, .1), vec2(.09, .31)));
+	d = min(d, box1(uv - vec2(.0, -.09), vec2(tri(-.09, .32, uv.y)*.04, .32)));
+	d = min(d, box1(uv - vec2(.11, -.21), vec2(tri(-.07, .3, uv.y)*.03, .15)));
+	uv.y += .07;
+	float b = length(uv) - .47, m = msk(b);
+	vec3 c = 1. - vec3(.7, 1, 1) * msk(max(.007 - d, b + .04));
+	return vec4(c * m, m);
 }
 
 TEXA(q3bnr) {
-    uv *= vec2(256, 64);
+	uv *= vec2(256, 64);
 	uv.y += 2.;
 
-    // Q
-    float d = circ(uv - vec2(81, 30), 11.);
-    d = max(d, uv.x - 80.);
-    d = max(d, -circ(uv - vec2(84, 26), 9.));
-    d = min(d, box(uv - vec2(73, 37), vec2(4, 9)) - 4.);
-    d = max(d, -box(uv - vec2(73, 37), vec2(0, 7)) + 1.);
-    // U
+	// Q
+	float d = circ(uv - vec2(81, 30), 11.);
+	d = max(d, uv.x - 80.);
+	d = max(d, -circ(uv - vec2(84, 26), 9.));
+	d = min(d, box(uv - vec2(73, 37), vec2(4, 9)) - 4.);
+	d = max(d, -box(uv - vec2(73, 37), vec2(0, 7)) + 1.);
+	// U
 	d = min(d, box(uv - vec2(91.5, 47), vec2(4, 19)) - 4.);
-    d = max(d, -box(uv - vec2(91.5, 47), vec2(0, 17.5)) + 1.);
-    // A
+	d = max(d, -box(uv - vec2(91.5, 47), vec2(0, 17.5)) + 1.);
+	// A
 	d = min(d, box(mirr(uv, 111.) - vec2(105. + ls(23., 50., uv.y) * 3., 43), vec2(3.5, 19)));
-    d = min(d, box(uv - vec2(111, 32), vec2(4, 3)));
-    // K
+	d = min(d, box(uv - vec2(111, 32), vec2(4, 3)));
+	// K
 	d = min(d, box(uv - vec2(126, 37), vec2(3, 13)));
 	d = min(d, box(uv - vec2(125.5 + ls(23., 50., uv.y) * 10., 44), vec2(3.5, 6)));
 	d = min(d, box(uv - vec2(136.5 - ls(23., 50., uv.y) * 9., 32), vec2(3.5, 8)));
-    // E
+	// E
 	d = min(d, box(uv - vec2(148.5, 37), vec2(7, 13)));
-    d = max(d, -box(uv - vec2(155, 33), vec2(6, 3)));
-    d = max(d, -box(uv - vec2(155, 43), vec2(6, 2)));
-    // III
+	d = max(d, -box(uv - vec2(155, 33), vec2(6, 3)));
+	d = max(d, -box(uv - vec2(155, 43), vec2(6, 2)));
+	// III
 	d = min(d, box(uv - vec2(168, 37), vec2(3.5, 13)));
 	d = min(d, box(uv - vec2(178., 37), vec2(3.5, 13)));
 	d = min(d, box(uv - vec2(188, 37), vec2(3.5, 13)));
 
-    d = max(d, uv.y - 50.);
-    return vec4(msk(d, .8), 0, 0, H(uv * 511.));
+	d = max(d, uv.y - 50.);
+	return vec4(msk(d, .8), 0, 0, H(uv * 511.));
 }
 
 void q3bnr_m() {
@@ -897,8 +897,8 @@ void fixture() {
 
 void dmnd2cjp_m() {
 	vec4 c = texture(Texture0, UV);
-    float r = length(fract(UV) - .5);
-    float s = mix(.4, 8., fract(Time.x * 1.5));
+	float r = length(fract(UV) - .5);
+	float s = mix(.4, 8., fract(Time.x * 1.5));
 	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.37, .32, r), 1);
 }
 
