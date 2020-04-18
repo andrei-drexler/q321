@@ -661,3 +661,4 @@
 38655,worldspawn levelshot params
 38657,worldspawn map message
 38598,lava area light
+38612,dm1 symmetry + lava caulk
