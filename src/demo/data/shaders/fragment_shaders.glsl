@@ -80,6 +80,26 @@ mat2 rot(float x) {
 	return mat2(v.y, v.x, -v.x, v.y);
 }
 
+// UV distortions //////////////////////////////////////////////
+
+// p = integral number of half periods
+// s = scale
+vec2 wavy(vec2 uv, float p, float s) {
+	return uv + sin(uv.yx * PI * p) * s;
+}
+
+// Running bond: s = (rows, columns)
+vec2 brick(vec2 uv, vec2 s) {
+	uv.x += floor(uv.y * s.y) * (.5 / s.x);
+	return fract(uv) * s;
+}
+
+// Input: uv is in [0..1]
+// Output: xy = offset; z = edge ratio in [0..1]
+vec3 brick_edge(vec2 uv, float r) {
+	return vec3(uv -= clamp(uv, r, 1. - r), length(uv) / r);
+}
+
 ////////////////////////////////////////////////////////////////
 
 // uint Hu(uvec4 u) {
@@ -712,8 +732,19 @@ TEX(gmtlbg6) {
 }
 
 TEX(glrgbk3b) {
-	float b = FBMT(uv, vec2(13), 1., 3., 4);
-	vec3 c = mix(RGB(67, 37, 27), RGB(152, 117, 85), b);
+	float
+		b = FBMT(wavy(uv, 5., .02), vec2(5), 1., 3., 5),
+		n = NT(uv, vec2(13));
+	vec2
+		p = brick(uv, vec2(8)),
+		q = fract(p),
+		id = p - q;
+	vec3 c = RGB(91, 61, 42) * (.8 + .8 * b * b);
+	c = mix(c, RGB(70, 30, 15) * (.8 + .8 * b * b), brick_edge(q, .1).z * .3);
+	c *= 1. - sqr(brick_edge(q, .01 + b * .05).z) * n * b * b;
+	c *= 1. + tri(.4, .3, brick_edge(q, .01 + b * .07).z) * sqrt(b) * .3;
+	c *= .9 + .2 * H(id) * (1. - brick_edge(q, .1).z);
+	c *= .9 + .4 * pow(FBMT_ridged(uv - H(id / 8.), vec2(5), .6, 2., 4), 4.);
 	return c;
 }
 
