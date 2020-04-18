@@ -115,15 +115,21 @@ namespace Demo {
 	}
 
 	FORCEINLINE void GenerateLevelShot() {
-		static constexpr Frame levelshot = {
-			{-920.f, -424.f, 1104.f},
-			{296.f, -22.f, 0.f},
-			90.f,
-			3.f,
-			0.f,
-			Demo::Texture::Levelshot
-		};
-		RenderWorld(levelshot);
+		const auto& levelshot = Map::source->levelshot;
+
+		Frame frame;
+		MemSet(&frame);
+
+		frame.pos[0] = levelshot.position[0];
+		frame.pos[1] = levelshot.position[1];
+		frame.pos[2] = levelshot.position[2];
+		frame.angles[0] = levelshot.angles[0];
+		frame.angles[1] = levelshot.angles[1];
+		frame.fov = 90.f;
+		frame.render_target = Demo::Texture::Levelshot;
+
+		RenderWorld(frame);
+
 		Gfx::GenerateMipMaps(Demo::Texture::Levelshot);
 	}
 

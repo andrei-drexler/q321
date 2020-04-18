@@ -292,14 +292,16 @@ const i16 light_data[] = {-632,-1208,656,75,32767,-664,-1176,656,75,32767,-600,-
 const u8 num_spotlights = 0;
 
 static constexpr PackedMap map{
-    1, 64,
+    1, 64, // symmetry axis, level
     entity_brushes, entity_data,
     world_bounds, brush_bounds,
     nonaxial_planes, nonaxial_counts,
     num_materials, plane_materials,
     uv_set, plane_uvs,
     patches, patch_verts,
-    light_data, num_spotlights
+    light_data, num_spotlights,
+    -920, -424, 1104, // levelshot position
+    296, -22 // levelshot yaw, pitch
 };
 } // namespace dm17
 
@@ -790,13 +792,15 @@ const i16 light_data[] = {529,221,87,10,8735,576,312,124,20,22463,576,160,156,10
 const u8 num_spotlights = 0;
 
 static constexpr PackedMap map{
-    0, 672,
+    0, 672, // symmetry axis, level
     entity_brushes, entity_data,
     world_bounds, brush_bounds,
     nonaxial_planes, nonaxial_counts,
     num_materials, plane_materials,
     uv_set, plane_uvs,
     patches, patch_verts,
-    light_data, num_spotlights
+    light_data, num_spotlights,
+    972, 836, -8, // levelshot position
+    130, 20 // levelshot yaw, pitch
 };
 } // namespace dm1

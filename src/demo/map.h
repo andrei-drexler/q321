@@ -38,6 +38,11 @@ struct PackedMap {
 	i8					symmetry_axis;
 	i16					symmetry_level;
 
+	struct {
+		i16				position[3];
+		i16				angles[2];
+	}					levelshot;
+
 	template
 	<
 		int NumBrushEntities, int NumEntityDataEntries,
@@ -63,7 +68,12 @@ struct PackedMap {
 		const u32	(&patches)			[NumPatches],
 		const float	(&patch_verts)		[NumPatchVertEntries],
 		const i16	(&light_data)		[NumLightEntries],
-		u8								num_spotlights
+		u8								num_spotlights,
+		i16								levelshot_x,
+		i16								levelshot_y,
+		i16								levelshot_z,
+		i16								levelshot_yaw,
+		i16								levelshot_pitch
 	) :
 		entity_brushes			(entity_brushes),
 		num_brush_entities		(NumBrushEntities),
@@ -93,6 +103,12 @@ struct PackedMap {
 	{
 		static_assert(NumPlaneUVEntries == NumMaterialEntries);
 		static_assert(NumBrushBoundEntries / 6 == NumNonaxialEntries);
+		
+		levelshot.position[0] = levelshot_x;
+		levelshot.position[1] = levelshot_y;
+		levelshot.position[2] = levelshot_z;
+		levelshot.angles[0] = levelshot_yaw;
+		levelshot.angles[1] = levelshot_pitch;
 	}
 
 	struct UV {

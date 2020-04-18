@@ -1715,6 +1715,29 @@ void WriteLightmap(ArrayPrinter& print, const Map& map, const Options& options, 
 
 ////////////////////////////////////////////////////////////////
 
+struct Levelshot {
+	i16 position[3] = {0, 0, 0};
+	i16 angles[2] = {0, 0};
+
+	bool Parse(std::string_view property) {
+		return
+			ParseValue(property, position[0]) &&
+			ParseValue(property, position[1]) &&
+			ParseValue(property, position[2]) &&
+			ParseValue(property, angles[0]) &&
+			ParseValue(property, angles[1]) ;
+	}
+
+	bool FindInMap(const Map& map) {
+		if (Parse(map.World().GetProperty("_levelshot"sv)))
+			return true;
+		*this = {};
+		return false;
+	}
+};
+
+////////////////////////////////////////////////////////////////
+
 bool CompileMap(Map& map, const char* name, const char* source_name, const Options& options, FILE* out) {
 	if (map.entities.empty())
 		return false;
@@ -1775,19 +1798,27 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 	//WriteLightmap			(print, map, options, shader_props.data(),	"lightmap_offsets"										);
 
 	/* footer */
+	Levelshot levelshot;
+	bool has_levelshot = levelshot.FindInMap(map);
+	assert(has_levelshot);
+
 	fprintf(out,
 		"\n"
 		"static constexpr PackedMap map{\n"
-		"    %d, %d,\n"
+		"    %d, %d, // symmetry axis, level\n"
 		"    entity_brushes, entity_data,\n"
 		"    world_bounds, brush_bounds,\n"
 		"    nonaxial_planes, nonaxial_counts,\n"
 		"    num_materials, plane_materials,\n"
 		"    uv_set, plane_uvs,\n"
 		"    patches, patch_verts,\n"
-		"    light_data, num_spotlights\n"
+		"    light_data, num_spotlights,\n"
+		"    %d, %d, %d, // levelshot position\n"
+		"    %d, %d // levelshot yaw, pitch\n"
 		"};\n",
-		symmetry.axis, symmetry.level
+		symmetry.axis, symmetry.level,
+		levelshot.position[0], levelshot.position[1], levelshot.position[2],
+		levelshot.angles[0], levelshot.angles[1]
 	);
 	fprintf(out, "} // namespace %s\n", name);
 
