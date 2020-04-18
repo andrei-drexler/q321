@@ -720,7 +720,7 @@ TEX(glrgbk3b) {
 TEX(gblks15) {
 	float
 		b = FBMT(uv, vec2(5), .9, 3., 4),
-		t = FBMT_ridged(uv + sin(uv.yx * PI * 4.) * .01, vec2(5), 1., 2., 5),
+		t = FBMT_ridged(uv + sin(uv.yx * PI * 4.) * .01, vec2(7), .5, 3., 5),
 		n = NT(uv + sin(uv.yx * PI * 4.) * .05, vec2(9)),
 		id, e;
 	vec3
@@ -729,13 +729,15 @@ TEX(gblks15) {
 	vec2 d = grad(pt.x);
 	id = H(fract(pt.yz));
 	c = RGB(91, 67, 61) * (.8 + b * b * .8);
-	c += tri(.6, .3, n) * ls(.3, .9, b * t) * .3;
-	c *= 1. - tri(.5, .4, n) * ls(.5, .7, t) * .2;
+	c += tri(.6, .3, n) * ls(.3, .9, b * t) * .2;
+	c *= 1. - tri(.5, .4, n) * ls(.5, .7, t) * .1;
 	c = mix(c, RGB(86, 74, 78), tri(.5, .1, b) * tri(.7, .3, id) * .7);
 	c = mix(c, RGB(105, 90, 70), tri(.3, .1, t) * tri(.3, .3, id) * .3);
-	e = max(tri(.02, .007, pt.x), tri(.4, .03, n * t));
-	c *= 1. - b * t * ls(.015, .022, pt.x) + e * b * d.y * .6;
+	e = tri(.015, .005 + .015 * n, pt.x) + tri(.4, .1, n * t) * .4;
+	c *= 1. - b * ls(.015, .05, pt.x) * .7;
+	c *= 1. + e * b * (d.y - .5) * .7;
 	c *= .9 + .2 * id;
+	c *= .9 + .2 * ridged(NT(uv - pt.yx, vec2(5)));
 	return c;
 }
 
