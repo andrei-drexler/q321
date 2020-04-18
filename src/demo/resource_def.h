@@ -146,6 +146,8 @@
 	x("gothic_trim/pitted_rust3",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust2",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
+	x("liquids/lavahellflat_400",			Lmapped,		cmet52,		Solid,		Opaque,					(400,16,5,2))\
+	x("liquids/lavahell_750",				Lmapped,		cmet52,		Solid,		Opaque,					(500,16,5,2))\
 	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
 	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\
 	x("sfx/beam",							beam,			White,		NonSolid,	Translucent|NeedsUV,	(0))\
