@@ -1774,7 +1774,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 	auto& world = map.entities[0];
 
 	/* header */
-	auto description = world.GetProperty("message"sv);
+	std::string description{world.GetProperty("message"sv)};
 	fprintf(out,
 		"\n"
 		"////////////////////////////////////////////////////////////////\n"
@@ -1782,7 +1782,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 		"////////////////////////////////////////////////////////////////\n"
 		"\n"
 		"namespace %s {\n",
-		int(description.size()), description.data(), source_name,
+		int(description.size()), description.c_str(), source_name,
 		name
 	);
 
@@ -1802,9 +1802,15 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 	bool has_levelshot = levelshot.FindInMap(map);
 	assert(has_levelshot);
 
+	for (auto& c : description)
+		c = std::toupper(c);
+	ReplaceAll(description, "\\",  "\\\\");
+	ReplaceAll(description, "\"",  "\\\"");
+
 	fprintf(out,
 		"\n"
 		"static constexpr PackedMap map{\n"
+		"    \"%s\",\n"
 		"    %d, %d, // symmetry axis, level\n"
 		"    entity_brushes, entity_data,\n"
 		"    world_bounds, brush_bounds,\n"
@@ -1816,6 +1822,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 		"    %d, %d, %d, // levelshot position\n"
 		"    %d, %d // levelshot yaw, pitch\n"
 		"};\n",
+		description.c_str(),
 		symmetry.axis, symmetry.level,
 		levelshot.position[0], levelshot.position[1], levelshot.position[2],
 		levelshot.angles[0], levelshot.angles[1]

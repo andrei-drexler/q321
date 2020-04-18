@@ -7,7 +7,7 @@
 #include <cstdarg>
 #include <cassert>
 #include <climits>
-#include <limits>
+#include <cctype>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -102,7 +102,7 @@ bool ReadFile(const char* file_name, std::vector<char>& contents) {
 
 ////////////////////////////////////////////////////////////////
 
-string_view ExtractFileName(string_view path) {
+std::string_view ExtractFileName(std::string_view path) {
 	auto i = path.rfind('/');
 	if (i != path.npos)
 		path.remove_prefix(i + 1);
@@ -115,6 +115,16 @@ string_view ExtractFileName(string_view path) {
 		path.remove_suffix(path.size() - i);
 	
 	return path;
+}
+
+void ReplaceAll(std::string& dest, std::string_view old, std::string replacement) {
+	for (size_t start = 0; start + old.size() < dest.size(); ) {
+		size_t pos = dest.find(old, start);
+		if (pos == dest.npos)
+			break;
+		dest.replace(pos, old.size(), replacement.data(), replacement.size());
+		start = pos + replacement.size();
+	}
 }
 
 ////////////////////////////////////////////////////////////////

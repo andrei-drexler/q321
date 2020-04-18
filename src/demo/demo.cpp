@@ -142,11 +142,12 @@ namespace Demo {
 		" "								"\0"
 		"LOADING... MAPS/Q3DM17.BSP"	"\0"
 		" "								"\0"
-		"THE LONGEST YARD"				"\0"
+		" "/* MAP MESSAGE */			"\0"
 		"CHEATS ARE ENABLED"			"\0"
 		"FREE FOR ALL"					"\0"
 		"FRAGLIMIT 20"					"\0"
 	;
+	static constexpr int LoadingScreenMessageLine = 6;
 
 	FORCEINLINE void RenderLoadingScreen() {
 		Gfx::SetRenderTarget(Gfx::Backbuffer);
@@ -160,8 +161,12 @@ namespace Demo {
 		vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.125f};
 		vec2 ui_scale = UI::GetScale();
 		vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;
-		for (const char* line = LoadingText; *line; line = NextAfter(line)) {
-			UI::PrintShadowed(line, pos, font_scale, -1, 0.5f, UI::LargeFont);
+		int line_number = 0;
+		for (const char* line = LoadingText; *line; line = NextAfter(line), ++line_number) {
+			const char* text = line;
+			if (line_number == LoadingScreenMessageLine)
+				text = Map::source->message;
+			UI::PrintShadowed(text, pos, font_scale, -1, 0.5f, UI::LargeFont);
 			pos.y += ui_scale.y * 80.f;
 		}
 		UI::FlushGeometry();

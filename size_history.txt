@@ -659,3 +659,4 @@
 38414,subdivided flag brush
 38585,largerblock3b first pass
 38655,worldspawn levelshot params
+38657,worldspawn map message

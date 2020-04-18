@@ -292,6 +292,7 @@ const i16 light_data[] = {-632,-1208,656,75,32767,-664,-1176,656,75,32767,-600,-
 const u8 num_spotlights = 0;
 
 static constexpr PackedMap map{
+    "THE LONGEST YARD",
     1, 64, // symmetry axis, level
     entity_brushes, entity_data,
     world_bounds, brush_bounds,
@@ -792,6 +793,7 @@ const i16 light_data[] = {529,221,87,10,8735,576,312,124,20,22463,576,160,156,10
 const u8 num_spotlights = 0;
 
 static constexpr PackedMap map{
+    "ARENA GATE",
     0, 672, // symmetry axis, level
     entity_brushes, entity_data,
     world_bounds, brush_bounds,
