@@ -1481,7 +1481,7 @@ void WriteLights
 				const float AreaScale = 0.25f / 7500.f / 6.f;
 				// assume square
 				float area = diameter * diameter / 16.f;
-				float offset = std::clamp(min_side / 16.f, 1.f, 32.f);
+				float offset = 4.f;
 
 				auto& light = lights.emplace_back();
 				light.pos = floor(center + offset * plane.xyz + 0.5f);

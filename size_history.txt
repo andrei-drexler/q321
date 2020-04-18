@@ -662,3 +662,4 @@
 38657,worldspawn map message
 38598,lava area light
 38612,dm1 symmetry + lava caulk
+38609,static surf light offset
