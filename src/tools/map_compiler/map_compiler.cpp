@@ -442,7 +442,7 @@ void MergeEntityBrushes(Map& map, const Options& options, std::vector<size_t>& b
 }
 
 void RebuildEntityLinks(Map& map, const Options& options) {
-	printf("Reindexing entity links");
+	printf("Reindexing entity links\n");
 
 	std::unordered_map<std::string, size_t> targetname_to_index;
 	targetname_to_index.reserve(map.entities.size());
