@@ -656,3 +656,4 @@
 38452,added noclip
 38398,more dm1 optimizations
 38412,tweaked gblks15
+38414,subdivided flag brush
