@@ -671,3 +671,4 @@
 38638,sun from worldspawn
 38689,fixed dm1 light leak
 38644,v2
+38641,explicit vec3/4 scalar assignment ops

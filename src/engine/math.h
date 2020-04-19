@@ -307,6 +307,7 @@ struct vec3 {
 	constexpr vec3(float scalar) : x(scalar), y(scalar), z(scalar) { }
 
 	vec3& operator=(const vec3& copy) { return *MemCopy(this, &copy); }
+	vec3& operator=(float scalar) { x = scalar; y = scalar; z = scalar; return *this; }
 
 	constexpr float& operator[](size_t i) { return data[i]; }
 	constexpr const float& operator[](size_t i) const { return data[i]; }
@@ -345,8 +346,9 @@ struct vec4 {
 	vec4() = default;
 	constexpr vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) { }
 	constexpr vec4(float scalar) : x(scalar), y(scalar), z(scalar), w(scalar) { }
-	
+
 	vec4& operator=(const vec4& copy) { return *MemCopy(this, &copy); }
+	vec4& operator=(float scalar) { x = scalar; y = scalar; z = scalar; w = scalar; return *this; }
 
 	constexpr float& operator[](size_t i) { return data[i]; }
 	constexpr const float& operator[](size_t i) const { return data[i]; }

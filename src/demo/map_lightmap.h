@@ -382,9 +382,7 @@ void Map::ComputeLighting(bool shadows) {
 								trace.SetLightmap(start, light_pos);
 								// prevent the ray from squeezing between diagonally-adjacent brushes
 								// this fixes a sun light leak in the left hallway of DM1
-								trace.box_half_size[0] = 1.f/32.f;
-								trace.box_half_size[1] = 1.f/32.f;
-								trace.box_half_size[2] = 1.f/32.f;
+								trace.box_half_size = 1.f/32.f;
 								if (Map::TraceRay(trace))
 									continue;
 							}
