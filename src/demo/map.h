@@ -932,8 +932,11 @@ void Map::Render() {
 	auto num_materials = min<u8>(size(Material::Properties), Map::num_materials);
 	for (u8 material = 0; material < num_materials; ++material) {
 		auto draw = Material::Properties[material] & Material::MaskVisibility;
-		if (draw == Material::Invisible && !ShowClipping)
+
+#ifndef DRAW_CLIPPING
+		if (draw == Material::Invisible)
 			continue;
+#endif
 
 		auto offset = mat_vertex_offset[material];
 		mesh.vertices[Attrib::Position	].SetData(offset + positions);
