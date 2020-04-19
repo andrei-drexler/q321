@@ -664,3 +664,4 @@
 38612,dm1 symmetry + lava caulk
 38609,static surf light offset
 38604,separate lightmap mem alloc
+38573,proper surface light areas

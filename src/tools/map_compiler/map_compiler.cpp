@@ -1426,6 +1426,11 @@ void WriteLights
 
 	size_t num_area_lights = 0;
 	if (options.use_area_lights) {
+		std::vector<size_t> face_edges;
+		std::vector<vec3> face_corners;
+		face_edges.reserve(64);
+		face_corners.reserve(64);
+
 		for (auto& brush : world.brushes) {
 			auto brush_index = &brush - world.brushes.data();
 
@@ -1433,7 +1438,7 @@ void WriteLights
 			BrushEdge brush_edges[MAX_NUM_EDGES];
 
 			size_t num_edges = EnumerateBrushEdges(brush.planes.data(), brush.planes.size(), brush_edges, MAX_NUM_EDGES);
-			
+
 			const bool Snap = false;
 			if (Snap) {
 				size_t num_valid_edges = 0;
@@ -1451,51 +1456,76 @@ void WriteLights
 				auto material = shader_props[plane.material].map_material_base;
 				if (material < 0)
 					continue;
+
 				auto emissive = Demo::Material::UnpackSurfaceLight(Demo::Material::Lights[material]);
 				if (emissive.intensity == 0)
 					continue;
 
 				auto plane_index = &plane - brush.planes.data();
-				size_t num_plane_edges = 0;
-				vec3 center = 0.f;
-				float diameter = 0.f;
-				float min_side = 128.f;
 
+				vec3 center = 0.f;
+				face_edges.clear();
 				for (size_t edge_index = 0; edge_index < num_edges; ++edge_index) {
 					auto& edge = brush_edges[edge_index];
-					if (edge.first_plane == plane_index || edge.second_plane == plane_index) {
-						center += (edge.first_point + edge.second_point);
-						float edge_length = length(edge.first_point - edge.second_point);
-						if (edge_length > 0.5f)
-							min_side = std::min(min_side, edge_length);
-						diameter += edge_length;
-						++num_plane_edges;
-					}
+					if (edge.first_plane != plane_index && edge.second_plane != plane_index)
+						continue;
+					face_edges.push_back(edge_index);
+					center += (edge.first_point + edge.second_point);
 				}
 
-				if (num_plane_edges < 3)
+				if (face_edges.size() < 3)
 					continue;
 
-				center /= num_plane_edges * 2;
-				
-				const float AreaScale = 0.25f / 7500.f / 6.f;
-				// assume square
-				float area = diameter * diameter / 16.f;
-				float offset = 4.f;
+				center /= face_edges.size() * 2;
+				vec3 x_axis = normalize(brush_edges[face_edges[0]].first_point - center);
+				vec3 y_axis = cross(x_axis, plane.xyz);
+
+				auto get_edge_angle = [&] (size_t index) {
+					const auto& e = brush_edges[index];
+					vec3 delta = (e.second_point + e.first_point) * 0.5f - center;
+					return atan2(dot(delta, y_axis), dot(delta, x_axis));
+				};
+
+				std::sort(face_edges.begin(), face_edges.end(), [&] (size_t a, size_t b) {
+					return get_edge_angle(a) < get_edge_angle(b);
+				});
+
+				face_corners.clear();
+				for (auto index : face_edges) {
+					auto& e = brush_edges[index];
+					face_corners.push_back(e.first_plane == plane_index ? e.first_point : e.second_point);
+				}
+
+				const float
+					AreaScale		= 0.25f / 7500.f / 2.f,
+					SurfaceOffset	= 4.f
+				;
+
+				float area = 0.f;
+				for (size_t corner_index = 2; corner_index < face_corners.size(); ++corner_index) {
+					const vec3& a = face_corners[corner_index - 2];
+					const vec3& b = face_corners[corner_index - 1];
+					const vec3& c = face_corners[corner_index - 0];
+					float ab = length(b - a);
+					float bc = length(c - b);
+					float ca = length(a - c);
+					float p = (ab + bc + ca) * 0.5f;
+					area += sqrtf(p * (p - ab) * (p - bc) * (p - ca));
+				}
 
 				auto& light = lights.emplace_back();
-				light.pos = floor(center + offset * plane.xyz + 0.5f);
+				light.pos = floor(center + SurfaceOffset * plane.xyz + 0.5f);
 				light.intensity = area * AreaScale * emissive.intensity;
 				SnapMantissa(light.intensity, 21);
 				light.color = emissive.color;
-				
+
 				const bool AreaLightsAreSpotlights = false;
 				if (AreaLightsAreSpotlights) {
 					light.key |= Light::IsSpotlight;
 					light.spot = floor(plane.xyz * 8.f + 0.5f);
 					++num_spotlights;
 				}
-				
+
 				if (options.verbose)
 					printf(INDENT"Surface light: %s (%g %g %g) %g\n",
 						map.materials[plane.material].name.c_str(), light.pos.x, light.pos.y, light.pos.z, light.intensity);
