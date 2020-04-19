@@ -61,14 +61,20 @@ FORCEINLINE void Map::PackLightmap() {
 	/* pack patches */
 	for (u16 patch_index = 0; patch_index < patches.count; ++patch_index) {
 		auto patch = source->GetPatch(patches.GetSourceIndex(patch_index));
+		bool is_mirrored = patches.IsMirrored(patch_index);
+
 		u16 num_control_points = patch.width * patch.height;
 
 		const u16 MaxPatchVertices = 64;
 		PackedMap::PatchVertex ctrl[MaxPatchVertices];
 
 		assert(num_control_points <= MaxPatchVertices);
-		for (u16 i = 0; i < num_control_points; ++i)
+		for (u16 i = 0; i < num_control_points; ++i) {
 			ctrl[i] = source->GetPatchVertex(i + patches.control_start[patch_index]);
+			if (is_mirrored) {
+				ctrl[i].pos[symmetry_axis] = 2 * symmetry_level - ctrl[i].pos[symmetry_axis];
+			}
+		}
 
 		vec2 size = 0.f;
 		for (u16 j = 0; j < patch.height; j += 2) {
@@ -147,7 +153,13 @@ FORCEINLINE void Map::PackLightmap() {
 				}
 				vec3 ds = s_coeff[0] * (v[1] - v[0]) + s_coeff[2] * (v[2] - v[1]);
 
-				safe_normalize(cross(dt, ds), texel_nor[x]);
+				auto& nor = texel_nor[x];
+				safe_normalize(cross(dt, ds), nor);
+				if (is_mirrored) {
+					nor[0] = -nor[0];
+					nor[1] = -nor[1];
+					nor[2] = -nor[2];
+				}
 			}
 		}
 	}
