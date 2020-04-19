@@ -1,9 +1,9 @@
 #pragma once
 
 NOINLINE void Map::LoadPatches(const PackedMap& packed, u8 pass) {
-	u16 current_patch_vertex = 0;
-	for (u16 patch_index = 0; patch_index < packed.num_patches; ++patch_index) {
+	patches.count = 0;
 
+	for (u16 patch_index = 0, current_patch_vertex = 0; patch_index < packed.num_patches; ++patch_index) {
 		auto patch = packed.GetPatch(patch_index);
 		u16 num_control_points = patch.width * patch.height;
 		bool mirror = UseSymmetry();

@@ -666,3 +666,4 @@
 38604,separate lightmap mem alloc
 38573,proper surface light areas
 38598,subdivided lava brushes
+38611,explicit zero initialization on map load

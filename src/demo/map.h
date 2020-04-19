@@ -454,6 +454,8 @@ FORCEINLINE u16 Map::MirrorPlaneIndex(u16 brush_plane) {
 FORCEINLINE void Map::InitLights() {
 	using namespace Demo;
 
+	num_lights = 0;
+
 	if (EnableSunLight) {
 		// FIXME: hardcoded
 		auto& sun = lights[num_lights++];
@@ -558,10 +560,10 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 
 	assert(num_materials <= Demo::Material::Count);
 
-	InitEntities();
+	MemSet(&num_mat_verts);
+	MemSet(&num_mat_indices);
 
-	// TODO: some data initialization was skipped since we know we already have zeroes everywhere,
-	// this should be fixed if support for loading different maps is ever added
+	InitEntities();
 
 	for (u16 pass = 0; pass < 2; ++pass) {
 		auto* nonaxial_offset = packed.nonaxial_counts;
