@@ -417,6 +417,7 @@ namespace Map {
 	LightList						lights;
 	u16								num_lights;
 
+	void							AllocLightmap();
 	void							ComputeLighting(bool shadows = true);
 	void							UpdateLightmapTexture();
 
@@ -430,7 +431,7 @@ namespace Map {
 
 	void							InitEntities();
 	void							InitLights();
-	void							InitLightmap();
+	void							PackLightmap();
 
 	static u16						MirrorPlaneIndex(u16 original);
 } // namespace Map
@@ -906,7 +907,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 
 	InitLights();
 	CreatePartition();
-	InitLightmap();
+	PackLightmap();
 	ComputeLighting(false);
 }
 

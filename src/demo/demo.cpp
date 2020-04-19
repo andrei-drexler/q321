@@ -327,6 +327,7 @@ int FORCEINLINE demo_main() {
 	Sys::InitWindow(&Sys::g_window, Demo::HandleEvent, "Q320");
 	Sys::SetFPSMode(&Sys::g_window);
 	Demo::RegisterGfxResources();
+	Map::AllocLightmap();
 	Demo::Texture::GenerateAll();
 	Demo::UpdateWindowIcon();
 

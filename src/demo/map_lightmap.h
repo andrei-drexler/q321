@@ -42,12 +42,16 @@ namespace Demo {
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Map::InitLightmap() {
+FORCEINLINE void Map::AllocLightmap() {
 	using namespace Demo;
 
 	lightmap.data = Mem::Alloc<u32>(Lightmap::Width * Lightmap::Height);
 	lightmap.pos = Mem::Alloc<vec3>(Lightmap::Width * Lightmap::Height);
 	lightmap.nor = Mem::Alloc<vec3>(Lightmap::Width * Lightmap::Height);
+}
+
+FORCEINLINE void Map::PackLightmap() {
+	using namespace Demo;
 
 	MemSet(lightmap.pos, 0, Lightmap::Width * Lightmap::Height);
 	MemSet(lightmap.nor, 0, Lightmap::Width * Lightmap::Height);
