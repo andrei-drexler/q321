@@ -672,3 +672,4 @@
 38689,fixed dm1 light leak
 38644,v2
 38641,explicit vec3/4 scalar assignment ops
+38642,fixed another minor light leak
