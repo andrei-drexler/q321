@@ -654,13 +654,18 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 					vec2 oct;
 					i32 x = xy & OctMask;
 					i32 y = xy >> 16;
-					oct.x = decode_sign_mag(x) * (1.f / OctMaxValue);
-					oct.y = decode_sign_mag(y) * (1.f / OctMaxValue);
+					oct.x = decode_sign_mag(x) / float(OctMaxValue);
+					oct.y = decode_sign_mag(y) / float(OctMaxValue);
 					assert(oct.x >= -1.f && oct.x <= 1.f);
 					assert(oct.y >= -1.f && oct.y <= 1.f);
 
 					plane.xyz = oct_to_vec3(oct);
-					plane.w = float(w) * (1.f / float(DistScale));
+					plane.w =
+						decode_sign_mag(w) * (1.f / float(DistScale)) -
+						brush_bounds[0][0] * plane[0] -
+						brush_bounds[0][1] * plane[1] -
+						brush_bounds[0][2] * plane[2]
+					;
 				}
 			}
 

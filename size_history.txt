@@ -676,3 +676,9 @@
 38721,proper lightmapping for mirrored patches
 38699,bithack negate
 38700,another light leak
+38613,export sign/mag plane dists
+38549,export dists w/ corner offset bias
+38531,export sign/mag + offset
+38533,decoding
+38553,bit twiddling sign/mag decoding
+38533,revert decoding

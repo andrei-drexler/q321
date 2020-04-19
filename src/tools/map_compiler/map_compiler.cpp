@@ -957,6 +957,19 @@ void WriteBrushBounds(ArrayPrinter& print, const Map& map, const Options& option
 
 ////////////////////////////////////////////////////////////////
 
+constexpr u32 EncodeSignMagnitude(i32 i) {
+	u32 s = u32(i) >> 31;
+	return (((u32(i) ^ -s) + s) << 1) | s;
+}
+
+constexpr i32 DecodeSignMagnitude(u32 u) {
+	bool negative = u & 1;
+	u >>= 1;
+	return negative ? -u : u;
+}
+
+////////////////////////////////////////////////////////////////
+
 void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& options, string_view array_name) {
 	auto& world = map.entities[0];
 
@@ -969,22 +982,8 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 		DistFractBits	= 4,
 		DistScale		= 1 << DistFractBits;
 
-	auto encode_sign_mag = [=] (float f) {
-		bool negative = f < 0.f;
-		if (negative)
-			f = -f;
-		i32 i = std::clamp((i32)std::floor(f * OctMaxValue + 0.5f), 0, OctMaxValue);
-		return (i << 1) | negative;
-	};
-
-	auto decode_sign_mag = [=] (i32 i) {
-		bool negative = i & 1;
-		float f = (i >> 1) * (1.f / OctMaxValue);
-		return negative ? -f : f;
-	};
-
 	int32_t max_nonaxial_planes = 0;
-		
+
 	print << "\nconst i32 "sv << array_name << "[] = {"sv;
 	for (i32 pass = 0; pass < 2; ++pass) { // 0: normal; 1: distance
 		for (size_t brush_index = 0; brush_index < world.brushes.size(); ++brush_index) {
@@ -995,6 +994,7 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 			BrushEdge edges[MAX_NUM_EDGES];
 
 			auto brush_center = brush.bounds.center();
+			auto corner = floor(brush.bounds.mins);
 
 			u32 num_edges;
 			if (pass == 1)
@@ -1006,16 +1006,16 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 					continue;
 					
 				vec2 oct = vec3_to_oct(plane.xyz);
-				i32 x = encode_sign_mag(oct.x);
-				i32 y = encode_sign_mag(oct.y);
+				i32 x = EncodeSignMagnitude(std::lround(oct.x * OctMaxValue));
+				i32 y = EncodeSignMagnitude(std::lround(oct.y * OctMaxValue));
 				u32 xy = x | (y << 16);
 
 				if (pass == 0) {
 					print << i32(xy) << ","sv;
 					++count;
 				} else {
-					oct.x = decode_sign_mag(x);
-					oct.y = decode_sign_mag(y);
+					oct.x = DecodeSignMagnitude(x) / (float)OctMaxValue;
+					oct.y = DecodeSignMagnitude(y) / (float)OctMaxValue;
 					vec3 snapped_normal = oct_to_vec3(oct);
 					float w = plane.w;
 						
@@ -1033,10 +1033,11 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 						face_center /= float(num_face_edges * 2);
 					else
 						face_center = brush_center;
-					vec3 projected_center = face_center - plane.xyz * (dot(plane.xyz, face_center) + plane.w);
-					w = -dot(projected_center, snapped_normal);
 
-					print << i32(w * float(DistScale) + 0.5f) << ","sv;
+					vec3 projected_center = face_center - plane.xyz * (dot(plane.xyz, face_center) + plane.w);
+					w = -dot(projected_center - corner, snapped_normal);
+
+					print << (i32)EncodeSignMagnitude(std::lround(w * DistScale)) << ","sv;
 				}
 			}
 
