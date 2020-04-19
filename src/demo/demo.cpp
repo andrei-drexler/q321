@@ -365,6 +365,10 @@ int FORCEINLINE demo_main() {
 	Demo::Texture::GenerateAll();
 	Demo::UpdateWindowIcon();
 
+#ifdef SHOW_LIGHTMAP
+	Demo::r_lightmap.Set(1);
+#endif
+
 	auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
 	#define PP_DEMO_MODEL_TOUCH(name)	touch(name::vertices); touch(name::uvs); touch(name::indices);
 	DEMO_MODELS(PP_DEMO_MODEL_TOUCH)

@@ -4,29 +4,32 @@ namespace Demo {
 	struct Cvar {
 		i32 integer;
 		f32 value;
+
+		FORCEINLINE void Set(float new_value) {
+			value = new_value;
+			integer = Math::ftoi(new_value);
+		}
+
+		FORCEINLINE void Set(int new_value) {
+			value = float(new_value);
+			integer = new_value;
+		}
 	};
 
 	////////////////////////////////////////////////////////////////
 
-	#ifdef SHOW_LIGHTMAP
-		#define R_LIGHTMAP_INIT 1
-	#else
-		#define R_LIGHTMAP_INIT 0
-	#endif
-
-	#define CVAR_LIST(x)						\
-		x(sensitivity,		1)					\
-		x(com_maxFps,		0)					\
-		x(cl_fov,			90)					\
-		x(r_lightmap,		R_LIGHTMAP_INIT)	\
-		x(g_gravity,		800)				\
+	#define CVAR_LIST(x)			\
+		x(sensitivity,		1)		\
+		x(com_maxFps,		0)		\
+		x(cl_fov,			90)		\
+		x(r_lightmap,		0)		\
+		x(g_gravity,		800)	\
 
 	////////////////////////////////////////////////////////////////
 	
 	namespace Console {
 		#define PP_CVAR_ADD_NAME(name, init)		#name "\0"
-		#define PP_CVAR_ADD_INIT_(name, init)		#init "\0"
-		#define PP_CVAR_ADD_INIT(name, init)		PP_CVAR_ADD_INIT_(name, init)	// force macro evaluation (for R_LIGHTMAP_INIT)
+		#define PP_CVAR_ADD_INIT(name, init)		#init "\0"
 		#define PP_CVAR_COUNT(name, init)			+1
 		
 		static constexpr char	CvarNames[]			= CVAR_LIST(PP_CVAR_ADD_NAME);
@@ -89,20 +92,12 @@ NOINLINE float ParseFloat(const char* text, iptr* consumed = 0) {
 	return negative ? -result : result;
 }
 
-FORCEINLINE int ftoi(float f) {
-	float posf = f < 0.f ? -f : f;
-	int i = (int)posf;
-	i -= float(i) > posf;
-	return f < 0.f ? -i : i;
-}
-
 FORCEINLINE void Demo::Console::Init() {
 	const char* value = CvarInit;
 	for (u32 cvar_index = 0; cvar_index < NumCvars; ++cvar_index) {
 		auto& cvar = CvarData[cvar_index];
 		iptr advance = 0;
-		cvar.value = ParseFloat(value, &advance);
-		cvar.integer = ftoi(cvar.value);
+		cvar.Set(ParseFloat(value, &advance));
 		assert(advance > 0 && value[advance] == 0);
 		value += advance;
 		++value;
