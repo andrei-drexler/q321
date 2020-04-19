@@ -682,3 +682,5 @@
 38533,decoding
 38553,bit twiddling sign/mag decoding
 38533,revert decoding
+38538,rep stosd for vector scalar assignment
+38533,undo

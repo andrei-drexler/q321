@@ -39,6 +39,7 @@
 
 	#pragma intrinsic(__movsb)
 	#pragma intrinsic(__stosb)
+	#pragma intrinsic(__stosd)
 
 #else
 	#define PP_CPP_VERSION					__cplusplus
@@ -122,6 +123,18 @@ FORCEINLINE void* MemSet(void* dest, int c, size_t count) {
 		char* bytes = (char*)dest;
 		while (count--)
 			*bytes++ = (char)c;
+		return dest;
+	#endif
+	return dest;
+}
+
+FORCEINLINE void* MemSet32(void* dest, i32 value, size_t count) {
+	#ifdef _MSC_VER
+		__stosd((unsigned long*)dest, (unsigned long)value, count);
+	#else
+		i32* dwords = (i32*)dest;
+		while (count--)
+			*dwords++ = value;
 		return dest;
 	#endif
 	return dest;
