@@ -669,3 +669,5 @@
 38611,explicit zero initialization on map load
 38556,fixed missing first light
 38638,sun from worldspawn
+38689,fixed dm1 light leak
+38644,v2
