@@ -269,7 +269,7 @@ namespace Map {
 		EnableSpotlights	= PackedMap::EnableSpotlights,
 		EnableAreaLights	= false,
 		SnapVertices		= true,
-		RecomputePlanes		= false,	// broken
+		RecomputePlanes		= false,
 	};
 
 	void					Load(const PackedMap& packed);
@@ -822,16 +822,23 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 					vec3* v = positions + mat_vertex_offset[material] + first_vertex;
 
 					auto& src_plane = brush_planes[i];
-					safe_normalize(cross(v[1] - v[0], v[2] - v[1]), src_plane.xyz);
-					assert(length_squared(src_plane.xyz) > 0.25f);
-					src_plane.w = -dot(v[0], src_plane.xyz);
+					for (u32 j = 2; j < num_face_edges; ++j, ++v) {
+						vec3 nor = cross(v[1] - v[0], v[2] - v[1]);
+						float len = length(nor);
+						if (len > 0.f) {
+							src_plane.x = nor.x / len;
+							src_plane.y = nor.y / len;
+							src_plane.z = nor.z / len;
+							src_plane.w = -dot(v[0], src_plane.xyz);
 
-					if (mirrored) {
-						auto& dst_plane = brush_planes[MirrorPlaneIndex(i) + num_brush_planes];
-						dst_plane.x = src_plane.x;
-						dst_plane.y = -src_plane.y;
-						dst_plane.z = src_plane.z;
-						dst_plane.w = src_plane.w + 2.f * src_plane.y * symmetry_level;
+							if (mirrored) {
+								auto& dst_plane = brush_planes[MirrorPlaneIndex(i) + num_brush_planes];
+								dst_plane.xyz = src_plane.xyz;
+								dst_plane[symmetry_axis] = -dst_plane[symmetry_axis];
+								dst_plane.w = src_plane.w + 2.f * src_plane[symmetry_axis] * symmetry_level;
+							}
+							break;
+						}
 					}
 				}
 

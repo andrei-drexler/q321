@@ -684,3 +684,4 @@
 38533,revert decoding
 38538,rep stosd for vector scalar assignment
 38533,undo
+38527,fixed recomputeplanes
