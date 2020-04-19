@@ -1,4 +1,6 @@
 //#define ENABLE_RENDERDOC
+//#define DRAW_LIGHTS
+//#define DRAW_POINT_ENTITIES
 
 #include "../engine/demo.h"
 #include "console.h"
@@ -70,6 +72,40 @@ namespace Demo {
 
 		Gfx::UpdateUniforms();
 		Gfx::Draw(mesh);
+	}
+
+	////////////////////////////////////////////////////////////////
+
+	void DrawLights() {
+		for (u16 i = 0; i < Map::num_lights; ++i) {
+			auto& light = Map::lights[i];
+			vec3 pos;
+			pos[0] = light.position[0];
+			pos[1] = light.position[1];
+			pos[2] = light.position[2];
+			RenderSprite(light.position, max(light.intensity / 25.f, 2.f));
+		}
+	}
+
+	void DrawPointEntities() {
+		for (u16 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
+			auto& e = Map::entities[i];
+			vec3 pos;
+			pos[0] = e.origin[0];
+			pos[1] = e.origin[1];
+			pos[2] = e.origin[2];
+			RenderSprite(pos, 8.f);
+		}
+	}
+
+	void RenderDebug() {
+		#ifdef DRAW_LIGHTS
+			DrawLights();
+		#endif
+
+		#ifdef DRAW_POINT_ENTITIES
+			DrawPointEntities();
+		#endif
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -213,17 +249,7 @@ namespace Demo {
 		frame.render_target	= Gfx::Backbuffer;
 
 		RenderWorld(frame);
-
-		if constexpr (0) {
-			for (u16 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
-				auto& e = Map::entities[i];
-				vec3 pos;
-				pos[0] = e.origin[0];
-				pos[1] = e.origin[1];
-				pos[2] = e.origin[2];
-				RenderSprite(pos, 16.f);
-			}
-		}
+		RenderDebug();
 	}
 
 	////////////////////////////////////////////////////////////////
