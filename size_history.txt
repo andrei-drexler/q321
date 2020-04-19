@@ -674,3 +674,4 @@
 38641,explicit vec3/4 scalar assignment ops
 38642,fixed another minor light leak
 38721,proper lightmapping for mirrored patches
+38699,bithack negate

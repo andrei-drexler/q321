@@ -155,11 +155,11 @@ FORCEINLINE void Map::PackLightmap() {
 
 				auto& nor = texel_nor[x];
 				safe_normalize(cross(dt, ds), nor);
-				if (is_mirrored) {
-					nor[0] = -nor[0];
-					nor[1] = -nor[1];
-					nor[2] = -nor[2];
-				}
+				
+				u32 flip_sign = is_mirrored << 31;
+				*(u32*)&nor[0] ^= flip_sign;
+				*(u32*)&nor[1] ^= flip_sign;
+				*(u32*)&nor[2] ^= flip_sign;
 			}
 		}
 	}
