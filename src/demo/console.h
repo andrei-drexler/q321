@@ -8,18 +8,25 @@ namespace Demo {
 
 	////////////////////////////////////////////////////////////////
 
-	#define CVAR_LIST(x)					\
-		x(sensitivity,		1)				\
-		x(com_maxFps,		0)				\
-		x(cl_fov,			90)				\
-		x(r_lightmap,		0)				\
-		x(g_gravity,		800)			\
+	#ifdef SHOW_LIGHTMAP
+		#define R_LIGHTMAP_INIT 1
+	#else
+		#define R_LIGHTMAP_INIT 0
+	#endif
+
+	#define CVAR_LIST(x)						\
+		x(sensitivity,		1)					\
+		x(com_maxFps,		0)					\
+		x(cl_fov,			90)					\
+		x(r_lightmap,		R_LIGHTMAP_INIT)	\
+		x(g_gravity,		800)				\
 
 	////////////////////////////////////////////////////////////////
 	
 	namespace Console {
 		#define PP_CVAR_ADD_NAME(name, init)		#name "\0"
-		#define PP_CVAR_ADD_INIT(name, init)		#init "\0"
+		#define PP_CVAR_ADD_INIT_(name, init)		#init "\0"
+		#define PP_CVAR_ADD_INIT(name, init)		PP_CVAR_ADD_INIT_(name, init)	// force macro evaluation (for R_LIGHTMAP_INIT)
 		#define PP_CVAR_COUNT(name, init)			+1
 		
 		static constexpr char	CvarNames[]			= CVAR_LIST(PP_CVAR_ADD_NAME);

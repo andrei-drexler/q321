@@ -340,5 +340,8 @@ NOINLINE void Demo::Player::Spawn() {
 	angles.x = spawn.w;
 	step = 16.f;
 	health = 100;
-	flags = Flag::NoJump /*| Flag::NoClip*/;
+	flags = Flag::NoJump;
+#ifdef START_NOCLIP
+	flags |= Flag::NoClip;
+#endif
 }

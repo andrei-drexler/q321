@@ -1,6 +1,14 @@
 //#define ENABLE_RENDERDOC
 //#define DRAW_LIGHTS
 //#define DRAW_POINT_ENTITIES
+//#define SAVE_ICON
+//#define SAVE_LIGHTMAP
+//#define SHOW_LIGHTMAP
+//#define START_NOCLIP
+
+#define START_MAP					dm1
+
+////////////////////////////////////////////////////////////////
 
 #include "../engine/demo.h"
 #include "console.h"
@@ -99,13 +107,13 @@ namespace Demo {
 	}
 
 	void RenderDebug() {
-		#ifdef DRAW_LIGHTS
-			DrawLights();
-		#endif
+#ifdef DRAW_LIGHTS
+		DrawLights();
+#endif
 
-		#ifdef DRAW_POINT_ENTITIES
-			DrawPointEntities();
-		#endif
+#ifdef DRAW_POINT_ENTITIES
+		DrawPointEntities();
+#endif
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -336,9 +344,9 @@ namespace Demo {
 		u32* pixels = Sys::Alloc<u32>(IconDescriptor.width * IconDescriptor.height);
 		Gfx::ReadBack(Texture::icon, pixels);
 		Sys::SetWindowIcon(&Sys::g_window, pixels, IconDescriptor.width);
-		if constexpr (0) {
-			Gfx::SaveTGA("icon.tga", pixels, IconDescriptor.width, IconDescriptor.height);
-		}
+#ifdef SAVE_ICON
+		Gfx::SaveTGA("icon.tga", pixels, IconDescriptor.width, IconDescriptor.height);
+#endif
 		Sys::Free(pixels);
 	}
 }
@@ -362,7 +370,7 @@ int FORCEINLINE demo_main() {
 	DEMO_MODELS(PP_DEMO_MODEL_TOUCH)
 	#undef PP_DEMO_MODEL_TOUCH
 
-	Map::Load(dm1::map);
+	Map::Load(START_MAP::map);
 	Map::UpdateLightmapTexture();
 	Demo::GenerateLevelShot();
 	
