@@ -667,3 +667,4 @@
 38573,proper surface light areas
 38598,subdivided lava brushes
 38611,explicit zero initialization on map load
+38556,fixed missing first light

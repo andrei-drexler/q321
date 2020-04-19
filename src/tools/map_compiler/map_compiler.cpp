@@ -1371,7 +1371,7 @@ void WriteLights
 	lights.reserve(256);
 
 	size_t num_spotlights = 0;
-	for (size_t i = 1; i < light_entities.size(); ++i) {
+	for (size_t i = 0; i < light_entities.size(); ++i) {
 		auto& ent = light_entities[i];
 
 		Light light;
