@@ -675,3 +675,4 @@
 38642,fixed another minor light leak
 38721,proper lightmapping for mirrored patches
 38699,bithack negate
+38700,another light leak
