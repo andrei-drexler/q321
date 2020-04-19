@@ -668,3 +668,4 @@
 38598,subdivided lava brushes
 38611,explicit zero initialization on map load
 38556,fixed missing first light
+38638,sun from worldspawn

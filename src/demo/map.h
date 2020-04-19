@@ -268,7 +268,6 @@ namespace Map {
 	enum {
 		EnableSpotlights	= PackedMap::EnableSpotlights,
 		EnableAreaLights	= false,
-		EnableSunLight		= true,
 		SnapVertices		= true,
 		RecomputePlanes		= false,	// broken
 	};
@@ -454,25 +453,23 @@ FORCEINLINE u16 Map::MirrorPlaneIndex(u16 brush_plane) {
 FORCEINLINE void Map::InitLights() {
 	using namespace Demo;
 
-	num_lights = 0;
+	// light 0 is the sun, always present
+	assert(source->num_lights > 0);
+	source->GetLight(0, lights[0]);
+	num_lights = 1;
 
-	if (EnableSunLight) {
-		// FIXME: hardcoded
-		auto& sun = lights[num_lights++];
-		sun.color = 1.f;
-		sun.position.z = 8192.f;
-		sun.intensity = 32.f;
-	}
-
-	for (u16 light_index = 0; light_index < source->num_lights; ++light_index) {
-		auto& light = lights[num_lights++];
-		source->GetLight(light_index, light);
-		if (UseSymmetry() && light.position[symmetry_axis] < symmetry_level - 1) {
-			auto& light2 = lights[num_lights++];
-			MemCopy(&light2, &light, sizeof(light));
-			light2.position[symmetry_axis] = 2.f * symmetry_level - light2.position[symmetry_axis];
-			if (EnableSpotlights && light2.flags & Light::IsSpotlight)
-				light2.spot[symmetry_axis] = -light2.spot[symmetry_axis];
+	// mirror all other lights (starting from 1)
+	if (UseSymmetry()) {
+		for (u16 light_index = 1; light_index < source->num_lights; ++light_index) {
+			auto& light = lights[num_lights++];
+			source->GetLight(light_index, light);
+			if (light.position[symmetry_axis] < symmetry_level - 1) {
+				auto& light2 = lights[num_lights++];
+				MemCopy(&light2, &light, sizeof(light));
+				light2.position[symmetry_axis] = 2.f * symmetry_level - light2.position[symmetry_axis];
+				if (EnableSpotlights && light2.flags & Light::IsSpotlight)
+					light2.spot[symmetry_axis] = -light2.spot[symmetry_axis];
+			}
 		}
 	}
 

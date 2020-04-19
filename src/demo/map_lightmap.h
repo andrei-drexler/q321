@@ -336,18 +336,21 @@ void Map::ComputeLighting(bool shadows) {
 						for (u16 light_index = 0; light_index < Map::num_lights; ++light_index) {
 							const auto& light = Map::lights[light_index];
 							vec3 light_pos = light.position;
-							if (EnableSunLight && light_index == 0)
+							if (light_index == 0)
 								light_pos += pos;
+
 							vec3 light_dir = pos - light_pos;
 							float angle = -dot(nor, light_dir);
 							if (angle < 0.f)
 								continue;
+
 							float dist = length(light_dir);
 							if (dist > 0.f)
 								angle /= dist;
 							assign_max(dist, 16.f);
+
 							float scale = light.intensity * angle;
-							if (!EnableSunLight || light_index != 0)
+							if (light_index != 0)
 								scale *= Lightmap::PointScale / (dist * dist);
 							if (scale < Lightmap::ThreshIgnore)
 								continue;
@@ -358,6 +361,7 @@ void Map::ComputeLighting(bool shadows) {
 								float dist_by_normal = dot(light_dir, light.spot.xyz);
 								if (dist_by_normal < 0.f)
 									continue;
+
 								const float Radius = 64.f;
 								float radius_by_dist = (Radius + 16.f) / light.spot.w;
 								float radius_at_dist = radius_by_dist * dist_by_normal;
@@ -366,6 +370,7 @@ void Map::ComputeLighting(bool shadows) {
 								float sample_radius = length(pos - point_at_dist);
 								if (sample_radius >= radius_at_dist)
 									continue;
+
 								if (sample_radius > radius_at_dist - 32.f)
 									scale *= (radius_at_dist - sample_radius) * (1.f/32.f);
 							}

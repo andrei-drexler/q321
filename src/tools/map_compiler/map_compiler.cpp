@@ -1370,6 +1370,32 @@ void WriteLights
 	std::vector<Light> lights;
 	lights.reserve(256);
 
+	// first light is always the sun
+	auto& sun = lights.emplace_back();
+	auto sun_prop = world.GetProperty("_sun");
+	float sun_degrees = 0.f;
+	float sun_elevation = 0.f;
+
+	bool valid_sun =
+		ParseVector(sun_prop, sun.color, false) &&
+		ParseValue(sun_prop, sun.intensity) &&
+		ParseValue(sun_prop, sun_degrees) &&
+		ParseValue(sun_prop, sun_elevation);
+
+	if (valid_sun) {
+		const float Distance = 8192.f;
+		float sin_yaw = sin(sun_degrees * Math::DEG2RAD);
+		float cos_yaw = cos(sun_degrees * Math::DEG2RAD);
+		float sin_pitch = sin(sun_elevation * Math::DEG2RAD);
+		float cos_pitch = cos(sun_elevation * Math::DEG2RAD);
+		sun.pos.x = Distance * cos_yaw * cos_pitch;
+		sun.pos.y = Distance * sin_yaw * cos_pitch;
+		sun.pos.z = Distance * sin_pitch;
+	} else {
+		sun = {};
+		sun.intensity = 0.f;
+	}
+
 	size_t num_spotlights = 0;
 	for (size_t i = 0; i < light_entities.size(); ++i) {
 		auto& ent = light_entities[i];
@@ -1547,7 +1573,9 @@ void WriteLights
 			light.key |= Interleave3(x, z, y);
 		}
 
-		std::sort(lights.begin(), lights.end(), by_member(&Light::key));
+		// keep the sun at index 0, sort the rest
+		assert(lights.size() >= 1);
+		std::sort(lights.begin() + 1, lights.end(), by_member(&Light::key));
 	}
 	
 	print << "\nconst i16 "sv << array_name << "[] = {"sv;
