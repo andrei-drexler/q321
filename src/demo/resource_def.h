@@ -144,9 +144,17 @@
 	x("gothic_floor/largerblock3b",			Lmapped,		glrgbk3b,	Solid,		Opaque,					(0))\
 	x("gothic_block/blocks15",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust3",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
+	x("liquids/lavahellflat_400",			Lmapped,		cmet52,		Solid,		Opaque,					(400,16,5,2))\
 	x("gothic_trim/pitted_rust2",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
-	x("liquids/lavahellflat_400",			Lmapped,		cmet52,		Solid,		Opaque,					(400,16,5,2))\
+	x("gothic_block/blocks18c_3",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\
+	x("gothic_block/killblock",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
+	x("gothic_block/blocks18b",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
+	x("gothic_block/blocks11b",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
+	x("gothic_block/blocks18c",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
+	x("gothic_block/killblock_i4",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\
+	x("gothic_block/killblock_i",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\
+	x("gothic_block/blocks1",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
 	x("liquids/lavahell_750",				Lmapped,		cmet52,		Solid,		Opaque,					(500,16,5,2))\
 	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
 	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\

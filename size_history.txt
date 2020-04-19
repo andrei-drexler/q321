@@ -685,3 +685,4 @@
 38538,rep stosd for vector scalar assignment
 38533,undo
 38527,fixed recomputeplanes
+38562,more blocks15 aliases
