@@ -379,31 +379,31 @@ vec4 ceil(const vec4& v)	{ return vec4(Math::ceil(v.x), Math::ceil(v.y), Math::c
 // appears to increase code size compared to the explicit component-wise form.
 // The helpers below are meant to alleviate the problem.
 
-FORCEINLINE void mul(vec3& dst, const vec3& a, float b) {
+NOINLINE void mul(vec3& dst, const vec3& a, float b) {
 	dst[0] = a[0] * b;
 	dst[1] = a[1] * b;
 	dst[2] = a[2] * b;
 }
 
-FORCEINLINE void mul(vec3& dst, const vec3& a, const vec3& b) {
+NOINLINE void mul(vec3& dst, const vec3& a, const vec3& b) {
 	dst[0] = a[0] * b[0];
 	dst[1] = a[1] * b[1];
 	dst[2] = a[2] * b[2];
 }
 
-FORCEINLINE void mad(vec3& dst, const vec3& a, float b) {
+NOINLINE void mad(vec3& dst, const vec3& a, float b) {
 	dst[0] += a[0] * b;
 	dst[1] += a[1] * b;
 	dst[2] += a[2] * b;
 }
 
-FORCEINLINE void mad(vec3& dst, const vec3& a, const vec3& b) {
+NOINLINE void mad(vec3& dst, const vec3& a, const vec3& b) {
 	dst[0] += a[0] * b[0];
 	dst[1] += a[1] * b[1];
 	dst[2] += a[2] * b[2];
 }
 
-FORCEINLINE void mix_into(vec3& dst, const vec3& v, float f) {
+NOINLINE void mix_into(vec3& dst, const vec3& v, float f) {
 	dst.x += (v.x - dst.x) * f;
 	dst.y += (v.y - dst.y) * f;
 	dst.z += (v.z - dst.z) * f;
@@ -433,18 +433,18 @@ FORCEINLINE void mix_into(vec3& dst, const vec3& v, float f) {
 
 ////////////////////////////////////////////////////////////////
 
-constexpr FORCEINLINE float dot(const vec2& a, const vec2& b)	{ return a.x*b.x + a.y*b.y; }
-constexpr FORCEINLINE float dot(const vec3& a, const vec3& b)	{ return a.x*b.x + a.y*b.y + a.z*b.z; }
-constexpr FORCEINLINE float dot(const vec4& a, const vec4& b)	{ return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w; }
+constexpr NOINLINE float dot(const vec2& a, const vec2& b)	{ return a.x*b.x + a.y*b.y; }
+constexpr NOINLINE float dot(const vec3& a, const vec3& b)	{ return a.x*b.x + a.y*b.y + a.z*b.z; }
+constexpr NOINLINE float dot(const vec4& a, const vec4& b)	{ return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w; }
 
-constexpr FORCEINLINE float length_squared(const vec2& v)		{ return dot(v, v); }
-constexpr FORCEINLINE float length_squared(const vec3& v)		{ return dot(v, v); }
-FORCEINLINE float length(const vec2& v)							{ return Math::sqrt(dot(v, v)); }
-FORCEINLINE float length(const vec3& v)							{ return Math::sqrt(dot(v, v)); }
-FORCEINLINE vec2 normalize(const vec2& p)						{ return p / length(p); }
-FORCEINLINE vec3 normalize(const vec3& p)						{ return p / length(p); }
+constexpr NOINLINE float length_squared(const vec2& v)		{ return dot(v, v); }
+constexpr NOINLINE float length_squared(const vec3& v)		{ return dot(v, v); }
+NOINLINE float length(const vec2& v)						{ return Math::sqrt(dot(v, v)); }
+NOINLINE float length(const vec3& v)						{ return Math::sqrt(dot(v, v)); }
+NOINLINE vec2 normalize(const vec2& p)						{ return p / length(p); }
+NOINLINE vec3 normalize(const vec3& p)						{ return p / length(p); }
 
-FORCEINLINE void safe_normalize(const vec3& src, vec3& dst) {
+NOINLINE void safe_normalize(const vec3& src, vec3& dst) {
 	float len = length(src);
 	if (len == 0.f)
 		len = 1.f;
@@ -453,7 +453,7 @@ FORCEINLINE void safe_normalize(const vec3& src, vec3& dst) {
 	dst.z = src.z / len;
 }
 
-constexpr FORCEINLINE vec3 cross(const vec3& a, const vec3& b) {
+constexpr NOINLINE vec3 cross(const vec3& a, const vec3& b) {
 	return vec3
 	(
 		a.y*b.z - a.z*b.y,
@@ -462,7 +462,7 @@ constexpr FORCEINLINE vec3 cross(const vec3& a, const vec3& b) {
 	);
 }
 
-constexpr FORCEINLINE void cross(const vec3& a, const vec3& b, vec3& dst) {
+constexpr NOINLINE void cross(const vec3& a, const vec3& b, vec3& dst) {
 	dst.x = a.y*b.z - a.z*b.y;
 	dst.y = a.z*b.x - a.x*b.z;
 	dst.z = a.x*b.y - a.y*b.x;
