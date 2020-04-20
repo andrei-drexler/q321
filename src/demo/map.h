@@ -858,30 +858,6 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		LoadPatches(packed, pass);
 	}
 
-	/* Recompute the planes to match the (snapped) rendered geometry */
-	if (RecomputePlanes) {
-		for (u32 plane_index = 0; plane_index < brushes.plane_count; ++plane_index) {
-			auto vtx_range = brushes.plane_vertex_range[plane_index];
-			const vec3* v = positions + vtx_range.GetOffset();
-
-			vec4& plane = brushes.planes[plane_index];
-			for (u32 j = 2; j < vtx_range.GetCount(); ++j, ++v) {
-				vec3 nor = cross(v[1] - v[0], v[2] - v[1]);
-				float len = length(nor);
-				if (len > 0.f) {
-					// mirrored plane?
-					if (dot(nor, plane.xyz) < 0.f)
-						len = -len;
-					plane.x = nor.x / len;
-					plane.y = nor.y / len;
-					plane.z = nor.z / len;
-					plane.w = -dot(v[0], plane.xyz);
-					break;
-				}
-			}
-		}
-	}
-
 	u32 total_verts = 0;
 	u32 total_indices = 0;
 
@@ -907,13 +883,28 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 			}
 		}
 
-		for (u32 i = 0; i < num_verts; ++i) {
-			nor[i] /= length(nor[i]);
-		}
+		for (u32 i = 0; i < num_verts; ++i)
+			safe_normalize(nor[i]);
 	}
 
 	assert(total_verts <= MAX_NUM_VERTS);
 	assert(total_indices <= MAX_NUM_INDICES);
+
+	/* Recompute the planes to match the (snapped) rendered geometry */
+	if (RecomputePlanes) {
+		for (u32 plane_index = 0; plane_index < brushes.plane_count; ++plane_index) {
+			vec4& plane = brushes.planes[plane_index];
+			auto vtx_range = brushes.plane_vertex_range[plane_index];
+
+			for (const vec3* nor = normals + vtx_range.GetOffset(), *end = nor + vtx_range.GetCount(); nor != end; ++nor) {
+				if (length_squared(*nor) != 0.f) {
+					plane.xyz = *nor;
+					plane.w = -dot(positions[vtx_range.GetOffset()], *nor);
+					break;
+				}
+			}
+		}
+	}
 
 	InitLights();
 	CreatePartition();
