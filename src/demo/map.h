@@ -660,12 +660,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 					assert(oct.y >= -1.f && oct.y <= 1.f);
 
 					plane.xyz = oct_to_vec3(oct);
-					plane.w =
-						decode_sign_mag(w) * (1.f / float(DistScale)) -
-						brush_bounds[0][0] * plane[0] -
-						brush_bounds[0][1] * plane[1] -
-						brush_bounds[0][2] * plane[2]
-					;
+					plane.w = decode_sign_mag(w) * (1.f / float(DistScale));
 				}
 			}
 

@@ -994,7 +994,6 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 			BrushEdge edges[MAX_NUM_EDGES];
 
 			auto brush_center = brush.bounds.center();
-			auto corner = floor(brush.bounds.mins);
 
 			u32 num_edges;
 			if (pass == 1)
@@ -1035,7 +1034,7 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 						face_center = brush_center;
 
 					vec3 projected_center = face_center - plane.xyz * (dot(plane.xyz, face_center) + plane.w);
-					w = -dot(projected_center - corner, snapped_normal);
+					w = -dot(projected_center, snapped_normal);
 
 					print << (i32)EncodeSignMagnitude(std::lround(w * DistScale)) << ","sv;
 				}
