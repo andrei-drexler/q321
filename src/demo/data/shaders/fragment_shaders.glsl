@@ -751,8 +751,8 @@ TEX(glrgbk3b) {
 TEX(gblks15) {
 	float
 		b = FBMT(uv, vec2(5), .9, 3., 4),
-		t = FBMT_ridged(uv + sin(uv.yx * PI * 4.) * .01, vec2(7), .5, 3., 5),
-		n = NT(uv + sin(uv.yx * PI * 4.) * .05, vec2(9)),
+		t = FBMT_ridged(wavy(uv, 4., .01), vec2(7), .5, 3., 5),
+		n = NT(wavy(uv, 4., .05), vec2(9)),
 		id, e;
 	vec3
 		pt = pattern(uv, 4., .1 + n * t * .05),
@@ -775,7 +775,7 @@ TEX(gblks15) {
 TEX(gtprst3) {
 	float
 		b = FBMT(uv, vec2(13), .9, 3., 4),
-		n = NT(uv + sin(uv.yx * PI * 4.) * .05, vec2(9));
+		n = NT(wavy(uv, 4., .05), vec2(9));
 	vec3 c = mix(RGB(56, 48, 49), RGB(100, 50, 40), .7 * (n + b) * .5) * (.875 + b * b);
 	return c;
 }
