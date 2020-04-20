@@ -885,6 +885,8 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 	u32 total_verts = 0;
 	u32 total_indices = 0;
 
+	MemSet(&normals);
+
 	for (u8 material = 0; material < num_materials; ++material) {
 		vec3* pos = positions + mat_vertex_offset[material];
 		vec3* nor = normals + mat_vertex_offset[material];
@@ -895,8 +897,6 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 
 		total_verts += num_verts;
 		total_indices += num_indices;
-
-		// TODO: zero normals out if loading multiple maps
 
 		for (u32 i = 0; i < num_indices; i += 3, idx += 3) {
 			for (u8 j = 0; j < 3; ++j) {

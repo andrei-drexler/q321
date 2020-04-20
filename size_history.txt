@@ -690,3 +690,4 @@
 38419,noinlined a few math functions
 38595,enabled recomputeplanes
 38527,simplified recomputeplanes
+38536,explicit normal zeroing
