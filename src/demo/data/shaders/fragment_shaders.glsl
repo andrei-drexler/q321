@@ -832,13 +832,15 @@ TEX(gwdclg1a) {
 	vec2 p = uv, q;
 	p.y *= 22.;
 	q = fract(p);
-	float b = FBMT(uv, vec2(3, 23), 1., 2., 6),
-		id = H(p.y - q.y),
-		n = NT(uv, vec2(2, 21)),
-		w = NT(wavy(uv, 8., .003), vec2(5, 66));
+	float
+		b = FBMT(uv, vec2(3, 23), 1., 2., 6),
+		n = FBMT(uv, vec2(3, 33), .7, 3., 4),
+		id = H(p.y - q.y);
 	vec3 c = RGB(92, 67, 53) * (.8 + .8 * b * b);
 	c *= 1. - sqr(ls(.1, .0, min(q.y, 1. - q.y))) * b;
-	c *= .8 + .3 * n * id;
+	c *= 1. - .2 * smoothstep(.3, .7, n);
+	//c *= 1. - .5 * sqr(tri(.5, .01, fract(p.x + id))) * b;
+	c *= .8 + .3 * b * id;
 	return c;
 }
 
