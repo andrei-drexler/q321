@@ -1065,7 +1065,7 @@ void lava() {
 	float b = FBMT(uv, vec2(7), .9, 2., 4);
 	vec3 c = RGB(91, 22, 14) * (.2 + 1.6 * b);
 	c = mix(c, RGB(144, 44, 0), tri(.6, .2, FBMT(uv, vec2(3), .7, 3., 4)));
-	c += RGB(244, 144, 66) * sqr(tri(.55, .2, FBMT(uv, vec2(11), .5, 2., 4)));
+	c = mix(c, RGB(244, 144, 66) * b * 2., sqr(tri(.55, .25, FBMT(uv, vec2(11), .5, 2., 4))));
 	FCol = vec4(c * sat(mx(Light())), 1);
 }
 

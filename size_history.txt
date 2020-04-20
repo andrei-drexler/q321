@@ -698,3 +698,4 @@
 38958,removed non-axial corner offset
 39209,some texturing work
 39208,fixed ceiling texture
+39211,tweaked lava texture
