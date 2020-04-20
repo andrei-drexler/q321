@@ -53,6 +53,10 @@ void gmtlbg6() { FS(); }
 void glrgbk3b() { FS(); }
 void gblks15() { FS(); }
 void gtprst3() { FS(); }
+void gmtlspsld() { FS(); }
+void gmtlsp4b() { FS(); }
+void gwdclg1a() { FS(); }
+void gwdclg1bd() { FS(); }
 void bmtsprt() { FS(); }
 void cable() { FS(); }
 void brdr11b() { FS(); }
@@ -74,3 +78,4 @@ void flame() { Generic(); }
 void q3bnr_m() { Generic(); }
 void shiny() { Generic(); }
 void timhel() { Generic(); }
+void lava() { Generic(); }

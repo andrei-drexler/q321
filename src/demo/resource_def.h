@@ -45,10 +45,14 @@
 	x(mtlt12f,				FSVertexBits)\
 	x(mtlt6f,				FSVertexBits)\
 	x(mtlbk03,				FSVertexBits)\
+	x(gwdclg1a,				FSVertexBits)\
+	x(gwdclg1bd,			FSVertexBits)\
 	x(gmtlbg6,				FSVertexBits)\
 	x(glrgbk3b,				FSVertexBits)\
 	x(gblks15,				FSVertexBits)\
 	x(gtprst3,				FSVertexBits)\
+	x(gmtlspsld,			FSVertexBits)\
+	x(gmtlsp4b,				FSVertexBits)\
 	x(bmtsprt,				FSVertexBits)\
 	x(cable,				FSVertexBits)\
 	x(brdr11b,				FSVertexBits)\
@@ -60,6 +64,7 @@
 	x(lpdmnd,				FSVertexBits)\
 	x(lpdmnd_m,				MapVertexBits)\
 	x(timhel,				MapVertexBits)\
+	x(lava,					MapVertexBits)\
 	x(q3bnr,				FSVertexBits)\
 	x(q3bnr_m,				MapVertexBits)\
 	x(beam,					Demo::Attrib::PositionBit|Demo::Attrib::TexCoordBit|Demo::Attrib::NormalBit|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
@@ -90,10 +95,14 @@
 	x(mtlt12f,		Shader::mtlt12f,	128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(mtlt6f,		Shader::mtlt6f,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(mtlbk03,		Shader::mtlbk03,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gwdclg1a,		Shader::gwdclg1a,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gwdclg1bd,	Shader::gwdclg1bd,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlbg6,		Shader::gmtlbg6,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(glrgbk3b,		Shader::glrgbk3b,	512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gblks15,		Shader::gblks15,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gtprst3,		Shader::gtprst3,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gmtlspsld,	Shader::gmtlspsld,	128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gmtlsp4b,		Shader::gmtlsp4b,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bmtsprt,		Shader::bmtsprt,	256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(cable,		Shader::cable,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(brdr11b,		Shader::brdr11b,	64,		32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -144,7 +153,9 @@
 	x("gothic_floor/largerblock3b",			Lmapped,		glrgbk3b,	Solid,		Opaque,					(0))\
 	x("gothic_block/blocks15",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust3",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
-	x("liquids/lavahellflat_400",			Lmapped,		cmet52,		Solid,		Opaque,					(400,16,5,2))\
+	x("gothic_trim/metalsupsolid",			Lmapped,		gmtlspsld,	Solid,		Opaque,					(0))\
+	x("gothic_trim/metalsupport4b",			Lmapped,		gmtlsp4b,	Solid,		Opaque,					(0))\
+	x("liquids/lavahellflat_400",			lava,			White,		Solid,		Opaque,					(400,16,5,2))\
 	x("gothic_trim/pitted_rust2",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
 	x("gothic_block/blocks18c_3",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\
@@ -155,7 +166,9 @@
 	x("gothic_block/killblock_i4",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\
 	x("gothic_block/killblock_i",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\
 	x("gothic_block/blocks1",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("liquids/lavahell_750",				Lmapped,		cmet52,		Solid,		Opaque,					(500,16,5,2))\
+	x("gothic_ceiling/woodceiling1b_dark",	Lmapped,		gwdclg1bd,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_ceiling/woodceiling1a",		Lmapped,		gwdclg1a,	Solid,		Opaque|NeedsUV,			(0))\
+	x("liquids/lavahell_750",				lava,			White,		Solid,		Opaque,					(500,16,5,2))\
 	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
 	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\
 	x("sfx/beam",							beam,			White,		NonSolid,	Translucent|NeedsUV,	(0))\

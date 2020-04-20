@@ -88,16 +88,38 @@ vec2 wavy(vec2 uv, float p, float s) {
 	return uv + sin(uv.yx * PI * p) * s;
 }
 
+// t = time offset
+vec2 wavy(vec2 uv, float t, float p, float s) {
+	return uv + sin(uv.yx * PI * p + t) * s;
+}
+
 // Running bond: s = (rows, columns)
 vec2 brick(vec2 uv, vec2 s) {
 	uv.x += floor(uv.y * s.y) * (.5 / s.x);
 	return fract(uv) * s;
 }
 
-// Input: uv is in [0..1]
-// Output: xy = offset; z = edge ratio in [0..1]
+// Inputs:
+//   - uv in [0..1]
+//   - r = radius, in [0..1]
+// Output:
+//   - xy = offset
+//   - z  = edge ratio in [0..1]
 vec3 brick_edge(vec2 uv, float r) {
 	return vec3(uv -= clamp(uv, r, 1. - r), length(uv) / r);
+}
+
+// Inputs:
+//   - uv in [0..1]
+//   - s = (rows, columns)
+//   - r = radius, in [0..1]
+// Output:
+//   - xy = offset
+//   - z  = edge ratio in [0..1]
+vec3 brick_edge(vec2 uv, vec2 s, float r) {
+	s = s.yx / mn(s);
+	uv *= s;
+	return vec3(uv -= clamp(uv, vec2(r), s - r), length(uv) / r);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -780,6 +802,45 @@ TEX(gtprst3) {
 	return c;
 }
 
+TEX(gmtlspsld) {
+	float
+		b = FBMT(uv, vec2(7), .9, 3., 4),
+		n = FBMT(uv, vec2(5), .9, 3., 4);
+	vec3 c = mix(RGB(103, 56, 53), RGB(73, 58, 71), smoothstep(.4, .5, n)) * (.75 + b * b);
+	return c;
+}
+
+TEX(gmtlsp4b) {
+	vec2
+		p = brick(uv, vec2(4, 1)),
+		q = fract(p),
+		id = p - q;
+	float
+		b = FBMT(uv, vec2(13), .9, 3., 4),
+		n = NT(wavy(uv, 4., .05), vec2(9));
+	vec3 c = RGB(59, 48, 49) * (.7 + .6 * b);
+	return c;
+}
+
+TEX(gwdclg1a) {
+	vec2 p = uv, q;
+	p.y *= 22.;
+	q = fract(p);
+	float b = FBMT(uv, vec2(3, 23), 1., 2., 6),
+		id = H(p.y - q.y),
+		n = NT(uv, vec2(2, 21)),
+		w = NT(wavy(uv, 8., .003), vec2(5, 66));
+	vec3 c = RGB(92, 67, 53) * (.8 + .8 * b * b);
+	c *= 1. - sqr(ls(.1, .0, min(q.y, 1. - q.y))) * b;
+	c *= .8 + .3 * n * id;
+	return c;
+}
+
+TEX(gwdclg1bd) {
+	vec3 c = gwdclg1a(uv);
+	return c;
+}
+
 TEX(cable) {
 	float
 		b = FBMT(uv, vec2(5), .9, 3., 4),
@@ -981,6 +1042,15 @@ void timhel() {
 	uv.y *= 1.5;
 	float s = ls(.3, 1., FBMT(uv - Time.x * vec2(.1, .18), vec2(5), .6, 2., 4));
 	FCol = vec4(vec3(b, 0, 0) + RGB(80, 30, 8) * s * s * 2., 1);
+}
+
+void lava() {
+	vec2 uv = wavy(UV / 8., Time.x * .5, 2., .05);
+	float b = FBMT(uv, vec2(7), .9, 2., 4);
+	vec3 c = RGB(91, 22, 14) * (.2 + 1.6 * b);
+	c = mix(c, RGB(144, 44, 0), tri(.6, .2, FBMT(uv, vec2(3), .7, 3., 4)));
+	c += RGB(244, 144, 66) * sqr(tri(.55, .2, FBMT(uv, vec2(11), .5, 2., 4)));
+	FCol = vec4(c * sat(mx(Light())), 1);
 }
 
 void Loading() {

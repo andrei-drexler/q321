@@ -693,3 +693,4 @@
 38536,explicit normal zeroing
 38553,simplified recomputeplanes some more
 38513,lut instead of mod 3
+38852,moar shaders
