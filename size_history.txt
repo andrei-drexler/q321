@@ -694,3 +694,4 @@
 38553,simplified recomputeplanes some more
 38513,lut instead of mod 3
 38852,moar shaders
+38859,minor dm1 texture fixes
