@@ -269,7 +269,7 @@ namespace Map {
 		EnableSpotlights	= PackedMap::EnableSpotlights,
 		EnableAreaLights	= false,
 		SnapVertices		= true,
-		RecomputePlanes		= false,
+		RecomputePlanes		= true,
 	};
 
 	void					Load(const PackedMap& packed);
@@ -817,31 +817,6 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 						.Set(mat_vertex_offset[material] + first_vertex + num_face_edges, num_face_edges);
 				}
 
-				/* Recompute the planes to match the (snapped) rendered geometry */
-				if (RecomputePlanes) {
-					vec3* v = positions + mat_vertex_offset[material] + first_vertex;
-
-					auto& src_plane = brush_planes[i];
-					for (u32 j = 2; j < num_face_edges; ++j, ++v) {
-						vec3 nor = cross(v[1] - v[0], v[2] - v[1]);
-						float len = length(nor);
-						if (len > 0.f) {
-							src_plane.x = nor.x / len;
-							src_plane.y = nor.y / len;
-							src_plane.z = nor.z / len;
-							src_plane.w = -dot(v[0], src_plane.xyz);
-
-							if (mirrored) {
-								auto& dst_plane = brush_planes[MirrorPlaneIndex(i) + num_brush_planes];
-								dst_plane.xyz = src_plane.xyz;
-								dst_plane[symmetry_axis] = -dst_plane[symmetry_axis];
-								dst_plane.w = src_plane.w + 2.f * src_plane[symmetry_axis] * symmetry_level;
-							}
-							break;
-						}
-					}
-				}
-
 				u32 index_offset = mat_index_offset[material];
 				for (u32 j = 2; j < num_face_edges; ++j) {
 					indices[index_offset + num_mat_indices[material]++] = first_vertex;
@@ -881,6 +856,30 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		assert(src_plane_index == packed.num_planes);
 
 		LoadPatches(packed, pass);
+	}
+
+	/* Recompute the planes to match the (snapped) rendered geometry */
+	if (RecomputePlanes) {
+		for (u32 plane_index = 0; plane_index < brushes.plane_count; ++plane_index) {
+			auto vtx_range = brushes.plane_vertex_range[plane_index];
+			const vec3* v = positions + vtx_range.GetOffset();
+
+			vec4& plane = brushes.planes[plane_index];
+			for (u32 j = 2; j < vtx_range.GetCount(); ++j, ++v) {
+				vec3 nor = cross(v[1] - v[0], v[2] - v[1]);
+				float len = length(nor);
+				if (len > 0.f) {
+					// mirrored plane?
+					if (dot(nor, plane.xyz) < 0.f)
+						len = -len;
+					plane.x = nor.x / len;
+					plane.y = nor.y / len;
+					plane.z = nor.z / len;
+					plane.w = -dot(v[0], plane.xyz);
+					break;
+				}
+			}
+		}
 	}
 
 	u32 total_verts = 0;

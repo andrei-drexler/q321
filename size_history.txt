@@ -688,3 +688,5 @@
 38562,more blocks15 aliases
 38540,more uses for wavy shader function
 38419,noinlined a few math functions
+38595,enabled recomputeplanes
+38527,simplified recomputeplanes
