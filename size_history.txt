@@ -700,3 +700,4 @@
 39208,fixed ceiling texture
 39211,tweaked lava texture
 39218,more detailed woodceiling texture
+39219,more octaves for timhel
