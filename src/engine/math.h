@@ -453,6 +453,15 @@ NOINLINE void safe_normalize(const vec3& src, vec3& dst) {
 	dst.z = src.z / len;
 }
 
+NOINLINE void safe_normalize(vec3& dst) {
+	float len = length(dst);
+	if (len == 0.f)
+		len = 1.f;
+	dst.x = dst.x / len;
+	dst.y = dst.y / len;
+	dst.z = dst.z / len;
+}
+
 constexpr NOINLINE vec3 cross(const vec3& a, const vec3& b) {
 	return vec3
 	(
