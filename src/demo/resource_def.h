@@ -153,8 +153,8 @@
 	x("gothic_floor/largerblock3b",			Lmapped,		glrgbk3b,	Solid,		Opaque,					(0))\
 	x("gothic_block/blocks15",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust3",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
-	x("gothic_trim/metalsupsolid",			Lmapped,		gmtlspsld,	Solid,		Opaque,					(0))\
-	x("gothic_trim/metalsupport4b",			Lmapped,		gmtlsp4b,	Solid,		Opaque,					(0))\
+	x("gothic_trim/metalsupsolid",			Lmapped,		gmtlspsld,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_trim/metalsupport4b",			Lmapped,		gmtlsp4b,	Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahellflat_400",			lava,			White,		Solid,		Opaque,					(400,16,5,2))\
 	x("gothic_trim/pitted_rust2",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\

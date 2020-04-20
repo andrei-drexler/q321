@@ -811,14 +811,20 @@ TEX(gmtlspsld) {
 }
 
 TEX(gmtlsp4b) {
-	vec2
-		p = brick(uv, vec2(4, 1)),
-		q = fract(p),
-		id = p - q;
 	float
 		b = FBMT(uv, vec2(13), .9, 3., 4),
-		n = NT(wavy(uv, 4., .05), vec2(9));
-	vec3 c = RGB(59, 48, 49) * (.7 + .6 * b);
+		n = NT(wavy(uv, 5., .05), vec2(9)),
+		d = ridged(fract(uv.x * 4.)),
+		m = ls(.1, .15, d);
+	vec3 c = RGB(51, 44, 44);
+	c = mix(c, RGB(73, 55, 52), ls(.2, .2, b) * n * m);
+	c = mix(c, RGB(88, 75, 60), ls(.7, .1, b) * b * m);
+	c = mix(c, RGB(99, 77, 77), ls(.6, .9, n) * b * m * .6);
+	c *=  .5 + .8 * b * b;
+	c *= 1. + .5 * sqrt(tri(.25, .05, d + b * .05)) * m * b;
+	c *= 1. - ls(.05, .2, d) * ls(.16, .1, d);
+	vec2 p = vec2(d, fract(uv.y * 8.));
+	c *= 1. + b * sqr(msk(circ(p - vec2(.4, .5), .05), .05));
 	return c;
 }
 
@@ -837,7 +843,17 @@ TEX(gwdclg1a) {
 }
 
 TEX(gwdclg1bd) {
+	float
+		b = FBMT(uv, vec2(13), .9, 3., 4),
+		x = uv.x * 16./3.;
+	vec2 p = mirr(uv, 3./32.);
 	vec3 c = gwdclg1a(uv);
+	c *= ls(.15, .21, uv.x);
+	if (x < 1.)
+		c = RGB(59, 48, 49) * (.7 + .6 * b);
+	c *= 1. + .5 * tri(.05, .05, ridged(x));
+	p.y = mod(p.y, .1);
+	c *= 1. + b * sqr(ls(1., .3, length(p * 1e2 - vec2(2, 5))));
 	return c;
 }
 

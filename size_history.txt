@@ -696,3 +696,4 @@
 38852,moar shaders
 38859,minor dm1 texture fixes
 38958,removed non-axial corner offset
+39209,some texturing work
