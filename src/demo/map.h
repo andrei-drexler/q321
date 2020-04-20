@@ -875,10 +875,11 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		total_indices += num_indices;
 
 		for (u32 i = 0; i < num_indices; i += 3, idx += 3) {
+			constexpr u8 Next[] = {1, 2, 0, 1};
 			for (u8 j = 0; j < 3; ++j) {
 				u32 i0 = idx[j];
-				u32 i1 = idx[(j + 1) % 3];
-				u32 i2 = idx[(j + 2) % 3];
+				u32 i1 = idx[Next[j]];
+				u32 i2 = idx[Next[j + 1]];
 				nor[i0] += cross(pos[i1] - pos[i0], pos[i2] - pos[i1]);
 			}
 		}
