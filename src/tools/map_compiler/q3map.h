@@ -138,6 +138,7 @@ namespace Q3 {
 		Map() = default;
 
 		Material::ID				AddMaterial(string_view name);
+		Material::ID				FindMaterial(string_view name) const;
 
 		Entity&						World() { return entities[0]; }
 		const Entity&				World() const { return entities[0]; }
@@ -169,12 +170,19 @@ bool Q3::Map::Error(const char* format, ...) {
 	return false;
 }
 
-Q3::Map::Material::ID Q3::Map::AddMaterial(string_view name) {
-	if (name.empty())
-		return -1;
+Q3::Map::Material::ID Q3::Map::FindMaterial(string_view name) const {
 	for (Material::ID i=0; i<materials.size(); ++i)
 		if (name == materials[i].name)
 			return i;
+	return -1;
+}
+
+Q3::Map::Material::ID Q3::Map::AddMaterial(string_view name) {
+	if (name.empty())
+		return -1;
+	auto index = FindMaterial(name);
+	if (index != -1)
+		return index;
 	auto& m = materials.emplace_back();
 	m.name = name;
 	return Material::ID(materials.size() - 1);

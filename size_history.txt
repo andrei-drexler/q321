@@ -709,3 +709,4 @@
 39844,added skylight
 39748,noinline floor/ceil
 39700,tweaked skylight code
+39682,added material substitutions

@@ -1058,6 +1058,40 @@ void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& op
 
 ////////////////////////////////////////////////////////////////
 
+static const char* const MaterialSubstitutions[][2] = {
+	#define PP_MATERIAL_SUBSTITION(before, after) {before, after},
+	DEMO_MATERIAL_SUBSTITUTIONS(PP_MATERIAL_SUBSTITION)
+	#undef PP_MATERIAL_SUBSTITION
+};
+
+void ApplyMaterialSubstitutions(Map& map) {
+	printf("Applying materials substitutions\n");
+
+	std::vector<size_t> replacement(map.materials.size());
+	for (size_t i = 0; i < replacement.size(); ++i)
+		replacement[i] = i;
+
+	for (auto& subst : MaterialSubstitutions) {
+		auto before = map.FindMaterial(subst[0]);
+		auto after = map.FindMaterial(subst[1]);
+		if (before != -1 && after != -1) {
+			replacement[before] = after;
+		}
+	}
+
+	for (auto& entity : map.entities) {
+		for (auto& brush : entity.brushes) {
+			for (auto& plane : brush.planes)
+				if (plane.material != -1)
+					plane.material = replacement[plane.material];
+		}
+		for (auto& patch : entity.patches) {
+			if (patch.material != -1)
+				patch.material = replacement[patch.material];
+		}
+	}
+}
+
 void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options, const ShaderProperties* shader_props, string_view count_name, string_view array_name) {
 	auto& world = map.World();
 
@@ -1808,6 +1842,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 	if (map.entities.empty())
 		return false;
 
+	ApplyMaterialSubstitutions(map);
 	MergeFuncGroups(map);
 	map.ComputeBounds();
 

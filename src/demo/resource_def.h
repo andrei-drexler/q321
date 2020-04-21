@@ -166,18 +166,6 @@
 	x("gothic_trim/km_arena1tower4",		Lmapped,		gspbdrbb,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_floor/xstairtop4",			Lmapped,		gxstrtop4,	Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahellflat_400",			lavaf,			White,		Solid,		Opaque,					(400,16,5,2))\
-	x("gothic_trim/pitted_rust2",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
-	x("gothic_trim/pitted_rust",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
-	x("gothic_block/blocks18c_3",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("gothic_block/killblock",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("gothic_block/blocks18b",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("gothic_block/blocks11b",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("gothic_block/blocks18c",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("gothic_block/blocks18c_3",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("gothic_block/blocks17",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("gothic_block/killblock_i4",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("gothic_block/killblock_i",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("gothic_block/blocks1",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
 	x("gothic_ceiling/woodceiling1b_dark",	Lmapped,		gwdclg1bd,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_ceiling/woodceiling1a",		Lmapped,		gwdclg1a,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/skull4",					Lmapped,		gskull4,	Solid,		Opaque,					(0))\
@@ -192,6 +180,19 @@
 	x("common/nodrawnonsolid",				Generic,		White,		NonSolid,	Invisible,				(0))\
 	x("common/trigger",						Generic,		White,		NonSolid,	Invisible,				(0))\
 	x("common/nodrop",						Generic,		White,		NoDrop,		Invisible,				(0))\
+
+#define DEMO_MATERIAL_SUBSTITUTIONS(x)\
+	x("gothic_block/blocks18c_3",			"gothic_block/blocks15")\
+	x("gothic_block/killblock",				"gothic_block/blocks15")\
+	x("gothic_block/blocks18b",				"gothic_block/blocks15")\
+	x("gothic_block/blocks11b",				"gothic_block/blocks15")\
+	x("gothic_block/blocks18c",				"gothic_block/blocks15")\
+	x("gothic_block/blocks17",				"gothic_block/blocks15")\
+	x("gothic_block/killblock_i4",			"gothic_block/blocks15")\
+	x("gothic_block/killblock_i",			"gothic_block/blocks15")\
+	x("gothic_block/blocks1",				"gothic_block/blocks15")\
+	x("gothic_trim/pitted_rust2",			"gothic_trim/pitted_rust3")\
+	x("gothic_trim/pitted_rust",			"gothic_trim/pitted_rust3")\
 
 ////////////////////////////////////////////////////////////////
 
