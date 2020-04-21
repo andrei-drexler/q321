@@ -1120,6 +1120,10 @@ void lava() {
 	FCol = vec4(c * sat(mx(Light())), 1);
 }
 
+void lavaf() {
+	lava();
+}
+
 void Loading() {
 	FCol = texture(Texture0, (.5 + UV * 127.) / 128., 2.5);
 	FCol.xyz *= .7 + .3 * NT(UV, .5/fwidth(UV));

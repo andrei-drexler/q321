@@ -68,6 +68,7 @@
 	x(lpdmnd_m,				MapVertexBits)\
 	x(timhel,				MapVertexBits)\
 	x(lava,					MapVertexBits)\
+	x(lavaf,				MapVertexBits)\
 	x(q3bnr,				FSVertexBits)\
 	x(q3bnr_m,				MapVertexBits)\
 	x(beam,					Demo::Attrib::PositionBit|Demo::Attrib::TexCoordBit|Demo::Attrib::NormalBit|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
@@ -164,7 +165,7 @@
 	x("gothic_wall/supportborder_blue_b",	Lmapped,		gspbdrbb,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/km_arena1tower4",		Lmapped,		gspbdrbb,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_floor/xstairtop4",			Lmapped,		gxstrtop4,	Solid,		Opaque|NeedsUV,			(0))\
-	x("liquids/lavahellflat_400",			lava,			White,		Solid,		Opaque,					(400,16,5,2))\
+	x("liquids/lavahellflat_400",			lavaf,			White,		Solid,		Opaque,					(400,16,5,2))\
 	x("gothic_trim/pitted_rust2",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
 	x("gothic_block/blocks18c_3",			Lmapped,		gblks15,	Solid,		Opaque,					(0))\

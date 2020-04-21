@@ -1,5 +1,5 @@
 uniform mat4 MVP;
-uniform vec4 Cam;
+uniform vec4 Time, Cam;
 
 layout(location=0) in vec4 P;
 layout(location=1) in vec4 T;
@@ -81,4 +81,10 @@ void flame() { Generic(); }
 void q3bnr_m() { Generic(); }
 void shiny() { Generic(); }
 void timhel() { Generic(); }
-void lava() { Generic(); }
+void lavaf() { Generic(); }
+
+void lava() {
+	Generic();
+	// assuming N = (0 0 1)
+	gl_Position += MVP[2] * sin(Time.x*.5 + dot(P.xyz/1e2, vec3(1))) * 4.;
+}
