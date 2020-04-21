@@ -11,6 +11,7 @@ out vec4 FCol;
 
 #define smoothen(x) ((x)*(x)*(3.-2.*(x)))
 #define sqr(x)		(x)*(x)
+#define lsq(x)		dot(x, x)
 #define sat(x)		clamp(x, 0., 1.)
 #define RGB(r,g,b)	(vec3(r,g,b)/255.)
 
@@ -810,21 +811,44 @@ TEX(gmtlspsld) {
 	return c;
 }
 
+// Output: xyz = normal, w = unclamped normalized distance
+vec4 bolt(vec2 uv, float s) {
+	return vec4(uv/=s, sqrt(sat(1.-lsq(uv))), length(uv) - 1.);
+}
+
+float toplight(vec3 n) {
+	float l = sum(n.yz) * .7;
+	return pow(sat(l), 4.) + l;
+}
+
+float shadow(vec4 b, float s) {
+	float t = ls(s, -s, b.y);
+	return sat(t * s - b.w) * t;
+}
+
+vec3 add_bolt(vec3 c, vec2 uv, float s) {
+	vec4 b = bolt(uv, s);
+	c *= 1. + toplight(b.xyz) * msk(b.w) * .5;
+	c *= 1. - sqr(shadow(b, 1.7)) * (1. - msk(b.w)) * .3;
+	return c;
+}
+
 TEX(gmtlsp4b) {
 	float
 		b = FBMT(uv, vec2(13), .9, 3., 4),
 		n = NT(wavy(uv, 5., .05), vec2(9)),
 		d = ridged(fract(uv.x * 4.)),
-		m = ls(.1, .15, d);
+		m = ls(.1, .15, d) * ls(1., .99, uv.y);
 	vec3 c = RGB(51, 44, 44);
 	c = mix(c, RGB(73, 55, 52), ls(.2, .2, b) * n * m);
-	c = mix(c, RGB(88, 75, 60), ls(.7, .1, b) * b * m);
-	c = mix(c, RGB(99, 77, 77), ls(.6, .9, n) * b * m * .6);
-	c *=  .5 + .8 * b * b;
-	c *= 1. + .5 * sqrt(tri(.25, .05, d + b * .05)) * m * b;
+	c = mix(c, RGB(69, 60, 66), ls(.7, .1, b) * b * m);
+	c = mix(c, RGB(99, 77, 77), ls(.1, .5, n) * n * m * b * b * .3);
+	c *= .6 + .3 * b + .3 * b * b;
+	c *= 1. + .9 * sqr(tri(.21, .02 + .1 * n, d + b * .05)) * m * b;
+	c *= 1. - sqr(ls(.49, .5, abs(uv.y - .5)));
 	c *= 1. - ls(.05, .2, d) * ls(.16, .1, d);
-	vec2 p = vec2(d, fract(uv.y * 8.));
-	c *= 1. + b * sqr(msk(circ(p - vec2(.4, .5), .05), .05));
+	c *= 1. + tri(.99, .007, uv.y);
+	c = add_bolt(c, vec2(d - .4, fract(uv.y * 8.) - .5), .07);
 	return c;
 }
 
