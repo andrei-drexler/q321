@@ -19,9 +19,11 @@ namespace Demo {
 		constexpr u16
 			Width			= Descriptor.width,
 			Height			= Descriptor.height,
-			NumSkySamples	= 12,
 			Scale			= 16,
-			Dilate			= true;
+			Dilate			= true,
+			NumSkySamples	= 12
+		;
+;
 
 		/* Debugging */
 		enum class DebugMode {
@@ -406,11 +408,11 @@ void Map::ComputeLighting(bool shadows) {
 
 						if (source->skylight && params->shadows) {
 							vec3 skylight;
-							skylight.r = ((source->skylight      ) & 255) * (1.f / Lightmap::NumSkySamples);
-							skylight.g = ((source->skylight >>  8) & 255) * (1.f / Lightmap::NumSkySamples);
-							skylight.b = ((source->skylight >> 16) & 255) * (1.f / Lightmap::NumSkySamples);
+							skylight.r = ((source->skylight      ) & 255) / float(Lightmap::NumSkySamples);
+							skylight.g = ((source->skylight >>  8) & 255) / float(Lightmap::NumSkySamples);
+							skylight.b = ((source->skylight >> 16) & 255) / float(Lightmap::NumSkySamples);
 
-							// find normal component with smallest absolute magnitude
+							// find normal component with smallest magnitude
 							vec3 abs_nor = abs(nor);
 							int next_axis = 0;
 							if (abs_nor[1] < abs_nor[0])
@@ -429,25 +431,26 @@ void Map::ComputeLighting(bool shadows) {
 							// Use R2 sequence to sample the hemisphere with a cosine distribution
 							// http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/
 
-							constexpr float G = 1.324718;
-							constexpr vec2 R2 = {1.f / G, 1.f / (G * G)};
-							vec2 uv = .5f;
+							constexpr float
+								G = 1.324718,
+								R2x = 1.f / G,
+								R2y = 1.f / (G * G);
 
-							for (u16 i = 0; i < Lightmap::NumSkySamples; ++i, uv += R2) {
-								float phi = uv.y * Math::TAU;
-								float cos_theta = sqrt(1.f - fract(uv.x));
+							float u = 0.5f;
+							float phi = Math::PI;
+
+							for (u16 i = 0; i < Lightmap::NumSkySamples; ++i, u += R2y, phi += (R2y * Math::TAU)) {
+								float cos_theta = sqrt(1.f - fract(u));
 								float sin_theta = sqrt(1.f - cos_theta * cos_theta);
-	
-								vec3 local_dir;
-								local_dir.x = cos(phi) * sin_theta;
-								local_dir.y = sin(phi) * sin_theta;
-								local_dir.z = cos_theta;
 
-								trace.start = pos + nor;
-								mul(trace.delta, x_axis, local_dir.x * Lightmap::SkyRayLength);
-								mad(trace.delta, y_axis, local_dir.y * Lightmap::SkyRayLength);
-								mad(trace.delta, nor,    local_dir.z * Lightmap::SkyRayLength);
-	
+								trace.start.x = pos.x + nor.x;
+								trace.start.y = pos.y + nor.y;
+								trace.start.z = pos.z + nor.z;
+
+								mul(trace.delta, x_axis, Lightmap::SkyRayLength * cos(phi) * sin_theta);
+								mad(trace.delta, y_axis, Lightmap::SkyRayLength * sin(phi) * sin_theta);
+								mad(trace.delta, nor,    Lightmap::SkyRayLength * cos_theta);
+
 								if (!Map::TraceRay(trace))
 									accum += skylight;
 							}

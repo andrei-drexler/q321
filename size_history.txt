@@ -708,3 +708,4 @@
 39586,mouth lava vertex anim
 39844,added skylight
 39748,noinline floor/ceil
+39700,tweaked skylight code
