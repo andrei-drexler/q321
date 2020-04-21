@@ -5767,7 +5767,7 @@ gothic_door/xian_tourneyarch_inside2
 ( 360 828 -40 ) ( 360 836 -40 ) ( 328 836 -40 ) common/caulk 0 0 0 0.500000 0.500000 0 4 0
 ( 320 836 296 ) ( 352 836 296 ) ( 352 828 296 ) common/caulk 0 0 0 0.500000 0.500000 0 4 0
 ( 316 820 -16 ) ( 316 820 4 ) ( 348 820 4 ) gothic_wall/supportborder_blue_b 0 0 -180 0.500000 -0.500000 0 0 0
-( 320 836 -16 ) ( 320 836 4 ) ( 320 828 4 ) gothic_wall/supportborder_blue_b 0 0 -180 0.500000 -0.500000 0 0 0
+( 320 836 -16 ) ( 320 836 4 ) ( 320 828 4 ) gothic_wall/supportborder_blue_c -48 0 0 0.500000 0.500000 0 0 0
 ( 344 928 -16 ) ( 344 928 4 ) ( 312 928 4 ) gothic_wall/supportborder_blue_b 0 0 -180 0.500000 -0.500000 0 0 0
 ( 352 828 -16 ) ( 352 828 4 ) ( 352 836 4 ) gothic_wall/supportborder_blue_b -24 0 -180 0.500000 -0.500000 0 0 0
 }
