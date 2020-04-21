@@ -707,3 +707,4 @@
 39548,changed wall texture
 39586,mouth lava vertex anim
 39844,added skylight
+39748,noinline floor/ceil

@@ -67,7 +67,7 @@ namespace Math {
 			return min(max(x, minval), maxval);
 		}
 
-		inline float floor(float f) {
+		NOINLINE float floor(float f) {
 			float i = float(int(f));
 			return i - (i > f);
 		}
@@ -80,7 +80,7 @@ namespace Math {
 			return fract(f / interval) * interval;
 		}
 
-		inline float ceil(float f) {
+		NOINLINE float ceil(float f) {
 			float i = float(int(f));
 			return i + (i < f);
 		}
