@@ -702,3 +702,4 @@
 39218,more detailed woodceiling texture
 39219,more octaves for timhel
 39291,more detailed metalsupport4b
+39285,reused add_bolt

@@ -848,8 +848,7 @@ TEX(gmtlsp4b) {
 	c *= 1. - sqr(ls(.49, .5, abs(uv.y - .5)));
 	c *= 1. - ls(.05, .2, d) * ls(.16, .1, d);
 	c *= 1. + tri(.99, .007, uv.y);
-	c = add_bolt(c, vec2(d - .4, fract(uv.y * 8.) - .5), .07);
-	return c;
+	return add_bolt(c, vec2(d - .4, fract(uv.y * 8.) - .5), .07);
 }
 
 TEX(gwdclg1a) {
@@ -872,15 +871,11 @@ TEX(gwdclg1bd) {
 	float
 		b = FBMT(uv, vec2(13), .9, 3., 4),
 		x = uv.x * 16./3.;
-	vec2 p = mirr(uv, 3./32.);
-	vec3 c = gwdclg1a(uv);
-	c *= ls(.15, .21, uv.x);
+	vec3 c = gwdclg1a(uv) * ls(.15, .21, uv.x);
 	if (x < 1.)
 		c = RGB(59, 48, 49) * (.7 + .6 * b);
 	c *= 1. + .5 * tri(.05, .05, ridged(x));
-	p.y = mod(p.y, .1);
-	c *= 1. + b * sqr(ls(1., .3, length(p * 1e2 - vec2(2, 5))));
-	return c;
+	return add_bolt(c, vec2(abs(uv.x - 3./32.) - .07, mod(uv.y, .1) - .05), .004);
 }
 
 TEX(cable) {
