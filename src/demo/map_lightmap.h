@@ -8,7 +8,8 @@ namespace Demo {
 		constexpr float
 			PointScale		= 7500.f * 3.f,
 			ThreshIgnore	= 2.f,
-			SurfaceBias		= 4.f
+			SurfaceBias		= 4.f,
+			SkyRayLength	= 8192.f
 		;
 
 		/* Metadata */
@@ -18,6 +19,7 @@ namespace Demo {
 		constexpr u16
 			Width			= Descriptor.width,
 			Height			= Descriptor.height,
+			NumSkySamples	= 12,
 			Scale			= 16,
 			Dilate			= true;
 
@@ -331,6 +333,10 @@ void Map::ComputeLighting(bool shadows) {
 			vec3* texel_nor = Map::lightmap.nor + y * Lightmap::Width;
 
 			TraceInfo trace;
+			trace.type = TraceInfo::Type::Lightmap;
+			// prevent the ray from squeezing between diagonally-adjacent brushes
+			// this fixes a sun light leak in the left hallway of DM1
+			trace.box_half_size = 1.f/32.f;
 
 			for (; y < yend; ++y) {
 				for (u16 x = 0; x < Lightmap::Width; ++x, ++texel_pos, ++texel_nor, ++texel) {
@@ -388,18 +394,63 @@ void Map::ComputeLighting(bool shadows) {
 							}
 
 							if (params->shadows) {
-								vec3 start = pos;
-								vec3 delta = light_pos - pos;
-								mad(start, delta, Lightmap::SurfaceBias / length(delta));
-								trace.SetLightmap(start, light_pos);
-								// prevent the ray from squeezing between diagonally-adjacent brushes
-								// this fixes a sun light leak in the left hallway of DM1
-								trace.box_half_size = 1.f/32.f;
+								trace.start = pos;
+								trace.delta = light_pos - pos;
+								mad(trace.start, trace.delta, Lightmap::SurfaceBias / length(trace.delta));
 								if (Map::TraceRay(trace))
 									continue;
 							}
 
 							mad(accum, light.color, scale);
+						}
+
+						if (source->skylight && params->shadows) {
+							vec3 skylight;
+							skylight.r = ((source->skylight      ) & 255) * (1.f / Lightmap::NumSkySamples);
+							skylight.g = ((source->skylight >>  8) & 255) * (1.f / Lightmap::NumSkySamples);
+							skylight.b = ((source->skylight >> 16) & 255) * (1.f / Lightmap::NumSkySamples);
+
+							// find normal component with smallest absolute magnitude
+							vec3 abs_nor = abs(nor);
+							int next_axis = 0;
+							if (abs_nor[1] < abs_nor[0])
+								next_axis = 1;
+							if (abs_nor[2] < abs_nor[next_axis])
+								next_axis = 2;
+
+							// setup tangent frame
+							vec3 x_axis, y_axis;
+							MemSet(&x_axis);
+							x_axis[next_axis] = 1.f;
+							cross(nor, x_axis, y_axis);
+							normalize(y_axis);
+							cross(nor, y_axis, x_axis);
+
+							// Use R2 sequence to sample the hemisphere with a cosine distribution
+							// http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/
+
+							constexpr float G = 1.324718;
+							constexpr vec2 R2 = {1.f / G, 1.f / (G * G)};
+							vec2 uv = .5f;
+
+							for (u16 i = 0; i < Lightmap::NumSkySamples; ++i, uv += R2) {
+								float phi = uv.y * Math::TAU;
+								float cos_theta = sqrt(1.f - fract(uv.x));
+								float sin_theta = sqrt(1.f - cos_theta * cos_theta);
+	
+								vec3 local_dir;
+								local_dir.x = cos(phi) * sin_theta;
+								local_dir.y = sin(phi) * sin_theta;
+								local_dir.z = cos_theta;
+
+								trace.start = pos + nor;
+								mul(trace.delta, x_axis, local_dir.x * Lightmap::SkyRayLength);
+								mad(trace.delta, y_axis, local_dir.y * Lightmap::SkyRayLength);
+								mad(trace.delta, nor,    local_dir.z * Lightmap::SkyRayLength);
+	
+								if (!Map::TraceRay(trace))
+									accum += skylight;
+							}
 						}
 					}
 

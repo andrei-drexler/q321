@@ -706,3 +706,4 @@
 39549,more shader work
 39548,changed wall texture
 39586,mouth lava vertex anim
+39844,added skylight

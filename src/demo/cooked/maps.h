@@ -301,6 +301,7 @@ static constexpr PackedMap map{
     uv_set, plane_uvs,
     patches, patch_verts,
     light_data, num_spotlights,
+    0x000000, // skylight
     -920, -424, 1104, // levelshot position
     296, -22 // levelshot yaw, pitch
 };
@@ -831,6 +832,7 @@ static constexpr PackedMap map{
     uv_set, plane_uvs,
     patches, patch_verts,
     light_data, num_spotlights,
+    0x564b80, // skylight
     972, 836, -8, // levelshot position
     130, 20 // levelshot yaw, pitch
 };

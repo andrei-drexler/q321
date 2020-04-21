@@ -21,6 +21,7 @@ struct PackedMap {
 	u8					num_materials;
 	u8					num_lights;
 	u8					num_spotlights;
+	u32					skylight;
 
 	const u16*			entity_brushes;
 	const i16*			entity_data;
@@ -71,6 +72,7 @@ struct PackedMap {
 		const float	(&patch_verts)		[NumPatchVertEntries],
 		const i16	(&light_data)		[NumLightEntries],
 		u8								num_spotlights,
+		u32								skylight,
 		i16								levelshot_x,
 		i16								levelshot_y,
 		i16								levelshot_z,
@@ -101,6 +103,7 @@ struct PackedMap {
 		light_data				(light_data),
 		num_lights				((NumLightEntries - num_spotlights * 3) / 5),
 		num_spotlights			(num_spotlights),
+		skylight				(skylight),
 		symmetry_axis			(symmetry_axis),
 		symmetry_level			(symmetry_level)
 	{

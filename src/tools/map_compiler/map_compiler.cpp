@@ -1332,6 +1332,14 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 
 ////////////////////////////////////////////////////////////////
 
+u32 ReadSkyLight(const Map& map) {
+	auto prop = map.World().GetProperty("_skylight");
+	i32 r, g, b;
+	if (ParseValue(prop, r) && ParseValue(prop, g) && ParseValue(prop, b))
+		return r | (g << 8) | (b << 16);
+	return 0;
+}
+
 void WriteLights
 (
 	ArrayPrinter& print, const Map& map, const Options& options, const ShaderProperties* shader_props,
@@ -1877,11 +1885,13 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 		"    uv_set, plane_uvs,\n"
 		"    patches, patch_verts,\n"
 		"    light_data, num_spotlights,\n"
+		"    0x%06x, // skylight\n"
 		"    %d, %d, %d, // levelshot position\n"
 		"    %d, %d // levelshot yaw, pitch\n"
 		"};\n",
 		description.c_str(),
 		symmetry.axis, symmetry.level,
+		ReadSkyLight(map),
 		levelshot.position[0], levelshot.position[1], levelshot.position[2],
 		levelshot.angles[0], levelshot.angles[1]
 	);
