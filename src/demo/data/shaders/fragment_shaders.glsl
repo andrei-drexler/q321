@@ -857,15 +857,27 @@ TEX(gmtlsp4b) {
 	return add_bolt(c, vec2(d - .4, fract(uv.y * 8.) - .5), .07);
 }
 
-TEX(gspbdrbb) {
+vec3 gspbdrbb_v(vec2 uv, float s)  {
 	float
-		b = FBMT(uv, vec2(3, 9), .5, 2., 4),
+		b = FBMT(uv, vec2(3, 1. + s + s), .5, 2., 4),
 		d = ridged(uv.x);
 	uv.y *= 2.;
 	vec3 c = mix(RGB(71, 60, 58), RGB(110, 88, 77), ls(.1, .05, d)) * (.7 + .6 * b);
 	c *= 1. - ls(.05, .0, uv.x);
 	c *= 1. + .5 * tri(.05, .02, uv.x);
-	return add_bolt(c, vec2(d - .4, fract(uv.y * 4.) - .5), .08);
+	return add_bolt(c, vec2(d - .4, fract(uv.y * s) - .5), .08);
+}
+
+TEX(gspbdrbb) {
+	return gspbdrbb_v(uv, 4.);
+}
+
+TEX(gkarntwr4a) {
+	return gspbdrbb(uv.yx);
+}
+
+TEX(gkarntwrst) {
+	return gspbdrbb_v(uv, 1.);
 }
 
 TEX(gxstrtop4) {

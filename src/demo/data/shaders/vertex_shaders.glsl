@@ -57,6 +57,8 @@ void gskull4() { FS(); }
 void gmtlspsld() { FS(); }
 void gmtlsp4b() { FS(); }
 void gspbdrbb() { FS(); }
+void gkarntwr4a() { FS(); }
+void gkarntwrst() { FS(); }
 void gxstrtop4() { FS(); }
 void gwdclg1a() { FS(); }
 void gwdclg1bd() { FS(); }

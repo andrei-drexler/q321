@@ -47,6 +47,8 @@
 	x(mtlbk03,				FSVertexBits)\
 	x(gskull4,				FSVertexBits)\
 	x(gspbdrbb,				FSVertexBits)\
+	x(gkarntwr4a,			FSVertexBits)\
+	x(gkarntwrst,			FSVertexBits)\
 	x(gxstrtop4,			FSVertexBits)\
 	x(gwdclg1a,				FSVertexBits)\
 	x(gwdclg1bd,			FSVertexBits)\
@@ -109,6 +111,8 @@
 	x(gmtlspsld,	Shader::gmtlspsld,	128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlsp4b,		Shader::gmtlsp4b,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gspbdrbb,		Shader::gspbdrbb,	64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarntwr4a,	Shader::gkarntwr4a,	256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarntwrst,	Shader::gkarntwrst,	64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gxstrtop4,	Shader::gxstrtop4,	256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bmtsprt,		Shader::bmtsprt,	256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(cable,		Shader::cable,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -163,7 +167,8 @@
 	x("gothic_trim/metalsupsolid",			Lmapped,		gmtlspsld,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/metalsupport4b",			Lmapped,		gmtlsp4b,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/supportborder_blue_b",	Lmapped,		gspbdrbb,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_trim/km_arena1tower4",		Lmapped,		gspbdrbb,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_trim/km_arena1tower4_a",		Lmapped,		gkarntwr4a,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_trim/km_arena1tower_short",	Lmapped,		gkarntwrst,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_floor/xstairtop4",			Lmapped,		gxstrtop4,	Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahellflat_400",			lavaf,			White,		Solid,		Opaque,					(400,16,5,2))\
 	x("gothic_ceiling/woodceiling1b_dark",	Lmapped,		gwdclg1bd,	Solid,		Opaque|NeedsUV,			(0))\
@@ -191,8 +196,13 @@
 	x("gothic_block/killblock_i4",			"gothic_block/blocks15")\
 	x("gothic_block/killblock_i",			"gothic_block/blocks15")\
 	x("gothic_block/blocks1",				"gothic_block/blocks15")\
+	x("gothic_block/demon_block15fx",		"gothic_block/blocks15")\
+	x("gothic_block/killblockgeomtrn",		"gothic_block/blocks15")\
+	x("gothic_trim/metaldemonkillblock",	"gothic_block/blocks15")\
+	x("sfx/computer_blocks17",				"gothic_block/blocks15")\
 	x("gothic_trim/pitted_rust2",			"gothic_trim/pitted_rust3")\
 	x("gothic_trim/pitted_rust",			"gothic_trim/pitted_rust3")\
+	x("gothic_trim/km_arena1tower4",		"gothic_wall/supportborder_blue_b")\
 
 ////////////////////////////////////////////////////////////////
 
