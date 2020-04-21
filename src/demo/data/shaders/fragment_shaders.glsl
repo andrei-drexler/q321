@@ -803,6 +803,12 @@ TEX(gtprst3) {
 	return c;
 }
 
+TEX(gskull4) {
+	float b = FBMT(uv, vec2(13), .9, 3., 4);
+	vec3 c = RGB(60, 50, 46) * (.875 + b * b);
+	return c;
+}
+
 TEX(gmtlspsld) {
 	float
 		b = FBMT(uv, vec2(7), .9, 3., 4),
@@ -849,6 +855,30 @@ TEX(gmtlsp4b) {
 	c *= 1. - ls(.05, .2, d) * ls(.16, .1, d);
 	c *= 1. + tri(.99, .007, uv.y);
 	return add_bolt(c, vec2(d - .4, fract(uv.y * 8.) - .5), .07);
+}
+
+TEX(gspbdrbb) {
+	float
+		b = FBMT(uv, vec2(3, 9), .5, 2., 4),
+		d = ridged(uv.x);
+	uv.y *= 2.;
+	vec3 c = mix(RGB(71, 60, 58), RGB(110, 88, 77), ls(.1, .05, d)) * (.7 + .6 * b);
+	c *= 1. - ls(.05, .0, uv.x);
+	c *= 1. + .5 * tri(.05, .02, uv.x);
+	return add_bolt(c, vec2(d - .4, fract(uv.y * 4.) - .5), .08);
+}
+
+TEX(gxstrtop4) {
+	float b = FBMT(uv, vec2(40, 5), .9, 3., 4);
+	vec3 c = RGB(110, 110, 98) * (.8 + .8 * b * b);
+	if (uv.y < 1./4.)
+		c *= .5;
+	c *= 1.
+		- .4 * ls(.4, .0, b)
+		+ .5 * ls(.02, .0, uv.y)
+		+ .2 * tri(.24, .01, uv.y)
+		;
+	return c;
 }
 
 TEX(gwdclg1a) {

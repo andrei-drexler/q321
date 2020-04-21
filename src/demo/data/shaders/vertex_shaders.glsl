@@ -53,8 +53,11 @@ void gmtlbg6() { FS(); }
 void glrgbk3b() { FS(); }
 void gblks15() { FS(); }
 void gtprst3() { FS(); }
+void gskull4() { FS(); }
 void gmtlspsld() { FS(); }
 void gmtlsp4b() { FS(); }
+void gspbdrbb() { FS(); }
+void gxstrtop4() { FS(); }
 void gwdclg1a() { FS(); }
 void gwdclg1bd() { FS(); }
 void bmtsprt() { FS(); }
