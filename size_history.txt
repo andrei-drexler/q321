@@ -720,3 +720,4 @@
 39948,remapped iron01_e to metalblack03
 39975,more detailed metalblack03
 39975,fixed surface light intensities
+39987,fixed light ray overshoot

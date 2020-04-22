@@ -326,7 +326,6 @@ void Map::ComputeLighting(bool shadows) {
 			bool shadows;
 		} params{shadows};
 
-		//for (u16 y = 0; y < Lightmap::Height; ++y) {
 		ParallelFor(Lightmap::Height, &params, [](u32 y, u32 yend, void* data) {
 			Params* params = (Params*)data;
 
@@ -396,9 +395,17 @@ void Map::ComputeLighting(bool shadows) {
 							}
 
 							if (params->shadows) {
-								trace.start = pos;
-								trace.delta = light_pos - pos;
-								mad(trace.start, trace.delta, Lightmap::SurfaceBias / length(trace.delta));
+								// offset sampling point towards the light
+								vec3 delta = light_pos - pos;
+								float dist = length(delta);
+								float bias = Lightmap::SurfaceBias / dist;
+								trace.start.x = pos.x + delta.x * bias;
+								trace.start.y = pos.y + delta.y * bias;
+								trace.start.z = pos.z + delta.z * bias;
+								trace.delta.x = light_pos.x - trace.start.x;
+								trace.delta.y = light_pos.y - trace.start.y;
+								trace.delta.z = light_pos.z - trace.start.z;
+
 								if (Map::TraceRay(trace))
 									continue;
 							}
@@ -504,9 +511,11 @@ void Map::ComputeLighting(bool shadows) {
 			}
 		}
 	} else {
+		// fill lightmap with debug info (see Lightmap::Debug)
+
 		for (u16 tile_index = 0, tile_count = lightmap.packer.GetNumTiles(); tile_index < tile_count; ++tile_index) {
 			auto& rect = lightmap.packer.GetTile(tile_index);
-			
+
 			u32* texel = lightmap.data + rect.min[1] * Lightmap::Width;
 			vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width;
 			vec3* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width;
