@@ -439,7 +439,7 @@ void Map::ComputeLighting(bool shadows) {
 							float u = 0.5f;
 							float phi = Math::PI;
 
-							for (u16 i = 0; i < Lightmap::NumSkySamples; ++i, u += R2y, phi += (R2y * Math::TAU)) {
+							for (u16 i = 0; i < Lightmap::NumSkySamples; ++i, u += R2x, phi += (R2y * Math::TAU)) {
 								float cos_theta = sqrt(1.f - fract(u));
 								float sin_theta = sqrt(1.f - cos_theta * cos_theta);
 
