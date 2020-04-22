@@ -712,3 +712,4 @@
 39682,added material substitutions
 39763,more shader reuse
 39771,fixed walljumping
+39767,tweaked skylight code

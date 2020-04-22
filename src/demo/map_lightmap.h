@@ -428,7 +428,7 @@ void Map::ComputeLighting(bool shadows) {
 							normalize(y_axis);
 							cross(nor, y_axis, x_axis);
 
-							// Use R2 sequence to sample the hemisphere with a cosine distribution
+							// sample aligned hemisphere with a cosine distribution using the R2 sequence
 							// http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/
 
 							constexpr float
@@ -447,8 +447,8 @@ void Map::ComputeLighting(bool shadows) {
 								trace.start.y = pos.y + nor.y;
 								trace.start.z = pos.z + nor.z;
 
-								mul(trace.delta, x_axis, Lightmap::SkyRayLength * cos(phi) * sin_theta);
-								mad(trace.delta, y_axis, Lightmap::SkyRayLength * sin(phi) * sin_theta);
+								mul(trace.delta, x_axis, Lightmap::SkyRayLength * sin_theta * cos(phi));
+								mad(trace.delta, y_axis, Lightmap::SkyRayLength * sin_theta * sin(phi));
 								mad(trace.delta, nor,    Lightmap::SkyRayLength * cos_theta);
 
 								if (!Map::TraceRay(trace))
