@@ -69,6 +69,7 @@ void brdr11b() { FS(); }
 void blt414k() { FS(); }
 void light5() { FS(); }
 void lt2() { FS(); }
+void gpntgmlt1k() { FS(); }
 void icon() { FS(); }
 void q3bnr() { FS(); }
 void Loading() { FS(); }

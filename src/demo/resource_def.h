@@ -64,6 +64,7 @@
 	x(brdr11b,				FSVertexBits)\
 	x(blt414k,				FSVertexBits)\
 	x(lt2,					FSVertexBits)\
+	x(gpntgmlt1k,			FSVertexBits)\
 	x(light5,				FSVertexBits)\
 	x(dmnd2cjp,				FSVertexBits)\
 	x(dmnd2cjp_m,			MapVertexBits)\
@@ -121,6 +122,7 @@
 	x(brdr11b,		Shader::brdr11b,	64,		32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(blt414k,		Shader::blt414k,	64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(lt2,			Shader::lt2,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gpntgmlt1k,	Shader::gpntgmlt1k,	64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(light5,		Shader::light5,		16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(q3bnr,		Shader::q3bnr,		512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
@@ -173,8 +175,9 @@
 	x("gothic_trim/km_arena1tower_short",	Lmapped,		gkarntwrst,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_floor/xstairtop4",			Lmapped,		gxstrtop4,	Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahellflat_400",			lavaf,			White,		Solid,		Opaque,					(400,16,5,2))\
-	x("gothic_ceiling/woodceiling1b_dark",	Lmapped,		gwdclg1bd,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_ceiling/woodceiling1a",		Lmapped,		gwdclg1a,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_ceiling/woodceiling1b_dark",	Lmapped,		gwdclg1bd,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_light/pentagram_light1_1k",	fixture,		gpntgmlt1k,	Solid,		Opaque|NeedsUV,			(1000,19,17,10))\
 	x("skin/chapthroat",					Lmapped,		skcpthrt,	Solid,		Opaque,					(0))\
 	x("gothic_wall/skull4",					Lmapped,		gskull4,	Solid,		Opaque,					(0))\
 	x("liquids/lavahell_750",				lava,			White,		Solid,		Opaque,					(500,16,5,2))\

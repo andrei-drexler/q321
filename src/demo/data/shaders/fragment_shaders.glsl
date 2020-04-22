@@ -101,8 +101,13 @@ vec2 wavy(vec2 uv, float t, float p, float s) {
 	return uv + sin(uv.yx * PI * p + t) * s;
 }
 
+float mirr(float v, float m) {
+	return m - abs(v - m);
+}
+
 vec2 mirr(vec2 v, float m) {
-	return vec2(m - abs(v.x - m), v.y);
+	v.x = mirr(v.x, m);
+	return v;
 }
 
 // Running bond: s = (rows, columns)
@@ -604,14 +609,20 @@ TEX(dmnd2cow) {
 	return c;
 }
 
+// uv in [-0.5..0.5]
+float pentagram(vec2 uv, float s) {
+	float d = 1e6, i = 0.;
+	for (/**/; i < 5.; ++i) {
+		vec2 p = vec2(0, -s) * rot(i * 72.);
+		d = min(d, length(uv - seg(uv, p, p * rot(144.))));
+	}
+	return d;
+}
+
 TEXA(dmnd2pnt) {
 	vec3 c = dmnd2cow(uv);
 	uv = fract(uv) - .5;
-	float b = FBMT(uv, vec2(3), .9, 3.), d = abs(length(uv) - .4), i = 0.;
-	for (/**/; i < 5.; ++i) {
-		vec2 p = vec2(0, -.35) * rot(i * 72.);
-		d = min(d, length(uv - seg(uv, p, p * rot(144.))));
-	}
+	float b = FBMT(uv, vec2(3), .9, 3.), d = min(abs(length(uv) - .4), pentagram(uv, .35));
 	return vec4(c, msk(d - .02 + b * .02, .01));
 }
 
@@ -1066,6 +1077,19 @@ TEXA(lt2) {
 	l *= 1. - .5 * sqr(tri(.46, .04, r));
 	l *= 1. - .4 * sqr(tri(.36, .04, r));
 	return vec4(c * l, a);
+}
+
+// gothic_light/pentagram_light1_1k
+TEXA(gpntgmlt1k) {
+	float
+		b = FBMT(uv, vec2(5), .9, 3., 4),
+		d = smin(pentagram(uv-=.5, .35), abs(circ(uv, .4)), .02),
+		a = pow(msk(d - .02, .15), 8.),
+		o = min(max(box(uv, vec2(.46)), -circ(uv, .51)), abs(circ(uv, .44)));
+	vec3 c = RGB(76, 62, 47) * (.8 + .8 * b * b);
+	c *= 1. + (b + .5) * msk(abs(o) - .01, .01);
+	c *= 1. - ls(.1, .05, d) * msk(circ(uv, .4));
+	return vec4(c + 1.*vec3(1, 1, .3) * a, a);
 }
 
 TEXA(icon) {

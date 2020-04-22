@@ -722,3 +722,4 @@
 39975,fixed surface light intensities
 39987,fixed light ray overshoot
 39987,surface light intensity/color balance
+40140,added pentagram_light1_1k
