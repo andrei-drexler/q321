@@ -716,3 +716,4 @@
 39766,fixed r2 bug
 39767,fixed imminent uniform buffer overflow
 39815,basic skin/chapthroat shader
+39939,more detailed pitted_rust3

@@ -62,6 +62,13 @@ float sum(vec2 v) {
 
 ////////////////////////////////////////////////////////////////
 
+vec2 safe_normalize(vec2 v) {
+	float l = dot(v, v);
+	return l > 0. ? v/sqrt(l) : v;
+}
+
+////////////////////////////////////////////////////////////////
+
 float tri(float center, float max_dist, float x) {
 	return 1. - sat(abs(x - center) / max_dist);
 }
@@ -92,6 +99,10 @@ vec2 wavy(vec2 uv, float p, float s) {
 // t = time offset
 vec2 wavy(vec2 uv, float t, float p, float s) {
 	return uv + sin(uv.yx * PI * p + t) * s;
+}
+
+vec2 mirr(vec2 v, float m) {
+	return vec2(m - abs(v.x - m), v.y);
 }
 
 // Running bond: s = (rows, columns)
@@ -423,9 +434,29 @@ float msk(float s) {
 	return sat(1. - s/fwidth(s));
 }
 
-vec2 mirr(vec2 v, float m) {
-	return vec2(m - abs(v.x - m), v.y);
-}
+////////////////////////////////////////////////////////////////
+
+// Hardware derivates are computed at half resolution (pixel quads).
+// To get full-resolution results, we need to evaluate 3 taps.
+// The macro below helps automate that process a bit.
+//
+// Arguments:
+// - res = name of vec3 output variable to receive the results:
+//   .xy = normalized gradient
+//   .z  = function value
+// - uv  = 2d point where function is to be evaluated
+
+#define EVAL_GRAD(res, uv, code)								 	\
+	{																\
+		vec2 p[3];													\
+	 	float r[3];													\
+		p[0] = uv;													\
+		p[1] = uv + dFdx(uv);										\
+		p[2] = uv + dFdy(uv);										\
+	for (int i = 0; i < 3; ++i)										\
+		r[i] = code;												\
+		res = vec3(safe_normalize(vec2(r[1], r[2]) - r[0]), r[0]);	\
+	}
 
 ////////////////////////////////////////////////////////////////
 
@@ -795,11 +826,22 @@ TEX(gblks15) {
 	return c;
 }
 
+// gothic_trim/pitted_rust3
 TEX(gtprst3) {
 	float
 		b = FBMT(uv, vec2(13), .9, 3., 4),
-		n = NT(wavy(uv, 4., .05), vec2(9));
-	vec3 c = mix(RGB(56, 48, 49), RGB(100, 50, 40), .7 * (n + b) * .5) * (.875 + b * b);
+		n = FBMT(uv, vec2(7), .9, 3., 4);
+	vec3
+		c = mix(RGB(60, 50, 50), RGB(87, 47, 37), sqr(ls(.7, .25, n))) * (.7 + .8 * b * b),
+		g;
+
+	uv = wavy(uv, 31., .003);
+	EVAL_GRAD(
+		g, uv,
+		sqrt(ls(.0, .9, NT(p[i], vec2(93))))
+	);
+
+	c *= 1. - (g.y + .4) * sqr(b * g.z) * g.z;
 	return c;
 }
 
