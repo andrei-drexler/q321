@@ -155,9 +155,9 @@
 	x("base_trim/basemetalsupport",			Lmapped,		bmtsprt,	Solid,		Opaque,					(0))\
 	x("base_trim/border11b",				Lmapped,		brdr11b,	Solid,		Opaque|NeedsUV,			(0))\
 	x("base_support/cable",					Lmapped,		cable,		Solid,		Opaque,					(0))\
-	x("base_light/baslt4_1_4k",				fixture,		blt414k,	Solid,		Opaque|NeedsUV,			(2000,31,29,26))\
-	x("base_light/lt2_2000",				fixture,		lt2,		Solid,		Opaque|NeedsUV,			(1000,31,22,24))\
-	x("base_light/lt2_8000",				fixture,		lt2,		Solid,		Opaque|NeedsUV,			(4000,31,22,24))\
+	x("base_light/baslt4_1_4k",				fixture,		blt414k,	Solid,		Opaque|NeedsUV,			(4000,16,15,13))\
+	x("base_light/lt2_2000",				fixture,		lt2,		Solid,		Opaque|NeedsUV,			(2000,16,11,12))\
+	x("base_light/lt2_8000",				fixture,		lt2,		Solid,		Opaque|NeedsUV,			(8000,16,11,12))\
 	x("base_light/light5_5k",				fixture,		light5,		Solid,		Opaque|NeedsUV,			(5000))\
 	x("sfx/diamond2cjumppad",				dmnd2cjp_m,		dmnd2cjp,	Solid,		Opaque|NeedsUV,			(200,100,0))\
 	x("sfx/launchpad_diamond",				lpdmnd_m,		lpdmnd,		Solid,		Opaque|NeedsUV,			(0))\

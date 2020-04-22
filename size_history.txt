@@ -721,3 +721,4 @@
 39975,more detailed metalblack03
 39975,fixed surface light intensities
 39987,fixed light ray overshoot
+39987,surface light intensity/color balance
