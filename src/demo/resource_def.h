@@ -207,6 +207,7 @@
 	x("gothic_trim/pitted_rust",			"gothic_trim/pitted_rust3")\
 	x("gothic_trim/km_arena1tower4",		"gothic_wall/supportborder_blue_b")\
 	x("skin/chapthroat2",					"skin/chapthroat")\
+	x("gothic_wall/iron01_e",				"base_wall/metalblack03")\
 
 ////////////////////////////////////////////////////////////////
 
