@@ -1073,7 +1073,7 @@ void ApplyMaterialSubstitutions(Map& map) {
 
 	for (auto& subst : MaterialSubstitutions) {
 		auto before = map.FindMaterial(subst[0]);
-		auto after = map.FindMaterial(subst[1]);
+		auto after = map.AddMaterial(subst[1]);
 		if (before != -1 && after != -1) {
 			replacement[before] = after;
 		}
