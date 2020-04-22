@@ -715,3 +715,4 @@
 39767,tweaked skylight code
 39766,fixed r2 bug
 39767,fixed imminent uniform buffer overflow
+39815,basic skin/chapthroat shader

@@ -45,6 +45,7 @@
 	x(mtlt12f,				FSVertexBits)\
 	x(mtlt6f,				FSVertexBits)\
 	x(mtlbk03,				FSVertexBits)\
+	x(skcpthrt,				FSVertexBits)\
 	x(gskull4,				FSVertexBits)\
 	x(gspbdrbb,				FSVertexBits)\
 	x(gkarntwr4a,			FSVertexBits)\
@@ -101,6 +102,7 @@
 	x(mtlt12f,		Shader::mtlt12f,	128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(mtlt6f,		Shader::mtlt6f,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(mtlbk03,		Shader::mtlbk03,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(skcpthrt,		Shader::skcpthrt,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskull4,		Shader::gskull4,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1a,		Shader::gwdclg1a,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1bd,	Shader::gwdclg1bd,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -173,6 +175,7 @@
 	x("liquids/lavahellflat_400",			lavaf,			White,		Solid,		Opaque,					(400,16,5,2))\
 	x("gothic_ceiling/woodceiling1b_dark",	Lmapped,		gwdclg1bd,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_ceiling/woodceiling1a",		Lmapped,		gwdclg1a,	Solid,		Opaque|NeedsUV,			(0))\
+	x("skin/chapthroat",					Lmapped,		skcpthrt,	Solid,		Opaque,					(0))\
 	x("gothic_wall/skull4",					Lmapped,		gskull4,	Solid,		Opaque,					(0))\
 	x("liquids/lavahell_750",				lava,			White,		Solid,		Opaque,					(500,16,5,2))\
 	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
@@ -203,6 +206,7 @@
 	x("gothic_trim/pitted_rust2",			"gothic_trim/pitted_rust3")\
 	x("gothic_trim/pitted_rust",			"gothic_trim/pitted_rust3")\
 	x("gothic_trim/km_arena1tower4",		"gothic_wall/supportborder_blue_b")\
+	x("skin/chapthroat2",					"skin/chapthroat")\
 
 ////////////////////////////////////////////////////////////////
 
