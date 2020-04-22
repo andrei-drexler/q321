@@ -231,6 +231,7 @@ namespace GL {
 
 			MaxNumShaders					= 1 << ShaderIDBits,
 			MaxNumRenderTargets				= 1 << RenderTargetIDBits,
+			MaxNumUniforms					= MaxNumShaders * 16,
 
 			ShiftShaderID					= Gfx::Shader::NumStateBits,
 			MaskShaderState					= Gfx::Shader::MaskState,
@@ -261,7 +262,7 @@ namespace GL {
 		const char*							uniform_names;
 
 		const Gfx::Shader::Flags*			shader_flags;
-		GLint								shader_uniforms[MaxNumShaders];
+		GLint								shader_uniforms[MaxNumUniforms];
 		GLuint								shader_programs[MaxNumShaders];
 
 		TextureState						texture_state[MaxNumTextures];
@@ -318,6 +319,9 @@ FORCEINLINE void Gfx::RegisterShaders(const char* names, const Shader::Flags* fl
 
 	g_state.shader_flags		= flags;
 	g_state.num_shaders			= count;
+
+	assert(g_state.num_shaders <= size(g_state.shader_programs));
+	assert(g_state.num_shaders * g_state.num_uniforms <= size(g_state.shader_uniforms));
 
 	// Two passes, to enable parallel shader compilation
 
