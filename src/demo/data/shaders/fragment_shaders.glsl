@@ -832,7 +832,7 @@ TEX(gblks15) {
 		c;
 	vec2 d = grad(pt.x);
 	id = H(fract(pt.yz));
-	c = RGB(91, 67, 61) * (.8 + b * b * .8);
+	c = RGB(74, 65, 62) * (.8 + .8 * b * b);
 	c += tri(.6, .3, n) * ls(.3, .9, b * t) * .2;
 	c *= 1. - tri(.5, .4, n) * ls(.5, .7, t) * .1;
 	c = mix(c, RGB(86, 74, 78), tri(.5, .1, b) * tri(.7, .3, id) * .7);
