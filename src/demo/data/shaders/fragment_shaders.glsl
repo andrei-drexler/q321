@@ -773,10 +773,18 @@ TEX(mtlt6f) {
 	return c * l;
 }
 
+// base_wall/metalblack03
 TEX(mtlbk03) {
-	float b = FBMT(uv, vec2(5), .9, 3., 4);
-	vec3 c = mix(RGB(36, 35, 33), RGB(56, 54, 52), b * b);
-	return c;
+	float
+		b = FBMT(uv, vec2(5), .9, 3., 4),
+		l = .18 * (.7 + b * b);
+	vec3 g;
+	uv = wavy(uv, 13., .007);
+	EVAL_GRAD(
+		g, uv,
+		sqr(ls(.3 + b * .2, .9, FBMT(p[i], vec2(23), .5, 2., 4)))
+	);
+	return vec3(l * (1. - g.y * g.z));
 }
 
 TEX(gmtlbg6) {

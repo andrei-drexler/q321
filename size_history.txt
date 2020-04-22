@@ -718,3 +718,4 @@
 39815,basic skin/chapthroat shader
 39939,more detailed pitted_rust3
 39948,remapped iron01_e to metalblack03
+39975,more detailed metalblack03
