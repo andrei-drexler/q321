@@ -145,6 +145,10 @@ beginning:
 		for (auto i = node.data[0], endi = node.data[1]; i < endi; ++i) {
 			auto brush_index = partition.brushes[i];
 			i16 best_brush_plane = -1;
+
+			// Note: when determining which entities we're touching
+			// we don't want to ignore those we're already inside of
+			// by a lot (t_enter < -1).
 			float t_enter = trace.max_touch_ents ? -FLT_MAX : -1.f;
 			float t_exit = tmax;
 
@@ -203,6 +207,16 @@ beginning:
 						if (touch_index == trace.num_touch_ents)
 							trace.touch_ents[trace.num_touch_ents++] = entity;
 					}
+
+					if (trace.max_touch_ents && t_enter < -1.f) {
+						// We're inside a solid, but the collision plane is too far behind us,
+						// so we only record the touching entities without also reporting
+						// a collision.
+						// This prevents potential walljumping when pushing against a wall.
+
+						continue;
+					}
+
 					if (contents < Material::PlayerClip)
 						continue;
 				} else if (trace.type == TraceType::Bullet) {
