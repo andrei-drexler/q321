@@ -1,4 +1,5 @@
 //#define ENABLE_RENDERDOC
+//#define DISABLE_PARTITION
 //#define DRAW_LIGHTS
 //#define DRAW_POINT_ENTITIES
 //#define DRAW_CLIPPING

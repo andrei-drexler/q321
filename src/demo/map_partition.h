@@ -120,7 +120,9 @@ NOINLINE void Map::CreatePartition() {
 	i16 bounds[2][3];
 	MemCopy(bounds, source->world_bounds, sizeof(bounds));
 
+#ifndef DISABLE_PARTITION
 	SplitNode(0, bounds);
+#endif
 }
 
 FORCEINLINE bool Map::TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax) {
