@@ -12,10 +12,8 @@ NOINLINE void Map::LoadPatches(const PackedMap& packed, u8 pass) {
 		PackedMap::PatchVertex ctrl[MaxPatchVertices];
 
 		assert(num_control_points <= MaxPatchVertices);
-		vec3 prev_pos = 0.f;
-		vec2 prev_uv = 0.f;
 		for (u16 i = 0; i < num_control_points; ++i) {
-			ctrl[i] = packed.GetPatchVertex(current_patch_vertex++, prev_pos, prev_uv);
+			ctrl[i] = packed.GetPatchVertex(patch, current_patch_vertex++);
 			if (mirror)
 				mirror = ctrl[i].pos[symmetry_axis] < symmetry_level + 1;
 		}

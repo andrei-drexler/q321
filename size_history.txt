@@ -732,3 +732,4 @@
 39599,bithack conditional negation
 39668,forceinline sign/mag decode
 39595,undo x2
+39555,tweaked patch vertex delta decoding

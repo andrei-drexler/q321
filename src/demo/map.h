@@ -129,6 +129,12 @@ struct PackedMap {
 		u8		divx;
 		u8		divy;
 		u8		material;
+
+		/* used for delta decoding */
+		struct {
+			i16	pos[3];
+			i16	uv[2];
+		} delta;
 	};
 
 	struct PatchVertex {
@@ -150,7 +156,7 @@ struct PackedMap {
 
 	UV							GetPlaneUV(u32 plane_index) const;
 	Patch						GetPatch(u32 patch_index) const;
-	PatchVertex					GetPatchVertex(u32 vertex_index, vec3& prev_pos, vec2& prev_uv) const;
+	PatchVertex					GetPatchVertex(Patch& patch, u32 vertex_index) const;
 	void						GetLight(u32 light_index, Light& light) const;
 };
 
@@ -183,6 +189,8 @@ NOINLINE PackedMap::Patch PackedMap::GetPatch(u32 patch_index) const {
 	u32 data = patches[patch_index];
 
 	Patch patch;
+	MemSet(&patch);
+
 	patch.width		= ((data & 7) << 1) + 3;
 	patch.height	= (((data >> 3) & 7) << 1) + 3;
 	patch.divx		= 1 << ((data >> 6) & 7);
@@ -192,21 +200,22 @@ NOINLINE PackedMap::Patch PackedMap::GetPatch(u32 patch_index) const {
 	return patch;
 }
 
-NOINLINE PackedMap::PatchVertex PackedMap::GetPatchVertex(u32 vertex_index, vec3& prev_pos, vec2& prev_uv) const {
+NOINLINE PackedMap::PatchVertex PackedMap::GetPatchVertex(Patch& patch, u32 vertex_index) const {
 	const i16* data = patch_vertices + vertex_index;
 
 	PatchVertex v;
-	v.pos.x		= DecodeSignMagnitude(*data); data += num_patch_verts;
-	v.pos.y		= DecodeSignMagnitude(*data); data += num_patch_verts;
-	v.pos.z		= DecodeSignMagnitude(*data); data += num_patch_verts;
-	v.uv.x		= DecodeSignMagnitude(*data) / 256.f; data += num_patch_verts;
-	v.uv.y		= DecodeSignMagnitude(*data) / 256.f;
-	
+	patch.delta.pos[0] += DecodeSignMagnitude(*data); data += num_patch_verts;
+	patch.delta.pos[1] += DecodeSignMagnitude(*data); data += num_patch_verts;
+	patch.delta.pos[2] += DecodeSignMagnitude(*data); data += num_patch_verts;
+	patch.delta.uv[0]  += DecodeSignMagnitude(*data); data += num_patch_verts;
+	patch.delta.uv[1]  += DecodeSignMagnitude(*data);
+
 	// delta decoding
-	v.pos += prev_pos;
-	v.uv += prev_uv;
-	prev_pos = v.pos;
-	prev_uv = v.uv;
+	v.pos[0] = patch.delta.pos[0];
+	v.pos[1] = patch.delta.pos[1];
+	v.pos[2] = patch.delta.pos[2];
+	v.uv[0] = patch.delta.uv[0] / 256.f;
+	v.uv[1] = patch.delta.uv[1] / 256.f;
 
 	return v;
 }

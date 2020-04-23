@@ -72,10 +72,8 @@ FORCEINLINE void Map::PackLightmap() {
 		PackedMap::PatchVertex ctrl[MaxPatchVertices];
 
 		assert(num_control_points <= MaxPatchVertices);
-		vec3 prev_pos = 0.f;
-		vec2 prev_uv = 0.f;
 		for (u16 i = 0; i < num_control_points; ++i) {
-			ctrl[i] = source->GetPatchVertex(i + patches.control_start[patch_index], prev_pos, prev_uv);
+			ctrl[i] = source->GetPatchVertex(patch, i + patches.control_start[patch_index]);
 			if (is_mirrored) {
 				ctrl[i].pos[symmetry_axis] = 2 * symmetry_level - ctrl[i].pos[symmetry_axis];
 			}
