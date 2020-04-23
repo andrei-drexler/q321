@@ -59,6 +59,19 @@ void Reorder(std::vector<T>& items, const size_t* order) {
 
 ////////////////////////////////////////////////////////////////
 
+constexpr u32 EncodeSignMagnitude(i32 i) {
+	u32 s = u32(i) >> 31;
+	return (((u32(i) ^ -s) + s) << 1) | s;
+}
+
+constexpr i32 DecodeSignMagnitude(u32 u) {
+	bool negative = u & 1;
+	u >>= 1;
+	return negative ? -u : u;
+}
+
+////////////////////////////////////////////////////////////////
+
 struct ShaderProperties {
 	Content::Flags		content_flags;
 	Surface::Flags		surface_flags;
@@ -957,19 +970,6 @@ void WriteBrushBounds(ArrayPrinter& print, const Map& map, const Options& option
 
 ////////////////////////////////////////////////////////////////
 
-constexpr u32 EncodeSignMagnitude(i32 i) {
-	u32 s = u32(i) >> 31;
-	return (((u32(i) ^ -s) + s) << 1) | s;
-}
-
-constexpr i32 DecodeSignMagnitude(u32 u) {
-	bool negative = u & 1;
-	u >>= 1;
-	return negative ? -u : u;
-}
-
-////////////////////////////////////////////////////////////////
-
 void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& options, string_view array_name) {
 	auto& world = map.entities[0];
 
@@ -1341,19 +1341,37 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 	print << "};"sv;
 	print.Flush();
 
-	print << "\nconst float "sv << vert_array_name << "[] = {"sv;
+	print << "\nconst i16 "sv << vert_array_name << "[] = {"sv;
 	for (int i=0; i<5; ++i) {
 		for (auto& patch : world.patches) {
+			vec2 uv_base = patch.vertices[0].uv;
+			for (auto& v : patch.vertices)
+				uv_base = min(uv_base, v.uv);
+			uv_base = floor(uv_base);
+
+			i16 prev = 0, value = 0;
 			for (auto& v : patch.vertices) {
+				vec3 ref;
+				if (&v == &patch.vertices[0])
+					ref = 0.f;
+				else
+					ref = (&v)[-1].pos;
+
 				switch (i) {
 				case 0:
 				case 1:
-				case 2: print << v.pos.data[i] << ","sv; break;
+				case 2:
+					value = std::roundl(v.pos.data[i]); break;
 				case 3:
-				case 4: print << v.uv.data[i-3] << ","sv; break;
+				case 4:
+					value = std::roundl((v.uv.data[i-3] - uv_base[i-3]) * 256.f); break;
 				default:
-					break;
+					assert(false);
+					continue;
 				}
+
+				print << (i16)EncodeSignMagnitude(value - prev) << ","sv;
+				prev = value;
 			}
 		}
 	}

@@ -33,7 +33,7 @@ struct PackedMap {
 	const float*		uv_data;
 	const u8*			plane_uvs;
 	const u32*			patches;
-	const float*		patch_vertices;
+	const i16*			patch_vertices;
 	const i16*			light_data;
 
 	i8					symmetry_axis;
@@ -69,7 +69,7 @@ struct PackedMap {
 		const float (&uv_data)			[NumUVEntries],
 		const u8	(&plane_uvs)		[NumPlaneUVEntries],
 		const u32	(&patches)			[NumPatches],
-		const float	(&patch_verts)		[NumPatchVertEntries],
+		const i16	(&patch_verts)		[NumPatchVertEntries],
 		const i16	(&light_data)		[NumLightEntries],
 		u8								num_spotlights,
 		u32								skylight,
@@ -150,8 +150,16 @@ struct PackedMap {
 
 	UV							GetPlaneUV(u32 plane_index) const;
 	Patch						GetPatch(u32 patch_index) const;
-	PatchVertex					GetPatchVertex(u32 vertex_index) const;
+	PatchVertex					GetPatchVertex(u32 vertex_index, vec3& prev_pos, vec2& prev_uv) const;
 	void						GetLight(u32 light_index, Light& light) const;
+};
+
+////////////////////////////////////////////////////////////////
+
+NOINLINE i32 DecodeSignMagnitude(u32 i) {
+	bool negative = i & 1;
+	i32 value = (i >> 1);
+	return negative ? -value : value;
 };
 
 ////////////////////////////////////////////////////////////////
@@ -184,15 +192,21 @@ NOINLINE PackedMap::Patch PackedMap::GetPatch(u32 patch_index) const {
 	return patch;
 }
 
-NOINLINE PackedMap::PatchVertex PackedMap::GetPatchVertex(u32 vertex_index) const {
-	const float* data = patch_vertices + vertex_index;
+NOINLINE PackedMap::PatchVertex PackedMap::GetPatchVertex(u32 vertex_index, vec3& prev_pos, vec2& prev_uv) const {
+	const i16* data = patch_vertices + vertex_index;
 
 	PatchVertex v;
-	v.pos.x		= *data; data += num_patch_verts;
-	v.pos.y		= *data; data += num_patch_verts;
-	v.pos.z		= *data; data += num_patch_verts;
-	v.uv.x		= *data; data += num_patch_verts;
-	v.uv.y		= *data;
+	v.pos.x		= DecodeSignMagnitude(*data); data += num_patch_verts;
+	v.pos.y		= DecodeSignMagnitude(*data); data += num_patch_verts;
+	v.pos.z		= DecodeSignMagnitude(*data); data += num_patch_verts;
+	v.uv.x		= DecodeSignMagnitude(*data) / 256.f; data += num_patch_verts;
+	v.uv.y		= DecodeSignMagnitude(*data) / 256.f;
+	
+	// delta decoding
+	v.pos += prev_pos;
+	v.uv += prev_uv;
+	prev_pos = v.pos;
+	prev_uv = v.uv;
 
 	return v;
 }
@@ -636,12 +650,6 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				DistFractBits	= 4,
 				DistScale		= 1 << DistFractBits;
 
-			auto decode_sign_mag = [] (i32 i) {
-				bool negative = i & 1;
-				float f = (i >> 1);
-				return negative ? -f : f;
-			};
-
 			/* non-axial planes, if any */
 			{
 				auto num_extra_planes = *nonaxial_offset++;
@@ -657,13 +665,13 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 					vec2 oct;
 					i32 x = xy & OctMask;
 					i32 y = xy >> 16;
-					oct.x = decode_sign_mag(x) / float(OctMaxValue);
-					oct.y = decode_sign_mag(y) / float(OctMaxValue);
+					oct.x = DecodeSignMagnitude(x) / float(OctMaxValue);
+					oct.y = DecodeSignMagnitude(y) / float(OctMaxValue);
 					assert(oct.x >= -1.f && oct.x <= 1.f);
 					assert(oct.y >= -1.f && oct.y <= 1.f);
 
 					plane.xyz = oct_to_vec3(oct);
-					plane.w = decode_sign_mag(w) * (1.f / float(DistScale));
+					plane.w = DecodeSignMagnitude(w) * (1.f / float(DistScale));
 				}
 			}
 

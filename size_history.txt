@@ -724,3 +724,11 @@
 39987,surface light intensity/color balance
 40140,added pentagram_light1_1k
 40139,changed blocks15 base color
+39588,export i16 patch verts
+39557,+sign/mag positions
+39504,+delta encoding
+39603,+decoding
+39595,noinline sign/mag decode
+39599,bithack conditional negation
+39668,forceinline sign/mag decode
+39595,undo x2
