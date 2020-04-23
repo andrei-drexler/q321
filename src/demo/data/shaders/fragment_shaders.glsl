@@ -1200,7 +1200,7 @@ void timhel() {
 	vec3 d = normalize(Pos - Cam.xyz);
 	d.z = d.z * 4. + 2.;
 	vec2 uv = normalize(d).xy * 2.;
-	float b = FBMT(uv - Time.x * vec2(.1, .2), vec2(5), .5, 2., 6);
+	float b = ls(.2, 1., FBMT(uv - Time.x * vec2(.1, .2), vec2(5), .5, 2., 6));
 	uv.y *= 1.5;
 	float s = ls(.3, 1., FBMT(uv - Time.x * vec2(.1, .18), vec2(5), .6, 2., 6));
 	FCol = vec4(vec3(b, 0, 0) + RGB(80, 30, 8) * s * s * 2., 1);
