@@ -23,7 +23,6 @@ namespace Demo {
 			Dilate			= true,
 			NumSkySamples	= 12
 		;
-;
 
 		/* Debugging */
 		enum class DebugMode {
