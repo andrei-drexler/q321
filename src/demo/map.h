@@ -7,7 +7,7 @@
 
 struct PackedMap {
 	enum {
-		EnableSpotlights = false,
+		EnableSpotlights = true,
 	};
 
 	u16					num_brushes;

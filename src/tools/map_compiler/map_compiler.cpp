@@ -38,7 +38,7 @@ struct Options {
 	bool		trim_unwanted_uvs	= true;
 	bool		wrap_uvs			= false; // increases final size by a bit
 	bool		sort_lights			= true;
-	bool		use_spotlights		= false;
+	bool		use_spotlights		= true;
 	bool		use_area_lights		= true;
 
 	bool		verbose				= false;
