@@ -812,11 +812,11 @@ FORCEINLINE void IntersectPlanes(const vec4& p0, const vec4& p1, const vec4& p2,
 	origin = coeff * vec3(-p0.w, -p1.w, -p2.w);
 }
 
-FORCEINLINE void ClipSegmentByPlane(const vec3& origin, const vec3& dir, const vec4& plane, float& tmin, float& tmax) {
+FORCEINLINE void ClipSegmentByPlane(const vec3& origin, const vec3& dir, const vec4& plane, float& tmin, float& tmax, float epsilon = 0.f) {
 	float align = dot(plane.xyz, dir);
 	float t = dot(origin, plane.xyz) + plane.w;
 	if (align == 0.f) {
-		if (t > 0.f) {
+		if (t > epsilon) {
 			tmin = FLT_MAX;
 			tmax = -FLT_MAX;
 		}
@@ -838,7 +838,7 @@ struct BrushEdge {
 
 // Template, because we want it to work not only with arrays of vec4's, but also Map::Planes (derived from vec4's) without slicing
 template <typename Plane>
-FORCEINLINE u32 EnumerateBrushEdges(const Plane* planes, u32 num_planes, BrushEdge* edges, u32 max_num_edges, float threshold = (1.f/32.f)) {
+FORCEINLINE u32 EnumerateBrushEdges(const Plane* planes, u32 num_planes, BrushEdge* edges, u32 max_num_edges, float epsilon = (1.f/32.f)) {
 	u32 num_edges = 0;
 
 	for (u32 i = 0; i < num_planes - 1; ++i) {
@@ -848,7 +848,7 @@ FORCEINLINE u32 EnumerateBrushEdges(const Plane* planes, u32 num_planes, BrushEd
 			auto& p1 = planes[j];
 
 			float align = Math::abs(dot(p0.xyz, p1.xyz));
-			if (align > 1.f - 1e-6f)
+			if (align > 1.f - 0x1p-10f)
 				continue;
 			
 			vec3 origin, dir;
@@ -864,12 +864,12 @@ FORCEINLINE u32 EnumerateBrushEdges(const Plane* planes, u32 num_planes, BrushEd
 			for (u32 k = 0; k < num_planes; ++k) {
 				if (k == i || k == j)
 					continue;
-				ClipSegmentByPlane(origin, dir, planes[k], tmin, tmax);
-				if (tmax <= tmin + threshold)
+				ClipSegmentByPlane(origin, dir, planes[k], tmin, tmax, epsilon);
+				if (tmax <= tmin + epsilon)
 					break;
 			}
 	
-			if (tmax <= tmin + threshold)
+			if (tmax <= tmin + epsilon)
 				continue;
 
 			if (edges) {

@@ -736,3 +736,4 @@
 39556,tweaked timhel
 39666,enabled spotlights
 39673,exported spotlights
+39697,new unaligned plane encoding + epsilon fixes

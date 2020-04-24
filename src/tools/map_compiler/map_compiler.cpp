@@ -970,90 +970,153 @@ void WriteBrushBounds(ArrayPrinter& print, const Map& map, const Options& option
 
 ////////////////////////////////////////////////////////////////
 
-void WriteUnalignedPlanes(ArrayPrinter& print, const Map& map, const Options& options, string_view array_name) {
-	auto& world = map.entities[0];
+void WriteUnalignedPlanes
+(
+	ArrayPrinter& print, const Map& map, const Options& options,
+	string_view plane_count_name, string_view data_array_name, string_view count_array_name
+)
+{
+	printf("Writing unaligned planes\n");
+
+	auto& world = map.World();
 
 	std::vector<int32_t> nonaxial_counts(world.brushes.size());
-	
-	const i32
-		OctBits			= 12,
-		OctMask			= (1 << OctBits) - 1,
-		OctMaxValue		= OctMask >> 1,
-		DistFractBits	= 4,
-		DistScale		= 1 << DistFractBits;
 
-	int32_t max_nonaxial_planes = 0;
+	size_t max_brush_nonaxial_planes = 0;
+	size_t num_unaligned_planes = 0;
+	size_t num_planes = 0;
+	size_t num_compact_planes = 0;
 
-	print << "\nconst i32 "sv << array_name << "[] = {"sv;
-	for (i32 pass = 0; pass < 2; ++pass) { // 0: normal; 1: distance
-		for (size_t brush_index = 0; brush_index < world.brushes.size(); ++brush_index) {
-			auto& brush = world.brushes[brush_index];
-			int32_t count = 0;
-			
-			const size_t MAX_NUM_EDGES = 256;
-			BrushEdge edges[MAX_NUM_EDGES];
+	print << "\nconst i32 "sv << data_array_name << "[] = {"sv;
+	for (size_t brush_index = 0; brush_index < world.brushes.size(); ++brush_index) {
+		auto& brush = world.brushes[brush_index];
+		size_t num_unaligned_brush_planes = 0;
 
-			auto brush_center = brush.bounds.center();
+		const size_t MAX_NUM_EDGES = 256;
+		BrushEdge edges[MAX_NUM_EDGES];
 
-			u32 num_edges;
-			if (pass == 1)
-				num_edges = EnumerateBrushEdges(brush.planes.data(), brush.planes.size(), edges, MAX_NUM_EDGES, 1.f);
+		auto brush_center = brush.bounds.center();
 
-			for (size_t plane_index = 0; plane_index < brush.planes.size(); ++plane_index) {
-				auto& plane = brush.planes[plane_index];
-				if (plane.type != Map::Plane::Unaligned)
+		vec3 bounds[2];
+		bounds[0] = floor(brush.bounds.mins + 0.5f);
+		bounds[1] = floor(brush.bounds.maxs + 0.5f);
+
+		u32 num_edges = EnumerateBrushEdges(brush.planes.data(), brush.planes.size(), edges, MAX_NUM_EDGES, 1.f);
+
+		for (size_t plane_index = 0; plane_index < brush.planes.size(); ++plane_index) {
+			auto& plane = brush.planes[plane_index];
+			if (plane.type != Map::Plane::Unaligned)
+				continue;
+
+			++num_unaligned_planes;
+			++num_planes;
+			++num_unaligned_brush_planes;
+
+			int axis0;
+			for (axis0 = 0; axis0 < 3; ++axis0)
+				if (plane[axis0] == 0.f)
+					break;
+
+			if (axis0 != 3) {
+				const u32
+					OffsetBits		= 12,
+					OffsetMask		= (1 << OffsetBits) - 1
+				;
+
+				int axis1 = (axis0 + 1) % 3;
+				int axis2 = (axis0 + 2) % 3;
+				bool negative = plane[axis0] < 0.f;
+				
+				vec3 corner;
+				corner[0] = bounds[plane[0] >= 0.f][0];
+				corner[1] = bounds[plane[1] >= 0.f][1];
+				corner[2] = bounds[plane[2] >= 0.f][2];
+
+				float dist = dot(corner, plane.xyz) + plane.w;
+				float offset1 = std::abs(dist / plane[axis1]);
+				float offset2 = std::abs(dist / plane[axis2]);
+				float rounded_offset1 = std::round(offset1);
+				float rounded_offset2 = std::round(offset2);
+
+				const float Tolerance = 1e-3f;
+				if (std::abs(offset1 - rounded_offset1) < Tolerance &&
+					std::abs(offset2 - rounded_offset2) < Tolerance &&
+					std::max(offset1, offset2) <= float(OffsetMask)
+				) {
+					// compact encoding
+					++num_compact_planes;
+					i32 value =
+						axis0
+						| ((plane[axis1] < 0.f) << 2)
+						| ((plane[axis2] < 0.f) << 3)
+						| (i32(rounded_offset1) << 4)
+						| (i32(rounded_offset2) << 16)
+						;
+					print << value << ","sv;
 					continue;
-					
-				vec2 oct = vec3_to_oct(plane.xyz);
-				i32 x = EncodeSignMagnitude(std::lround(oct.x * OctMaxValue));
-				i32 y = EncodeSignMagnitude(std::lround(oct.y * OctMaxValue));
-				u32 xy = x | (y << 16);
-
-				if (pass == 0) {
-					print << i32(xy) << ","sv;
-					++count;
-				} else {
-					oct.x = DecodeSignMagnitude(x) / (float)OctMaxValue;
-					oct.y = DecodeSignMagnitude(y) / (float)OctMaxValue;
-					vec3 snapped_normal = oct_to_vec3(oct);
-					float w = plane.w;
-						
-					vec3 face_center{0.f};
-					u32 num_face_edges = 0;
-					for (u32 edge_index = 0; edge_index < num_edges; ++edge_index) {
-						auto& e = edges[edge_index];
-						if (e.first_plane == plane_index || e.second_plane == plane_index) {
-							face_center += e.first_point;
-							face_center += e.second_point;
-							++num_face_edges;
-						}
-					}
-					if (num_face_edges > 0)
-						face_center /= float(num_face_edges * 2);
-					else
-						face_center = brush_center;
-
-					vec3 projected_center = face_center - plane.xyz * (dot(plane.xyz, face_center) + plane.w);
-					w = -dot(projected_center, snapped_normal);
-
-					print << (i32)EncodeSignMagnitude(std::lround(w * DistScale)) << ","sv;
 				}
 			}
 
-			if (pass == 0) {
-				max_nonaxial_planes = std::max(max_nonaxial_planes, count);
-				nonaxial_counts[brush_index] = count;
+			const i32
+				OctBits			= 12,
+				OctMask			= (1 << OctBits) - 1,
+				OctMaxValue		= OctMask >> 1,
+				DistFractBits	= 4,
+				DistScale		= 1 << DistFractBits;
+
+			vec2 oct = vec3_to_oct(plane.xyz);
+			i32 x = EncodeSignMagnitude(std::lround(oct.x * OctMaxValue));
+			i32 y = EncodeSignMagnitude(std::lround(oct.y * OctMaxValue));
+			u32 xy = x | (y << 16);
+
+			oct.x = DecodeSignMagnitude(x) / (float)OctMaxValue;
+			oct.y = DecodeSignMagnitude(y) / (float)OctMaxValue;
+			vec3 snapped_normal = oct_to_vec3(oct);
+			float w = plane.w;
+
+			vec3 face_center{0.f};
+			u32 num_face_edges = 0;
+			for (u32 edge_index = 0; edge_index < num_edges; ++edge_index) {
+				auto& e = edges[edge_index];
+				if (e.first_plane == plane_index || e.second_plane == plane_index) {
+					face_center += e.first_point;
+					face_center += e.second_point;
+					++num_face_edges;
+				}
 			}
+			if (num_face_edges > 0)
+				face_center /= float(num_face_edges * 2);
+			else
+				face_center = brush_center;
+
+			vec3 projected_center = face_center - plane.xyz * (dot(plane.xyz, face_center) + plane.w);
+			w = -dot(projected_center, snapped_normal);
+
+			print
+				<< i32((xy << 2) | 3) << ","sv
+				<< (i32)EncodeSignMagnitude(std::lround(w * DistScale)) << ","sv
+			;
 		}
+
+		max_brush_nonaxial_planes = std::max(max_brush_nonaxial_planes, num_unaligned_brush_planes);
+		nonaxial_counts[brush_index] = num_unaligned_brush_planes;
 	}
+
 	print << "};"sv;
 	print.Flush();
 	
-	print << "\nconst u16 nonaxial_counts[] = {"sv;
+	print << "\nconst u16 "sv << count_array_name << "[] = {"sv;
 	for (auto count : nonaxial_counts)
 		print << count << ","sv;
 	print << "};"sv;
 	print.Flush();
+
+	print << "\nconst u16 "sv << plane_count_name << " = "sv << i32(num_unaligned_planes) << ";"sv;
+	print.Flush();
+
+	printf(INDENT "%zd unaligned planes, %zd of which compact (%.1f%%)\n",
+		num_planes, num_compact_planes, float(num_compact_planes) * 100.f / float(num_planes)
+	);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1361,10 +1424,10 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 				case 0:
 				case 1:
 				case 2:
-					value = std::roundl(v.pos.data[i]); break;
+					value = std::lround(v.pos.data[i]); break;
 				case 3:
 				case 4:
-					value = std::roundl((v.uv.data[i-3] - uv_base[i-3]) * 256.f); break;
+					value = std::lround((v.uv.data[i-3] - uv_base[i-3]) * 256.f); break;
 				default:
 					assert(false);
 					continue;
@@ -1907,13 +1970,13 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 
 	ArrayPrinter print(out);
 
-	WriteEntities			(print, map, options, brush_count,								"entity_brushes"sv,		"entity_data"sv			);
-	WriteBrushBounds		(print, map, options,											"world_bounds"sv,		"brush_bounds"sv		);
-	WriteUnalignedPlanes	(print, map, options,											"nonaxial_planes"sv								);
-	WriteMaterials			(print, map, options, shader_props.data(),						"num_materials"sv,		"plane_materials"sv		);
-	WriteBrushUVs			(print, map, options, shader_props.data(),						"uv_set"sv,				"plane_uvs"sv			);
-	WritePatchData			(print, map, options, shader_props.data(),						"patches"sv,			"patch_verts"sv			);
-	WriteLights				(print, map, options, shader_props.data(),	lights,	symmetry,	"light_data"sv,			"num_spotlights"sv		);
+	WriteEntities			(print, map, options, brush_count,								"entity_brushes"sv,			"entity_data"sv			);
+	WriteBrushBounds		(print, map, options,											"world_bounds"sv,			"brush_bounds"sv		);
+	WriteUnalignedPlanes	(print, map, options,											"num_nonaxial_planes"sv,	"nonaxial_planes"sv,	"nonaxial_counts"sv);
+	WriteMaterials			(print, map, options, shader_props.data(),						"num_materials"sv,			"plane_materials"sv		);
+	WriteBrushUVs			(print, map, options, shader_props.data(),						"uv_set"sv,					"plane_uvs"sv			);
+	WritePatchData			(print, map, options, shader_props.data(),						"patches"sv,				"patch_verts"sv			);
+	WriteLights				(print, map, options, shader_props.data(),	lights,	symmetry,	"light_data"sv,				"num_spotlights"sv		);
 	//WriteLightmap			(print, map, options, shader_props.data(),	"lightmap_offsets"										);
 
 	/* footer */
@@ -1933,7 +1996,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 		"    %d, %d, // symmetry axis, level\n"
 		"    entity_brushes, entity_data,\n"
 		"    world_bounds, brush_bounds,\n"
-		"    nonaxial_planes, nonaxial_counts,\n"
+		"    num_nonaxial_planes, nonaxial_planes, nonaxial_counts,\n"
 		"    num_materials, plane_materials,\n"
 		"    uv_set, plane_uvs,\n"
 		"    patches, patch_verts,\n"

@@ -39,6 +39,10 @@ struct PackedMap {
 	i8					symmetry_axis;
 	i16					symmetry_level;
 
+#ifdef DEV
+	u16					num_plane_entries;
+#endif
+
 	struct {
 		i16				position[3];
 		i16				angles[2];
@@ -62,6 +66,7 @@ struct PackedMap {
 		const i16	(&entity_data)		[NumEntityDataEntries],
 		const i16	(&world_bounds)		[6],
 		const i16	(&brush_bounds)		[NumBrushBoundEntries],
+		u16								num_unaligned_planes,
 		const i32	(&plane_data)		[NumPlaneEntries],
 		const u16	(&nonaxial_counts)	[NumNonaxialEntries],
 		u8								num_materials,
@@ -88,7 +93,10 @@ struct PackedMap {
 		brush_bounds			(brush_bounds),
 		num_brushes				(NumBrushBoundEntries / 6),
 		plane_data				(plane_data),
-		num_unaligned_planes	(NumPlaneEntries / 2),
+		num_unaligned_planes	(num_unaligned_planes),
+#ifdef DEV
+		num_plane_entries		(NumPlaneEntries),
+#endif
 		nonaxial_counts			(nonaxial_counts),
 		uv_data					(uv_data),
 		num_uvs					(NumUVEntries / 5),
@@ -158,6 +166,7 @@ struct PackedMap {
 	Patch						GetPatch(u32 patch_index) const;
 	PatchVertex					GetPatchVertex(Patch& patch, u32 vertex_index) const;
 	void						GetLight(u32 light_index, Light& light) const;
+	void						GetPlane(const i32*& plane_data, const i16 brush_bounds[2][3], vec4& plane) const;
 };
 
 ////////////////////////////////////////////////////////////////
@@ -249,6 +258,65 @@ FORCEINLINE void PackedMap::GetLight(u32 light_index, Light& light) const {
 		}
 	} else {
 		light.flags = (light_index < num_spotlights) ? Light::IsSpotlight : 0;
+	}
+}
+
+FORCEINLINE void PackedMap::GetPlane(const i32*& plane_data, const i16 brush_bounds[2][3], vec4& plane) const {
+	u32 value = *plane_data++;
+	u8 axis0 = value & 3;
+	if (axis0 != 3) {
+		const u32
+			OffsetBits		= 12,
+			OffsetMask		= (1 << OffsetBits) - 1
+		;
+
+		bool negative_axis1 = (value >> 2) & 1;
+		bool negative_axis2 = (value >> 3) & 1;
+		float offset1 = (value >> 4) & OffsetMask;
+		float offset2 = value >> 16;
+
+		const u8 NextAxis[] = {1, 2, 0, 1};
+		u8 axis1 = NextAxis[axis0];
+		u8 axis2 = NextAxis[axis1];
+
+		vec3 corner;
+		corner[axis0] = brush_bounds[0][axis0];
+		corner[axis1] = brush_bounds[!negative_axis1][axis1];
+		corner[axis2] = brush_bounds[!negative_axis2][axis2];
+
+		corner[axis1] += negative_axis1 ? offset1 : -offset1;
+
+		float norm = sqrt(offset1*offset1 + offset2*offset2);
+		offset1 /= norm;
+		offset2 /= norm;
+
+		plane[axis0] = 0.f;
+		// rotate vec2(offset1, offset2) by 90 degrees and adjust sign
+		plane[axis1] = negative_axis1 ? -offset2 : offset2; // not a typo!
+		plane[axis2] = negative_axis2 ? -offset1 : offset1; // not a typo!
+
+		plane.w = -dot(plane.xyz, corner);
+	} else {
+		value >>= 2;
+		i32 w = *plane_data++;
+
+		const i32
+			OctBits			= 12,
+			OctMask			= (1 << OctBits) - 1,
+			OctMaxValue		= OctMask >> 1,
+			DistFractBits	= 4,
+			DistScale		= 1 << DistFractBits;
+
+		vec2 oct;
+		i32 x = value & OctMask;
+		i32 y = value >> 16;
+		oct.x = DecodeSignMagnitude(x) / float(OctMaxValue);
+		oct.y = DecodeSignMagnitude(y) / float(OctMaxValue);
+		assert(oct.x >= -1.f && oct.x <= 1.f);
+		assert(oct.y >= -1.f && oct.y <= 1.f);
+
+		plane.xyz = oct_to_vec3(oct);
+		plane.w = DecodeSignMagnitude(w) * (1.f / float(DistScale));
 	}
 }
 
@@ -652,36 +720,13 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				*((u32*)&plane.data[3]) = *(u32*)&value ^ sign;
 			}
 
-			const i32
-				OctBits			= 12,
-				OctMask			= (1 << OctBits) - 1,
-				OctMaxValue		= OctMask >> 1,
-				DistFractBits	= 4,
-				DistScale		= 1 << DistFractBits;
-
 			/* non-axial planes, if any */
 			{
 				auto num_extra_planes = *nonaxial_offset++;
 				assert(brushes.plane_count + 6  + num_extra_planes <= MAX_NUM_PLANES);
 
-				for (u32 i = 0; i < num_extra_planes; ++i) {
-					vec4& plane = brush_planes[num_brush_planes++];
-				
-					u32 xy = plane_data[0];
-					i32 w = plane_data[packed.num_unaligned_planes];
-					++plane_data;
-				
-					vec2 oct;
-					i32 x = xy & OctMask;
-					i32 y = xy >> 16;
-					oct.x = DecodeSignMagnitude(x) / float(OctMaxValue);
-					oct.y = DecodeSignMagnitude(y) / float(OctMaxValue);
-					assert(oct.x >= -1.f && oct.x <= 1.f);
-					assert(oct.y >= -1.f && oct.y <= 1.f);
-
-					plane.xyz = oct_to_vec3(oct);
-					plane.w = DecodeSignMagnitude(w) * (1.f / float(DistScale));
-				}
+				for (u32 i = 0; i < num_extra_planes; ++i)
+					packed.GetPlane(plane_data, brush_bounds, brush_planes[num_brush_planes++]);
 			}
 
 			brushes.plane_count += num_brush_planes;
@@ -709,7 +754,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 			const u16 MAX_NUM_EDGES = 48;
 			BrushEdge brush_edges[MAX_NUM_EDGES];
 		
-			u16 num_brush_edges = EnumerateBrushEdges(brush_planes, num_brush_planes, brush_edges, MAX_NUM_EDGES);
+			u16 num_brush_edges = EnumerateBrushEdges(brush_planes, num_brush_planes, brush_edges, MAX_NUM_EDGES, 1.f/16.f);
 
 			assert(num_brush_edges <= MAX_NUM_EDGES);
 			assert(num_brush_planes <= 32);
@@ -778,7 +823,10 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				for (u32 j = 0; j < num_face_edges; ++j) {
 					auto edge_index = face_edges[j];
 					auto& edge = brush_edges[edge_index];
-					vec3 delta = (edge.first_point + edge.second_point) * 0.5f - center;
+					vec3 delta;
+					delta.x = (edge.first_point.x + edge.second_point.x) * 0.5f - center.x;
+					delta.y = (edge.first_point.y + edge.second_point.y) * 0.5f - center.y;
+					delta.z = (edge.first_point.z + edge.second_point.z) * 0.5f - center.z;
 					edge_angle[edge_index] = Math::atan2(dot(delta, y_axis), dot(delta, x_axis));
 				}
 
@@ -869,6 +917,9 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		brushes.start[brushes.count] = brushes.plane_count;
 
 		assert(src_plane_index == packed.num_planes);
+#ifdef DEV
+		assert(plane_data == packed.plane_data + packed.num_plane_entries);
+#endif
 
 		LoadPatches(packed, pass);
 	}
