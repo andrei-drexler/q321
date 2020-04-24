@@ -6,7 +6,7 @@ setlocal EnableDelayedExpansion
 set src_folder=src/demo/data/shaders/
 set sources=%src_folder%*.glsl
 set out_folder=src/demo/cooked/
-set out_file=%out_folder%shaders.h
+set out_file=%out_folder%cooked_shaders.h
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 

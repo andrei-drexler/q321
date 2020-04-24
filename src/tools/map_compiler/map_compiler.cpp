@@ -29,7 +29,7 @@ struct Options {
 		float	patch_vertex		= 1.f;
 	};
 
-	const char* out_path			= "../../demo/cooked/maps.h";
+	const char* out_path			= "../../demo/cooked/cooked_maps.h";
 
 	UVSort		sort_uv				= UVSort::ByMapOrder;
 	Snap		snap;
@@ -2034,7 +2034,7 @@ static constexpr MapEntry DemoMaps[] = {
 
 int main() {
 	Options options;
-	options.out_path			= "../../demo/cooked/maps.h";
+	options.out_path			= "../../demo/cooked/cooked_maps.h";
 	options.snap.uv_angle		= 1.f;
 	options.snap.uv_offset		= 4.f;
 	options.snap.uv_scale_bits	= 16;

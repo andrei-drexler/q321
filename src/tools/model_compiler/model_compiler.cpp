@@ -352,7 +352,7 @@ int main() {
 		DEMO_MODELS(PP_DEMO_MODEL_PATH)
 		#undef PP_DEMO_MODEL_PATH
 	};
-	options.out_path = "../../demo/cooked/models.h";
+	options.out_path = "../../demo/cooked/cooked_models.h";
 
 	FILE* out = fopen(options.out_path.c_str(), "w");
 	if (!out)

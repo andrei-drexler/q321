@@ -17,8 +17,8 @@
 #include "resource_def.h"
 #include "gfx_resources.h"
 #include "map.h"
-#include "cooked/maps.h"
-#include "cooked/models.h"
+#include "cooked/cooked_maps.h"
+#include "cooked/cooked_models.h"
 #include "player.h"
 
 ////////////////////////////////////////////////////////////////
