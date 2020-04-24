@@ -888,24 +888,26 @@ TEX(gmtlspsld) {
 }
 
 // Output: xyz = normal, w = unclamped normalized distance
-vec4 bolt(vec2 uv, float s) {
+vec4 rivet(vec2 uv, float s) {
 	return vec4(uv/=s, sqrt(sat(1.-lsq(uv))), length(uv) - 1.);
 }
 
-float toplight(vec3 n) {
+float top_light(vec3 n) {
 	float l = sum(n.yz) * .7;
 	return pow(sat(l), 4.) + l;
 }
 
-float shadow(vec4 b, float s) {
-	float t = ls(s, -s, b.y);
-	return sat(t * s - b.w) * t;
+float rivet_shadow(vec2 uv, float s) {
+	uv /= s;
+	uv.y += .06;
+	uv.x *= 2.;
+	return ls(.3, .0, length(uv));
 }
 
-vec3 add_bolt(vec3 c, vec2 uv, float s) {
-	vec4 b = bolt(uv, s);
-	c *= 1. + toplight(b.xyz) * msk(b.w) * .5;
-	c *= 1. - sqr(shadow(b, 1.7)) * (1. - msk(b.w)) * .3;
+vec3 add_rivet(vec3 c, vec2 uv, float s) {
+	vec4 b = rivet(uv, s);
+	c *= 1. + top_light(b.xyz) * msk(b.w) * .5;
+	c *= 1. - sqr(rivet_shadow(uv, 20. * s)) * (1. - msk(b.w)) * .3;
 	return c;
 }
 
@@ -924,18 +926,28 @@ TEX(gmtlsp4b) {
 	c *= 1. - sqr(ls(.49, .5, abs(uv.y - .5)));
 	c *= 1. - ls(.05, .2, d) * ls(.16, .1, d);
 	c *= 1. + tri(.99, .007, uv.y);
-	return add_bolt(c, vec2(d - .4, fract(uv.y * 8.) - .5), .07);
+	return add_rivet(c, vec2(d - .4, fract(uv.y * 8.) - .5), .07);
 }
 
 vec3 gspbdrbb_v(vec2 uv, float s)  {
 	float
-		b = FBMT(uv, vec2(3, 1. + s + s), .5, 2., 4),
-		d = ridged(uv.x);
+		b = FBMT(uv, vec2(3, 1. + s + s), .7, 2., 4),
+		d = ridged(uv.x),
+		m;
 	uv.y *= 2.;
 	vec3 c = mix(RGB(71, 60, 58), RGB(110, 88, 77), ls(.1, .05, d)) * (.7 + .6 * b);
-	c *= 1. - ls(.05, .0, uv.x);
+	c *= 1. - ls(.05, .0, uv.x) * (1. - b * b);
 	c *= 1. + .5 * tri(.05, .02, uv.x);
-	return add_bolt(c, vec2(d - .4, fract(uv.y * s) - .5), .08);
+	vec2 p = vec2(d - .4, fract(uv.y * s) - .5);
+	vec4 k = rivet(p, .1);
+	m = msk(k.w);
+	c *= 1. - .7 * rivet_shadow(p, 1.) * (1. - m);
+	c = mix(c,
+			RGB(128, 105, 88) *
+			(.4 + 2. * b * pow(sat(sum(k.yz * .7)), 4.)) *
+			(1. - .5 * tri(-.1, .4, k.y)),
+			m);
+	return c;
 }
 
 TEX(gspbdrbb) {
@@ -987,7 +999,7 @@ TEX(gwdclg1bd) {
 	if (x < 1.)
 		c = RGB(59, 48, 49) * (.7 + .6 * b);
 	c *= 1. + .5 * tri(.05, .05, ridged(x));
-	return add_bolt(c, vec2(abs(uv.x - 3./32.) - .07, mod(uv.y, .1) - .05), .004);
+	return add_rivet(c, vec2(abs(uv.x - 3./32.) - .07, mod(uv.y, .1) - .05), .004);
 }
 
 TEX(cable) {
