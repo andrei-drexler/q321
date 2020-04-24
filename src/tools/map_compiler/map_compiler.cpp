@@ -1566,6 +1566,9 @@ void WriteLights
 
 		auto target_str = ent.GetProperty("target"sv);
 		if (!target_str.empty()) {
+			if (!options.use_spotlights)
+				continue;
+
 			auto i = named_entity.find(target_str);
 			if (i == named_entity.end()) {
 				printf(INDENT "warning: entity %zd spotlight target '%*s' not found\n", i->second, int(target_str.size()), target_str.data());
@@ -1580,10 +1583,12 @@ void WriteLights
 				continue;
 			}
 
-			if (!options.use_spotlights)
-				continue;
+			float radius;
+			auto radius_str = ent.GetProperty("radius");
+			if (!ParseValue(radius_str, radius))
+				radius = 64.f;
 
-			light.spot = target_pos - light.pos;
+			light.spot = (target_pos - light.pos) * (64.f / radius);
 			light.key |= Light::IsSpotlight;
 			++num_spotlights;
 		}
