@@ -737,3 +737,4 @@
 39666,enabled spotlights
 39673,exported spotlights
 39697,new unaligned plane encoding + epsilon fixes
+39622,disabled recomputeplanes

@@ -363,7 +363,7 @@ namespace Map {
 		EnableSpotlights	= PackedMap::EnableSpotlights,
 		EnableAreaLights	= false,
 		SnapVertices		= true,
-		RecomputePlanes		= true,
+		RecomputePlanes		= false,
 	};
 
 	void					Load(const PackedMap& packed);
