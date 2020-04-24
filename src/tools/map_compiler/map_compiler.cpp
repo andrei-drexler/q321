@@ -38,6 +38,7 @@ struct Options {
 	bool		trim_unwanted_uvs	= true;
 	bool		wrap_uvs			= false; // increases final size by a bit
 	bool		sort_lights			= true;
+	bool		sort_patches		= false;
 	bool		use_spotlights		= true;
 	bool		use_area_lights		= true;
 
@@ -1341,8 +1342,36 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 	}
 	printf(INDENT "max patch size: %d x %d\n", max_width, max_height);
 
+	std::vector<size_t> order(world.patches.size());
+	for (size_t i = 0; i < order.size(); ++i)
+		order[i] = i;
+
+	if (options.sort_patches) {
+		auto mins = world.bounds.mins;
+		auto size = world.bounds.size();
+
+		std::vector<u64> sort_keys(world.patches.size());
+		for (size_t i = 0; i < sort_keys.size(); ++i) {
+			auto& patch = world.patches[i];
+			auto center = patch.bounds.center();
+			auto x = std::clamp(i32((center.x - mins.x) / size.x * 1023.f + 0.5f), 0, 1023);
+			auto y = std::clamp(i32((center.y - mins.y) / size.y * 1023.f + 0.5f), 0, 1023);
+			auto z = std::clamp(i32((center.z - mins.z) / size.z * 1023.f + 0.5f), 0, 1023);
+			sort_keys[i] = Interleave3(x, y, z) | (u64(patch.material) << 30);
+		}
+
+		std::sort(order.begin(), order.end(), [&] (size_t a, size_t b) {
+			return sort_keys[a] < sort_keys[b];
+		});
+
+		for (size_t i = 0; i < order.size(); ++i) {
+			printf("Sort: %lld\n", sort_keys[order[i]]);
+		}
+	}
+
 	print << "\nconst u32 "sv << patch_array_name << "[] = {"sv;
-	for (auto& patch : world.patches) {
+	for (auto patch_index : order) {
+		auto& patch = world.patches[patch_index];
 		vec2 max_dist = 0.f;
 
 		auto* ctrl = patch.vertices.data();
@@ -1406,7 +1435,8 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 
 	print << "\nconst i16 "sv << vert_array_name << "[] = {"sv;
 	for (int i=0; i<5; ++i) {
-		for (auto& patch : world.patches) {
+		for (auto patch_index : order) {
+			auto& patch = world.patches[patch_index];
 			vec2 uv_base = patch.vertices[0].uv;
 			for (auto& v : patch.vertices)
 				uv_base = min(uv_base, v.uv);
@@ -2045,6 +2075,7 @@ int main() {
 	options.trim_unwanted_uvs	= true;		// saves 1k!
 	options.wrap_uvs			= false;	// minor net loss
 	options.sort_lights			= true;
+	options.sort_patches		= false;
 	options.verbose				= false;
 
 	FILE* out = fopen(options.out_path, "w");
