@@ -532,6 +532,10 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 	ExitProcess(code);
 }
 
+[[noreturn]] void mainCRTStartup() {
+	WinMainCRTStartup();
+}
+
 namespace Win32 {
 	const DWORD WindowStyle		= WS_POPUP | WS_VISIBLE;
 	const DWORD WindowStyleEx	= 0;
