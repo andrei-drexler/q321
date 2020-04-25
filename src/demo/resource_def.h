@@ -50,6 +50,7 @@
 	x(gspbdrbb,				FSVertexBits)\
 	x(gkarntwr4a,			FSVertexBits)\
 	x(gkarntwrst,			FSVertexBits)\
+	x(giron01e,				FSVertexBits)\
 	x(gxstrtop4,			FSVertexBits)\
 	x(gwdclg1a,				FSVertexBits)\
 	x(gwdclg1bd,			FSVertexBits)\
@@ -116,6 +117,7 @@
 	x(gspbdrbb,		Shader::gspbdrbb,	64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkarntwr4a,	Shader::gkarntwr4a,	256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkarntwrst,	Shader::gkarntwrst,	64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(giron01e,		Shader::giron01e,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gxstrtop4,	Shader::gxstrtop4,	256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bmtsprt,		Shader::bmtsprt,	256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(cable,		Shader::cable,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -173,6 +175,7 @@
 	x("gothic_wall/supportborder_blue_b",	Lmapped,		gspbdrbb,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/km_arena1tower4_a",		Lmapped,		gkarntwr4a,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/km_arena1tower_short",	Lmapped,		gkarntwrst,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_wall/iron01_e",				Lmapped,		giron01e,	Solid,		Opaque,					(0))\
 	x("gothic_floor/xstairtop4",			Lmapped,		gxstrtop4,	Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahellflat_400",			lavaf,			White,		Solid,		Opaque,					(400,16,5,2))\
 	x("gothic_ceiling/woodceiling1a",		Lmapped,		gwdclg1a,	Solid,		Opaque|NeedsUV,			(0))\
@@ -210,7 +213,6 @@
 	x("gothic_trim/pitted_rust",			"gothic_trim/pitted_rust3")\
 	x("gothic_trim/km_arena1tower4",		"gothic_wall/supportborder_blue_b")\
 	x("skin/chapthroat2",					"skin/chapthroat")\
-	x("gothic_wall/iron01_e",				"base_wall/metalblack03")\
 
 ////////////////////////////////////////////////////////////////
 

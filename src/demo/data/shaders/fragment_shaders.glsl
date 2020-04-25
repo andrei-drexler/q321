@@ -798,6 +798,23 @@ TEX(mtlbk03) {
 	return vec3(l * (1. - g.y * g.z));
 }
 
+// gothic_wall/iron01_e
+TEX(giron01e) {
+	float
+		b = FBMT(uv, vec2(5), .9, 3., 4),
+		l = .18 * (.7 + b * b);
+	vec3
+		c = mix(RGB(77, 55, 53), RGB(62, 48, 48), NT(uv, vec2(128, 13))) * (.7 + b * b),
+		g;
+	uv = wavy(uv, 13., .007);
+	EVAL_GRAD(
+		g, uv,
+		sqr(ls(.6 + b * .3, .95, NT(p[i], vec2(47,23))))
+	);
+	c *= ls(1.3, .9, g.z);
+	return vec3(c * (1. + g.y * g.z));
+}
+
 TEX(gmtlbg6) {
 	float b = FBMT(uv, vec2(13), 1., 3., 4);
 	vec3 c = mix(RGB(36, 35, 31), RGB(132, 132, 132), b);
