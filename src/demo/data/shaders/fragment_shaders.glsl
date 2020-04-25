@@ -938,26 +938,29 @@ vec3 gspbdrbb_v(vec2 uv, float s)  {
 	vec3 c = mix(RGB(71, 60, 58), RGB(110, 88, 77), ls(.1, .05, d)) * (.7 + .6 * b);
 	c *= 1. - ls(.05, .0, uv.x) * (1. - b * b);
 	c *= 1. + .5 * tri(.05, .02, uv.x);
-	vec2 p = vec2(d - .4, fract(uv.y * s) - .5);
-	vec4 k = rivet(p, .1);
+	vec2 p = vec2(d - .35, fract(uv.y * s) - .5);
+	vec4 k = rivet(p, .11);
 	m = msk(k.w);
-	c *= 1. - .7 * rivet_shadow(p, 1.) * (1. - m);
+	c *= 1. - .7 * rivet_shadow(p, 1.1) * (1. - m);
 	c = mix(c,
-			RGB(128, 105, 88) *
+			(k.y > .0 ? RGB(128, 105, 88) : RGB(200,111,66) * ls(-.2, .7, k.z)) *
 			(.4 + 2. * b * pow(sat(sum(k.yz * .7)), 4.)) *
-			(1. - .5 * tri(-.1, .4, k.y)),
+			(1. - .6 * tri(-.1, .4, k.y)),
 			m);
 	return c;
 }
 
+// gothic_wall/supportborder_blue_b
 TEX(gspbdrbb) {
 	return gspbdrbb_v(uv, 4.);
 }
 
+// gothic_trim/km_arena1tower4_a
 TEX(gkarntwr4a) {
 	return gspbdrbb(uv.yx);
 }
 
+// gothic_trim/km_arena1tower_short
 TEX(gkarntwrst) {
 	return gspbdrbb_v(uv, 1.);
 }

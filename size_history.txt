@@ -744,3 +744,4 @@
 39622,undo + disabled sorting
 39649,nicer rivets
 39650,spotlight radius adjustment
+39698,nicer shiny rivets
