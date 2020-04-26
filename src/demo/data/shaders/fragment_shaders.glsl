@@ -193,6 +193,12 @@ vec4 H4(float p) {
 	return fract((p4.xxyz + p4.yzzw) * p4.zywx);
 }
 
+vec4 H4(vec2 p) {
+	vec4 p4 = fract(vec4(p.xyxy) * vec4(.1031, .1030, .0973, .1099));
+	p4 += dot(p4, p4.wzxy+33.33);
+	return fract((p4.xxyz+p4.yzzw)*p4.zywx);
+}
+
 float HT(float x, float p) {
 	return H(mod(x, p));
 }
@@ -416,7 +422,11 @@ float circ(vec2 p, float r) {
 }
 
 float elips(vec2 p, vec2 r) {
-	return (length(p/r) - 1.) / min(r.x, r.y);
+	return circ(p/r, 1.) / min(r.x, r.y);
+}
+
+float exclude(float a, float b) {
+	return max(a, -b);
 }
 
 // polynomial smooth min
@@ -462,6 +472,32 @@ float msk(float s) {
 		r[i] = code;												\
 		res = vec3(safe_normalize(vec2(r[1], r[2]) - r[0]), r[0]);	\
 	}
+
+////////////////////////////////////////////////////////////////
+
+// Output: xyz = normal, w = unclamped normalized distance
+vec4 rivet(vec2 uv, float s) {
+	return vec4(uv/=s, sqrt(sat(1.-lsq(uv))), length(uv) - 1.);
+}
+
+float top_light(vec3 n) {
+	float l = sum(n.yz) * .7;
+	return pow(sat(l), 4.) + l;
+}
+
+float rivet_shadow(vec2 uv, float s) {
+	uv /= s;
+	uv.y += .06;
+	uv.x *= 2.;
+	return ls(.3, .0, length(uv));
+}
+
+vec3 add_rivet(vec3 c, vec2 uv, float s) {
+	vec4 b = rivet(uv, s);
+	c *= 1. + top_light(b.xyz) * msk(b.w) * .5;
+	c *= 1. - sqr(rivet_shadow(uv, 20. * s)) * (1. - msk(b.w)) * .3;
+	return c;
+}
 
 ////////////////////////////////////////////////////////////////
 
@@ -815,6 +851,114 @@ TEX(giron01e) {
 	return vec3(c * (1. + g.y * g.z));
 }
 
+float fender(vec2 uv, vec2 s) {
+	uv.y = max(uv.y, 0.);
+	return elips(uv, s);
+}
+
+vec3 techno(vec2 uv) {
+	return vec3(.06 + .1 * H(uv * 133.7));
+}
+
+vec3 add_techpipe(vec3 c, vec3 b, vec2 uv, float h, float s) {
+	float
+		y = (uv.y - h) / s,
+		p = 1. - y * y;
+	c *= 1. - tri(-1., 1., y);
+	if (p > 0.)
+		c = b * (p * (.8 + .2 * tri(.5, .25, fract(uv.x / s)))) *
+			(.7 + sqr(tri(.2, .7, y)));
+	return c;
+}
+
+// TODO: PCB/chips?
+vec3 techno(vec2 uv, float n) {
+	return vec3(n * n * .4);
+}
+
+// gothic_wall/iron01_ntech3
+TEX(giron01nt3) {
+	uv.x *= .5; // fix aspect ratio (texture is 128 x 256)
+
+	float
+		b = FBMT(uv * vec2(2, 1), vec2(3, 5), .9, 3., 4), // base FBM, tileable
+		n = .8 + .8 * b * b, // texture intensity
+		t = uv.y + .2 * min(.5, tri(.5, .375, fract(uv.x * 4.))), // top alternating pattern
+		f1 = fender(uv - vec2(.25, .62), vec2(3, 2) / 32.),
+		f2 = fender(uv - vec2(.25, .55), vec2(3, 2) / 48.),
+		r;
+
+	vec3
+		c = mix(RGB(66, 50, 51), RGB(111, 66, 44), sqrt(tri(.31, .01, uv.y))),
+		c2;
+
+	vec2 p = uv, q;
+	p.x = fract(p.x * 4.);
+	if (uv.y > .3)
+		c = add_rivet(c, vec2(4. * abs(p.x - .5) - 1.6, fract(uv.y * 16.) - .5), .07);
+	r = abs(p.x - .5);
+	// panel shadow/highlight
+	c *= 1. - .3 * ls(.31, .33, uv.y) *
+		(ls(.035, .03, .5 - r) + tri(.48, .01, r) - tri(.46, .02, r));
+
+	// techno jumble
+	c = mix(c * n, techno(uv, b), max(ls(.31, .3, uv.y), msk(f2)));
+	c *= ls(1.5, .7, uv.y);
+	if (uv.y < .306)
+		c *= 1. - tri(.3, .05, uv.y) * msk(-f2 + 10., 20.); // panel shadow
+	c *= 1. - tri(.316, .004, uv.y) * msk(-f2);
+
+	// bottom part - cables?
+	if (uv.y < .1)
+		c *= .0;
+	q = uv;
+	q.y += tri(.1, .01, mod(q.x, .33)) / 2e2;
+	c = add_techpipe(c, 2. * b * RGB(93, 84, 79), uv, .185, .015);
+	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), uv, .13, .025);
+	c = add_techpipe(c, 2. * b * RGB(112, 71, 51), uv, .09, .015);
+	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), q, .05, .015);
+
+	// rectangular gizmos on top of cables
+	p.x = abs(fract(uv.x * 6. - .5) - .5) / 6.;
+	c *= 1.+ .5 * ls(.04, .03, p.x) * tri(.18, .03, p.y);
+	r = box1(p - vec2(0, .12), vec2(.03, .01));
+	r = exclude(r, box1(p - vec2(0, .11), vec2(.01)));
+	c *= 1. - sqr(tri(.0, .04, r));
+	c = mix(c, RGB(166, 99, 77) * 2. * b * (.75 + .5 * sqr(tri(.125, .01, uv.y))), msk(r));
+
+	// transformer coils?
+	q = p;
+	q.y -= .07;
+	r = circ(q, .03);
+	c *= 1. - sqr(tri(.0, .07, r)); // outer shadow
+	c = mix(c, RGB(127, 83, 72) * b * 2. * ls(.01, -.005, r), ls(.005, .0, r));
+	q.y -= .004;
+	r = circ(q, .015);
+	c *= sqr(ls(-.01, .01, r)); // inner shadow
+	q.y += .013;
+	r = circ(q, .05);
+	c += RGB(67, 38, 30) * 4. * sqrt(b) * sqr(tri(-.02, .015, r) * tri(.023, .02, uv.y)); // specular?
+
+	// fender?
+	r = exclude(f1, f2);
+	r = exclude(r, (uv.y - .3) * 3e2);
+	c *= 1. - .5 * tri(-2., 17., f2) * ls(.26, .3, uv.y); // inner fender shadow
+
+	c2 = RGB(67, 39, 17) * n;
+	c2 = mix(c2, vec3(n * .2), tri(0., 4., r) * b); // desaturate edges
+	c2 *= 1. - .4 * pow(tri(.0, 3., r), 4.); // darken outer edge
+	c2 += (c2 + .6) * sqrt(b) * sqr(tri(-6., 8., r) * tri(.66, .04, uv.y)) * msk(r); // specular
+	if (uv.y < .55)
+		c2 = add_rivet(c2, vec2(24. * abs(uv.x - .25) - 1.85, fract(uv.y * 24. + .5) - .5), .15);
+
+	// top part - we also fill in the bottom row to avoid bilinear artifacts
+	// (even if the original texture doesn't)
+	c = mix(c, giron01e(uv), ls(.85, .9, t) + step(uv.y, 1./256.));
+	c *= 1. + tri(.88, .015, t) - sqr(tri(.87, .03, t));
+
+	return mix(c, c2, ls(1., .1, r));
+}
+
 TEX(gmtlbg6) {
 	float b = FBMT(uv, vec2(13), 1., 3., 4);
 	vec3 c = mix(RGB(36, 35, 31), RGB(132, 132, 132), b);
@@ -901,30 +1045,6 @@ TEX(gmtlspsld) {
 		b = FBMT(uv, vec2(7), .9, 3., 4),
 		n = FBMT(uv, vec2(5), .9, 3., 4);
 	vec3 c = mix(RGB(103, 56, 53), RGB(73, 58, 71), smoothstep(.4, .5, n)) * (.75 + b * b);
-	return c;
-}
-
-// Output: xyz = normal, w = unclamped normalized distance
-vec4 rivet(vec2 uv, float s) {
-	return vec4(uv/=s, sqrt(sat(1.-lsq(uv))), length(uv) - 1.);
-}
-
-float top_light(vec3 n) {
-	float l = sum(n.yz) * .7;
-	return pow(sat(l), 4.) + l;
-}
-
-float rivet_shadow(vec2 uv, float s) {
-	uv /= s;
-	uv.y += .06;
-	uv.x *= 2.;
-	return ls(.3, .0, length(uv));
-}
-
-vec3 add_rivet(vec3 c, vec2 uv, float s) {
-	vec4 b = rivet(uv, s);
-	c *= 1. + top_light(b.xyz) * msk(b.w) * .5;
-	c *= 1. - sqr(rivet_shadow(uv, 20. * s)) * (1. - msk(b.w)) * .3;
 	return c;
 }
 

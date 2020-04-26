@@ -746,3 +746,8 @@
 39650,spotlight radius adjustment
 39698,nicer shiny rivets
 39873,added iron01_e
+40071,iron01_ntech3 wip
+40190,more iron01_ntech3 wip
+40228,more iron01_ntech3 wip
+40347,and more
+40502,and more
