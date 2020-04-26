@@ -959,9 +959,20 @@ TEX(giron01nt3) {
 	return mix(c, c2, ls(1., .1, r));
 }
 
+vec3 gmtlbg6_layer(vec3 c, vec2 uv, int w, int h) {
+	float b = FBMT(uv, vec2(w, h), .5, 2., 2);
+	c *= .9 - .3 * ls(.15, .1, abs(b - .5));
+	return mix(c, RGB(145, 140, 137), tri(.5, .1, b));
+}
+
+// gothic_floor/metalbridge06
 TEX(gmtlbg6) {
-	float b = FBMT(uv, vec2(13), 1., 3., 4);
-	vec3 c = mix(RGB(36, 35, 31), RGB(132, 132, 132), b);
+	uv = wavy(uv, 9., .005);
+	int i = 0, l[] = int[](13, 43, 17, 47, 23, 59, 27, 63);
+	float b = FBMT(uv, vec2(19), .7, 2., 4);
+	vec3 c = RGB(40, 50, 60) * (.5 + b);
+	for (/**/; i < 8; i += 2)
+		c = gmtlbg6_layer(c, uv, l[i], l[i+1]);
 	return c;
 }
 
