@@ -913,7 +913,7 @@ TEX(giron01nt3) {
 		c = add_rivet(c, vec2(4. * abs(p.x - .5) - 1.6, fract(uv.y * 16.) - .5), .07);
 	r = abs(p.x - .5);
 	// panel shadow/highlight
-	c *= 1. - .3 * ls(.31, .33, uv.y) *
+	c *= 1. - .3 * ls(.31, .32, uv.y) * ls(.87, .86, uv.y) *
 		(ls(.035, .03, .5 - r) + tri(.48, .01, r) - tri(.46, .02, r));
 
 	// techno jumble
