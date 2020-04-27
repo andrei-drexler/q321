@@ -60,6 +60,14 @@ float sum(vec2 v) {
 	return v.x + v.y;
 }
 
+float minabs(float a, float b) {
+	return abs(a) < abs(b) ? a : b;
+}
+
+float onion(float x, float s) {
+	return abs(x) - s;
+}
+
 ////////////////////////////////////////////////////////////////
 
 vec2 safe_normalize(vec2 v) {
@@ -69,12 +77,19 @@ vec2 safe_normalize(vec2 v) {
 
 ////////////////////////////////////////////////////////////////
 
+// tent
 float tri(float center, float max_dist, float x) {
 	return 1. - sat(abs(x - center) / max_dist);
 }
 
+// linear step (like smoothstep, but linear)
 float ls(float lo, float hi, float x) {
 	return sat((x - lo) / (hi - lo));
+}
+
+// asymmetric tent
+float tri(float a, float b, float c, float x) {
+	return min(ls(a, b, x), ls(c, b, x));
 }
 
 ////////////////////////////////////////////////////////////////
@@ -993,6 +1008,7 @@ TEX(glrgbk3b) {
 	return c;
 }
 
+// gothic_block/blocks15
 TEX(gblks15) {
 	float
 		b = FBMT(uv, vec2(5), .9, 3., 4),
@@ -1014,6 +1030,100 @@ TEX(gblks15) {
 	c *= 1. + e * b * (d.y - .5) * .7;
 	c *= .9 + .2 * id;
 	c *= .9 + .2 * ridged(NT(uv - pt.yx, vec2(5)));
+	return c;
+}
+
+// gothic_floor/center2trn
+TEX(gcntr2trn) {
+	float
+		b = FBMT(uv -= .5, vec2(5), .9, 3., 4), // base fbm
+		t = .75 + b * b, // base texture intensity (remapped fbm)
+		n = NT(wavy(uv, 7., .02), vec2(17)), // low-frequency variation
+		r = length(uv), // distance from center
+		l = safe_normalize(uv).y, // light from top [-1..1]
+		k = r > .4 ? 38. : r > .32 ? 28. : 16., // number of bricks in circle
+		a = fract(atan(uv.y, uv.x) / TAU), // angle [0..1]
+		i = floor(a * k), // brick number [0..k)
+		r2 = abs(abs(r - .41 - n * .002) * 1e2 - 6.),
+		m = ls(1.5, 1.4, r2), // mask
+		rl[] = float[](1., 3., -.145, -1., 2., .166), // 2 rhombus lines: x0, y0, dist0, x1, y1, dist1
+		d, ld, s;
+
+	vec2 p = uv;
+	vec3 c = RGB(78, 68, 63); // outer color
+	c *= 1. + .5 * sqr(tri(.49, .005 + .015 * n * n + .015 * b, r)); // highlight outer edge
+	c = mix(c, RGB(83, 52, 47) * (.6 + .4 * n * n), m) * t;
+
+	c *= 1.
+		- .5 * tri(1.5, .5, r2) // dark outer edge
+		+ b * tri(1., .5 + .5 * n, abs(r - .418) * 1e2 - 5.) // edge highlight
+		- b * tri(.5, .08, fract(a * k + .5)) * m // dark edge between bricks in circle
+		+ b * tri(.5, .1, fract(a * k + .55)) * m // lit edge between bricks in circle
+		;
+
+	// inner 3 brick rows
+	m = ls(.34, .33, r); // mask
+	c = mix(c * (1. - .5 * m), RGB(83, 52, 47) * t, n * b * m); // base color
+	c = mix(c, RGB(112, 86, 31) * t, m * sqr(tri(.1, .15, .45, b)));
+	c = mix(c, RGB(77, 66, 77) * t, m * ls(.5, .8, b) * .5);
+	c *= 1. - .7 * tri(.27, .34, .35, r); // soft shadow
+
+	r2 = r + n * .004; // slight distortion
+	m = r > .21 && r < .31 ? 1. : 0.;
+	c *= 1.
+		- tri(.325, .005, r2) // dark edge
+		- tri(.31, .005, r2) // dark edge
+		- b * sqr(tri(.29, .005, r2)) // dark edge
+		- b * sqr(tri(.23, .01, r2)) // dark edge
+		- .5 * sqr(tri(.21, .02, r2)) // dark edge
+		+ sqr(tri(.3, .01, r2)) * b // highlight
+		+ sqr(tri(.22, .01, r2)) * b // highlight
+		- b * tri(.5, .07, fract(a * k)) * m // dark edge between bricks in circle
+		;
+	// separate ids for each row of bricks
+	if (r < .23) i += 37.;
+	if (r < .31) i += 73.;
+	if (r < .31) i += 91.;
+	c *= mix(1., .9 + .2 * R1(i), m); // vary intensity based on brick id
+
+	// rhombus ring
+	m = ls(.01, .0, abs(r - .411) - .039); // mask
+	i = floor(a * 72.); // base id
+	p *= rot(i * 5.); // polar mod: 360/72 = 5
+	s = 0.;
+	d = 1e6;
+	int j = 0;
+	for (/**/; j < 6; j += 3) { // for each line
+		d = minabs(d, ld = dot(p, normalize(vec2(rl[j], rl[j+1]))) + rl[j+2]); // distance to line
+		s += s + float(ld > 0.); // which side of line 1 we're on
+	}
+	// find rhombus id
+	if (s == 3.)
+		++i;
+	else
+		i += 66. * s;
+	i = R1(i);
+	c = mix(c, t * RGB(90, 80, 75), m);
+	c = mix(c, t * RGB(127, 111, 88), i * b * m);
+	c *= mix(1., .7 + .6 * H(i), m); // per-tile variation
+	c *= 1.
+		- m * sqr(tri(.0, .006, d)) * b // shadow
+		+ m * sqr(tri(.006, .006, abs(d))) * b * .5 // highlight
+		;
+
+	i = floor(a * 4.); // base id
+	p = abs(uv * rot(i * 90. + 45.)); // polar mod + reflection
+	d = 1e6;
+	for (j = 0; j < 2; ++j, p = abs(p * rot(45.)))
+		d = minabs(d, abs(length(p - vec2(.0, .12)) - .16));
+	m = ls(.22, .2, r);
+	r2 = onion(onion(d, .012), .001); // grill outline
+	c *= 1.
+		- .8 * t * ls(.21, .2, r) * msk(.012 - d) // dark void under grill
+		+ b * m * sqr(tri(.005, .005, d))
+		- .5 * m * sqr(msk(r2 - .001, .001)) // darken grill edges
+		;
+
 	return c;
 }
 

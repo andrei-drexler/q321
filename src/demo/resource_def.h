@@ -47,6 +47,7 @@
 	x(mtlbk03,				FSVertexBits)\
 	x(skcpthrt,				FSVertexBits)\
 	x(gskull4,				FSVertexBits)\
+	x(gcntr2trn,			FSVertexBits)\
 	x(gspbdrbb,				FSVertexBits)\
 	x(gkarntwr4a,			FSVertexBits)\
 	x(gkarntwrst,			FSVertexBits)\
@@ -107,6 +108,7 @@
 	x(mtlbk03,		Shader::mtlbk03,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(skcpthrt,		Shader::skcpthrt,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskull4,		Shader::gskull4,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gcntr2trn,	Shader::gcntr2trn,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1a,		Shader::gwdclg1a,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1bd,	Shader::gwdclg1bd,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlbg6,		Shader::gmtlbg6,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -186,6 +188,7 @@
 	x("gothic_light/pentagram_light1_1k",	fixture,		gpntgmlt1k,	Solid,		Opaque|NeedsUV,			(1000,19,17,10))\
 	x("skin/chapthroat",					Lmapped,		skcpthrt,	Solid,		Opaque,					(0))\
 	x("gothic_wall/skull4",					Lmapped,		gskull4,	Solid,		Opaque,					(0))\
+	x("gothic_floor/center2trn",			Lmapped,		gcntr2trn,	Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahell_750",				lava,			White,		Solid,		Opaque,					(500,16,5,2))\
 	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
 	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\

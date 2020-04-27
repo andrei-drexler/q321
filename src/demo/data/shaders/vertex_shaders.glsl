@@ -55,6 +55,7 @@ void gblks15() { FS(); }
 void gtprst3() { FS(); }
 void skcpthrt() { FS(); }
 void gskull4() { FS(); }
+void gcntr2trn() { FS(); }
 void gmtlspsld() { FS(); }
 void gmtlsp4b() { FS(); }
 void gspbdrbb() { FS(); }
