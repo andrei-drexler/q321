@@ -87,6 +87,7 @@ void beam() { Generic(); }
 void flame() { Generic(); }
 void q3bnr_m() { Generic(); }
 void shiny() { Generic(); }
+void gcntr2trn_m() { Generic(); }
 void timhel() { Generic(); }
 void lavaf() { Generic(); }
 

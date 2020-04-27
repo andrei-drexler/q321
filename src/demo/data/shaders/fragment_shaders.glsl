@@ -1033,14 +1033,13 @@ TEX(gblks15) {
 	return c;
 }
 
-// gothic_floor/center2trn
-TEX(gcntr2trn) {
+// gothic_floor/center2trn (texture)
+TEXA(gcntr2trn) {
 	float
 		b = FBMT(uv -= .5, vec2(5), .9, 3., 4), // base fbm
 		t = .75 + b * b, // base texture intensity (remapped fbm)
 		n = NT(wavy(uv, 7., .02), vec2(17)), // low-frequency variation
 		r = length(uv), // distance from center
-		l = safe_normalize(uv).y, // light from top [-1..1]
 		k = r > .4 ? 38. : r > .32 ? 28. : 16., // number of bricks in circle
 		a = fract(atan(uv.y, uv.x) / TAU), // angle [0..1]
 		i = floor(a * k), // brick number [0..k)
@@ -1078,7 +1077,7 @@ TEX(gcntr2trn) {
 		- .5 * sqr(tri(.21, .02, r2)) // dark edge
 		+ sqr(tri(.3, .01, r2)) * b // highlight
 		+ sqr(tri(.22, .01, r2)) * b // highlight
-		- b * tri(.5, .07, fract(a * k)) * m // dark edge between bricks in circle
+		- b * tri(.5, .07, fract(a * k + .5)) * m // dark edge between bricks in circle
 		;
 	// separate ids for each row of bricks
 	if (r < .23) i += 37.;
@@ -1111,19 +1110,34 @@ TEX(gcntr2trn) {
 		+ m * sqr(tri(.006, .006, abs(d))) * b * .5 // highlight
 		;
 
+	// inner grill
 	i = floor(a * 4.); // base id
 	p = abs(uv * rot(i * 90. + 45.)); // polar mod + reflection
 	d = 1e6;
 	for (j = 0; j < 2; ++j, p = abs(p * rot(45.)))
-		d = minabs(d, abs(length(p - vec2(.0, .12)) - .16));
-	m = ls(.22, .2, r);
+		d = minabs(d, abs(length(p - vec2(0, .12)) - .16));
+	m = ls(.21, .2, r);
 	r2 = onion(onion(d, .012), .001); // grill outline
 	c *= 1.
-		- .8 * t * ls(.21, .2, r) * msk(.012 - d) // dark void under grill
-		+ b * m * sqr(tri(.005, .005, d))
+		- ls(.21, .2, r) * msk(.012 - d) // dark void under grill
+		+ b * m * sqr(tri(.005, .005, d)) // highlight
 		- .5 * m * sqr(msk(r2 - .001, .001)) // darken grill edges
 		;
 
+	// note: last factor tapers alpha a bit to avoid some ugly aliased corners
+	return vec4(c, (1. - ls(.21, .15, r) * msk(.028 - d, .02)) * ls(.07, .087, r));
+}
+
+// gothic_floor/center2trn (map shader)
+TEXA(gcntr2trn_m) {
+	vec2 p = fract(UV) - .5;
+	float b = FBMT(p * rot(Time.x * 333.) * (.8 + .2 * sin(Time.x * 61.)), vec2(53), .7, 2., 4); // 61 ~= TAU * 9.7
+	vec4
+		c = vec4(1. - b * vec3(0, .3, 1), 1),
+		c2 = texture(Texture0, (p * rot(Time.x * 30.) * (.8 + .2 * sin(Time.x * 1.26))) + .5); // 1.26 ~= TAU * .2
+	c.xyz = mix(c.xyz, c2.xyz, c2.w);
+	c2 = texture(Texture0, UV);
+	c.xyz = mix(c.xyz, c2.xyz, c2.w) * Light();
 	return c;
 }
 

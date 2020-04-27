@@ -48,6 +48,7 @@
 	x(skcpthrt,				FSVertexBits)\
 	x(gskull4,				FSVertexBits)\
 	x(gcntr2trn,			FSVertexBits)\
+	x(gcntr2trn_m,			MapVertexBits)\
 	x(gspbdrbb,				FSVertexBits)\
 	x(gkarntwr4a,			FSVertexBits)\
 	x(gkarntwrst,			FSVertexBits)\
@@ -188,7 +189,7 @@
 	x("gothic_light/pentagram_light1_1k",	fixture,		gpntgmlt1k,	Solid,		Opaque|NeedsUV,			(1000,19,17,10))\
 	x("skin/chapthroat",					Lmapped,		skcpthrt,	Solid,		Opaque,					(0))\
 	x("gothic_wall/skull4",					Lmapped,		gskull4,	Solid,		Opaque,					(0))\
-	x("gothic_floor/center2trn",			Lmapped,		gcntr2trn,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_floor/center2trn",			gcntr2trn_m,	gcntr2trn,	Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahell_750",				lava,			White,		Solid,		Opaque,					(500,16,5,2))\
 	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
 	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\

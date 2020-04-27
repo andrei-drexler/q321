@@ -755,3 +755,4 @@
 40850,center2trn wip
 41020,more center2trn
 41151,and more
+41229,center2trn alpha + animation
