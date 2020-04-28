@@ -758,3 +758,4 @@
 41229,center2trn alpha + animation
 41233,tweaked iron01_ntech3
 41225,round uv offsets to 2 instead of 4
+41228,inverted center2trn rotation/scaling

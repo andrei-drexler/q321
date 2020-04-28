@@ -1131,10 +1131,10 @@ TEXA(gcntr2trn) {
 // gothic_floor/center2trn (map shader)
 TEXA(gcntr2trn_m) {
 	vec2 p = fract(UV) - .5;
-	float b = FBMT(p * rot(Time.x * 333.) * (.8 + .2 * sin(Time.x * 61.)), vec2(53), .7, 2., 4); // 61 ~= TAU * 9.7
+	float b = FBMT(rot(Time.x * 333.) * p / (.8 + .2 * sin(Time.x * 61.)), vec2(53), .7, 2., 4); // 61 ~= TAU * 9.7
 	vec4
 		c = vec4(1. - b * vec3(0, .3, 1), 1),
-		c2 = texture(Texture0, (p * rot(Time.x * 30.) * (.8 + .2 * sin(Time.x * 1.26))) + .5); // 1.26 ~= TAU * .2
+		c2 = texture(Texture0, (rot(Time.x * 30.) * p / (.8 + .2 * sin(Time.x * 1.26))) + .5); // 1.26 ~= TAU * .2
 	c.xyz = mix(c.xyz, c2.xyz, c2.w);
 	c2 = texture(Texture0, UV);
 	c.xyz = mix(c.xyz, c2.xyz, c2.w) * Light();
