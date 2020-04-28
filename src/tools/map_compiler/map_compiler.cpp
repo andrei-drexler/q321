@@ -1444,12 +1444,6 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 
 			i16 prev = 0, value = 0;
 			for (auto& v : patch.vertices) {
-				vec3 ref;
-				if (&v == &patch.vertices[0])
-					ref = 0.f;
-				else
-					ref = (&v)[-1].pos;
-
 				switch (i) {
 				case 0:
 				case 1:
