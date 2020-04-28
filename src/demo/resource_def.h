@@ -226,8 +226,9 @@
 	x("gothic_block/killblockgeomtrn",		"gothic_block/blocks15")\
 	x("gothic_trim/metaldemonkillblock",	"gothic_block/blocks15")\
 	x("sfx/computer_blocks17",				"gothic_block/blocks15")\
-	x("gothic_trim/pitted_rust2",			"gothic_trim/pitted_rust3")\
 	x("gothic_trim/pitted_rust",			"gothic_trim/pitted_rust3")\
+	x("gothic_trim/pitted_rust2",			"gothic_trim/pitted_rust3")\
+	x("gothic_trim/pitted_rust2_trans",		"gothic_trim/pitted_rust3")\
 	x("gothic_trim/km_arena1tower4",		"gothic_wall/supportborder_blue_b")\
 	x("skin/chapthroat2",					"skin/chapthroat")\
 
