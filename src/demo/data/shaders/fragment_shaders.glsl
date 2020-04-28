@@ -1071,19 +1071,19 @@ TEX(gklblki) {
 
 	// thingmajigs
 	p.x = mod(p.x, 1./7.) - .07; // repeat 7x horizontally
-	p.y -= .2;
+	p.y -= .21;
 
-	d = circ(vec2(.75 * p.x, elongate(p.y, .09)), .033);
-	i = msk(d + .015); // inner part
 	d = circ(vec2(.75 * p.x, elongate(p.y, .1)), .033);
 	o = msk(d, .005); // outer part
+	d = circ(vec2(.75 * p.x, elongate(p.y + .005, .09)), .033);
+	i = msk(d + .015); // inner part
 	c = mix(c, RGB(83, 81, 66) * t, (o - i) * ls(.1, .3, uv.y)); // base metallic color
 	c *= 1. - ls(.17, .25, uv.y) * i; // inner shadow
-	c += sqr(tri(-.01, .015, d)) * tri(.3, .03, uv.y); // top specular
-	c *= 1. + 5. * pow(tri(-.01, .03, d), 4.) * tri(.06, .03, uv.y); // bottom specular
+	c += sqr(tri(.0, .015, d)) * tri(.32, .03, uv.y); // top specular
+	c *= 1. + 3. * pow(tri(-.01, .03, d), 4.) * tri(.09, .03, uv.y); // bottom specular
 
-	d = circ(vec2(.75 * p.x, elongate(p.y + .02, .1)), .033); // shadow distance
-	c *= 1. - msk(d, .007 + .0 * ls(.3, .0, uv.y)) * (1. - o); // outer shadow
+	d = circ(vec2(.75 * p.x, elongate(p.y + .03, .1)), .033); // shadow distance
+	c *= 1. - msk(d + .01, .02) * (1. - o); // outer shadow
 
 	if (uv.y > .09 && uv.y < .3)
 		c = add_rivet(c, vec2((abs(p.x) - .035) * 36., fract(uv.y * 36.) - .5), .1);

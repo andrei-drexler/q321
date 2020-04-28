@@ -762,3 +762,4 @@
 41405,basic slateroofc
 41604,added killblock_i
 41626,tower clip brush
+41623,tweaked killblock_i
