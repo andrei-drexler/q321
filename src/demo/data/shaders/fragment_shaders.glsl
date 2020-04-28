@@ -30,6 +30,12 @@ float R1(float i) {
 	return fract(.5 + i * PHI);
 }
 
+// smooth R1
+float SR1(float f) {
+	float i = floor(f);
+	return mix(R1(i), R1(i+1.), smoothen(f - i));
+}
+
 ////////////////////////////////////////////////////////////////
 
 float mn(vec2 v) {
@@ -1250,6 +1256,7 @@ TEX(gxstrtop4) {
 	return c;
 }
 
+// gothic_ceiling/woodceiling1a
 TEX(gwdclg1a) {
 	vec2 p = uv, q;
 	p.y *= 22.;
@@ -1266,6 +1273,7 @@ TEX(gwdclg1a) {
 	return c;
 }
 
+// gothic_ceiling/woodceiling1b_dark
 TEX(gwdclg1bd) {
 	float
 		b = FBMT(uv, vec2(13), .9, 3., 4),
@@ -1275,6 +1283,33 @@ TEX(gwdclg1bd) {
 		c = RGB(59, 48, 49) * (.7 + .6 * b);
 	c *= 1. + .5 * tri(.05, .05, ridged(x));
 	return add_rivet(c, vec2(abs(uv.x - 3./32.) - .07, mod(uv.y, .1) - .05), .004);
+}
+
+// gothic_wall/slateroofc
+TEX(gsltrfc) {
+	vec2
+		p = brick(uv, vec2(6, 4)),
+		q = fract(p),
+		u = q;
+	float
+		b = FBMT(wavy(uv -= .5, 5., .03), vec2(13), .9, 2., 3), // base fbm
+		n = NT(uv, vec2(73, 7)),
+		t = (.75 + b * b) * (.8 + .4 * SR1(uv.x * 93.)), // base texture intensity (remapped fbm)
+		r
+		;
+
+	vec3 c = vec3(.25 * t);
+	u.y += u.y * 2. -.01 - .03 * n;
+	r = length(u -= clamp(u, vec2(.49, .5), vec2(.51, 3)));
+	c *= 1.
+		- .7 * b * sqr(ls(.07, .03, abs(r - .5)))
+		+ .5 * b * tri(.35, .1, r) * sqr(ls(.2, .1, q.y))
+		- .3 * sqr(ls(.8, 1., q.y))
+		- .3 * (ls(.3, .1, q.y)) * ls(.4, .6, r)
+		+ .2 * sqr(ls(.5, .1, q.y)) * ls(.45, .4, r)
+		;
+
+	return c;
 }
 
 TEX(cable) {

@@ -57,6 +57,7 @@
 	x(gxstrtop4,			FSVertexBits)\
 	x(gwdclg1a,				FSVertexBits)\
 	x(gwdclg1bd,			FSVertexBits)\
+	x(gsltrfc,				FSVertexBits)\
 	x(gmtlbg6,				FSVertexBits)\
 	x(glrgbk3b,				FSVertexBits)\
 	x(gblks15,				FSVertexBits)\
@@ -112,6 +113,7 @@
 	x(gcntr2trn,	Shader::gcntr2trn,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1a,		Shader::gwdclg1a,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1bd,	Shader::gwdclg1bd,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gsltrfc,		Shader::gsltrfc,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlbg6,		Shader::gmtlbg6,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(glrgbk3b,		Shader::glrgbk3b,	512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gblks15,		Shader::gblks15,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -186,6 +188,7 @@
 	x("liquids/lavahellflat_400",			lavaf,			White,		Solid,		Opaque,					(400,16,5,2))\
 	x("gothic_ceiling/woodceiling1a",		Lmapped,		gwdclg1a,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_ceiling/woodceiling1b_dark",	Lmapped,		gwdclg1bd,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_wall/slateroofc",				Lmapped,		gsltrfc,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_light/pentagram_light1_1k",	fixture,		gpntgmlt1k,	Solid,		Opaque|NeedsUV,			(1000,19,17,10))\
 	x("skin/chapthroat",					Lmapped,		skcpthrt,	Solid,		Opaque,					(0))\
 	x("gothic_wall/skull4",					Lmapped,		gskull4,	Solid,		Opaque,					(0))\

@@ -66,6 +66,7 @@ void giron01nt3() { FS(); }
 void gxstrtop4() { FS(); }
 void gwdclg1a() { FS(); }
 void gwdclg1bd() { FS(); }
+void gsltrfc() { FS(); }
 void bmtsprt() { FS(); }
 void cable() { FS(); }
 void brdr11b() { FS(); }
