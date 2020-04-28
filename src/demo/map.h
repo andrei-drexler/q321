@@ -223,8 +223,8 @@ NOINLINE PackedMap::PatchVertex PackedMap::GetPatchVertex(Patch& patch, u32 vert
 	v.pos[0] = patch.delta.pos[0];
 	v.pos[1] = patch.delta.pos[1];
 	v.pos[2] = patch.delta.pos[2];
-	v.uv[0] = patch.delta.uv[0] / 256.f;
-	v.uv[1] = patch.delta.uv[1] / 256.f;
+	v.uv[0] =  patch.delta.uv[0] / 256.f;
+	v.uv[1] = -patch.delta.uv[1] / 256.f; // flip upside-down
 
 	return v;
 }
