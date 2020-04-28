@@ -760,3 +760,4 @@
 41225,round uv offsets to 2 instead of 4
 41228,inverted center2trn rotation/scaling
 41405,basic slateroofc
+41604,added killblock_i

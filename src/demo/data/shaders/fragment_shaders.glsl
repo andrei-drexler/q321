@@ -74,6 +74,10 @@ float onion(float x, float s) {
 	return abs(x) - s;
 }
 
+float elongate(float x, float s) {
+	return sign(x) * max(0., abs(x) - s);
+}
+
 ////////////////////////////////////////////////////////////////
 
 vec2 safe_normalize(vec2 v) {
@@ -1036,6 +1040,54 @@ TEX(gblks15) {
 	c *= 1. + e * b * (d.y - .5) * .7;
 	c *= .9 + .2 * id;
 	c *= .9 + .2 * ridged(NT(uv - pt.yx, vec2(5)));
+	return c;
+}
+
+// gothic_block/killblock_i
+TEX(gklblki) {
+	float
+		b = FBMT(uv, vec2(5), .9, 3., 4), // base FBM
+		n = FBMT(uv, vec2(31, 3), .5, 3., 3), // mostly vertical noise (for drip stains)
+		t = .75 + b * b, // base texture intensity (remapped FBM)
+		d, o, i;
+
+	vec2 p = uv;
+	vec3 c = gblks15(uv);
+
+	if (uv.y > .38)
+		return c;
+
+	c = mix(RGB(92, 43, 15), RGB(66, 44, 33), ls(.1, .05, uv.y)) // base color
+		* t * (.5 + .5 * ls(.0, .35, uv.y)) // intensity
+		;
+	c +=
+		sqr(tri(.32, .015, uv.y)) * b // highlight edge
+		+ .3 * b * tri(.34, .05, uv.y) // highlight top
+		;
+	c *= 1.
+		- tri(.38, .01 + b * b * .03, uv.y) // shadow under blocks
+		+ 3. * tri(.15, .2, uv.y) * (n - .5) // dark drip stains
+		;
+
+	// thingmajigs
+	p.x = mod(p.x, 1./7.) - .07; // repeat 7x horizontally
+	p.y -= .2;
+
+	d = circ(vec2(.75 * p.x, elongate(p.y, .09)), .033);
+	i = msk(d + .015); // inner part
+	d = circ(vec2(.75 * p.x, elongate(p.y, .1)), .033);
+	o = msk(d, .005); // outer part
+	c = mix(c, RGB(83, 81, 66) * t, (o - i) * ls(.1, .3, uv.y)); // base metallic color
+	c *= 1. - ls(.17, .25, uv.y) * i; // inner shadow
+	c += sqr(tri(-.01, .015, d)) * tri(.3, .03, uv.y); // top specular
+	c *= 1. + 5. * pow(tri(-.01, .03, d), 4.) * tri(.06, .03, uv.y); // bottom specular
+
+	d = circ(vec2(.75 * p.x, elongate(p.y + .02, .1)), .033); // shadow distance
+	c *= 1. - msk(d, .007 + .0 * ls(.3, .0, uv.y)) * (1. - o); // outer shadow
+
+	if (uv.y > .09 && uv.y < .3)
+		c = add_rivet(c, vec2((abs(p.x) - .035) * 36., fract(uv.y * 36.) - .5), .1);
+
 	return c;
 }
 

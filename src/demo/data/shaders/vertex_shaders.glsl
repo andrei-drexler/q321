@@ -52,6 +52,7 @@ void mtlbk03() { FS(); }
 void gmtlbg6() { FS(); }
 void glrgbk3b() { FS(); }
 void gblks15() { FS(); }
+void gklblki() { FS(); }
 void gtprst3() { FS(); }
 void skcpthrt() { FS(); }
 void gskull4() { FS(); }
