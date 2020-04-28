@@ -766,3 +766,4 @@
 41673,added blocks18c variant
 41676,size-optimized
 41671,undo + minor tweak
+41740,added blocks17floor2

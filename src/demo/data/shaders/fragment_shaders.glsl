@@ -1001,6 +1001,28 @@ TEX(gmtlbg6) {
 	return c;
 }
 
+vec3 gblks17f2_layer(vec3 c, vec3 k, vec2 uv, int w, int h) {
+	float b = FBMT(uv, vec2(w, h), .5, 2., 2);
+	c *= 1. - .15 * sqr(ls(.15, .1, abs(b - .5)));
+	return mix(c, k, tri(.5, .1, b));
+}
+
+// gothic_floor/blocks17floor2
+TEX(gblks17f2) {
+	float
+		b = FBMT(uv, vec2(13), .9, 3., 4),
+		n = FBMT(uv, vec2(7), .9, 3., 4);
+	vec3
+		c = mix(RGB(111, 66, 55), RGB(80, 55, 52), sqr(ls(.8, .2, n))) * (.8 + .8 * b * b),
+		k = c; // layer color
+	uv = wavy(uv, 13., .01);
+	int i = 0, l[] = int[](13, 43, 17, 47, 23, 59, 27, 63); // same values as in gmtlbg6
+	b = FBMT(uv, vec2(19), .7, 2., 4);
+	for (/**/; i < 6; i += 2) // note: not using all layers!
+		c = gblks17f2_layer(c, k, uv, l[i], l[i+1]);
+	return c;
+}
+
 TEX(glrgbk3b) {
 	float
 		b = FBMT(wavy(uv, 5., .02), vec2(5), 1., 3., 5),
@@ -1226,6 +1248,7 @@ TEX(gtprst3) {
 	return c;
 }
 
+// skin/chapthroat
 TEX(skcpthrt) {
 	float b = FBMT(wavy(uv, 7., .01), vec2(9), .7, 2., 4);
 	vec3 c = RGB(127, 70, 55) * (.85 + .3 * b);

@@ -64,6 +64,7 @@
 	x(gblks18c,				FSVertexBits)\
 	x(gklblki,				FSVertexBits)\
 	x(gtprst3,				FSVertexBits)\
+	x(gblks17f2,			FSVertexBits)\
 	x(gmtlspsld,			FSVertexBits)\
 	x(gmtlsp4b,				FSVertexBits)\
 	x(bmtsprt,				FSVertexBits)\
@@ -122,6 +123,7 @@
 	x(gblks18c,		Shader::gblks18c,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gklblki,		Shader::gklblki,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gtprst3,		Shader::gtprst3,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gblks17f2,	Shader::gblks17f2,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlspsld,	Shader::gmtlspsld,	128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlsp4b,		Shader::gmtlsp4b,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gspbdrbb,		Shader::gspbdrbb,	64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -182,6 +184,7 @@
 	x("gothic_block/blocks15",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
 	x("gothic_block/blocks18c",				Lmapped,		gblks18c,	Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust3",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
+	x("gothic_floor/blocks17floor2",		Lmapped,		gblks17f2,	Solid,		Opaque,					(0))\
 	x("gothic_trim/metalsupsolid",			Lmapped,		gmtlspsld,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/metalsupport4b",			Lmapped,		gmtlsp4b,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/supportborder_blue_b",	Lmapped,		gspbdrbb,	Solid,		Opaque|NeedsUV,			(0))\
