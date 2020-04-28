@@ -9,6 +9,7 @@ var options = {
 };
 ////////////////////////////////////////////////////////////////
 
+var debugMissingSymbol;// = "bS";
 var startTime = new Date();
 
 function repeat(str, count) {
@@ -127,7 +128,7 @@ for (var srcIndex in srcPaths) {
 			'sampler3D','samplerCube','sampler2DShadow','samplerCubeShadow','sampler2DArray','uniform','const','in','out','inout','layout',
 			'location','main','if','else','for','while','do','switch','case','default','break','continue','return','discard',
 			'texture','textureLod','textureProj','texelFetch','textureGrad','textureSize','floor','round','fract','mod','sin','asin','cos',
-			'acos','tan','atan','radians','degrees','mix','smoothstep','step','abs','max','min','clamp','reflect','normalize','length','sqrt',
+			'acos','tan','atan','radians','degrees','mix','smoothstep','step','abs','sign','max','min','clamp','reflect','normalize','length','sqrt',
 			'pow','exp','exp2','log','log2','dot','fwidth','dFdx','dFdy',
 			'any','all','not','equal','notEqual','lessThan','lessThanEqual','greaterThan','greaterThanEqual',
 			'gl_Position','gl_FragCoord',
@@ -256,6 +257,9 @@ for (var srcIndex in srcPaths) {
 			replacement = nextSafeString(replacement);
 			if (replacement.length > ident.length)
 				continue;
+			if (replacement === debugMissingSymbol) {
+				WScript.Echo(ident + " => " + replacement);
+			}
 			if (needsMacro(ident)) {
 				var macroMatch = source.match(RegExp('#define ' + ident + '\\b'));
 				if (macroMatch) {
