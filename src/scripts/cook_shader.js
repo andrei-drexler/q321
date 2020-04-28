@@ -26,8 +26,21 @@ function padRight(str, count) {
 	return str + repeat(" ", count - str.length);
 }
 
+function time(name, code) {
+	var t0 = new Date();
+	var result = code();
+	var t1 = new Date();
+	var msec = (t1 - t0).valueOf();
+	if ("name" in timings)
+		timings[name] += msec;
+	else
+		timings[name] = msec;
+	return result;
+}
+
 ////////////////////////////////////////////////////////////////
 
+var timings = {};
 var srcPaths = [];
 var dstPath;
 
@@ -254,9 +267,15 @@ for (var srcIndex in srcPaths) {
 				continue;
 			if (identSavings[ident] < 1)
 				continue;
-			replacement = nextSafeString(replacement);
 			if (replacement.length > ident.length)
 				continue;
+			var backup = replacement;
+			replacement = nextSafeString(replacement);
+			if (replacement.length > ident.length) {
+				// don't waste a perfectly fine id string
+				replacement = backup;
+				continue;
+			}
 			if (replacement === debugMissingSymbol) {
 				WScript.Echo(ident + " => " + replacement);
 			}
@@ -284,8 +303,8 @@ for (var srcIndex in srcPaths) {
 	
 	var finalSize = source.length;
 	var relativeSize = finalSize / initialSize;
-	source = source.replace(/^(.*)$/gm, '"$1\\n"');
-	source = source.replace(/\\n\"$/g, '"');
+	source = source.replace(/^(.*)$/gm, '"$1\\n"'); // escape newlines
+	source = source.replace(/\\n\"$/g, '"'); // remove trailing newline
 	
 	var stats = srcPaths[srcIndex] + ": " + initialSize + " => " + finalSize + " (" + (100 * relativeSize).toFixed(1) + "%)";
 	if (dstPath)
@@ -309,5 +328,9 @@ if (dstPath) {
 }
 
 var endTime = new Date();
-if (dstPath)
+if (dstPath) {
 	WScript.Echo((endTime - startTime).valueOf() + " msec elapsed");
+	for (var stage in timings) {
+		WScript.Echo("   " + stage + ": " + timings[stage] + " msec");
+	}
+}
