@@ -763,3 +763,6 @@
 41604,added killblock_i
 41626,tower clip brush
 41623,tweaked killblock_i
+41673,added blocks18c variant
+41676,size-optimized
+41671,undo + minor tweak

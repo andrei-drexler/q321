@@ -1043,6 +1043,14 @@ TEX(gblks15) {
 	return c;
 }
 
+// gothic_block/blocks18c
+TEX(gblks18c) {
+	float b = FBMT(uv, vec2(13, 1), .7, 2., 3); // mostly vertical noise
+	vec3 c = gblks15(uv) * .7; // base texture, slightly darkened
+	c *= 1. - sqr(ls(.4, 1., b)); // dark drip stains
+	return c;
+}
+
 // gothic_block/killblock_i
 TEX(gklblki) {
 	float
