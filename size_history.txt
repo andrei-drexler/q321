@@ -761,3 +761,4 @@
 41228,inverted center2trn rotation/scaling
 41405,basic slateroofc
 41604,added killblock_i
+41626,tower clip brush
