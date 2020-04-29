@@ -1474,9 +1474,11 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 u32 ReadSkyLight(const Map& map) {
 	auto prop = map.World().GetProperty("_skylight");
 	i32 r, g, b;
-	if (ParseValue(prop, r) && ParseValue(prop, g) && ParseValue(prop, b))
-		return r | (g << 8) | (b << 16);
-	return 0;
+	if (!ParseValue(prop, r))
+		return 0;
+	if (!ParseValue(prop, g) || !ParseValue(prop, b))
+		g = b = r;
+	return r | (g << 8) | (b << 16);
 }
 
 void WriteLights
