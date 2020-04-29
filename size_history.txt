@@ -769,3 +769,5 @@
 41740,added blocks17floor2
 41734,remapped pitted_rust2_trans
 41738,flipped patch uvs vertically
+41767,more robust printf
+41737,macro next_arg in release

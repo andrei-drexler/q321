@@ -21,10 +21,22 @@ namespace Sys {
 	void						Log(const char* text);
 	void						DebugLog(const char* text);
 
-	void						PrintfEx(const char* format, const void* const* args, size_t count);
+	namespace Details {
+		union PrintArg {
+			int i;
+			float f;
+			const char* s;
+
+			PrintArg(int i) : i(i) { }
+			PrintArg(float f) : f(f) { }
+			PrintArg(const char* s) : s(s) { }
+		};
+	}
+
+	void						PrintfEx(const char* format, const Details::PrintArg* args, size_t count);
 
 	template <typename... Args>
-	FORCEINLINE void			Printf(const char* format, const Args&... args) { const void* list[] = {&args...}; PrintfEx(format, list, sizeof...(Args)); }
+	FORCEINLINE void			Printf(const char* format, const Args&... args) { const Details::PrintArg list[] = {args...}; PrintfEx(format, list, sizeof...(Args)); }
 	FORCEINLINE void			Printf(const char* format) { Log(format); }
 
 	void						Breakpoint();
@@ -181,17 +193,18 @@ bool Sys::FileExists(const char* path) {
 	return true;
 }
 
-NOINLINE void Sys::PrintfEx(const char* format, const void* const* args, size_t count) {
+NOINLINE void Sys::PrintfEx(const char* format, const Details::PrintArg* args, size_t count) {
 	const size_t BufferSize = 4096;
 	char buffer[BufferSize];
 
-	auto next_arg = [&] () {
+#ifdef DEV
+	auto NEXT_ARG = [&] () {
 		assert(count--);
-		return *args++;
+		return args++;
 	};
-
-	#define ARG_PTR(type)		((type const*)next_arg())
-	#define ARG(type)			(*ARG_PTR(type))
+#else
+	#define NEXT_ARG() (args++)
+#endif
 
 	size_t write_cursor = 0;
 	while (*format) {
@@ -207,13 +220,13 @@ NOINLINE void Sys::PrintfEx(const char* format, const void* const* args, size_t 
 		if (*format == '%') {
 			++format;
 			if (*format == 'd') {
-				IntToString(ARG(i32), buffer);
+				IntToString(NEXT_ARG()->i, buffer);
 				Log(buffer);
 			} else if (*format == 'f') {
-				FloatToString(ARG(float), buffer);
+				FloatToString(NEXT_ARG()->f, buffer);
 				Log(buffer);
 			} else if (*format == 's') {
-				Log(ARG_PTR(char));
+				Log(NEXT_ARG()->s);
 			} else if (*format == '%') {
 				Log("%");
 			} else if (*format == '\0') {
@@ -223,9 +236,6 @@ NOINLINE void Sys::PrintfEx(const char* format, const void* const* args, size_t 
 			++format;
 		}
 	}
-
-	#undef ARG
-	#undef ARG_PTR
 }
 
 ////////////////////////////////////////////////////////////////
