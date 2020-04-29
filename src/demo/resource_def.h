@@ -52,6 +52,7 @@
 	x(gspbdrbb,				FSVertexBits)\
 	x(gkarntwr4a,			FSVertexBits)\
 	x(gkarntwrst,			FSVertexBits)\
+	x(gkarnclma2r,			FSVertexBits)\
 	x(giron01e,				FSVertexBits)\
 	x(giron01nt3,			FSVertexBits)\
 	x(gxstrtop4,			FSVertexBits)\
@@ -129,6 +130,9 @@
 	x(gspbdrbb,		Shader::gspbdrbb,	64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkarntwr4a,	Shader::gkarntwr4a,	256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkarntwrst,	Shader::gkarntwrst,	64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	/* Note: original km_arena1columna2R texture was 66x640, but since it's only used here on a patch*/\
+	/* (which already has normalized UVs), the exact dimensions of the texture are not important.    */\
+	x(gkarnclma2r,	Shader::gkarnclma2r,64,		512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(giron01e,		Shader::giron01e,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(giron01nt3,	Shader::giron01nt3,	128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gxstrtop4,	Shader::gxstrtop4,	256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -190,6 +194,7 @@
 	x("gothic_wall/supportborder_blue_b",	Lmapped,		gspbdrbb,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/km_arena1tower4_a",		Lmapped,		gkarntwr4a,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/km_arena1tower_short",	Lmapped,		gkarntwrst,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/km_arena1columna2R",		Lmapped,		gkarnclma2r,Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/iron01_e",				Lmapped,		giron01e,	Solid,		Opaque,					(0))\
 	x("gothic_wall/iron01_ntech3",			Lmapped,		giron01nt3,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_floor/xstairtop4",			Lmapped,		gxstrtop4,	Solid,		Opaque|NeedsUV,			(0))\

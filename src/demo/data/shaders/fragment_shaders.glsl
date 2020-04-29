@@ -984,10 +984,10 @@ TEX(giron01nt3) {
 	return mix(c, c2, ls(1., .1, r));
 }
 
-vec3 gmtlbg6_layer(vec3 c, vec2 uv, int w, int h) {
+vec3 gmtlbg6_layer(vec3 c, vec3 k, vec2 uv, int w, int h) {
 	float b = FBMT(uv, vec2(w, h), .5, 2., 2);
 	c *= .9 - .3 * ls(.15, .1, abs(b - .5));
-	return mix(c, RGB(145, 140, 137), tri(.5, .1, b));
+	return mix(c, k, tri(.5, .1, b));
 }
 
 // gothic_floor/metalbridge06
@@ -997,7 +997,7 @@ TEX(gmtlbg6) {
 	float b = FBMT(uv, vec2(19), .7, 2., 4);
 	vec3 c = RGB(40, 50, 60) * (.5 + b);
 	for (/**/; i < 8; i += 2)
-		c = gmtlbg6_layer(c, uv, l[i], l[i+1]);
+		c = gmtlbg6_layer(c, RGB(145, 140, 137), uv, l[i], l[i+1]);
 	return c;
 }
 
@@ -1020,6 +1020,63 @@ TEX(gblks17f2) {
 	b = FBMT(uv, vec2(19), .7, 2., 4);
 	for (/**/; i < 6; i += 2) // note: not using all layers!
 		c = gblks17f2_layer(c, k, uv, l[i], l[i+1]);
+	return c;
+}
+
+vec3 gkarnclma2r_layer(vec3 c, vec3 k, vec2 uv, int w, int h) {
+	float b = FBMT(uv, vec2(w, h), .5, 2., 1);
+	c *= .9 - .3 * sqr(ls(.15, .1, abs(b - .5)));
+	return mix(c, k, tri(.5, .1, b));
+}
+
+// gothic_door/km_arena1columna2R
+TEX(gkarnclma2r) {
+	float
+		b = FBMT(uv, vec2(3,29), .9, 2., 4), // base FBM
+		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
+		d = abs(uv.y - .61), // distance from vertical center of helixy part
+		o = ls(.25, .24, d), // mask for flat part
+		m; // mask for threads
+	vec3
+		c = RGB(140, 127, 127), // base color
+		k = c; // branchy layer color
+	vec2
+		p = uv;
+
+	c *= 1. - .1 * ls(.85, .86, uv.y); // darken top part
+	c = t * mix(c, RGB(110, 55, 50), ls(.33, .32, uv.y)); // vary intensity, colorize bottom
+
+	p.y += p.x * .11 + b * .007; // skew
+	p.y = fract(p.y * 9.) - .5; // repeat vertically
+	m = ls(.0, .1, abs(p.y) - .2); // mask
+
+	// branchy part between the threads
+	int i = 0, l[] = int[](3, 29, 5, 37, 9, 63, 27, 63);
+	for (/**/; i < 6; i += 2)
+		c = mix(c, gkarnclma2r_layer(c, k, uv, l[i], l[i+1]), m * o); // branchy layer
+
+	c *= 1. + t * o * (
+		+ .6 * tri(.1, .1, p.y) // helix highlight
+		- .7 * tri(-.25, .3, p.y) // shadow underneath helix
+		- .5 * tri(.2, .1, p.y) // shadow above helix
+	);
+	c = mix(c, RGB(99, 66, 51) * t, tri(-.15, .1, p.y) * o); // colored reflection
+
+	// bevels at both ends of the helixy part
+	c *= 1.
+		+ tri(.36, .005, uv.y) // highlight
+		+ tri(.34, .005, uv.y) // highlight
+		+ tri(.865, .005, uv.y) // highlight
+		+ tri(.89, .01, uv.y) // highlight
+		- .5 * sqr(tri(.245, .01, d)) // shadow
+		- .7 * sqr(tri(.35, .01, uv.y)) // shadow
+		- .5 * sqr(tri(.325, .02, uv.y)) // shadow
+		- .8 * sqr(tri(.875, .02, uv.y)) // shadow
+		- .3 * sqr(tri(.9, .02, uv.y)) // shadow
+		;
+
+	c *= .3 + sqrt(ridged(uv.x)); // darken left/right sides
+
 	return c;
 }
 
