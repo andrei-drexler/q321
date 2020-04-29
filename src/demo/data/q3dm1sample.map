@@ -10016,7 +10016,7 @@ skin/tongue_trans
 // entity 77
 {
 "_color" "1.000000 0.125490 0.125490"
-"origin" "676 -76 116"
+"origin" "672 -76 116"
 "light" "15"
 "classname" "light"
 }
@@ -10030,7 +10030,7 @@ skin/tongue_trans
 // entity 79
 {
 "_color" "1.000000 0.472441 0.472441"
-"origin" "676 112 132"
+"origin" "672 112 132"
 "light" "50"
 "classname" "light"
 }
