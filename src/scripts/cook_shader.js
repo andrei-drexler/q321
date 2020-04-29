@@ -304,8 +304,7 @@ for (var srcIndex in srcPaths) {
 	
 	var finalSize = source.length;
 	var relativeSize = finalSize / initialSize;
-	source = source.replace(/^(.*)$/gm, '"$1\\n"'); // escape newlines
-	source = source.replace(/\\n\"$/g, '"'); // remove trailing newline
+	source = source.replace(/\\n$/g, ''); // remove trailing newline
 	
 	var stats = srcPaths[srcIndex] + ": " + initialSize + " => " + finalSize + " (" + (100 * relativeSize).toFixed(1) + "%)";
 	if (dstPath)
@@ -314,11 +313,24 @@ for (var srcIndex in srcPaths) {
 	output += "\n";
 	output += "// " + stats + "\n";
 	output += "const char g_" + fso.GetBaseName(srcPaths[srcIndex]) + "[] =\n";
-	for (var offset = 0; offset < source.length; offset += maxLiteralLength) {
-		var part = source.substring(offset, Math.min(offset + maxLiteralLength, source.length));
-		if (offset != 0)
-			output += '\"/*continued on next line*/\n/*cont.*/\"';
-		output += part;
+
+	for (var offset = 0; offset < source.length; ) {
+		var newline = source.indexOf('\n', offset);
+		var end = newline == -1 ? source.length : newline;
+		end = Math.min(offset + maxLiteralLength, end);
+		var part = source.substring(offset, end);
+		if (offset != 0) {
+			if (source.charCodeAt(offset - 1) != 10)
+				output += '/*continued on next line*/\n/*cont.*/';
+			else
+				output += '\n';
+		}
+		offset = end;
+		if (newline == end) {
+			part += '\\n';
+			++offset;
+		}
+		output += '"' + part + '"';
 	}
 	output += ";\n";
 }
