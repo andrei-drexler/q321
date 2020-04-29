@@ -774,3 +774,4 @@
 41946,added basic km_arena1columna2R
 41963,fixed 2 asymmetric lights in dm1
 42021,tweaked light levels
+42012,tweaked iron01_e and iron01_ntech3

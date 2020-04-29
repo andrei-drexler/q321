@@ -861,16 +861,14 @@ TEX(mtlbk03) {
 
 // gothic_wall/iron01_e
 TEX(giron01e) {
-	float
-		b = FBMT(uv, vec2(5), .9, 3., 4),
-		l = .18 * (.7 + b * b);
+	float b = FBMT(uv, vec2(5), .9, 3., 4);
 	vec3
 		c = mix(RGB(77, 55, 53), RGB(62, 48, 48), NT(uv, vec2(128, 13))) * (.7 + b * b),
 		g;
 	uv = wavy(uv, 13., .007);
 	EVAL_GRAD(
 		g, uv,
-		sqr(ls(.6 + b * .3, .95, NT(p[i], vec2(47,23))))
+		sqr(ls(.4 + b * .4, .95, NT(p[i], vec2(63, 43))))
 	);
 	c *= ls(1.3, .9, g.z);
 	return vec3(c * (1. + g.y * g.z));
@@ -879,10 +877,6 @@ TEX(giron01e) {
 float fender(vec2 uv, vec2 s) {
 	uv.y = max(uv.y, 0.);
 	return elips(uv, s);
-}
-
-vec3 techno(vec2 uv) {
-	return vec3(.06 + .1 * H(uv * 133.7));
 }
 
 vec3 add_techpipe(vec3 c, vec3 b, vec2 uv, float h, float s) {
@@ -907,8 +901,8 @@ TEX(giron01nt3) {
 
 	float
 		b = FBMT(uv * vec2(2, 1), vec2(3, 5), .9, 3., 4), // base FBM, tileable
-		n = .8 + .8 * b * b, // texture intensity
-		t = uv.y + .2 * min(.5, tri(.5, .375, fract(uv.x * 4.))), // top alternating pattern
+		n = .75 + b * b, // texture intensity
+		t = uv.y + .2 * min(.4, tri(.5, .33, fract(uv.x * 4.))), // top alternating pattern
 		f1 = fender(uv - vec2(.25, .62), vec2(3, 2) / 32.),
 		f2 = fender(uv - vec2(.25, .55), vec2(3, 2) / 48.),
 		r;
