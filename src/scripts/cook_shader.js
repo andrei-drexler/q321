@@ -9,6 +9,7 @@ var options = {
 };
 ////////////////////////////////////////////////////////////////
 
+var maxLiteralLength = 8192;
 var debugMissingSymbol;// = "bS";
 var startTime = new Date();
 
@@ -313,7 +314,13 @@ for (var srcIndex in srcPaths) {
 	output += "\n";
 	output += "// " + stats + "\n";
 	output += "const char g_" + fso.GetBaseName(srcPaths[srcIndex]) + "[] =\n";
-	output += source + ";\n";
+	for (var offset = 0; offset < source.length; offset += maxLiteralLength) {
+		var part = source.substring(offset, Math.min(offset + maxLiteralLength, source.length));
+		if (offset != 0)
+			output += '\"/*continued on next line*/\n/*cont.*/\"';
+		output += part;
+	}
+	output += ";\n";
 }
 
 ////////////////////////////////////////////////////////////////
