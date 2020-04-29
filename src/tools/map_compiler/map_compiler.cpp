@@ -1677,7 +1677,7 @@ void WriteLights
 				}
 
 				const float
-					AreaScale		= 0.25f / 7500.f / 2.f,
+					AreaScale		= 0.25f / 7500.f,
 					SurfaceOffset	= 4.f
 				;
 

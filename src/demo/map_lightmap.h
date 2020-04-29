@@ -6,7 +6,7 @@ namespace Demo {
 	namespace Lightmap {
 		/* Lighting parameters */
 		constexpr float
-			PointScale		= 7500.f * 3.f,
+			PointScale		= 7500.f * 2.f,
 			ThreshIgnore	= 2.f,
 			SurfaceBias		= 4.f,
 			SkyRayLength	= 8192.f
@@ -462,9 +462,6 @@ void Map::ComputeLighting(bool shadows) {
 							}
 						}
 					}
-
-					if (!params->shadows)
-						accum *= 0.75f;
 
 					// maintain hue instead of clamping to white
 					float max_value = max_component(accum);

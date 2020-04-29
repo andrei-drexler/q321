@@ -627,7 +627,7 @@ vec3 Light() {
 	float
 		b = FBMT(d.xy/256.*rot(Cam.w), vec2(3), .7, 3., 4),
 		l = 1. - ls(14., -6., length(d.xy) - b * 8.) * ls(128., 48., d.z) * step(.1, Nor.z);
-	return texture(Texture1, LUV).xyz * 3. * l;
+	return texture(Texture1, LUV).xyz * 2. * l;
 }
 
 // $protect ^void[ \t]+([_a-zA-Z][_a-zA-Z0-9]*)\(\)
