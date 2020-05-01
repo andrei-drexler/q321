@@ -775,3 +775,4 @@
 41963,fixed 2 asymmetric lights in dm1
 42021,tweaked light levels
 42012,tweaked iron01_e and iron01_ntech3
+42012,separate tangent frame function

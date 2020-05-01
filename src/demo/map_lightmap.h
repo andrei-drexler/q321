@@ -313,6 +313,23 @@ void ParallelFor(u32 count, void* data, void (*work)(u32 begin, u32 end, void* d
 		Sys::JoinThread(workers[batch_index]);
 }
 
+FORCEINLINE void ComputeTangentFrame(const vec3& z, vec3& x, vec3& y) {
+	// find normal component with smallest magnitude
+	vec3 abs_z = abs(z);
+	int next_axis = 0;
+	if (abs_z[1] < abs_z[0])
+		next_axis = 1;
+	if (abs_z[2] < abs_z[next_axis])
+		next_axis = 2;
+
+	// setup tangent frame
+	MemSet(&x);
+	x[next_axis] = 1.f;
+	cross(z, x, y);
+	normalize(y);
+	cross(z, y, x);
+}
+
 void Map::ComputeLighting(bool shadows) {
 	using namespace Demo;
 
@@ -418,21 +435,8 @@ void Map::ComputeLighting(bool shadows) {
 							skylight.g = ((source->skylight >>  8) & 255) / float(Lightmap::NumSkySamples);
 							skylight.b = ((source->skylight >> 16) & 255) / float(Lightmap::NumSkySamples);
 
-							// find normal component with smallest magnitude
-							vec3 abs_nor = abs(nor);
-							int next_axis = 0;
-							if (abs_nor[1] < abs_nor[0])
-								next_axis = 1;
-							if (abs_nor[2] < abs_nor[next_axis])
-								next_axis = 2;
-
-							// setup tangent frame
 							vec3 x_axis, y_axis;
-							MemSet(&x_axis);
-							x_axis[next_axis] = 1.f;
-							cross(nor, x_axis, y_axis);
-							normalize(y_axis);
-							cross(nor, y_axis, x_axis);
+							ComputeTangentFrame(nor, x_axis, y_axis);
 
 							// sample aligned hemisphere with a cosine distribution using the R2 sequence
 							// http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/
