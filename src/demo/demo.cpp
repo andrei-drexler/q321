@@ -267,11 +267,15 @@ namespace Demo {
 
 	u32 g_screenshot_index;
 
-	constexpr char ScreenshotPrefix[] = "screenshot_";
+	constexpr char ScreenshotFolder[] = "screenshots";
+	constexpr char ScreenshotPrefix[] = "screenshots/screenshot_";
 	constexpr char ScreenshotSuffix[] = ".tga";
 
 	void TakeScreenshot() {
-		char file_name[32];
+		if (!Sys::CreateFolder(ScreenshotFolder))
+			return;
+
+		char file_name[64];
 		MemCopy(file_name, ScreenshotPrefix, size(ScreenshotPrefix) - 1);
 		do {
 			MemCopy(IntToString(++g_screenshot_index, file_name + (size(ScreenshotPrefix) - 1)), ScreenshotSuffix, size(ScreenshotSuffix));
@@ -283,7 +287,7 @@ namespace Demo {
 
 		i32 width = Sys::g_window.width;
 		i32 height = Sys::g_window.height;
-		u32* pixels = (u32*)Sys::Alloc(width * height * sizeof(u32));
+		u32* pixels = Sys::Alloc<u32>(width * height);
 		Gfx::ReadBack(Gfx::Backbuffer, pixels);
 		Gfx::SaveTGA(file_name, pixels, width, height);
 		Sys::Free(pixels);

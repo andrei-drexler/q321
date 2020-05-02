@@ -338,7 +338,7 @@ namespace Win32 {
 
 FORCEINLINE Sys::File::Handle Sys::OpenFile(const char* path, File::Mode mode) {
 	const DWORD* arg = Win32::FileOpenParams[mode == File::Write];
-	HANDLE handle = CreateFileA(path, arg[0], arg[1], NULL, arg[2], FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE handle = ::CreateFileA(path, arg[0], arg[1], NULL, arg[2], FILE_ATTRIBUTE_NORMAL, NULL);
 	return {(void*)handle};
 }
 
@@ -348,7 +348,7 @@ FORCEINLINE bool Sys::IsOpen(File::Handle file) {
 
 FORCEINLINE void Sys::CloseFile(File::Handle& file) {
 	if ((HANDLE)file.data != INVALID_HANDLE_VALUE) {
-		CloseHandle((HANDLE)file.data);
+		::CloseHandle((HANDLE)file.data);
 		file.data = (void*)INVALID_HANDLE_VALUE;
 	}
 }
@@ -367,6 +367,10 @@ FORCEINLINE bool Sys::WriteToFile(File::Handle file, const void* buffer, u32 siz
 	if (written)
 		*written = bytes_written;
 	return result != FALSE;
+}
+
+FORCEINLINE bool Sys::CreateFolder(const char* name) {
+	return ::CreateDirectoryA(name, NULL) || ::GetLastError() == ERROR_ALREADY_EXISTS;
 }
 
 ////////////////////////////////////////////////////////////////
