@@ -777,3 +777,4 @@
 42012,tweaked iron01_e and iron01_ntech3
 42012,separate tangent frame function
 42009,separated r2/cosine hemisphere code
+42009,tweaked flame shader
