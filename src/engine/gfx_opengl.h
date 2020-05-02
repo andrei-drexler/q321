@@ -773,6 +773,15 @@ void Gfx::DrawFullScreen() {
 	Draw(FSMesh);
 }
 
+FORCEINLINE void Gfx::Present() {
+#ifdef _WIN32
+	HWND hwnd = (HWND)Sys::g_window.handle;
+	HDC hdc = GetDC(hwnd);
+	SwapBuffers(hdc);
+	// Note: no need to call ReleaseDC due to CS_OWNDC flag
+#endif // _WIN32
+}
+
 FORCEINLINE void Gfx::Sync() {
 	glFinish();
 }

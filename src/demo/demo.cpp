@@ -258,6 +258,7 @@ namespace Demo {
 		frame.shadow_angle	= g_player.shadow_angle;
 		frame.render_target	= Gfx::Backbuffer;
 
+		Gfx::Sync();
 		RenderWorld(frame);
 		RenderDebug();
 	}
@@ -310,10 +311,6 @@ namespace Demo {
 		using Event = Sys::Window::Event;
 
 		switch (event.type) {
-			case Event::Paint:
-				RenderFrame();
-				return;
-
 			case Event::KeyUp:
 				if (event.data.key_down.code == Key::Escape)
 					Sys::Exit();
@@ -396,7 +393,8 @@ int FORCEINLINE demo_main() {
 		Demo::Tick(Demo::g_time - last_tick);
 		last_tick = Demo::g_time;
 
-		Sys::RedrawWindow(&Sys::g_window);
+		Demo::RenderFrame();
+		Gfx::Present();
 
 		float fps = Demo::com_maxFps.value;
 		if (fps == 0.f)

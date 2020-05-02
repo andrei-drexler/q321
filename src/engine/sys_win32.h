@@ -149,9 +149,6 @@ namespace Win32 {
 				BeginPaint(hWnd, &ps);
 				event.type = Event::Type::Paint;
 				window->on_event(event);
-				SwapBuffers(ps.hdc);
-				// trade off some performance for lower input lag
-				Gfx::Sync();
 				EndPaint(hWnd, &ps);
 				return 0;
 			}

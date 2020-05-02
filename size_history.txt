@@ -778,3 +778,4 @@
 42012,separate tangent frame function
 42009,separated r2/cosine hemisphere code
 42009,tweaked flame shader
+41951,more game-like render loop

@@ -251,6 +251,7 @@ namespace Gfx {
 	void DrawFullScreen();
 	void Draw(const Mesh& mesh);
 	
+	void Present();
 	void Sync();
 	
 	vec2 GetResolution();
