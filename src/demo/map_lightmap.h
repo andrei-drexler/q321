@@ -330,6 +330,35 @@ FORCEINLINE void ComputeTangentFrame(const vec3& z, vec3& x, vec3& y) {
 	cross(z, y, x);
 }
 
+// http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/
+namespace R2 {
+	static constexpr float
+		G = 1.324718,
+		X = 1.f / G,
+		Y = 1.f / (G * G);
+
+	struct CosineHemisphere {
+		float u = 0.5f;
+		float v = Math::PI;
+
+		vec3 NextSample() {
+
+			float cos_theta = sqrt(1.f - fract(u));
+			float sin_theta = sqrt(1.f - cos_theta * cos_theta);
+			float phi = v;
+
+			u += R2::X;
+			v += R2::Y * Math::TAU;
+
+			return {
+				sin_theta * cos(phi),
+				sin_theta * sin(phi),
+				cos_theta
+			};
+		}
+	};
+} // namespace R2
+
 void Map::ComputeLighting(bool shadows) {
 	using namespace Demo;
 
@@ -438,28 +467,17 @@ void Map::ComputeLighting(bool shadows) {
 							vec3 x_axis, y_axis;
 							ComputeTangentFrame(nor, x_axis, y_axis);
 
-							// sample aligned hemisphere with a cosine distribution using the R2 sequence
-							// http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/
-
-							constexpr float
-								G = 1.324718,
-								R2x = 1.f / G,
-								R2y = 1.f / (G * G);
-
-							float u = 0.5f;
-							float phi = Math::PI;
-
-							for (u16 i = 0; i < Lightmap::NumSkySamples; ++i, u += R2x, phi += (R2y * Math::TAU)) {
-								float cos_theta = sqrt(1.f - fract(u));
-								float sin_theta = sqrt(1.f - cos_theta * cos_theta);
-
+							R2::CosineHemisphere hemisphere;
+							for (u16 i = 0; i < Lightmap::NumSkySamples; ++i) {
 								trace.start.x = pos.x + nor.x;
 								trace.start.y = pos.y + nor.y;
 								trace.start.z = pos.z + nor.z;
 
-								mul(trace.delta, x_axis, Lightmap::SkyRayLength * sin_theta * cos(phi));
-								mad(trace.delta, y_axis, Lightmap::SkyRayLength * sin_theta * sin(phi));
-								mad(trace.delta, nor,    Lightmap::SkyRayLength * cos_theta);
+								vec3 dir = hemisphere.NextSample();
+
+								mul(trace.delta, x_axis, Lightmap::SkyRayLength * dir.x);
+								mad(trace.delta, y_axis, Lightmap::SkyRayLength * dir.y);
+								mad(trace.delta, nor,    Lightmap::SkyRayLength * dir.z);
 
 								if (!Map::TraceRay(trace))
 									accum += skylight;
