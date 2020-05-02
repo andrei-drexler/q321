@@ -92,7 +92,7 @@ namespace Demo {
 		void				Set(Input input)			{ inputs |= InputMask(input); }
 		void				Clear(Input input)			{ inputs &= ~InputMask(input); }
 
-		void				Update(const u8* keys, float dt);
+		void				Update(float dt);
 		void				Spawn();
 	} g_player;
 
@@ -132,10 +132,10 @@ namespace Demo {
 
 #include "player_move.h"
 
-void Demo::Player::Update(const u8* keys, float dt) {
+void Demo::Player::Update(float dt) {
 	inputs = 0;
 	for (u16 i = 0; i < 256; ++i)
-		if (keys[i])
+		if (Sys::IsKeyDown(i))
 			Set(KeyBindings[i]);
 
 	const u32 MaskJump = InputMask(Input::MoveUp);

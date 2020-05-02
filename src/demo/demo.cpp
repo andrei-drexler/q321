@@ -265,22 +265,6 @@ namespace Demo {
 
 	////////////////////////////////////////////////////////////////
 
-	float g_delta_time;
-	FORCEINLINE void Tick(float dt) {
-		if (g_delta_time == 0.f)
-			g_delta_time = dt;
-		dt = mix(g_delta_time, dt, 0.125f);
-		g_delta_time = dt;
-
-		u8 key_state[256];
-		Sys::GetKeyboardState(key_state);
-
-		if (!IsLoading())
-			g_player.Update(key_state, dt);
-	}
-
-	////////////////////////////////////////////////////////////////
-
 	u32 g_screenshot_index;
 
 	constexpr char ScreenshotPrefix[] = "screenshot_";
@@ -307,34 +291,39 @@ namespace Demo {
 
 	////////////////////////////////////////////////////////////////
 
-	void HandleEvent(Sys::Window::Event& event) {
-		using Event = Sys::Window::Event;
+	float g_delta_time;
+	u8 g_key_state[256];
 
-		switch (event.type) {
-			case Event::KeyUp:
-				if (event.data.key_down.code == Key::Escape)
-					Sys::Exit();
-				else if (event.data.key_down.code == Key::PrintScreen)
-					TakeScreenshot();
-				else if (event.data.key_down.code == Key::Backspace)
-					g_player.Spawn();
-				return;
+	FORCEINLINE void Tick(float dt) {
+		assign_min(dt, 0.25f);
+		if (g_delta_time == 0.f)
+			g_delta_time = dt;
+		dt = mix(g_delta_time, dt, 0.125f);
+		g_delta_time = dt;
 
-			case Event::MouseMove: {
-				if (IsLoading())
-					return;
-				float scale = (sensitivity.value * -90.f) / event.window->height;
-				g_player.angles.x += event.data.mouse_move.pt.x * scale;
-				g_player.angles.y += event.data.mouse_move.pt.y * scale;
-				g_player.angles.x = mod(g_player.angles.x, 360.f);
-				g_player.angles.y = clamp(g_player.angles.y, -85.f, 85.f);
-				return;
-			}
+		Sys::UpdateKeyboardState();
+		if (Sys::IsKeyReleased(Key::Escape))
+			Sys::Exit();
+		if (Sys::IsKeyReleased(Key::PrintScreen))
+			TakeScreenshot();
+		if (Sys::IsKeyReleased(Key::Backspace))
+			g_player.Spawn();
 
-			default:
-				return;
+		Sys::Point mouse;
+		Sys::UpdateMouseState(mouse);
+
+		if (!IsLoading()) {
+			float mouse_scale = (sensitivity.value * -90.f) / Sys::g_window.height;
+			g_player.angles.x += mouse.x * mouse_scale;
+			g_player.angles.y += mouse.y * mouse_scale;
+			g_player.angles.x = mod(g_player.angles.x, 360.f);
+			g_player.angles.y = clamp(g_player.angles.y, -85.f, 85.f);
+
+			g_player.Update(dt);
 		}
 	}
+
+	////////////////////////////////////////////////////////////////
 
 	static constexpr auto IconDescriptor = Texture::Descriptors[Texture::icon];
 	static_assert(IconDescriptor.width == IconDescriptor.height, "Icon texture must be square");
@@ -357,7 +346,7 @@ int FORCEINLINE demo_main() {
 
 	Mem::Init();
 	Demo::Console::Init();
-	Sys::InitWindow(&Sys::g_window, Demo::HandleEvent, "Q320");
+	Sys::InitWindow(&Sys::g_window, nullptr, "Q320");
 	Sys::SetFPSMode(&Sys::g_window);
 	Demo::RegisterGfxResources();
 	Map::AllocLightmap();

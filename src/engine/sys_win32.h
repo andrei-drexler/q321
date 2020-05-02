@@ -66,6 +66,7 @@ extern "C" size_t __cdecl strlen(const char* str);
 namespace Win32 {
 	LARGE_INTEGER g_startTime;
 	double g_rcpFrequency;
+	Sys::Point g_mouse;
 
 	Sys::Point GetPoint(LPARAM lParam) {
 		return { SHORT(LOWORD(lParam)), SHORT(HIWORD(lParam)) };
@@ -144,15 +145,6 @@ namespace Win32 {
 				return 0;
 			}
 
-			case WM_PAINT: {
-				PAINTSTRUCT ps;
-				BeginPaint(hWnd, &ps);
-				event.type = Event::Type::Paint;
-				window->on_event(event);
-				EndPaint(hWnd, &ps);
-				return 0;
-			}
-
 			case WM_MOUSEMOVE: {
 				event.type = Event::Type::MouseMove;
 				auto pt = GetPoint(lParam);
@@ -169,9 +161,26 @@ namespace Win32 {
 					if ((pt.x | pt.y) == 0)
 						return 0;
 					SetCursorPos(center.x, center.y);
+					g_mouse.x += pt.x;
+					g_mouse.y += pt.y;
+				} else {
+					g_mouse.x = pt.x;
+					g_mouse.y = pt.y;
 				}
+#ifdef USE_EVENTS
 				event.data.mouse_move.pt = pt;
 				window->on_event(event);
+#endif // USE_EVENTS
+				return 0;
+			}
+
+#ifdef USE_EVENTS
+			case WM_PAINT: {
+				PAINTSTRUCT ps;
+				BeginPaint(hWnd, &ps);
+				event.type = Event::Type::Paint;
+				window->on_event(event);
+				EndPaint(hWnd, &ps);
 				return 0;
 			}
 
@@ -207,6 +216,7 @@ namespace Win32 {
 				window->on_event(event);
 				return 0;
 			}
+#endif // USE_EVENTS
 
 			case WM_ERASEBKGND:
 				return 1;
@@ -664,14 +674,23 @@ FORCEINLINE int Sys::RunApplication() {
 	return (int)msg.wParam;
 }
 
-FORCEINLINE void Sys::GetKeyboardState(u8* state) {
-	if (g_window.flags & Window::Flags::Active) {
-		::GetKeyboardState(state);
-		for (u16 i = 0; i < 256; ++i)
-			state[i] = state[i] >> 7;
-	} else {
-		MemSet(state, 0, 256);
-	}
+FORCEINLINE void Sys::UpdateKeyboardState() {
+	BYTE current_state[256];
+	if (g_window.flags & Window::Flags::Active)
+		::GetKeyboardState(current_state);
+	else
+		MemSet(current_state, 0, 256);
+
+	for (u16 i = 0; i < 256; ++i)
+		g_key_state[i] = (g_key_state[i] << 1) | (current_state[i] >> 7);
+}
+
+FORCEINLINE void Sys::UpdateMouseState(Point& pt) {
+	using namespace Win32;
+
+	pt = g_mouse;
+	if (g_window.flags & Window::Flags::FPSMode)
+		memset(&g_mouse, 0, sizeof(g_mouse));
 }
 
 ////////////////////////////////////////////////////////////////

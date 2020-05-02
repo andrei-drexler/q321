@@ -58,7 +58,7 @@ namespace Sys {
 		Middle,
 	};
 
-	struct Point {
+	struct alignas(u32) Point {
 		i16 x, y;
 	};
 
@@ -114,12 +114,22 @@ namespace Sys {
 	void RedrawWindow(Window* window);
 	void SetWindowIcon(Window* window, const u32* pixels, u16 size);
 
-	void GetKeyboardState(u8* state);
-	
 	bool PumpMessages(int* error = nullptr);
 	int RunApplication();
 
-	////////////////////////////////////////////////////////////////
+	// Mouse and keyboard //////////////////////////////////////////
+
+	u8 g_key_state[256];
+
+	FORCEINLINE bool IsKeyDown(u8 key)								{ return g_key_state[key] & 1; }
+	FORCEINLINE bool IsKeyFirstDown(u8 key)							{ return (g_key_state[key] & 3) == 1; }
+	FORCEINLINE bool IsKeyReleased(u8 key)							{ return (g_key_state[key] & 3) == 2; }
+	FORCEINLINE bool IsKeyToggled(u8 key, bool new_state = true)	{ return (g_key_state[key] & 3) == (1 << (u8)new_state); }
+
+	void UpdateKeyboardState();
+	void UpdateMouseState(Point& pt);
+
+	// Threading ///////////////////////////////////////////////////
 
 	struct Thread {
 		void*	handle;
@@ -133,7 +143,7 @@ namespace Sys {
 	void		JoinThread(Thread& thread);
 	bool		IsThreadReady(const Thread& thread);
 
-	////////////////////////////////////////////////////////////////
+	// File system /////////////////////////////////////////////////
 
 	namespace File {
 		enum Mode {
@@ -155,7 +165,7 @@ namespace Sys {
 	bool			ReadFromFile(File::Handle file, void* buffer, u32 size, u32* read = nullptr);
 	bool			WriteToFile(File::Handle file, const void* buffer, u32 size, u32* written = nullptr);
 
-	////////////////////////////////////////////////////////////////
+	// Font ////////////////////////////////////////////////////////
 
 	namespace Font {
 		enum Flags : u8 {
@@ -180,6 +190,10 @@ namespace Sys {
 
 	void RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, RectPacker& packer, Font::Glyph* glyphs);
 }
+
+////////////////////////////////////////////////////////////////
+// Implementation //////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 
 Sys::File::Handle::operator bool() const {
 	return IsOpen(*this);
