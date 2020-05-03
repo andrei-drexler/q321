@@ -138,7 +138,8 @@ namespace Sys {
 	};
 	
 	u32			GetNumCPUThreads();
-	void		Sleep(float duration);
+	void		Sleep(float seconds);
+	void		PreciseSleep(float seconds); // for main thread only
 	void		SpawnThread(Thread& thread);
 	void		JoinThread(Thread& thread);
 	bool		IsThreadReady(const Thread& thread);

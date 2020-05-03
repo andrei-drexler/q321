@@ -66,6 +66,7 @@ extern "C" size_t __cdecl strlen(const char* str);
 namespace Win32 {
 	LARGE_INTEGER g_startTime;
 	double g_rcpFrequency;
+	HANDLE g_waitable_timer;
 	Sys::Point g_mouse;
 
 	Sys::Point GetPoint(LPARAM lParam) {
@@ -539,6 +540,7 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 	QueryPerformanceCounter(&Win32::g_startTime);
 	Win32::g_rcpFrequency = 1. / frequency.QuadPart;
 	Seed(Win32::g_startTime.LowPart);
+	Win32::g_waitable_timer = ::CreateWaitableTimerA(NULL, FALSE, NULL);
 	int code = demo_main();
 	ExitProcess(code);
 }
@@ -658,8 +660,21 @@ FORCEINLINE bool Sys::PumpMessages(int* error) {
 	return true;
 }
 
-FORCEINLINE void Sys::Sleep(float duration) {
-	::Sleep(DWORD(duration * 1000.f));
+FORCEINLINE void Sys::Sleep(float seconds) {
+	::Sleep(DWORD(seconds * 1000.f));
+}
+
+// For use on main thread only
+FORCEINLINE void Sys::PreciseSleep(float seconds) {
+	LARGE_INTEGER due_time;
+	due_time.QuadPart = -seconds * 1e7f; // 100 nanosecond intervals
+	if (::SetWaitableTimer(Win32::g_waitable_timer, &due_time, 0, NULL, NULL, FALSE)) {
+		DWORD result = ::WaitForSingleObject(Win32::g_waitable_timer, INFINITE);
+		assert(result == WAIT_OBJECT_0);
+	} else {
+		assert(false);
+		//Sys::Sleep(seconds);
+	}
 }
 
 FORCEINLINE int Sys::RunApplication() {

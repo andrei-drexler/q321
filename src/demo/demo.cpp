@@ -405,7 +405,7 @@ int FORCEINLINE demo_main() {
 				next_time += interval;
 			}
 		}
-		Sys::Sleep(wait);
+		Sys::PreciseSleep(wait);
 	}
 
 	return code;
