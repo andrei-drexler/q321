@@ -534,38 +534,40 @@ vec3 pattern(vec2 p, float sc, float bv) {
 	vec2 ip = floor(p*sc), tileID = e.yy;
 	p -= (ip + .5) / sc; 
 
-	float h11 = .5 * HT(ip + e.yy, vec2(sc));
-	float h10 = .5 * HT(ip + e.xy, vec2(sc));
-	float h01 = .5 * HT(ip + e.yz, vec2(sc));
-	float h12 = .5 * HT(ip + e.zy, vec2(sc));
-	float h21 = .5 * HT(ip + e.yx, vec2(sc));
-	float h00 = .5 * HT(ip + e.xz, vec2(sc));
-	float h02 = .5 * HT(ip + e.zz, vec2(sc));
-	float h22 = .5 * HT(ip + e.zx, vec2(sc));
-	float h20 = .5 * HT(ip + e.xx, vec2(sc));
+	float
+		h11 = .5 * HT(ip + e.yy, vec2(sc)),
+		h10 = .5 * HT(ip + e.xy, vec2(sc)),
+		h01 = .5 * HT(ip + e.yz, vec2(sc)),
+		h12 = .5 * HT(ip + e.zy, vec2(sc)),
+		h21 = .5 * HT(ip + e.yx, vec2(sc)),
+		h00 = .5 * HT(ip + e.xz, vec2(sc)),
+		h02 = .5 * HT(ip + e.zz, vec2(sc)),
+		h22 = .5 * HT(ip + e.zx, vec2(sc)),
+		h20 = .5 * HT(ip + e.xx, vec2(sc));
 
 	vec2[4] ctr, l;
-	if (mod((ip.x + ip.y), 2.) < .5) { 
-		l[0] = 1. + vec2(h01 - h10, h00 - h11);
-		l[1] = 1. + vec2(-h01 + h12, h02 - h11);
-		l[2] = 1. + vec2(-h21 + h12, -h22 + h11);
-		l[3] = 1. + vec2(h21 - h10, -h20 + h11);
-		ctr[0] = vec2(h01, h11) + l[0]*vec2(-.5, .5);
-		ctr[1] = vec2(h01, h11) + l[1]*vec2(.5, .5);
-		ctr[2] = vec2(h21, h11) + l[2]*vec2(.5, -.5);
-		ctr[3] = vec2(h21, h11) + l[3]*vec2(-.5, -.5); 
+	if (mod(ip.x + ip.y, 2.) < .5) { 
+		l[0] = 1. + vec2(h21 - h10, h11 - h20);
+		l[1] = 1. + vec2(h12 - h21, h11 - h22);
+		l[2] = 1. + vec2(h01 - h10, h00 - h11);
+		l[3] = 1. + vec2(h12 - h01, h02 - h11);
+		ctr[0] = vec2(h21, h11);
+		ctr[1] = vec2(h21, h11);
+		ctr[2] = vec2(h01, h11);
+		ctr[3] = vec2(h01, h11);
 	} else { 
-		l[0] = 1. + vec2(-h00 + h11, h01 - h10);
-		l[1] = 1. + vec2(h02 - h11, h01 - h12);
-		l[2] = 1. + vec2(h22 - h11, -h21 + h12);
-		l[3] = 1. + vec2(-h20 + h11, -h21 + h10);
-		ctr[0] = vec2(h11, h10) + l[0]*vec2(-.5, .5);
-		ctr[1] = vec2(h11, h12) + l[1]*vec2(.5, .5);
-		ctr[2] = vec2(h11, h12) + l[2]*vec2(.5, -.5);
-		ctr[3] = vec2(h11, h10) + l[3]*vec2(-.5, -.5); 
+		l[0] = 1. + vec2(h11 - h20, h10 - h21);
+		l[1] = 1. + vec2(h22 - h11, h12 - h21);
+		l[2] = 1. + vec2(h11 - h00, h01 - h10);
+		l[3] = 1. + vec2(h02 - h11, h01 - h12);
+		ctr[0] = vec2(h11, h10);
+		ctr[1] = vec2(h11, h12);
+		ctr[2] = vec2(h11, h10);
+		ctr[3] = vec2(h11, h12);
 	}
 
 	for (int i=0; i<4; i++) {
+		ctr[i] += l[i] * (vec2(i&1, i/2) - .5);
 		l[i] /= sc;
 		float bx = box1(p - ctr[i]/sc, l[i]/2. - bv/sc);
 		if (bx < r.x)
