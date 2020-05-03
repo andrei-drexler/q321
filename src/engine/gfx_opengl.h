@@ -204,14 +204,6 @@ namespace GL {
 
 	////////////////////////////////////////////////////////////////
 
-	enum {
-		BufferType_Geometry,
-		BufferType_Indices,
-		BufferType_Uniform,
-
-		BufferType_Count,
-	};
-	
 	using UniformUpdateFunction				= void(GLint location, const void* data);
 
 	struct TextureState {
@@ -250,7 +242,12 @@ namespace GL {
 		u16									GetShader() { return (current_bits & MaskShaderID) >> ShiftShaderID; }
 		u16									GetRenderTarget() { return (current_bits & MaskRenderTargetID) >> ShiftRenderTargetID; }
 
-		GLuint								buffers[BufferType_Count];
+		GLuint								vbo;
+		struct Arena {
+			u32								start_offset;
+			u32								size;
+			u32								cursor;
+		}									arena[Gfx::Arena::Type::Count];
 
 		u16									num_uniforms;
 		u16									num_shaders;
@@ -297,8 +294,6 @@ FORCEINLINE void* CreateSystemRenderer(Sys::Window* window) {
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-
-	glGenBuffers(BufferType_Count, g_state.buffers);
 
 	return context;
 }
@@ -490,6 +485,50 @@ FORCEINLINE void Gfx::RegisterTextures(const Texture::Descriptor* textures, u16 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+////////////////////////////////////////////////////////////////
+
+FORCEINLINE void Gfx::InitMemory(u32 fixed_size, u32 dynamic_size) {
+	using namespace GL;
+
+	assert(g_state.vbo == 0);
+
+	u32 total_size = fixed_size + dynamic_size;
+	g_state.arena[Arena::Level].size = fixed_size;
+	g_state.arena[Arena::Dynamic].size = dynamic_size;
+	g_state.arena[Arena::Dynamic].start_offset = fixed_size;
+
+	glGenBuffers(1, &g_state.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, g_state.vbo);
+	glBufferData(GL_ARRAY_BUFFER, total_size, nullptr, GL_STREAM_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_state.vbo);
+}
+
+FORCEINLINE void Gfx::ResetArena(Arena::Type type) {
+	GL::g_state.arena[type].cursor = 0;
+}
+
+NOINLINE u32 Gfx::UploadGeometry(const void* data, u32 size, Arena::Type type) {
+	using namespace GL;
+
+	const u32 Alignment = 256;
+	size = (size + (Alignment - 1)) & ~(Alignment - 1);
+
+	State::Arena& arena = g_state.arena[type];
+	assert(size <= arena.size);
+	if (arena.cursor + size > arena.size) {
+		// wrap around
+		assert(type == Arena::Type::Dynamic);
+		arena.cursor = 0;
+	}
+
+	u32 offset = arena.start_offset + arena.cursor;
+	arena.cursor += size;
+	glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+
+	return offset + Arena::BaseOffset;
+}
+
 
 ////////////////////////////////////////////////////////////////
 
@@ -741,8 +780,10 @@ NOINLINE void Gfx::Draw(const Mesh& mesh) {
 	for (u8 attrib = 0; attrib < Vertex::MaxNumAttributes; ++attrib) {
 		if (flags & (1 << attrib)) {
 			auto& stream = mesh.vertices[attrib];
-			if (stream.data) {
-				glVertexAttribPointer(attrib, GL::AttribSizes[(u8)stream.type], GL::AttribTypes[(u8)stream.type], stream.normalized, stream.stride, stream.data);
+			if (stream.addr) {
+				assert(stream.addr >= Arena::BaseOffset);
+				const void* ptr = (const void*)(stream.addr - Arena::BaseOffset);
+				glVertexAttribPointer(attrib, GL::AttribSizes[(u8)stream.type], GL::AttribTypes[(u8)stream.type], stream.normalized, stream.stride, ptr);
 			} else {
 				Sys::DebugStream << "Invalid draw call: missing mesh stream\n";
 				Sys::Breakpoint();
@@ -752,7 +793,9 @@ NOINLINE void Gfx::Draw(const Mesh& mesh) {
 	}
 
 	if (mesh.num_indices) {
-		glDrawElements(GL_TRIANGLES, mesh.num_indices, GL_UNSIGNED_INT, mesh.indices);
+		assert(mesh.index_addr >= Arena::BaseOffset);
+		const void* ptr = (const void*)(mesh.index_addr - Arena::BaseOffset);
+		glDrawElements(GL_TRIANGLES, mesh.num_indices, GL_UNSIGNED_INT, ptr);
 	} else {
 		glDrawArrays(GL_TRIANGLES, 0, mesh.num_vertices);
 	}
@@ -765,12 +808,13 @@ void Gfx::DrawFullScreen() {
 		{-1.f,  3.f},
 	};
 	
-	static constexpr Gfx::Mesh FSMesh = {
-		{{positions}},
-		0, 3, 0,
-	};
+	Gfx::Mesh mesh;
+	MemSet(&mesh);
 
-	Draw(FSMesh);
+	mesh.vertices[0].SetData(positions, 3);
+	mesh.num_vertices = 3;
+
+	Draw(mesh);
 }
 
 FORCEINLINE void Gfx::Present() {

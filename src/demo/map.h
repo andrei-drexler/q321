@@ -175,6 +175,15 @@ namespace Map {
 	Array<u32,  MAX_NUM_MATERIALS>	mat_vertex_offset;
 	Array<u32,  MAX_NUM_MATERIALS>	num_mat_indices;
 	Array<u32,  MAX_NUM_MATERIALS>	mat_index_offset;
+	u32								num_total_vertices;
+	u32								num_total_indices;
+
+	struct {
+		u32							positions;
+		u32							texcoords;
+		u32							normals;
+		u32							indices;
+	}								gpu_addr;
 
 	void							Render();
 
@@ -346,15 +355,15 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		auto* bounds_src = packed.brush_bounds;
 
 		if (pass == 1) {
-			u32 vertex_offset = 0;
-			u32 index_offset = 0;
+			num_total_vertices = 0;
+			num_total_indices = 0;
 			for (u8 mat = 0; mat < num_materials; ++mat) {
-				mat_vertex_offset[mat] = vertex_offset;
-				vertex_offset += num_mat_verts[mat];
+				mat_vertex_offset[mat] = num_total_vertices;
+				num_total_vertices += num_mat_verts[mat];
 				num_mat_verts[mat] = 0;
 
-				mat_index_offset[mat] = index_offset;
-				index_offset += num_mat_indices[mat];
+				mat_index_offset[mat] = num_total_indices;
+				num_total_indices += num_mat_indices[mat];
 				num_mat_indices[mat] = 0;
 			}
 		}
@@ -608,9 +617,6 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		LoadPatches(packed, pass);
 	}
 
-	u32 total_verts = 0;
-	u32 total_indices = 0;
-
 	MemSet(&normals);
 
 	for (u8 material = 0; material < num_materials; ++material) {
@@ -618,13 +624,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		vec3* nor = normals + mat_vertex_offset[material];
 		u32* idx = indices + mat_index_offset[material];
 
-		u32 num_verts = num_mat_verts[material];
-		u32 num_indices = num_mat_indices[material];
-
-		total_verts += num_verts;
-		total_indices += num_indices;
-
-		for (u32 i = 0; i < num_indices; i += 3, idx += 3) {
+		for (u32 i = 0; i < num_mat_indices[material]; i += 3, idx += 3) {
 			constexpr u8 Next[] = {1, 2, 0, 1};
 			for (u8 j = 0; j < 3; ++j) {
 				u32 i0 = idx[j];
@@ -634,12 +634,12 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 			}
 		}
 
-		for (u32 i = 0; i < num_verts; ++i)
+		for (u32 i = 0; i < num_mat_verts[material]; ++i)
 			safe_normalize(nor[i]);
 	}
 
-	assert(total_verts <= MAX_NUM_VERTS);
-	assert(total_indices <= MAX_NUM_INDICES);
+	assert(Map::num_total_vertices <= MAX_NUM_VERTS);
+	assert(Map::num_total_indices <= MAX_NUM_INDICES);
 
 	/* Recompute the planes to match the (snapped) rendered geometry */
 	if (RecomputePlanes) {
@@ -661,6 +661,12 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 	CreatePartition();
 	PackLightmap();
 	ComputeLighting(false);
+
+	Gfx::ResetArena(Gfx::Arena::Level);
+	gpu_addr.positions = Gfx::UploadGeometry(&positions[0], num_total_vertices, Gfx::Arena::Level);
+	gpu_addr.texcoords = Gfx::UploadGeometry(&texcoords[0], num_total_vertices, Gfx::Arena::Level);
+	gpu_addr.normals   = Gfx::UploadGeometry(&normals[0],   num_total_vertices, Gfx::Arena::Level);
+	gpu_addr.indices   = Gfx::UploadGeometry(&indices[0],   num_total_indices,  Gfx::Arena::Level);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -679,19 +685,18 @@ void Map::Render() {
 
 	auto num_materials = min<u8>(size(Material::Properties), Map::num_materials);
 	for (u8 material = 0; material < num_materials; ++material) {
-		auto draw = Material::Properties[material] & Material::MaskVisibility;
+		auto visibility = Material::Properties[material] & Material::MaskVisibility;
 
 #ifndef DRAW_CLIPPING
-		if (draw == Material::Invisible)
+		if (visibility == Material::Invisible)
 			continue;
 #endif
-
 		auto offset = mat_vertex_offset[material];
-		mesh.vertices[Attrib::Position	].SetData(offset + positions);
-		mesh.vertices[Attrib::TexCoord	].SetData(offset + texcoords);
-		mesh.vertices[Attrib::Normal	].SetData(offset + normals);
-		
-		mesh.indices			= indices + mat_index_offset[material];
+		mesh.vertices[Attrib::Position	].SetData<vec3>(gpu_addr.positions, offset);
+		mesh.vertices[Attrib::TexCoord	].SetData<vec4>(gpu_addr.texcoords, offset);
+		mesh.vertices[Attrib::Normal	].SetData<vec3>(gpu_addr.normals, offset);
+
+		mesh.index_addr			= gpu_addr.indices + mat_index_offset[material] * sizeof(u32) ;
 		mesh.num_vertices		= num_mat_verts[material];
 		mesh.num_indices		= num_mat_indices[material];
 
@@ -699,11 +704,11 @@ void Map::Render() {
 			continue;
 
 		Gfx::SetShader(MaterialShaders[material]);
-		
+
 		Uniform::Time.w = material;
 		Uniform::Texture0 = MaterialTextures[material];
 		Uniform::Texture1 = Texture::Lightmap;
-		
+
 		if (r_lightmap.integer)
 			Uniform::Texture0 = Texture::Grey;
 
@@ -711,6 +716,7 @@ void Map::Render() {
 		Gfx::Draw(mesh);
 	}
 
+#if 0
 	if (0) {
 		const u16 plane_index = 256;//1482;
 
@@ -750,4 +756,5 @@ void Map::Render() {
 		Gfx::UpdateUniforms();
 		Gfx::Draw(mesh);
 	}
+#endif
 }

@@ -73,20 +73,23 @@ namespace Gfx {
 			Count,
 		};
 
-		template <typename T> struct TypeToEnum;
+		template <typename T> struct TypeToEnumImpl;
 		#define PP_GFX_MAP_UNIFORM_TYPE_TO_ENUM(name, type)\
-			template <> struct TypeToEnum<type>	{ static constexpr Type value = Type::name; };
+			template <> struct TypeToEnumImpl<type>	{ static constexpr Type value = Type::name; };
 		GFX_UNIFORM_TYPES(PP_GFX_MAP_UNIFORM_TYPE_TO_ENUM)
 		#undef PP_GFX_MAP_UNIFORM_TYPE_TO_ENUM
 
-		template <typename T> struct TypeToEnum<T&> : TypeToEnum<T>{};
+		template <typename T> struct TypeToEnumImpl<T&> : TypeToEnumImpl<T>{};
+
+		template <typename T>
+		static constexpr Type TypeToEnum = TypeToEnumImpl<T>::value;
 	}
 
 	#define PP_GFX_DECLARE_UNIFORM_VARIABLE(name, type)			type name;
 	#define PP_GFX_UNIFORM_NAME(name, type)						#name "\0"
 	#define PP_GFX_UNIFORM_ADDRESS(name, type)					&name,
-	#define PP_GFX_UNIFORM_TYPE(name, type)						Gfx::Uniform::TypeToEnum<decltype(name)>::value,
-		
+	#define PP_GFX_UNIFORM_TYPE(name, type)						Gfx::Uniform::TypeToEnum<decltype(name)>,
+
 	#define GFX_DECLARE_UNIFORMS(list)														\
 		inline namespace Variables {														\
 			list(PP_GFX_DECLARE_UNIFORM_VARIABLE)											\
@@ -123,47 +126,18 @@ namespace Gfx {
 			Count,
 		};
 
-		template <typename T> struct TypeToEnum;
+		template <typename T> struct TypeToEnumImpl;
 		#define PP_GFX_MAP_ATTRIB_TYPE_TO_ENUM(name, type)\
-			template <> struct TypeToEnum<type>	{ static constexpr AttribType value = AttribType::name; };
+			template <> struct TypeToEnumImpl<type>	{ static constexpr AttribType value = AttribType::name; };
 		GFX_VERTEX_ATTRIB_TYPES(PP_GFX_MAP_ATTRIB_TYPE_TO_ENUM)
 		#undef PP_GFX_MAP_ATTRIB_TYPE_TO_ENUM
 
-		template <typename T> struct TypeToEnum<T&> : TypeToEnum<T>{};
-		template <typename T> struct TypeToEnum<const T> : TypeToEnum<T>{};
+		template <typename T> struct TypeToEnumImpl<T&> : TypeToEnumImpl<T>{};
+		template <typename T> struct TypeToEnumImpl<const T> : TypeToEnumImpl<T>{};
+
+		template <typename T>
+		static constexpr AttribType TypeToEnum = TypeToEnumImpl<T>::value;
 	}
-
-	////////////////////////////////////////////////////////////////
-
-	struct Mesh {
-		struct VertexStream {
-			const void*			data;
-			Vertex::AttribType	type;
-			bool				normalized;
-			u8					stride;
-
-			VertexStream() = default;
-
-			template <typename T>
-			constexpr VertexStream(const T* contents, bool normalized = true, u8 stride = 0) :
-				data		(contents),
-				type		(Gfx::Vertex::TypeToEnum<T>::value),
-				normalized	(normalized),
-				stride		(stride)
-			{ }
-
-			template <typename T>
-			FORCEINLINE VertexStream& SetData(const T* contents) {
-				data = contents;
-				type = Gfx::Vertex::TypeToEnum<T>::value;
-				return *this;
-			}
-		}						vertices[Vertex::MaxNumAttributes];
-		const u32*				indices;
-
-		u32						num_vertices;
-		u32						num_indices;
-	};
 
 	////////////////////////////////////////////////////////////////
 
@@ -225,6 +199,27 @@ namespace Gfx {
 
 	////////////////////////////////////////////////////////////////
 
+	namespace Arena {
+		enum Type {
+			Level,
+			Dynamic,
+
+			Count,
+		};
+
+		// offset added to all allocations so that we can use 0 as NULL
+		constexpr u32 BaseOffset = 4096;
+	};
+
+	void InitMemory(u32 fixed_size, u32 dynamic_size);
+	void ResetArena(Arena::Type type);
+	u32 UploadGeometry(const void* data, u32 size, Arena::Type type = Arena::Type::Dynamic);
+
+	template <typename T>
+	u32 UploadGeometry(const T* data, u32 count, Arena::Type type = Arena::Type::Dynamic) {
+		return UploadGeometry((const void*)data, count * sizeof(T), type);
+	}
+
 	void RegisterUniforms(const char* names, const Uniform::Type* types, const void* const* values, u16 count);
 	void RegisterTextures(const Texture::Descriptor* textures, u16 count);
 	void RegisterShaders(const char* names, const Shader::Flags* flags, u16 count, const char* vertex_shaders, const char* fragment_shaders);
@@ -235,6 +230,8 @@ namespace Gfx {
 	}
 
 	////////////////////////////////////////////////////////////////
+
+	struct Mesh;
 
 	void SetTextureContents(Texture::ID id, const void* pixels, const IRect* rect = nullptr);
 	void GenerateMipMaps(Texture::ID id);
@@ -255,6 +252,59 @@ namespace Gfx {
 	void Sync();
 	
 	vec2 GetResolution();
+
+	////////////////////////////////////////////////////////////////
+
+	struct Mesh {
+		struct VertexStream {
+			u32					addr;
+			Vertex::AttribType	type;
+			bool				normalized;
+			u8					stride;
+
+			VertexStream() = default;
+			VertexStream(const VertexStream&) = default;
+
+			constexpr VertexStream(u32 addr, Vertex::AttribType type, bool normalized, u8 stride) :
+				addr(addr),
+				type(type),
+				normalized(normalized),
+				stride(stride)
+			{ }
+
+			template <typename T>
+			FORCEINLINE VertexStream& SetData(const T* contents, u32 count) {
+				addr = Gfx::UploadGeometry(contents, count);
+				type = Gfx::Vertex::TypeToEnum<T>;
+				return *this;
+			}
+
+			template <typename T>
+			FORCEINLINE VertexStream& SetData(u32 contents, u32 offset = 0) {
+				addr = contents + offset * sizeof(T);
+				type = Gfx::Vertex::TypeToEnum<T>;
+				return *this;
+			}
+
+			template <typename T>
+			FORCEINLINE VertexStream& SetType() {
+				type = Gfx::Vertex::TypeToEnum<T>;
+				return *this;
+			}
+		}						vertices[Vertex::MaxNumAttributes];
+		u32						index_addr;
+
+		Mesh& SetIndices(const u32* indices, u32 count) {
+			index_addr = Gfx::UploadGeometry(indices, count);
+			num_indices = count;
+			return *this;
+		}
+
+		u32						num_vertices;
+		u32						num_indices;
+	};
+
+	////////////////////////////////////////////////////////////////
 
 	namespace TGA {
 		#pragma pack(push, 1)

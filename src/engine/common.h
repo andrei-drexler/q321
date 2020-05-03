@@ -98,6 +98,10 @@ using uptr = uint_sized<sizeof(void*)>;
 
 ////////////////////////////////////////////////////////////////
 
+#define OFFSET_OF(type, member) ((size_t)(&((type*)1)->member) - 1)
+
+////////////////////////////////////////////////////////////////
+
 FORCEINLINE void* MemCopy(void* dest, const void* src, size_t count) {
 	#ifdef _MSC_VER
 		__movsb((unsigned char*)dest, (const unsigned char*)src, count);

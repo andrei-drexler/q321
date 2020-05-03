@@ -66,14 +66,12 @@ namespace Demo {
 		uv[3] = vec2{0.f, 1.f};
 
 		u32 idx[6] = { 0, 1, 2, 0, 2, 3 };
-	
-		mesh.vertices[Attrib::Position	].SetData(pos);
-		mesh.vertices[Attrib::TexCoord	].SetData(uv);
-		mesh.vertices[Attrib::Normal	].SetData(nor);
-		
-		mesh.indices			= idx;
-		mesh.num_vertices		= 4;
-		mesh.num_indices		= 6;
+
+		mesh.vertices[Attrib::Position	].SetData(pos, 4);
+		mesh.vertices[Attrib::TexCoord	].SetData(uv, 4);
+		mesh.vertices[Attrib::Normal	].SetData(nor, 4);
+		mesh.num_vertices = 4;
+		mesh.SetIndices(idx, 6);
 
 		Gfx::SetShader(Demo::Shader::Generic);
 		
@@ -352,6 +350,7 @@ int FORCEINLINE demo_main() {
 	Demo::Console::Init();
 	Sys::InitWindow(&Sys::g_window, nullptr, "Q320");
 	Sys::SetFPSMode(&Sys::g_window);
+	Gfx::InitMemory(16 * Mem::MB, 16 * Mem::MB);
 	Demo::RegisterGfxResources();
 	Map::AllocLightmap();
 	Demo::Texture::GenerateAll();

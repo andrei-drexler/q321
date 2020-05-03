@@ -257,26 +257,34 @@ NOINLINE void Demo::UI::FlushGeometry() {
 
 	static constexpr Gfx::Mesh BaseMesh = {
 		{
-			{&vertices[0].pos,		false,	sizeof(vertices[0])},
-			{&vertices[0].uv,		false,	sizeof(vertices[0])},
+			{OFFSET_OF(VertexFormat, pos),		Gfx::Vertex::TypeToEnum<vec3>,	false, sizeof(vertices[0])},
+			{OFFSET_OF(VertexFormat, uv),		Gfx::Vertex::TypeToEnum<vec2>,	false, sizeof(vertices[0])},
 			{},
-			{&vertices[0].color,	true,	sizeof(vertices[0])},
+			{OFFSET_OF(VertexFormat, color),	Gfx::Vertex::TypeToEnum<u32>,	true, sizeof(vertices[0])},
 		},
-		indices,
 	};
 	static_assert(0 == Attrib::Position,	"Invalid BaseMesh position stream index");
 	static_assert(1 == Attrib::TexCoord,	"Invalid BaseMesh texcoord stream index");
 	static_assert(3 == Attrib::Color,		"Invalid BaseMesh color stream index");
 
+	u32 num_vertices = num_quads * 4;
+	u32 num_indices = num_quads * 6;
+
+	vec2 scale = 1.f / Gfx::GetResolution();
+	for (u16 i = 0, count = num_vertices; i < count; ++i)
+		vertices[i].pos *= scale;
+
 	Gfx::Mesh mesh;
 	MemCopy(&mesh, &BaseMesh);
 
-	mesh.num_vertices	= num_quads * 4;
-	mesh.num_indices	= num_quads * 6;
+	u32 vertex_addr = Gfx::UploadGeometry(vertices, num_vertices);
+	for (u16 i = 0; i < Attrib::Count; ++i)
+		if (mesh.vertices[i].stride)
+			mesh.vertices[i].addr += vertex_addr;
 
-	vec2 scale = 1.f / Gfx::GetResolution();
-	for (u16 i = 0, count = mesh.num_vertices; i < count; ++i)
-		vertices[i].pos *= scale;
+	mesh.index_addr		= Gfx::UploadGeometry(indices, num_indices);
+	mesh.num_vertices	= num_vertices;
+	mesh.num_indices	= num_indices;
 
 	Gfx::SetShader(Shader::UI);
 	Uniform::Texture0 = Texture::Font;
