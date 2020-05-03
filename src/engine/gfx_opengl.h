@@ -58,6 +58,7 @@ using GLintptr = iptr;
 	x(void,			DeleteShader, (GLuint shader))\
 	x(void,			DetachShader, (GLuint program, GLuint shader))\
 	x(void,			DeleteFramebuffers, (GLsizei n, const GLuint *framebuffers))\
+	x(void,			DeleteVertexArrays, (GLsizei n, const GLuint *arrays))\
 	x(void,			GetProgramInfoLog, (GLuint program, GLsizei bufSize, GLsizei *length, GLchar *infoLog))\
 	x(void,			GetShaderInfoLog, (GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog))\
 	x(void,			GetShaderiv, (GLuint shader, GLenum pname, GLint *params))\
@@ -80,6 +81,8 @@ using GLintptr = iptr;
 	x(void,			ShaderSource, (GLuint shader, GLsizei count, const GLchar* const *string, const GLint *length))\
 	x(void,			CompileShader, (GLuint shader))\
 	x(void,			AttachShader, (GLuint program, GLuint shader))\
+	x(void,			BindVertexArray, (GLuint array))\
+	x(void,			GenVertexArrays, (GLsizei n, GLuint *arrays))\
 	x(void,			EnableVertexAttribArray, (GLuint index))\
 	x(void,			DisableVertexAttribArray, (GLuint index))\
 	x(void,			VertexAttribPointer, (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer))\
@@ -242,6 +245,7 @@ namespace GL {
 		u16									GetShader() { return (current_bits & MaskShaderID) >> ShiftShaderID; }
 		u16									GetRenderTarget() { return (current_bits & MaskRenderTargetID) >> ShiftRenderTargetID; }
 
+		GLuint								vao;
 		GLuint								vbo;
 		struct Arena {
 			u32								start_offset;
@@ -492,6 +496,10 @@ FORCEINLINE void Gfx::InitMemory(u32 fixed_size, u32 dynamic_size) {
 	using namespace GL;
 
 	assert(g_state.vbo == 0);
+	assert(g_state.vao == 0);
+
+	glGenVertexArrays(1, &g_state.vao);
+	glBindVertexArray(g_state.vao);
 
 	u32 total_size = fixed_size + dynamic_size;
 	g_state.arena[Arena::Level].size = fixed_size;
