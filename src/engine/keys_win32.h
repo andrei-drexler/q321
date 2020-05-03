@@ -2,6 +2,12 @@
 
 namespace Key {
 	enum {
+		Mouse1				= VK_LBUTTON,
+		Mouse2				= VK_RBUTTON,
+		Mouse3				= VK_MBUTTON,
+		Mouse4				= VK_XBUTTON1,
+		Mouse5				= VK_XBUTTON2,
+
 		Backspace			= VK_BACK,
 		Tab					= VK_TAB,
 		Enter				= VK_RETURN,
