@@ -1,6 +1,6 @@
 #pragma once
 
-NOINLINE void Map::LoadPatches(const PackedMap& packed, u8 pass) {
+NOINLINE void Map::Details::LoadPatches(const PackedMap& packed, u8 pass) {
 	patches.count = 0;
 
 	for (u16 patch_index = 0, current_patch_vertex = 0; patch_index < packed.num_patches; ++patch_index) {

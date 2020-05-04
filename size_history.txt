@@ -786,3 +786,4 @@
 42076,added vbo support
 42057,added vao support
 42057,fixed buffer overrun
+42057,separate computenormals function

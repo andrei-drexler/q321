@@ -208,18 +208,20 @@ namespace Map {
 	void							UpdateLightmapTexture();
 
 	/* Internal functions */
+	namespace Details {
+		bool						TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax);
+		void						SplitNode(u16 index, i16 bounds[2][3]);
+		void						DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid);
+		void						LoadPatches(const PackedMap& packed, u8 pass);
+		void						ComputeNormals();
+		void						CreatePartition();
 
-	bool							TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax);
-	void							SplitNode(u16 index, i16 bounds[2][3]);
-	void							DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid);
-	void							LoadPatches(const PackedMap& packed, u8 pass);
-	void							CreatePartition();
+		void						InitEntities();
+		void						InitLights();
+		void						PackLightmap();
 
-	void							InitEntities();
-	void							InitLights();
-	void							PackLightmap();
-
-	static u16						MirrorPlaneIndex(u16 original);
+		static u16					MirrorPlaneIndex(u16 original);
+	}
 } // namespace Map
 
 ////////////////////////////////////////////////////////////////
@@ -231,13 +233,13 @@ namespace Map {
 // The first 6 brush planes correspond to the 6 sides of the bounding box.
 // In order to maintain this order For mirrored brushes we need to swap
 // the Y min/max planes (#2 & #3).
-FORCEINLINE u16 Map::MirrorPlaneIndex(u16 brush_plane) {
+FORCEINLINE u16 Map::Details::MirrorPlaneIndex(u16 brush_plane) {
 	if (u16(brush_plane - 2) < 2)
 		brush_plane ^= 2 ^ 3;
 	return brush_plane;
 }
 
-FORCEINLINE void Map::InitLights() {
+FORCEINLINE void Map::Details::InitLights() {
 	using namespace Demo;
 
 	// light 0 is the sun, always present
@@ -313,7 +315,7 @@ Demo::Entity* Map::PickTarget(i16 target) {
 	return nullptr;
 }
 
-FORCEINLINE void Map::InitEntities() {
+FORCEINLINE void Map::Details::InitEntities() {
 	num_brush_entities = source->num_brush_entities;
 	num_entities = source->num_entities;
 
@@ -347,7 +349,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 	MemSet(&num_mat_verts);
 	MemSet(&num_mat_indices);
 
-	InitEntities();
+	Details::InitEntities();
 
 	for (u16 pass = 0; pass < 2; ++pass) {
 		auto* nonaxial_offset = packed.nonaxial_counts;
@@ -433,7 +435,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				
 				for (u16 i = 0; i < num_brush_planes; ++i) {
 					auto& dst_plane = brush_planes[i + num_brush_planes];
-					auto& src_plane = brush_planes[MirrorPlaneIndex(i)];
+					auto& src_plane = brush_planes[Details::MirrorPlaneIndex(i)];
 					dst_plane.xyz = src_plane.xyz;
 					dst_plane[symmetry_axis] = -dst_plane[symmetry_axis];
 					dst_plane.w = src_plane.w + 2.f * src_plane[symmetry_axis] * symmetry_level;
@@ -485,7 +487,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 
 				brushes.plane_mat_uv_axis[brush_start + i] = material;
 				if (mirrored)
-					brushes.plane_mat_uv_axis[brush_start + MirrorPlaneIndex(i) + num_brush_planes] = material;
+					brushes.plane_mat_uv_axis[brush_start + Details::MirrorPlaneIndex(i) + num_brush_planes] = material;
 
 				if (num_face_edges < 3)
 					continue;
@@ -569,7 +571,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				brushes.plane_vertex_range[brush_start + i].Set(mat_vertex_offset[material] + first_vertex, num_face_edges);
 				if (mirrored) {
 					brushes
-						.plane_vertex_range[brush_start + MirrorPlaneIndex(i) + num_brush_planes]
+						.plane_vertex_range[brush_start + Details::MirrorPlaneIndex(i) + num_brush_planes]
 						.Set(mat_vertex_offset[material] + first_vertex + num_face_edges, num_face_edges);
 				}
 
@@ -614,29 +616,10 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		assert(plane_data == packed.plane_data + packed.num_plane_entries);
 #endif
 
-		LoadPatches(packed, pass);
+		Details::LoadPatches(packed, pass);
 	}
 
-	MemSet(&normals);
-
-	for (u8 material = 0; material < num_materials; ++material) {
-		vec3* pos = positions + mat_vertex_offset[material];
-		vec3* nor = normals + mat_vertex_offset[material];
-		u32* idx = indices + mat_index_offset[material];
-
-		for (u32 i = 0; i < num_mat_indices[material]; i += 3, idx += 3) {
-			constexpr u8 Next[] = {1, 2, 0, 1};
-			for (u8 j = 0; j < 3; ++j) {
-				u32 i0 = idx[j];
-				u32 i1 = idx[Next[j]];
-				u32 i2 = idx[Next[j + 1]];
-				nor[i0] += cross(pos[i1] - pos[i0], pos[i2] - pos[i1]);
-			}
-		}
-
-		for (u32 i = 0; i < num_mat_verts[material]; ++i)
-			safe_normalize(nor[i]);
-	}
+	Details::ComputeNormals();
 
 	assert(Map::num_total_vertices <= MAX_NUM_VERTS);
 	assert(Map::num_total_indices <= MAX_NUM_INDICES);
@@ -657,9 +640,9 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		}
 	}
 
-	InitLights();
-	CreatePartition();
-	PackLightmap();
+	Details::InitLights();
+	Details::CreatePartition();
+	Details::PackLightmap();
 	ComputeLighting(false);
 
 	Gfx::ResetArena(Gfx::Arena::Level);
@@ -667,6 +650,31 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 	gpu_addr.texcoords = Gfx::UploadGeometry(&texcoords[0], num_total_vertices, Gfx::Arena::Level);
 	gpu_addr.normals   = Gfx::UploadGeometry(&normals[0],   num_total_vertices, Gfx::Arena::Level);
 	gpu_addr.indices   = Gfx::UploadGeometry(&indices[0],   num_total_indices,  Gfx::Arena::Level);
+}
+
+////////////////////////////////////////////////////////////////
+
+FORCEINLINE void Map::Details::ComputeNormals() {
+	MemSet(&normals);
+
+	for (u8 material = 0; material < num_materials; ++material) {
+		vec3* pos = positions + mat_vertex_offset[material];
+		vec3* nor = normals + mat_vertex_offset[material];
+		u32* idx = indices + mat_index_offset[material];
+
+		for (u32 i = 0; i < num_mat_indices[material]; i += 3, idx += 3) {
+			constexpr u8 Next[] = {1, 2, 0, 1};
+			for (u8 j = 0; j < 3; ++j) {
+				u32 i0 = idx[j];
+				u32 i1 = idx[Next[j]];
+				u32 i2 = idx[Next[j + 1]];
+				nor[i0] += cross(pos[i1] - pos[i0], pos[i2] - pos[i1]);
+			}
+		}
+
+		for (u32 i = 0; i < num_mat_verts[material]; ++i)
+			safe_normalize(nor[i]);
+	}
 }
 
 ////////////////////////////////////////////////////////////////

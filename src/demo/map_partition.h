@@ -23,7 +23,7 @@ FORCEINLINE void Map::TraceInfo::SetCollision(const vec3& a, const vec3& travel,
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Map::DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid) {
+FORCEINLINE void Map::Details::DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid) {
 	Partition::Node& parent = partition.nodes[node];
 	assert(parent.IsLeaf());
 
@@ -57,7 +57,7 @@ FORCEINLINE void Map::DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 cli
 	mid = left_cursor;
 }
 
-NOINLINE void Map::SplitNode(u16 index, i16 bounds[2][3]) {
+NOINLINE void Map::Details::SplitNode(u16 index, i16 bounds[2][3]) {
 	if (partition.num_nodes + 2 >= MAX_NUM_NODES)
 		return;
 
@@ -108,7 +108,7 @@ NOINLINE void Map::SplitNode(u16 index, i16 bounds[2][3]) {
 	bounds[0][best_axis] = tmp;
 }
 
-NOINLINE void Map::CreatePartition() {
+NOINLINE void Map::Details::CreatePartition() {
 	for (u16 i = 0, count = brushes.count; i < count; ++i)
 		partition.brushes[i] = i;
 
@@ -125,7 +125,7 @@ NOINLINE void Map::CreatePartition() {
 #endif
 }
 
-FORCEINLINE bool Map::TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax) {
+FORCEINLINE bool Map::Details::TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax) {
 	bool hit = false;
 
 	struct StackEntry {
@@ -289,7 +289,7 @@ NOINLINE bool Map::TraceRay(TraceInfo& trace) {
 
 	float travel = length(trace.delta);
 	trace.start.z -= trace.z_offset;
-	bool result = TraceRayStep(trace, 0, 0.f, 1.f);
+	bool result = Details::TraceRayStep(trace, 0, 0.f, 1.f);
 	trace.start.z += trace.z_offset;
 	trace.start_solid = trace.fraction < 0.f;
 	if (trace.start_solid)

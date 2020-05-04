@@ -53,7 +53,7 @@ FORCEINLINE void Map::AllocLightmap() {
 	lightmap.nor = Mem::Alloc<vec3>(Lightmap::Width * Lightmap::Height);
 }
 
-FORCEINLINE void Map::PackLightmap() {
+FORCEINLINE void Map::Details::PackLightmap() {
 	using namespace Demo;
 
 	MemSet(lightmap.pos, 0, Lightmap::Width * Lightmap::Height);
