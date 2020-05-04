@@ -520,18 +520,18 @@ NOINLINE u32 Gfx::UploadGeometry(const void* data, u32 size, Arena::Type type) {
 	using namespace GL;
 
 	const u32 Alignment = 256;
-	size = (size + (Alignment - 1)) & ~(Alignment - 1);
+	u32 aligned_size = (size + (Alignment - 1)) & ~(Alignment - 1);
 
 	State::Arena& arena = g_state.arena[type];
-	assert(size <= arena.size);
-	if (arena.cursor + size > arena.size) {
+	assert(aligned_size <= arena.size);
+	if (arena.cursor + aligned_size > arena.size) {
 		// wrap around
 		assert(type == Arena::Type::Dynamic);
 		arena.cursor = 0;
 	}
 
 	u32 offset = arena.start_offset + arena.cursor;
-	arena.cursor += size;
+	arena.cursor += aligned_size;
 	glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
 
 	return offset + Arena::BaseOffset;
