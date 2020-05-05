@@ -220,7 +220,7 @@ namespace Map {
 		void						InitLights();
 		void						PackLightmap();
 
-		static u16					MirrorPlaneIndex(u16 original);
+		static u16					MirrorPlaneIndex(u16 brush_plane, u8 axis);
 	}
 } // namespace Map
 
@@ -231,12 +231,10 @@ namespace Map {
 #include "map_lightmap.h"
 
 // The first 6 brush planes correspond to the 6 sides of the bounding box.
-// In order to maintain this order For mirrored brushes we need to swap
-// the Y min/max planes (#2 & #3).
-FORCEINLINE u16 Map::Details::MirrorPlaneIndex(u16 brush_plane) {
-	if (u16(brush_plane - 2) < 2)
-		brush_plane ^= 2 ^ 3;
-	return brush_plane;
+// In order to maintain this order for mirrored brushes we need to swap
+// the min/max planes for the symmetry axis
+FORCEINLINE u16 Map::Details::MirrorPlaneIndex(u16 brush_plane, u8 axis) {
+	return brush_plane ^ ((brush_plane - (axis << 1)) < 2);
 }
 
 FORCEINLINE void Map::Details::InitLights() {
@@ -434,7 +432,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				
 				for (u16 i = 0; i < num_brush_planes; ++i) {
 					auto& dst_plane = brush_planes[i + num_brush_planes];
-					auto& src_plane = brush_planes[Details::MirrorPlaneIndex(i)];
+					auto& src_plane = brush_planes[Details::MirrorPlaneIndex(i, symmetry_axis)];
 					dst_plane.xyz = src_plane.xyz;
 					dst_plane[symmetry_axis] = -dst_plane[symmetry_axis];
 					dst_plane.w = src_plane.w + 2.f * src_plane[symmetry_axis] * symmetry_level;
@@ -486,7 +484,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 
 				brushes.plane_mat_uv_axis[brush_start + i] = material;
 				if (mirrored)
-					brushes.plane_mat_uv_axis[brush_start + Details::MirrorPlaneIndex(i) + num_brush_planes] = material;
+					brushes.plane_mat_uv_axis[brush_start + Details::MirrorPlaneIndex(i, symmetry_axis) + num_brush_planes] = material;
 
 				if (num_face_edges < 3)
 					continue;
@@ -570,7 +568,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				brushes.plane_vertex_range[brush_start + i].Set(mat_vertex_offset[material] + first_vertex, num_face_edges);
 				if (mirrored) {
 					brushes
-						.plane_vertex_range[brush_start + Details::MirrorPlaneIndex(i) + num_brush_planes]
+						.plane_vertex_range[brush_start + Details::MirrorPlaneIndex(i, symmetry_axis) + num_brush_planes]
 						.Set(mat_vertex_offset[material] + first_vertex + num_face_edges, num_face_edges);
 				}
 

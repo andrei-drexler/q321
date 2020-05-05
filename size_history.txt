@@ -788,3 +788,6 @@
 42057,fixed buffer overrun
 42057,separate computenormals function
 42057,tweaked brush plane init
+42158,fixed mirrorplaneindex
+42124,v2
+42081,v3
