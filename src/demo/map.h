@@ -252,7 +252,7 @@ FORCEINLINE void Map::Details::InitLights() {
 			source->GetLight(light_index, light);
 			if (light.position[symmetry_axis] < symmetry_level - 1) {
 				auto& light2 = lights[num_lights++];
-				MemCopy(&light2, &light, sizeof(light));
+				MemCopy(&light2, &light);
 				light2.position[symmetry_axis] = 2.f * symmetry_level - light2.position[symmetry_axis];
 				if (EnableSpotlights && light2.flags & Light::IsSpotlight)
 					light2.spot[symmetry_axis] = -light2.spot[symmetry_axis];
