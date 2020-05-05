@@ -401,14 +401,13 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 			bounds_src += 6;
 
 			/* first 6 planes - one for each bounding box side */
+			MemSet(brush_planes, 0, 6);
 			for (u16 i = 0; i < 6; ++i) {
 				u16 axis = i >> 1;
 				bool max_side = i & 1;
 				u32 sign = i << 31;	// (i & 1) << 31
 				float value = brush_bounds[max_side][axis];
 				vec4& plane = brush_planes[num_brush_planes++];
-				for (u16 j = 0; j < 3; ++j)
-					plane.data[j] = 0;
 				//plane.data[axis] = max_side ? 1.f : -1.f;
 				*((u32*)&plane.data[axis]) = 0xbf80'0000u ^ sign;
 				//plane.data[3] = max_side ? -value : value;
