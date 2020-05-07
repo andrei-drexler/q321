@@ -254,12 +254,12 @@ bool Q3::Map::ParseEntity(string_view& source) {
 	if (source.empty())
 		return false;
 
-	if (!Consume(source, "{"sv))
+	if (!Match(source, "{"sv))
 		return Error("Could not find entity beginning");
 	
 	Entity entity;
 	while (!source.empty()) {
-		if (Consume(source, "}"sv)) {
+		if (Match(source, "}"sv)) {
 			entities.push_back(std::move(entity));
 			return true;
 		}
@@ -273,15 +273,15 @@ bool Q3::Map::ParseEntity(string_view& source) {
 			continue;
 		}
 
-		if (Consume(source, "{"sv)) {
-			if (Consume(source, "patchDef2"sv)) {
-				if (!Consume(source, "{"sv))
+		if (Match(source, "{"sv)) {
+			if (Match(source, "patchDef2"sv)) {
+				if (!Match(source, "{"sv))
 					return Error("Could not find patch beginning");
 
 				Patch patch;
 				patch.material = AddMaterial(ParseWord(source));
 
-				if (!Consume(source, "("sv))
+				if (!Match(source, "("sv))
 					return false;
 
 				if (!ParseValue(source, patch.height) || !ParseValue(source, patch.width))
@@ -291,19 +291,19 @@ bool Q3::Map::ParseEntity(string_view& source) {
 					if (!ParseValue(source, ignore))
 						return false;
 
-				if (!Consume(source, ")"sv))
+				if (!Match(source, ")"sv))
 					return false;
 
-				if (!Consume(source, "("sv))
+				if (!Match(source, "("sv))
 					return false;
 					
 				patch.vertices.resize(patch.width * patch.height);
 				for (uint32_t y=0; y<patch.height; ++y) {
-					if (!Consume(source, "("sv))
+					if (!Match(source, "("sv))
 						return false;
 					
 					for (uint32_t x=0; x<patch.width; ++x) {
-						if (!Consume(source, "("sv))
+						if (!Match(source, "("sv))
 							return false;
 
 						auto& vertex = patch.vertices[y * patch.width + x];
@@ -314,23 +314,23 @@ bool Q3::Map::ParseEntity(string_view& source) {
 							if (!ParseValue(source, vertex.uv.data[i]))
 								return false;
 						
-						if (!Consume(source, ")"sv))
+						if (!Match(source, ")"sv))
 							return false;
 					}
 						
-					if (!Consume(source, ")"sv))
+					if (!Match(source, ")"sv))
 						return false;
 				}
 
-				if (!Consume(source, ")"sv))
+				if (!Match(source, ")"sv))
 					return false;
 
 				// end patch
-				if (!Consume(source, "}"sv))
+				if (!Match(source, "}"sv))
 					return false;
 
 				// end brush
-				if (!Consume(source, "}"sv))
+				if (!Match(source, "}"sv))
 					return false;
 
 				entity.patches.push_back(std::move(patch));
@@ -340,7 +340,7 @@ bool Q3::Map::ParseEntity(string_view& source) {
 			Brush brush;
 			brush.planes.reserve(8);
 			while (!source.empty()) {
-				if (Consume(source, "}"sv)) {
+				if (Match(source, "}"sv)) {
 					brush.Finalize();
 					entity.brushes.push_back(std::move(brush));
 					break;

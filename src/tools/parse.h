@@ -21,7 +21,7 @@ void SkipWhitespace(string_view& s) {
 	}
 }
 
-bool Consume(string_view& source, string_view text) {
+bool Match(string_view& source, string_view text) {
 	SkipWhitespace(source);
 	if (source.length() >= text.length() && memcmp(source.data(), text.data(), text.length()) == 0) {
 		source.remove_prefix(text.length());
@@ -49,7 +49,7 @@ bool ParseValue(string_view& source, T& value) {
 
 bool ParseVector(string_view& source, vec3& v, bool parentheses = true) {
 	auto backup = source;
-	if (parentheses && !Consume(source, "("sv))
+	if (parentheses && !Match(source, "("sv))
 		return false;
 	
 	for (int i=0; i<3; ++i) {
@@ -59,7 +59,7 @@ bool ParseVector(string_view& source, vec3& v, bool parentheses = true) {
 		}
 	}
 	
-	if (parentheses && !Consume(source, ")"sv)) {
+	if (parentheses && !Match(source, ")"sv)) {
 		source = backup;
 		return false;
 	}
