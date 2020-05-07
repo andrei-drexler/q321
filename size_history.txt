@@ -796,3 +796,4 @@
 42429,changed mouse sensitivity reference
 42530,added zoom
 42494,v2
+42529,zoom sensitivity adjustment
