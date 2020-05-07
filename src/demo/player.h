@@ -26,7 +26,9 @@ namespace Demo {
 			HalfWidth		= 15.f,
 			EyeLevel		= 48.f,
 			EyeCenterOffset	= EyeLevel - HalfHeight,
-			SpawnOffset		= HalfHeight - 4.f
+			SpawnOffset		= HalfHeight - 4.f,
+
+			ZoomTime		= 0.125f
 		;
 
 		static constexpr vec3
@@ -59,6 +61,7 @@ namespace Demo {
 			LookDown,
 			LookCenter,
 			Run,
+			Zoom,
 
 			Count,
 			Invalid = Count,
@@ -76,6 +79,7 @@ namespace Demo {
 		float				land_change;
 		float				land_time;
 		float				shadow_angle;
+		float				zoom;
 		const vec4*			ground;
 		vec3				angles;
 		u32					inputs;
@@ -119,6 +123,8 @@ namespace Demo {
 			case Key::End:		return Player::Input::LookCenter;
 
 			case Key::Shift:	return Player::Input::Run;
+			
+			case Key::Mouse2:	return Player::Input::Zoom;
 
 			default:			return Player::Input::Invalid;
 		}
@@ -235,7 +241,7 @@ void Demo::Player::Update(float dt) {
 	/* animate stair-stepping & landing */
 	step = max(0.f, step - step * dt * 8.f);
 	land_time = max(0.f, land_time - dt);
-
+	
 	/* move */
 	float prev_z_speed = velocity.z;
 	if (length_squared(velocity.xy) < 1.f)
@@ -263,6 +269,13 @@ void Demo::Player::Update(float dt) {
 		land_time = LandTime;
 		walk_cycle = 0.f;
 	}
+
+	/* zoom in/out */
+	float zoom_delta = dt / ZoomTime;
+	if (Has(Input::Zoom))
+		zoom = min(1.f, zoom + zoom_delta);
+	else
+		zoom = max(0.f, zoom - zoom_delta);
 
 	/* touch entities */
 	for (u16 i = 0; i < num_touch_ents; ++i) {

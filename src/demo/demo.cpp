@@ -251,7 +251,7 @@ namespace Demo {
 		frame.angles		= g_player.angles;
 		frame.angles.y		-= abs(bob);
 		frame.angles.z		+= bob;
-		frame.fov			= cl_fov.value;
+		frame.fov			= mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
 		frame.time			= g_time - g_load_time;
 		frame.shadow_angle	= g_player.shadow_angle;
 		frame.render_target	= Gfx::Backbuffer;

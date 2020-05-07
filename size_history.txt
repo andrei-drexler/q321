@@ -794,3 +794,5 @@
 42080,fixed light copy overrun
 42350,basic protobanner
 42429,changed mouse sensitivity reference
+42530,added zoom
+42494,v2
