@@ -315,7 +315,7 @@ namespace Demo {
 		Sys::UpdateMouseState(mouse);
 
 		if (!IsLoading()) {
-			float mouse_scale = (sensitivity.value * -90.f) / Sys::g_window.height;
+			float mouse_scale = (sensitivity.value * -90.f) / sqrt(Sys::g_window.width * Sys::g_window.height);
 			g_player.angles.x += mouse.x * mouse_scale;
 			g_player.angles.y += mouse.y * mouse_scale;
 			g_player.angles.x = mod(g_player.angles.x, 360.f);

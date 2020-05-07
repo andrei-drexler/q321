@@ -793,3 +793,4 @@
 42081,v3
 42080,fixed light copy overrun
 42350,basic protobanner
+42429,changed mouse sensitivity reference
