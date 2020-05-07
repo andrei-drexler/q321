@@ -217,7 +217,9 @@ void ExploitSymmetry(Map& map, const Options& options, Symmetry& symmetry) {
 	auto trim = [&](auto& list) {
 		size_t before = list.size();
 		list.erase(std::remove_if(list.begin(), list.end(), [&](auto& item) {
-			return item.bounds.mins[symmetry.axis] > symmetry.level - 1.f;
+			return
+				item.extra.asymmetric == false &&
+				item.bounds.mins[symmetry.axis] > symmetry.level - 1.f;
 		}), list.end());
 		return before - list.size();
 	};
@@ -305,11 +307,25 @@ void MergeFuncGroups(Map& map) {
 	auto& world = map.entities[0];
 	for (auto i = map.entities.begin() + 1; i != map.entities.end(); /**/) {
 		auto& ent = *i;
-		//PrintProgress(i - map.entities.begin(), map.entities.size());
-		//_sleep(100);
 		if (ent.props["classname"] != "func_group"sv) {
 			++i;
 			continue;
+		}
+		std::string_view prop = ent.GetProperty("_keep_uvs"sv);
+		int keep_uvs = 0;
+		if (!ParseValue(prop, keep_uvs))
+			keep_uvs = 0;
+		prop = ent.GetProperty("_asymmetric"sv);
+		int asymmetric = 0;
+		if (!ParseValue(prop, asymmetric))
+			asymmetric = 0;
+		for (auto& brush : ent.brushes) {
+			brush.extra.keep_uvs = (keep_uvs != 0);
+			brush.extra.asymmetric = (asymmetric != 0);
+		}
+		for (auto& patch : ent.patches) {
+			patch.extra.keep_uvs = (keep_uvs != 0);
+			patch.extra.asymmetric = (asymmetric != 0);
 		}
 		AppendEntityGeometryToWorld(map, i - map.entities.begin());
 		i = map.entities.erase(i);
@@ -819,7 +835,14 @@ void RemoveUnneededUVs(Map& map, const Options& options, const ShaderProperties*
 			i32 index = props.map_material;
 			if (index < 0)
 				index = 0;
-			bool needs_uv = Demo::Material::Properties[index] & Demo::Material::NeedsUV;
+
+			auto mat_props = Demo::Material::Properties[index];
+			auto vis = mat_props & Demo::Material::MaskVisibility;
+
+			bool needs_uv =
+				vis != Demo::Material::Invisible &&
+				(brush.extra.keep_uvs != 0 || (mat_props & Demo::Material::NeedsUV) != 0);
+
 			if (!needs_uv) {
 				plane.scale = 0.5f;
 				plane.rotation = 0.f;
@@ -1309,6 +1332,20 @@ void WriteBrushUVs(ArrayPrinter& print, const Map& map, const Options& options, 
 			print << index << ","sv;
 		}
 	}
+	print << "};"sv;
+	print.Flush();
+}
+
+////////////////////////////////////////////////////////////////
+
+void WriteBrushAsymmetry(ArrayPrinter& print, const Map& map, const Options& options, string_view array_name) {
+	printf("Writing brush asymmetry\n");
+
+	auto& world = map.World();
+
+	print << "\nconst u8 "sv << array_name << "[] = {"sv;
+	for (auto& brush : world.brushes)
+		print << brush.extra.asymmetric << ","sv;
 	print << "};"sv;
 	print.Flush();
 }
@@ -2006,6 +2043,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 	WriteUnalignedPlanes	(print, map, options,											"num_nonaxial_planes"sv,	"nonaxial_planes"sv,	"nonaxial_counts"sv);
 	WriteMaterials			(print, map, options, shader_props.data(),						"num_materials"sv,			"plane_materials"sv		);
 	WriteBrushUVs			(print, map, options, shader_props.data(),						"uv_set"sv,					"plane_uvs"sv			);
+	WriteBrushAsymmetry		(print, map, options,											"brush_asymmetry"									);
 	WritePatchData			(print, map, options, shader_props.data(),						"patches"sv,				"patch_verts"sv			);
 	WriteLights				(print, map, options, shader_props.data(),	lights,	symmetry,	"light_data"sv,				"num_spotlights"sv		);
 	//WriteLightmap			(print, map, options, shader_props.data(),	"lightmap_offsets"										);
@@ -2028,6 +2066,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 		"    entity_brushes, entity_data,\n"
 		"    world_bounds, brush_bounds,\n"
 		"    num_nonaxial_planes, nonaxial_planes, nonaxial_counts,\n"
+		"    brush_asymmetry,\n"
 		"    num_materials, plane_materials,\n"
 		"    uv_set, plane_uvs,\n"
 		"    patches, patch_verts,\n"

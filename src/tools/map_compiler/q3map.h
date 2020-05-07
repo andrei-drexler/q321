@@ -101,6 +101,12 @@ namespace Q3 {
 			bool					axial = false;
 
 			void					Finalize();
+
+			// compiler-added fields
+			struct {
+				bool				keep_uvs = false;
+				bool				asymmetric = false;
+			}						extra;
 		};
 
 		struct Patch {
@@ -114,6 +120,12 @@ namespace Q3 {
 			uint32_t				height = 0;
 			Material::ID			material = -1;
 			AABB					bounds;
+
+			// compiler-added fields
+			struct {
+				bool				keep_uvs = false;
+				bool				asymmetric = false;
+			}						extra;
 		};
 
 		struct Entity {

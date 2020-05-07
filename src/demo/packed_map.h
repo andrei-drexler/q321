@@ -31,6 +31,7 @@ struct PackedMap {
 	const i16*			patch_vertices;
 	const i16*			light_data;
 
+	const u8*			brush_asymmetry;
 	i8					symmetry_axis;
 	i16					symmetry_level;
 
@@ -50,7 +51,8 @@ struct PackedMap {
 		int NumBrushBoundEntries, int NumPlaneEntries, int NumNonaxialEntries,
 		int NumUVEntries, int NumPlaneUVEntries, int NumMaterialEntries,
 		int NumPatches, int NumPatchVertEntries,
-		int NumLightEntries
+		int NumLightEntries,
+		int NumAsymmetryEntries
 	>
 	constexpr PackedMap
 	(
@@ -64,6 +66,7 @@ struct PackedMap {
 		u16								num_unaligned_planes,
 		const i32	(&plane_data)		[NumPlaneEntries],
 		const u16	(&nonaxial_counts)	[NumNonaxialEntries],
+		const u8	(&brush_asymmetry)	[NumAsymmetryEntries],
 		u8								num_materials,
 		const u8	(&plane_materials)	[NumMaterialEntries],
 		const float (&uv_data)			[NumUVEntries],
@@ -108,7 +111,8 @@ struct PackedMap {
 		num_spotlights			(num_spotlights),
 		skylight				(skylight),
 		symmetry_axis			(symmetry_axis),
-		symmetry_level			(symmetry_level)
+		symmetry_level			(symmetry_level),
+		brush_asymmetry			(brush_asymmetry)
 	{
 		static_assert(NumPlaneUVEntries == NumMaterialEntries);
 		static_assert(NumBrushBoundEntries / 6 == NumNonaxialEntries);

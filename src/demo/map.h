@@ -394,7 +394,10 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 			brush_bounds[1][1] = bounds_src[4] + brush_bounds[0][1];
 			brush_bounds[1][2] = bounds_src[5] + brush_bounds[0][2];
 
-			bool mirrored = UseSymmetry() && entity_index == 0 && brush_bounds[1][symmetry_axis] < symmetry_level + 1;
+			bool mirrored =
+				UseSymmetry() && entity_index == 0 &&
+				brush_bounds[1][symmetry_axis] < symmetry_level + 1 &&
+				packed.brush_asymmetry[brush_index] == 0;
 
 			bounds_src += 6;
 
