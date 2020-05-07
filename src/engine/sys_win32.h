@@ -67,7 +67,6 @@ namespace Win32 {
 	LARGE_INTEGER g_startTime;
 	double g_rcpFrequency;
 	HANDLE g_waitable_timer;
-	Sys::Point g_mouse;
 
 	Sys::Point GetPoint(LPARAM lParam) {
 		return { SHORT(LOWORD(lParam)), SHORT(HIWORD(lParam)) };
@@ -146,6 +145,7 @@ namespace Win32 {
 				return 0;
 			}
 
+#ifdef USE_EVENTS
 			case WM_MOUSEMOVE: {
 				event.type = Event::Type::MouseMove;
 				auto pt = GetPoint(lParam);
@@ -162,20 +162,12 @@ namespace Win32 {
 					if ((pt.x | pt.y) == 0)
 						return 0;
 					SetCursorPos(center.x, center.y);
-					g_mouse.x += pt.x;
-					g_mouse.y += pt.y;
-				} else {
-					g_mouse.x = pt.x;
-					g_mouse.y = pt.y;
 				}
-#ifdef USE_EVENTS
 				event.data.mouse_move.pt = pt;
 				window->on_event(event);
-#endif // USE_EVENTS
 				return 0;
 			}
 
-#ifdef USE_EVENTS
 			case WM_PAINT: {
 				PAINTSTRUCT ps;
 				BeginPaint(hWnd, &ps);
@@ -707,9 +699,26 @@ FORCEINLINE void Sys::UpdateKeyboardState() {
 FORCEINLINE void Sys::UpdateMouseState(Point& pt) {
 	using namespace Win32;
 
-	pt = g_mouse;
-	if (g_window.flags & Window::Flags::FPSMode)
-		memset(&g_mouse, 0, sizeof(g_mouse));
+	POINT p;
+	::GetCursorPos(&p);
+
+	pt.x = p.x;
+	pt.y = p.y;
+
+	if (g_window.flags & Window::Flags::FPSMode) {
+		RECT rect;
+		::GetWindowRect((HWND)g_window.handle, &rect);
+		POINT center;
+		center.x = (rect.left + rect.right) / 2;
+		center.y = (rect.bottom + rect.top) / 2;
+		if (g_window.flags & Window::Flags::Active) {
+			::SetCursorPos(center.x, center.y);
+			pt.x -= center.x;
+			pt.y -= center.y;
+		} else {
+			MemSet(&pt);
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////
