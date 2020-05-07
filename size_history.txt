@@ -792,3 +792,4 @@
 42124,v2
 42081,v3
 42080,fixed light copy overrun
+42350,basic protobanner

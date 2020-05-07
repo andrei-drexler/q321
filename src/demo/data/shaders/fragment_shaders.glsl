@@ -1550,19 +1550,68 @@ TEXA(gpntgmlt1k) {
 	return vec4(c + 1.*vec3(1, 1, .3) * a, a);
 }
 
-TEXA(icon) {
-	uv.y -= .57;
-	uv.x = abs(uv.x - .48);
+float icon_sdf(vec2 uv) {
+	uv.x = abs(uv.x);
+	uv.y -= .07;
 	float d = elips(uv, vec2(.31, .12)) / 50.;
 	d = max(d, -elips(uv - vec2(0, .01), vec2(.28, .07)) / 120.);
 	d = max(d, -box(uv - vec2(.0, .1), vec2(.22, .12)));
 	d = max(d, -box(uv - vec2(.0, .1), vec2(.09, .31)));
 	d = min(d, box1(uv - vec2(.0, -.09), vec2(tri(-.09, .32, uv.y)*.04, .32)));
 	d = min(d, box1(uv - vec2(.11, -.21), vec2(tri(-.07, .3, uv.y)*.03, .15)));
-	uv.y += .07;
-	float b = length(uv) - .47, m = msk(b);
-	vec3 c = 1. - vec3(.7, 1, 1) * msk(max(.007 - d, b + .04));
-	return vec4(c * m, m);
+	return d;
+}
+
+TEXA(icon) {
+	uv -= vec2(.48, .5);
+	float
+		d = icon_sdf(uv),
+		b = length(uv) - .47;
+	vec3 c = 1. - vec3(.5, 1, 1) * msk(max(.007 - d, b + .04));
+	return vec4(c, 1) * msk(b);
+}
+
+float banner_fold(vec2 uv, float s, float i, float amp) {
+	i = (uv.y - sqr(abs(uv.x - .5)) * amp) * s - i;
+	return 2. * tri(.5, .4, i) * (fract(i) - .5);
+}
+
+// base_wall/protobanner (texture)
+TEXA(bwprtbnr) {
+	float
+		b = FBMT(uv, vec2(5, 9), .9, 3., 4), // base FBM
+		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
+		n = FBMT(uv, vec2(5, 9), .9, 3., 2), // noise (for ragged edges)
+		x = abs(uv.x - .5), // distance from center
+		d; // sdf
+	vec3 c = RGB(77, 60, 44) * t; // base color
+	vec2 p = uv * vec2(1, 2) - vec2(.5, .7);
+	c *= 1. - .55 * msk(exclude(circ(p, .3), icon_sdf(rot(45.) * p * .8) - .01)); // logo
+	c *= 1.
+		+ sqr(ls(.6, .9, b)) // noisy highlights
+		+ tri(.2, .5, uv.y) * tri(.2, .3, x) * banner_fold(uv, 4., .2, 4.) // bottom fold
+		;
+	// TODO: eliminate loop
+	for (float f = 6.; f < 9.; ++f)
+	   	c *= 1. + tri(.8, .5, uv.y) * tri(.2, .3, x) * banner_fold(uv, 12., f, 1.); // top fold
+	d = uv.y - .81 - sqr(sat(x * 4.)) * .09;
+	c = mix(c, RGB(82, 66, 60) * t, ls(.0, .01, d));
+	c *= 1.
+		- .5 * (tri(.01, .02, d)) // support shadow
+		+ .5 * (tri(.02, .01, d)) // support highlight
+		;
+	d = .15 * (1. - uv.y); // corner rounding amount; it should be 0.3, but the lightmapper doesn't do alpha testing
+	d = box(uv - .5, vec2(.49) - d) + n * .1 * sqrt(1. - uv.y) - d; // box with y-varying raggedness
+	return vec4(c * sqr(msk(d + .01, .05)), msk(d));
+}
+
+// base_wall/protobanner (map shader)
+TEXA(bwprtbnr_m) {
+	vec4 c = texture(Texture0, uv);
+	if (c.a < .5)
+		discard;
+	c.xyz *= sqr(Light() * .5);
+	return c;
 }
 
 TEXA(q3bnr) {

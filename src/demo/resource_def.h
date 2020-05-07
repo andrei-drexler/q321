@@ -82,10 +82,12 @@
 	x(timhel,				MapVertexBits)\
 	x(lava,					MapVertexBits)\
 	x(lavaf,				MapVertexBits)\
+	x(bwprtbnr,				FSVertexBits)\
+	x(bwprtbnr_m,			MapVertexBits|Gfx::Shader::NoCull)\
 	x(q3bnr,				FSVertexBits)\
 	x(q3bnr_m,				MapVertexBits)\
-	x(beam,					Demo::Attrib::PositionBit|Demo::Attrib::TexCoordBit|Demo::Attrib::NormalBit|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
-	x(flame,				Demo::Attrib::PositionBit|Demo::Attrib::TexCoordBit|Demo::Attrib::NormalBit|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(beam,					MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(flame,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 
 ////////////////////////////////////////////////////////////////
 
@@ -135,6 +137,7 @@
 	x(gkarnclma2r,	Shader::gkarnclma2r,64,		512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(giron01e,		Shader::giron01e,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(giron01nt3,	Shader::giron01nt3,	128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(bwprtbnr,		Shader::bwprtbnr,	128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gxstrtop4,	Shader::gxstrtop4,	256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bmtsprt,		Shader::bmtsprt,	256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(cable,		Shader::cable,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -208,6 +211,7 @@
 	x("gothic_wall/skull4",					Lmapped,		gskull4,	Solid,		Opaque,					(0))\
 	x("gothic_floor/center2trn",			gcntr2trn_m,	gcntr2trn,	Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahell_750",				lava,			White,		Solid,		Opaque,					(500,16,5,2))\
+	x("base_wall/protobanner",				bwprtbnr_m,		bwprtbnr,	Solid,		Opaque|NeedsUV,			(0))\
 	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
 	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\
 	x("sfx/beam",							beam,			White,		NonSolid,	Translucent|NeedsUV,	(0))\

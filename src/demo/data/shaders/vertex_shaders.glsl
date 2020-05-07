@@ -79,6 +79,7 @@ void light5() { FS(); }
 void lt2() { FS(); }
 void gpntgmlt1k() { FS(); }
 void icon() { FS(); }
+void bwprtbnr() { FS(); }
 void q3bnr() { FS(); }
 void Loading() { FS(); }
 
@@ -96,8 +97,17 @@ void gcntr2trn_m() { Generic(); }
 void timhel() { Generic(); }
 void lavaf() { Generic(); }
 
+void wave(float div, float amp, float freq) {
+	gl_Position += amp * MVP * vec4(N, 0) * sin(6.28 * (Time.x * freq + dot(P.xyz/div, vec3(1))));
+}
+
+void bwprtbnr_m() {
+	Generic();
+	wave(30., 3., .2);
+	wave(100., 3., .7);
+}
+
 void lava() {
 	Generic();
-	// assuming N = (0 0 1)
-	gl_Position += MVP[2] * sin(Time.x*.5 + dot(P.xyz/1e2, vec3(1))) * 4.;
+	wave(100., 3., .1);
 }
