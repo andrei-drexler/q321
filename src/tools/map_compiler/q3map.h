@@ -254,6 +254,8 @@ bool Q3::Map::ParseEntity(string_view& source) {
 	if (source.empty())
 		return false;
 
+	using ::Parse;
+
 	if (!Match(source, "{"sv))
 		return Error("Could not find entity beginning");
 	
@@ -284,11 +286,11 @@ bool Q3::Map::ParseEntity(string_view& source) {
 				if (!Match(source, "("sv))
 					return false;
 
-				if (!ParseValue(source, patch.height) || !ParseValue(source, patch.width))
+				if (!Parse(source, patch.height) || !Parse(source, patch.width))
 					return false;
 				int ignore = 0;
 				for (int i=0; i<3; ++i)
-					if (!ParseValue(source, ignore))
+					if (!Parse(source, ignore))
 						return false;
 
 				if (!Match(source, ")"sv))
@@ -308,10 +310,10 @@ bool Q3::Map::ParseEntity(string_view& source) {
 
 						auto& vertex = patch.vertices[y * patch.width + x];
 						for (int i=0; i<3; ++i)
-							if (!ParseValue(source, vertex.pos.data[i]))
+							if (!Parse(source, vertex.pos.data[i]))
 								return false;
 						for (int i=0; i<2; ++i)
-							if (!ParseValue(source, vertex.uv.data[i]))
+							if (!Parse(source, vertex.uv.data[i]))
 								return false;
 						
 						if (!Match(source, ")"sv))
@@ -348,15 +350,15 @@ bool Q3::Map::ParseEntity(string_view& source) {
 
 				vec3 corners[3];
 				for (int i=0; i<3; ++i)
-					if (!ParseVector(source, corners[i]))
+					if (!Parse(source, corners[i]))
 						return false;
 
 				Plane plane;
 				plane.material = AddMaterial(ParseWord(source));
-				if (!ParseValue(source, plane.shift.x) || !ParseValue(source, plane.shift.y) ||
-					!ParseValue(source, plane.rotation) ||
-					!ParseValue(source, plane.scale.x) || !ParseValue(source, plane.scale.y) ||
-					!ParseValue(source, plane.content_flags) || !ParseValue(source, plane.surface_flags) || !ParseValue(source, plane.value))
+				if (!Parse(source, plane.shift.x) || !Parse(source, plane.shift.y) ||
+					!Parse(source, plane.rotation) ||
+					!Parse(source, plane.scale.x) || !Parse(source, plane.scale.y) ||
+					!Parse(source, plane.content_flags) || !Parse(source, plane.surface_flags) || !Parse(source, plane.value))
 					return false;
 
 				plane.rotation = fmodf(plane.rotation, 360.f);

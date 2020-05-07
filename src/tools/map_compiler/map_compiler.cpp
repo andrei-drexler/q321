@@ -207,7 +207,7 @@ struct Symmetry {
 void ExploitSymmetry(Map& map, const Options& options, Symmetry& symmetry) {
 	auto& world = map.World();
 	auto text = world.GetProperty("_symmetry"sv);
-	if (!ParseValue(text, symmetry.axis) || symmetry.axis >= 3 || !ParseValue(text, symmetry.level)) {
+	if (!Parse(text, symmetry.axis) || symmetry.axis >= 3 || !Parse(text, symmetry.level)) {
 		symmetry = {};
 		return;
 	}
@@ -311,14 +311,14 @@ void MergeFuncGroups(Map& map) {
 			++i;
 			continue;
 		}
-		std::string_view prop = ent.GetProperty("_keep_uvs"sv);
+
 		int keep_uvs = 0;
-		if (!ParseValue(prop, keep_uvs))
+		if (!Parse(ent.GetProperty("_keep_uvs"sv), keep_uvs))
 			keep_uvs = 0;
-		prop = ent.GetProperty("_asymmetric"sv);
 		int asymmetric = 0;
-		if (!ParseValue(prop, asymmetric))
+		if (!Parse(ent.GetProperty("_asymmetric"sv), asymmetric))
 			asymmetric = 0;
+
 		for (auto& brush : ent.brushes) {
 			brush.extra.keep_uvs = (keep_uvs != 0);
 			brush.extra.asymmetric = (asymmetric != 0);
@@ -870,7 +870,7 @@ void RemoveUnneededUVs(Map& map, const Options& options, const ShaderProperties*
 
 void DoSetField(i16 (&value)[3], string_view string_value) {
 	vec3 v;
-	if (string_value.empty() || !ParseVector(string_value, v, false))
+	if (string_value.empty() || !Parse(string_value, v, false))
 		v = 0.f;
 	value[0] = i16(floor(v[0] + 0.5f));
 	value[1] = i16(floor(v[1] + 0.5f));
@@ -879,7 +879,7 @@ void DoSetField(i16 (&value)[3], string_view string_value) {
 
 void DoSetField(i16 &value, string_view string_value) {
 	float f;
-	if (string_value.empty() || !ParseValue(string_value, f))
+	if (string_value.empty() || !Parse(string_value, f))
 		f = 0.f;
 	value = i16(floor(f + 0.5f));
 }
@@ -1511,9 +1511,9 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 u32 ReadSkyLight(const Map& map) {
 	auto prop = map.World().GetProperty("_skylight");
 	i32 r, g, b;
-	if (!ParseValue(prop, r))
+	if (!Parse(prop, r))
 		return 0;
-	if (!ParseValue(prop, g) || !ParseValue(prop, b))
+	if (!Parse(prop, g) || !Parse(prop, b))
 		g = b = r;
 	return r | (g << 8) | (b << 16);
 }
@@ -1563,10 +1563,10 @@ void WriteLights
 	float sun_elevation = 0.f;
 
 	bool valid_sun =
-		ParseVector(sun_prop, sun.color, false) &&
-		ParseValue(sun_prop, sun.intensity) &&
-		ParseValue(sun_prop, sun_degrees) &&
-		ParseValue(sun_prop, sun_elevation);
+		Parse(sun_prop, sun.color, false) &&
+		Parse(sun_prop, sun.intensity) &&
+		Parse(sun_prop, sun_degrees) &&
+		Parse(sun_prop, sun_elevation);
 
 	if (valid_sun) {
 		const float Distance = 8192.f;
@@ -1589,7 +1589,7 @@ void WriteLights
 		Light light;
 
 		auto origin_str = ent.GetProperty("origin"sv);
-		if (origin_str.empty() || !ParseVector(origin_str, light.pos, false)) {
+		if (origin_str.empty() || !Parse(origin_str, light.pos, false)) {
 			printf(INDENT "warning: light entity %zd with no origin\n", i);
 			continue;
 		}
@@ -1611,14 +1611,14 @@ void WriteLights
 			auto& target = map.entities[i->second];
 			auto target_origin_str = target.GetProperty("origin"sv);
 			vec3 target_pos;
-			if (target_origin_str.empty() || !ParseVector(target_origin_str, target_pos, false)) {
+			if (target_origin_str.empty() || !Parse(target_origin_str, target_pos, false)) {
 				printf(INDENT "warning: entity %zd spotlight target '%*s' has no origin\n", i->second, int(target_str.size()), target_str.data());
 				continue;
 			}
 
 			float radius;
 			auto radius_str = ent.GetProperty("radius");
-			if (!ParseValue(radius_str, radius))
+			if (!Parse(radius_str, radius))
 				radius = 64.f;
 
 			light.spot = (target_pos - light.pos) * (64.f / radius);
@@ -1627,11 +1627,11 @@ void WriteLights
 		}
 
 		auto light_str = ent.GetProperty("light"sv);
-		if (light_str.empty() || !ParseValue(light_str, light.intensity))
+		if (light_str.empty() || !Parse(light_str, light.intensity))
 			light.intensity = 300.f;
 
 		auto color_str = ent.GetProperty("_color"sv);
-		if (color_str.empty() || !ParseVector(color_str, light.color, false))
+		if (color_str.empty() || !Parse(color_str, light.color, false))
 			light.color = 1.f;
 		float max_value = std::max(light.color.r, std::max(light.color.g, light.color.b));
 		if (max_value != 0.f)
@@ -1969,12 +1969,13 @@ struct Levelshot {
 	i16 angles[2] = {0, 0};
 
 	bool Parse(std::string_view property) {
+		using ::Parse;
 		return
-			ParseValue(property, position[0]) &&
-			ParseValue(property, position[1]) &&
-			ParseValue(property, position[2]) &&
-			ParseValue(property, angles[0]) &&
-			ParseValue(property, angles[1]) ;
+			Parse(property, position[0]) &&
+			Parse(property, position[1]) &&
+			Parse(property, position[2]) &&
+			Parse(property, angles[0]) &&
+			Parse(property, angles[1]) ;
 	}
 
 	bool FindInMap(const Map& map) {

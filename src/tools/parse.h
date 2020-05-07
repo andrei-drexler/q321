@@ -31,7 +31,7 @@ bool Match(string_view& source, string_view text) {
 }
 
 template <typename T>
-bool ParseValue(string_view& source, T& value) {
+bool Parse(string_view& source, T& value) {
 	SkipWhitespace(source);
 	std::from_chars_result res;
 	if constexpr (std::is_enum_v<T>) {
@@ -47,13 +47,13 @@ bool ParseValue(string_view& source, T& value) {
 	return true;
 }
 
-bool ParseVector(string_view& source, vec3& v, bool parentheses = true) {
+bool Parse(string_view& source, vec3& v, bool parentheses = true) {
 	auto backup = source;
 	if (parentheses && !Match(source, "("sv))
 		return false;
 	
 	for (int i=0; i<3; ++i) {
-		if (!ParseValue(source, v.data[i])) {
+		if (!Parse(source, v.data[i])) {
 			source = backup;
 			return false;
 		}
@@ -65,6 +65,12 @@ bool ParseVector(string_view& source, vec3& v, bool parentheses = true) {
 	}
 
 	return true;
+}
+
+template <typename T, typename... ExtraArgs>
+bool Parse(const string_view& source, T& value, ExtraArgs&&... args) {
+	auto copy = source;
+	return Parse(copy, value, static_cast<ExtraArgs&&>(args)...);
 }
 
 string_view ParseWord(string_view& source) {
