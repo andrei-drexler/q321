@@ -105,6 +105,10 @@ namespace Math {
 			//return *(float*)&u;
 		}
 
+		NOINLINE i32 abs(i32 i) {
+			return i < 0 ? -i : i;
+		}
+
 		FORCEINLINE float sign_nonzero(float x) {
 			return x < 0.f ? -1.f : 1.f;
 		}
