@@ -292,8 +292,12 @@ namespace Mem {
 		u32		high;
 		u32		size;
 	};
-	
+
 	Arena g_main_arena;
+
+	FORCEINLINE u32 Aligned(u32 size) {
+		return (size + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1);
+	}
 
 	FORCEINLINE void Init(Arena* arena = &g_main_arena, u32 size = 128 * MB) {
 		arena->buffer	= (u8*)Sys::Alloc(size);
@@ -308,7 +312,7 @@ namespace Mem {
 	}
 
 	NOINLINE void* Alloc(u32 size, Arena* arena = &g_main_arena) {
-		size = (size + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1);
+		size = Aligned(size);
 		if (arena->low + size <= arena->high) {
 			arena->high -= size;
 			return arena->buffer + arena->high;
@@ -320,6 +324,48 @@ namespace Mem {
 	template <typename T>
 	FORCEINLINE T* Alloc(u32 count = 1, Arena* arena = &g_main_arena) {
 		return (T*)Alloc(count * sizeof(T), arena);
+	}
+
+	namespace Details {
+		struct Header {
+			u32		low;
+#ifdef DEV
+			Arena*	arena;
+			u32		size;
+#endif
+		};
+	}
+
+	NOINLINE void* TempAlloc(u32 size, Arena* arena = &g_main_arena) {
+		u32 aligned_size = Aligned(size);
+		u32 total_size = aligned_size + sizeof(Details::Header);
+		if (arena->low + total_size <= arena->high) {
+			u8* ptr = arena->buffer + arena->low;
+			auto& header = *(Details::Header*)ptr;
+			header.low = arena->low;
+#ifdef DEV
+			header.arena = arena;
+			header.size = size;
+#endif
+			arena->low += total_size;
+			return ptr + sizeof(header);
+		}
+		Sys::Fatal(Error::OutOfMemory);
+		return nullptr;
+	}
+
+	void TempFree(void* block, Arena* arena = &g_main_arena) {
+		assert(uptr(block) - uptr(arena->buffer) < arena->size);
+		auto& header = ((Details::Header*)block)[-1];
+#ifdef DEV
+		assert(header.arena = arena);
+#endif
+		arena->low = header.low;
+	}
+
+	template <typename T>
+	FORCEINLINE T* TempAlloc(u32 count = 1, Arena* arena = &g_main_arena) {
+		return (T*)TempAlloc(count * sizeof(T), arena);
 	}
 }
 
