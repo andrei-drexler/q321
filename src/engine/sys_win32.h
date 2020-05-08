@@ -64,8 +64,8 @@ extern "C" size_t __cdecl strlen(const char* str);
 ////////////////////////////////////////////////////////////////
 
 namespace Win32 {
-	LARGE_INTEGER g_startTime;
-	double g_rcpFrequency;
+	LARGE_INTEGER g_start_time;
+	double g_rcp_frequency;
 	HANDLE g_waitable_timer;
 
 	// Used by raw input
@@ -257,7 +257,7 @@ void* CreateSystemRenderer(Sys::Window* window);
 FORCEINLINE Sys::Time Sys::GetTime() {
 	LARGE_INTEGER now;
 	QueryPerformanceCounter(&now);
-	return ((double)now.QuadPart - (double)Win32::g_startTime.QuadPart) * Win32::g_rcpFrequency;
+	return ((double)now.QuadPart - (double)Win32::g_start_time.QuadPart) * Win32::g_rcp_frequency;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -556,9 +556,9 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 [[noreturn]] void WINAPI WinMainCRTStartup() {
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
-	QueryPerformanceCounter(&Win32::g_startTime);
-	Win32::g_rcpFrequency = 1. / frequency.QuadPart;
-	Seed(Win32::g_startTime.LowPart);
+	QueryPerformanceCounter(&Win32::g_start_time);
+	Win32::g_rcp_frequency = 1. / frequency.QuadPart;
+	Seed(Win32::g_start_time.LowPart);
 	Win32::g_waitable_timer = ::CreateWaitableTimerA(NULL, FALSE, NULL);
 	int code = demo_main();
 	ExitProcess(code);
