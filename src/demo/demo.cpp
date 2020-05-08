@@ -1,4 +1,5 @@
 //#define ENABLE_RENDERDOC
+#define USE_RAW_INPUT
 //#define DISABLE_PARTITION
 //#define DRAW_LIGHTS
 //#define DRAW_POINT_ENTITIES
@@ -311,7 +312,7 @@ namespace Demo {
 		if (Sys::IsKeyReleased(Key::Backspace))
 			g_player.Spawn();
 
-		Sys::Point mouse;
+		vec2 mouse;
 		Sys::UpdateMouseState(mouse);
 
 		if (!IsLoading()) {

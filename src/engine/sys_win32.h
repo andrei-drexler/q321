@@ -68,6 +68,12 @@ namespace Win32 {
 	double g_rcpFrequency;
 	HANDLE g_waitable_timer;
 
+	// Used by raw input
+	i32 g_mouse_x;
+	i32 g_mouse_y;
+	i32 g_last_mouse_x;
+	i32 g_last_mouse_y;
+
 	Sys::Point GetPoint(LPARAM lParam) {
 		return { SHORT(LOWORD(lParam)), SHORT(HIWORD(lParam)) };
 	}
@@ -123,15 +129,14 @@ namespace Win32 {
 			}
 
 			case WM_ACTIVATE: {
+				RECT rect;
+				GetWindowRect((HWND)window->handle, &rect);
+				POINT center;
+				center.x = (rect.left + rect.right) / 2;
+				center.y = (rect.bottom + rect.top) / 2;
 				if (wParam != WA_INACTIVE) {
 					if ((window->flags & (Window::Flags::Active|Window::Flags::FPSMode)) == Window::Flags::FPSMode) {
-						RECT rect;
-						GetWindowRect((HWND)window->handle, &rect);
-						POINT center;
-						center.x = (rect.left + rect.right) / 2;
-						center.y = (rect.bottom + rect.top) / 2;
 						ClipCursor(&rect);
-						SetCursorPos(center.x, center.y);
 						ShowCursor(FALSE);
 					}
 					window->flags |= Window::Flags::Active;
@@ -142,8 +147,30 @@ namespace Win32 {
 					}
 					window->flags &= ~Window::Flags::Active;
 				}
+				SetCursorPos(center.x, center.y);
 				return 0;
 			}
+
+#ifdef USE_RAW_INPUT
+			case WM_INPUT: {
+				RAWINPUT raw;
+				UINT data_size = sizeof(raw);
+				if (::GetRawInputData((HRAWINPUT)lParam, RID_INPUT, &raw, &data_size, sizeof(RAWINPUTHEADER)) != UINT(-1)) {
+					if (raw.header.dwType == RIM_TYPEMOUSE) {
+						auto& mouse = raw.data.mouse;
+						g_mouse_x += mouse.lLastX;
+						g_mouse_y += mouse.lLastY;
+						if (raw.data.mouse.usFlags != MOUSE_MOVE_RELATIVE) {
+							g_mouse_x -= g_last_mouse_x;
+							g_mouse_y -= g_last_mouse_y;
+							g_last_mouse_x = mouse.lLastX;
+							g_last_mouse_y = mouse.lLastY;
+						}
+					}
+				}
+				return 0;
+			}
+#endif // USE_RAW_INPUT
 
 #ifdef USE_EVENTS
 			case WM_MOUSEMOVE: {
@@ -560,6 +587,13 @@ namespace Win32 {
 		NULL,					// LPCSTR      lpszClassName;
 		NULL,					// HICON       hIconSm;
 	};
+
+	static constexpr RAWINPUTDEVICE BaseRIMouse = {
+		1,		// USHORT usUsagePage; // Toplevel collection UsagePage
+		2,		// USHORT usUsage;     // Toplevel collection Usage
+		0,		// DWORD dwFlags;
+		NULL,	// HWND hwndTarget;    // Target hwnd. NULL = follows keyboard focus
+	};
 }
 
 FORCEINLINE void* CreateSystemWindow(Sys::Window* window) {
@@ -598,6 +632,18 @@ FORCEINLINE void* CreateSystemWindow(Sys::Window* window) {
 	dev.dmDriverExtra = 0;
 	if (EnumDisplaySettingsA(monitorinfo.szDevice, ENUM_CURRENT_SETTINGS, &dev) && (dev.dmFields & DM_DISPLAYFREQUENCY))
 		window->refresh = dev.dmDisplayFrequency;
+
+#ifdef USE_RAW_INPUT
+	RAWINPUTDEVICE rid;
+	MemCopy(&rid, &Win32::BaseRIMouse);
+	rid.hwndTarget = (HWND)window->handle;
+
+	if (RegisterRawInputDevices(&rid, 1, sizeof(rid))) {
+		Sys::DebugLog("Raw input initialized.\n");
+	} else {
+		Sys::DebugLog("ERROR: RegisterRawInputDevices failed.\n");
+	}
+#endif // USE_RAW_INPUT
 
 	return handle;
 }
@@ -696,9 +742,41 @@ FORCEINLINE void Sys::UpdateKeyboardState() {
 		g_key_state[i] = (g_key_state[i] << 1) | (current_state[i] >> 7);
 }
 
-FORCEINLINE void Sys::UpdateMouseState(Point& pt) {
+FORCEINLINE void Sys::UpdateMouseState(vec2& pt) {
 	using namespace Win32;
 
+#ifdef USE_RAW_INPUT
+	if (g_window.flags & Window::Flags::FPSMode) {
+		float scale = 1.f;
+
+		INT speed, accel[3];
+		// TODO: cache SPI values?
+		if (::SystemParametersInfoA(SPI_GETMOUSESPEED, 0, &speed, FALSE) &&
+			::SystemParametersInfoA(SPI_GETMOUSE, 0, accel, FALSE))
+		{
+			// Emulate Windows pointer ballistics
+			// https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mouse_event
+
+			scale = speed / 10.f;
+			int max_dist = max(abs(g_mouse_x), abs(g_mouse_y));
+			if (accel[2] && max_dist > accel[0])
+				scale *= 2.f;
+			if (accel[2] == 2 && max_dist > accel[1])
+				scale *= 2.f;
+		}
+
+		pt.x = g_mouse_x * scale;
+		pt.y = g_mouse_y * scale;
+		g_mouse_x = 0;
+		g_mouse_y = 0;
+	} else {
+		POINT p;
+		::GetCursorPos(&p);
+
+		pt.x = p.x;
+		pt.y = p.y;
+	}
+#else
 	POINT p;
 	::GetCursorPos(&p);
 
@@ -719,6 +797,7 @@ FORCEINLINE void Sys::UpdateMouseState(Point& pt) {
 			MemSet(&pt);
 		}
 	}
+#endif // USE_RAW_INPUT
 }
 
 ////////////////////////////////////////////////////////////////
