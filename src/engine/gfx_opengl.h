@@ -508,7 +508,7 @@ FORCEINLINE void Gfx::InitMemory(u32 fixed_size, u32 dynamic_size) {
 
 	glGenBuffers(1, &g_state.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, g_state.vbo);
-	glBufferData(GL_ARRAY_BUFFER, total_size, nullptr, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, total_size, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_state.vbo);
 }
 
