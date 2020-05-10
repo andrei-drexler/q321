@@ -991,9 +991,9 @@ TEX(gmtlbg6) {
 	uv = wavy(uv, 9., .005);
 	int i = 0, l[] = int[](13, 43, 17, 47, 23, 59, 27, 63);
 	float b = FBMT(uv, vec2(19), .7, 2., 4);
-	vec3 c = RGB(40, 50, 60) * (.5 + b);
+	vec3 c = mix(RGB(40, 50, 60), RGB(46, 33, 27), b) * (.5 + b);
 	for (/**/; i < 8; i += 2)
-		c = gmtlbg6_layer(c, RGB(145, 140, 137), uv, l[i], l[i+1]);
+		c = gmtlbg6_layer(c, mix(RGB(145, 140, 137), RGB(132, 123, 116), b), uv, l[i], l[i+1]);
 	return c;
 }
 
