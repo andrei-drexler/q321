@@ -254,7 +254,7 @@ void* CreateSystemRenderer(Sys::Window* window);
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE Sys::Time Sys::GetTime() {
+NOINLINE Sys::Time Sys::GetTime() {
 	LARGE_INTEGER now;
 	QueryPerformanceCounter(&now);
 	return ((double)now.QuadPart - (double)Win32::g_start_time.QuadPart) * Win32::g_rcp_frequency;
