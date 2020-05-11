@@ -742,27 +742,29 @@ FORCEINLINE void Sys::UpdateKeyboardState() {
 		g_key_state[i] = (g_key_state[i] << 1) | (current_state[i] >> 7);
 }
 
-FORCEINLINE void Sys::UpdateMouseState(vec2& pt) {
+FORCEINLINE void Sys::UpdateMouseState(vec2& pt, float dt) {
 	using namespace Win32;
 
 #ifdef USE_RAW_INPUT
 	if (g_window.flags & Window::Flags::FPSMode) {
 		float scale = 1.f;
 
-		INT speed, accel[3];
+		INT win_speed, win_accel[3];
 		// TODO: cache SPI values?
-		if (::SystemParametersInfoA(SPI_GETMOUSESPEED, 0, &speed, FALSE) &&
-			::SystemParametersInfoA(SPI_GETMOUSE, 0, accel, FALSE))
+		if (::SystemParametersInfoA(SPI_GETMOUSESPEED, 0, &win_speed, FALSE) &&
+			::SystemParametersInfoA(SPI_GETMOUSE, 0, win_accel, FALSE))
 		{
-			// Emulate Windows pointer ballistics
-			// https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mouse_event
+			const float
+				AccelMin = 0.5f, // min scale factor
+				AccelMax = 2.5f, // max scale factor
+				MaxSpeed = 5.0f // speed, in screens per second, at which we use the max scale factor
+			;
 
-			scale = speed / 10.f;
+			scale = win_speed / 10.f;
 			int max_dist = max(abs(g_mouse_x), abs(g_mouse_y));
-			if (accel[2] && max_dist > accel[0])
-				scale *= 2.f;
-			if (accel[2] == 2 && max_dist > accel[1])
-				scale *= 2.f;
+			float speed = max_dist * scale / dt / g_window.width;
+			if (win_accel[2])
+				scale *= mix(AccelMin, AccelMax, min(1.f, speed / MaxSpeed));
 		}
 
 		pt.x = g_mouse_x * scale;

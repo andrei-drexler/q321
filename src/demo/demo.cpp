@@ -313,7 +313,7 @@ namespace Demo {
 			g_player.Spawn();
 
 		vec2 mouse;
-		Sys::UpdateMouseState(mouse);
+		Sys::UpdateMouseState(mouse, dt);
 
 		if (!IsLoading()) {
 			float fov = mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);

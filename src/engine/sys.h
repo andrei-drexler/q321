@@ -127,7 +127,7 @@ namespace Sys {
 	FORCEINLINE bool IsKeyToggled(u8 key, bool new_state = true)	{ return (g_key_state[key] & 3) == (1 << (u8)new_state); }
 
 	void UpdateKeyboardState();
-	void UpdateMouseState(vec2& pt);
+	void UpdateMouseState(vec2& pt, float dt);
 
 	// Threading ///////////////////////////////////////////////////
 
