@@ -284,56 +284,56 @@ bool Q3::Map::ParseEntity(string_view& source) {
 				patch.material = AddMaterial(ParseWord(source));
 
 				if (!Match(source, "("sv))
-					return false;
+					return Error("Expected '(' before patch size");
 
 				if (!Parse(source, patch.height) || !Parse(source, patch.width))
-					return false;
+					return Error("Could not parse patch size");
 				int ignore = 0;
 				for (int i=0; i<3; ++i)
 					if (!Parse(source, ignore))
-						return false;
+						return Error("Could not parse reserved patch data");
 
 				if (!Match(source, ")"sv))
-					return false;
+					return Error("Expected ')' after patch size");
 
 				if (!Match(source, "("sv))
-					return false;
-					
+					return Error("Expected '(' before patch rows");
+
 				patch.vertices.resize(patch.width * patch.height);
 				for (uint32_t y=0; y<patch.height; ++y) {
 					if (!Match(source, "("sv))
-						return false;
-					
+						return Error("Expected '(' before patch vertex row");
+
 					for (uint32_t x=0; x<patch.width; ++x) {
 						if (!Match(source, "("sv))
-							return false;
+							return Error("Expected '(' before patch vertex");
 
 						auto& vertex = patch.vertices[y * patch.width + x];
 						for (int i=0; i<3; ++i)
 							if (!Parse(source, vertex.pos.data[i]))
-								return false;
+								return Error("Could not parse patch vertex position");
 						for (int i=0; i<2; ++i)
 							if (!Parse(source, vertex.uv.data[i]))
-								return false;
-						
+								return Error("Could not parse patch vertex UV");
+
 						if (!Match(source, ")"sv))
-							return false;
+							return Error("Expected ')' after patch vertex");
 					}
-						
+
 					if (!Match(source, ")"sv))
-						return false;
+						return Error("Expected ')' after patch vertex row");
 				}
 
 				if (!Match(source, ")"sv))
-					return false;
+					return Error("Expected ')' after patch rows");
 
 				// end patch
 				if (!Match(source, "}"sv))
-					return false;
+					return Error("Expected '}' after patch");
 
 				// end brush
 				if (!Match(source, "}"sv))
-					return false;
+					return Error("Expected '}' after patch brush");
 
 				entity.patches.push_back(std::move(patch));
 				continue;
@@ -351,7 +351,7 @@ bool Q3::Map::ParseEntity(string_view& source) {
 				vec3 corners[3];
 				for (int i=0; i<3; ++i)
 					if (!Parse(source, corners[i]))
-						return false;
+						return Error("Could not parse face corner");
 
 				Plane plane;
 				plane.material = AddMaterial(ParseWord(source));
@@ -359,7 +359,7 @@ bool Q3::Map::ParseEntity(string_view& source) {
 					!Parse(source, plane.rotation) ||
 					!Parse(source, plane.scale.x) || !Parse(source, plane.scale.y) ||
 					!Parse(source, plane.content_flags) || !Parse(source, plane.surface_flags) || !Parse(source, plane.value))
-					return false;
+					return Error("Could not parse plane properties");
 
 				plane.rotation = fmodf(plane.rotation, 360.f);
 				if (plane.rotation < 0.f)
