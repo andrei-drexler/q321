@@ -250,6 +250,41 @@ NOINLINE char* FloatToString(float f, char* out) {
 	return out;
 }
 
+NOINLINE float StringToFloat(const char* text, iptr* consumed = 0) {
+	const char* start = text;
+	while (*text == ' ' || *text == '\t')
+		++text;
+	iptr spaces = text - start;
+
+	char c = *text;
+	bool negative = (c == '-');
+	bool has_sign = ((c == '+') | negative);
+	text += has_sign;
+	i32 i = 0;
+	while (u8(*text - '0') < 10)
+		i = i * 10 + (*text++ - '0');
+
+	float result = float(i);
+	bool has_dot = (*text == '.');
+	if (has_dot) {
+		++text;
+		i = 0;
+		float denom = 1.f;
+		while (u8(*text - '0') < 10) {
+			i = i * 10 + (*text++ - '0');
+			denom *= 10.f;
+		}
+		result += i / denom;
+	}
+
+	if (consumed) {
+		iptr dist = text - start;
+		*consumed = (dist > spaces + has_sign + has_dot) ? dist : 0;
+	}
+
+	return negative ? -result : result;
+}
+
 ////////////////////////////////////////////////////////////////
 
 NOINLINE constexpr const char* NextAfter(const char* multistr) {

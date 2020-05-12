@@ -1,5 +1,17 @@
 #pragma once
 
+////////////////////////////////////////////////////////////////
+
+#define CVAR_LIST(x)			\
+	x(sensitivity,		1)		\
+	x(com_maxFps,		0)		\
+	x(cg_fov,			90)		\
+	x(cg_zoomfov,		45)		\
+	x(r_lightmap,		0)		\
+	x(g_gravity,		800)	\
+
+////////////////////////////////////////////////////////////////
+
 namespace Demo {
 	struct Cvar {
 		i32 integer;
@@ -18,16 +30,6 @@ namespace Demo {
 
 	////////////////////////////////////////////////////////////////
 
-	#define CVAR_LIST(x)			\
-		x(sensitivity,		1)		\
-		x(com_maxFps,		0)		\
-		x(cg_fov,			90)		\
-		x(cg_zoomfov,		45)		\
-		x(r_lightmap,		0)		\
-		x(g_gravity,		800)	\
-
-	////////////////////////////////////////////////////////////////
-	
 	namespace Console {
 		#define PP_CVAR_ADD_NAME(name, init)		#name "\0"
 		#define PP_CVAR_ADD_INIT(name, init)		#init "\0"
@@ -58,47 +60,12 @@ namespace Demo {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE float ParseFloat(const char* text, iptr* consumed = 0) {
-	const char* start = text;
-	while (*text == ' ' || *text == '\t')
-		++text;
-	iptr spaces = text - start;
-
-	char c = *text;
-	bool negative = (c == '-');
-	bool has_sign = ((c == '+') | negative);
-	text += has_sign;
-	i32 i = 0;
-	while (u8(*text - '0') < 10)
-		i = i * 10 + (*text++ - '0');
-
-	float result = float(i);
-	bool has_dot = (*text == '.');
-	if (has_dot) {
-		++text;
-		i = 0;
-		float denom = 1.f;
-		while (u8(*text - '0') < 10) {
-			i = i * 10 + (*text++ - '0');
-			denom *= 10.f;
-		}
-		result += i / denom;
-	}
-
-	if (consumed) {
-		iptr dist = text - start;
-		*consumed = (dist > spaces + has_sign + has_dot) ? dist : 0;
-	}
-
-	return negative ? -result : result;
-}
-
 FORCEINLINE void Demo::Console::Init() {
 	const char* value = CvarInit;
 	for (u32 cvar_index = 0; cvar_index < NumCvars; ++cvar_index) {
 		auto& cvar = CvarData[cvar_index];
 		iptr advance = 0;
-		cvar.Set(ParseFloat(value, &advance));
+		cvar.Set(StringToFloat(value, &advance));
 		assert(advance > 0 && value[advance] == 0);
 		value += advance;
 		++value;
