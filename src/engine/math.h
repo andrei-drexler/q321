@@ -18,11 +18,6 @@ namespace Math {
 		return f < 0.f ? -i : i;
 	}
 
-	inline __m128 _mm_setone_ps() {
-		const __m128i tmp = _mm_setzero_si128();
-		return _mm_castsi128_ps(_mm_srli_epi32(_mm_slli_epi32(_mm_cmpeq_epi32(tmp, tmp), 25), 2));
-	}
-
 	inline namespace constants {
 		static constexpr float
 			PI			= 3.1415927f,
