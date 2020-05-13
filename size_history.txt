@@ -809,3 +809,4 @@
 42881,jitter occluded lightmap texels
 42755,disabled jittering
 42793,copy texel pos
+42765,always detect startsolid
