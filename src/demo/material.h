@@ -4,9 +4,9 @@ namespace Demo {
 	namespace Material {
 		enum Flags : u8 {
 			Opaque			= 0 << 0,
-			Translucent		= 1 << 0,
-			Invisible		= 2 << 0,
-			Sky				= 3 << 0,
+			Sky				= 1 << 0,
+			Translucent		= 2 << 0,
+			Invisible		= 3 << 0,
 			MaskVisibility	= 3 << 0,
 
 			NonSolid		= 0 << 2,
@@ -45,6 +45,10 @@ namespace Demo {
 			DEMO_MATERIALS(PP_DEMO_MATERIAL_PATH)
 			#undef PP_DEMO_MATERIAL_PATH
 		};
+
+		constexpr Flags GetVisibility(u8 material) {
+			return Flags(Properties[material] & MaskVisibility);
+		}
 
 		////////////////////////////////////////////////////////////////
 		

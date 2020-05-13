@@ -155,7 +155,7 @@ namespace Demo {
 		Uniform::Cam.w = frame.shadow_angle * RAD2DEG;
 
 		Gfx::SetRenderTarget(frame.render_target);
-		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
+		Gfx::Clear(Gfx::ClearBit::Depth);
 		Map::Render();
 	}
 

@@ -494,8 +494,14 @@ void Map::ComputeLighting(bool shadows) {
 								trace.delta.y = light_pos.y - trace.start.y;
 								trace.delta.z = light_pos.z - trace.start.z;
 
-								if (Map::TraceRay(trace))
+								bool hit = Map::TraceRay(trace);
+								if (light_index == 0) {
+									using namespace Demo::Material;
+									if (!hit || GetVisibility(brushes.GetPlaneMaterial(trace.plane)) != Sky)
+										continue;
+								} else if (hit) {
 									continue;
+								}
 							}
 
 							mad(accum, light.color, scale);
@@ -519,7 +525,9 @@ void Map::ComputeLighting(bool shadows) {
 								mad(trace.delta, y_axis, Lightmap::SkyRayLength * dir.y);
 								mad(trace.delta, nor,    Lightmap::SkyRayLength * dir.z);
 
-								if (!Map::TraceRay(trace))
+								using namespace Demo::Material;
+
+								if (Map::TraceRay(trace) && GetVisibility(brushes.GetPlaneMaterial(trace.plane)) == Sky)
 									accum += skylight;
 							}
 						}

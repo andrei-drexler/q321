@@ -222,7 +222,7 @@ beginning:
 					if (contents != Material::WeaponClip)
 						continue;
 				} else if (trace.type == TraceType::Lightmap) {
-					if (visibility != Material::Opaque && (props & Material::BlocksLight) == 0)
+					if (visibility >= Material::Translucent && (props & Material::BlocksLight) == 0)
 						continue;
 				}
 				
