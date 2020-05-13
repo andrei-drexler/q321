@@ -139,10 +139,6 @@ namespace Map {
 		u16					max_touch_ents;
 		u16					num_touch_ents;
 
-		TraceInfo() {
-			MemSet(this);
-		}
-
 		void				SetBullet(const vec3& a, const vec3& b);
 		void				SetLightmap(const vec3& a, const vec3& b);
 		void				SetCollision(const vec3& a, const vec3& travel, const vec3& box);

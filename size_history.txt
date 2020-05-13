@@ -806,3 +806,4 @@
 42762,tweaked metalbridge06
 42741,noinline gettime
 42764,custom mouse acceleration
+42881,jitter occluded lightmap texels

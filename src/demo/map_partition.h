@@ -151,7 +151,8 @@ beginning:
 			// Note: when determining which entities we're touching
 			// we don't want to ignore those we're already inside of
 			// by a lot (t_enter < -1).
-			float t_enter = trace.max_touch_ents ? -FLT_MAX : -1.f;
+			// Same thing goes for lightmap traces.
+			float t_enter = trace.max_touch_ents || trace.type == TraceType::Lightmap ? -FLT_MAX : -1.f;
 			float t_exit = tmax;
 
 			auto plane_index = brushes.start[brush_index];

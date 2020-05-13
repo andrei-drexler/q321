@@ -21,6 +21,7 @@ namespace Demo {
 			Height			= Descriptor.height,
 			Scale			= 16,
 			Dilate			= true,
+			JitterOccluded	= true,
 			NumSkySamples	= 12
 		;
 
@@ -379,14 +380,20 @@ void Map::ComputeLighting(bool shadows) {
 			vec3* texel_nor = Map::lightmap.nor + y * Lightmap::Width;
 
 			TraceInfo trace;
+			MemSet(&trace);
 			trace.type = TraceInfo::Type::Lightmap;
 			// prevent the ray from squeezing between diagonally-adjacent brushes
 			// this fixes a sun light leak in the left hallway of DM1
 			trace.box_half_size = 1.f/32.f;
 
+			TraceInfo occlusion_trace;
+			if constexpr (Lightmap::JitterOccluded) {
+				MemCopy(&occlusion_trace, &trace);
+			}
+
 			for (; y < yend; ++y) {
 				for (u16 x = 0; x < Lightmap::Width; ++x, ++texel_pos, ++texel_nor, ++texel) {
-					const vec3& pos = *texel_pos;
+					vec3& pos = *texel_pos;
 					const vec3& nor = *texel_nor;
 
 					constexpr vec3 Ambient = {
@@ -397,6 +404,37 @@ void Map::ComputeLighting(bool shadows) {
 					vec3 accum = Ambient;
 
 					if (length_squared(nor) > 0.f) {
+						vec3 x_axis, y_axis;
+						ComputeTangentFrame(nor, x_axis, y_axis);
+
+						if constexpr (Lightmap::JitterOccluded) {
+							occlusion_trace.start = pos + nor;
+							occlusion_trace.delta = nor;
+
+							if (Map::TraceRay(occlusion_trace)) {
+								const u16 Divs = 2;
+								const float
+									Scale =  Lightmap::Scale / float(Divs),
+									Bias  = -Lightmap::Scale * (0.5f - 0.5f / Divs)
+								;
+
+								for (u16 i = 0; i < Divs * Divs; ++i) {
+									vec3 offset = nor;
+									mad(offset, x_axis, (i % Divs) * Scale + Bias);
+									mad(offset, y_axis, (i / Divs) * Scale + Bias);
+
+									occlusion_trace.start.x = pos.x + offset.x;
+									occlusion_trace.start.y = pos.y + offset.y;
+									occlusion_trace.start.z = pos.z + offset.z;
+
+									if (!Map::TraceRay(occlusion_trace)) {
+										pos = occlusion_trace.start;
+										break;
+									}
+								}
+							}
+						}
+
 						for (u16 light_index = 0; light_index < Map::num_lights; ++light_index) {
 							const auto& light = Map::lights[light_index];
 							vec3 light_pos = light.position;
@@ -463,9 +501,6 @@ void Map::ComputeLighting(bool shadows) {
 							skylight.r = ((source->skylight      ) & 255) / float(Lightmap::NumSkySamples);
 							skylight.g = ((source->skylight >>  8) & 255) / float(Lightmap::NumSkySamples);
 							skylight.b = ((source->skylight >> 16) & 255) / float(Lightmap::NumSkySamples);
-
-							vec3 x_axis, y_axis;
-							ComputeTangentFrame(nor, x_axis, y_axis);
 
 							R2::CosineHemisphere hemisphere;
 							for (u16 i = 0; i < Lightmap::NumSkySamples; ++i) {

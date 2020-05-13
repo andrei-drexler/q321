@@ -15,6 +15,7 @@ namespace Demo {
 
 	bool GroundTrace(Player& player) {
 		Map::TraceInfo trace;
+		MemSet(&trace);
 		trace.start = player.position;
 		trace.z_offset = Player::EyeCenterOffset;
 		trace.delta.z = -0.5f;
@@ -70,6 +71,7 @@ namespace Demo {
 			vec3 advance = player.velocity * dt;
 
 			Map::TraceInfo trace;
+			MemSet(&trace);
 			trace.SetCollision(player.position, advance, Player::CollisionBounds);
 			trace.z_offset = Player::EyeCenterOffset;
 
@@ -204,9 +206,9 @@ namespace Demo {
 
 		const float StepSize = 18.f;
 
-		// zeroed out in constructor
 		Map::TraceInfo trace;
 
+		MemSet(&trace);
 		trace.start = pos;
 		trace.z_offset = Player::EyeCenterOffset;
 		trace.delta.z = -StepSize;
