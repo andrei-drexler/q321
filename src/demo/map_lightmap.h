@@ -398,7 +398,7 @@ void Map::ComputeLighting(bool shadows) {
 
 			for (; y < yend; ++y) {
 				for (u16 x = 0; x < Lightmap::Width; ++x, ++texel_pos, ++texel_nor, ++texel) {
-					vec3& pos = *texel_pos;
+					vec3 pos = *texel_pos;
 					const vec3& nor = *texel_nor;
 
 					constexpr vec3 Ambient = {
