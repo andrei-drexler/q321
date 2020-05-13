@@ -21,7 +21,7 @@ namespace Demo {
 			Height			= Descriptor.height,
 			Scale			= 16,
 			Dilate			= true,
-			JitterOccluded	= true,
+			JitterOccluded	= false,
 			NumSkySamples	= 12
 		;
 
