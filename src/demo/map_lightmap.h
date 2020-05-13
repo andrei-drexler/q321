@@ -5,21 +5,8 @@
 namespace Demo {
 	namespace Lightmap {
 		/* Lighting parameters */
-		constexpr float
-			PointScale		= 7500.f * 2.f,
-			ThreshIgnore	= 2.f,
-			SurfaceBias		= 4.f,
-			SkyRayLength	= 8192.f
-		;
-
-		/* Metadata */
-		constexpr auto
-			Descriptor		= Texture::Descriptors[Texture::Lightmap];
-
 		constexpr u16
-			Width			= Descriptor.width,
-			Height			= Descriptor.height,
-			Scale			= 16,
+			TexelSize		= 16,
 			Dilate			= true,
 			JitterOccluded	= false,
 			NumSkySamples	= 12
@@ -34,6 +21,24 @@ namespace Demo {
 			Normals,
 		};
 		constexpr DebugMode Debug = DebugMode::Off;
+
+		constexpr float
+			PointScale		= 7500.f * 2.f,
+			ThreshIgnore	= 2.f,
+			SurfaceBias		= 4.f,
+			SkyRayLength	= 8192.f
+		;
+
+		/* Metadata */
+		constexpr auto
+			Descriptor		= Texture::Descriptors[Texture::Lightmap];
+
+		constexpr u16
+			Width			= Descriptor.width,
+			Height			= Descriptor.height
+		;
+
+		////////////////////////////////////////////////////////////////
 
 		u32 PackVec3(const vec3& v) {
 			return 
@@ -99,8 +104,8 @@ FORCEINLINE void Map::Details::PackLightmap() {
 				size.y = height;
 		}
 
-		size.x = ceil(size.x / Lightmap::Scale);
-		size.y = ceil(size.y / Lightmap::Scale);
+		size.x = ceil(size.x / Lightmap::TexelSize);
+		size.y = ceil(size.y / Lightmap::TexelSize);
 
 		auto tile = lightmap.packer.Add(u16(size.x) + 1, u16(size.y) + 1);
 		assert(tile != lightmap.packer.Full);
@@ -196,15 +201,15 @@ FORCEINLINE void Map::Details::PackLightmap() {
 			for (vec3 *v = pos, *endv = pos + vtx_count; v != endv; ++v)
 				uv_bounds.add(vec2{(*v)[s_axis], (*v)[t_axis]});
 
-			uv_bounds.mins.x = floor(uv_bounds.mins.x / Lightmap::Scale) - 0.5f;
-			uv_bounds.mins.y = floor(uv_bounds.mins.y / Lightmap::Scale) - 0.5f;
-			uv_bounds.maxs.x = ceil(uv_bounds.maxs.x / Lightmap::Scale) + 0.5f;
-			uv_bounds.maxs.y = ceil(uv_bounds.maxs.y / Lightmap::Scale) + 0.5f;
+			uv_bounds.mins.x = floor(uv_bounds.mins.x / Lightmap::TexelSize) - 0.5f;
+			uv_bounds.mins.y = floor(uv_bounds.mins.y / Lightmap::TexelSize) - 0.5f;
+			uv_bounds.maxs.x = ceil(uv_bounds.maxs.x / Lightmap::TexelSize) + 0.5f;
+			uv_bounds.maxs.y = ceil(uv_bounds.maxs.y / Lightmap::TexelSize) + 0.5f;
 
 			const vec4& plane = brushes.planes[plane_index];
 			auto uv_unmap = [&](float s, float t) -> vec3 {
-				s = (s + uv_bounds.mins.x + 0.5f) * Lightmap::Scale;
-				t = (t + uv_bounds.mins.y + 0.5f) * Lightmap::Scale;
+				s = (s + uv_bounds.mins.x + 0.5f) * Lightmap::TexelSize;
+				t = (t + uv_bounds.mins.y + 0.5f) * Lightmap::TexelSize;
 
 				vec3 pos;
 				pos[s_axis ] = s;
@@ -213,8 +218,8 @@ FORCEINLINE void Map::Details::PackLightmap() {
 
 				if (0) {
 					vec2 uv;
-					uv.x = pos[s_axis] / Lightmap::Scale;
-					uv.y = pos[t_axis] / Lightmap::Scale;
+					uv.x = pos[s_axis] / Lightmap::TexelSize;
+					uv.y = pos[t_axis] / Lightmap::TexelSize;
 
 					assert(uv.x >= uv_bounds.mins.x);
 					assert(uv.x <= uv_bounds.maxs.x);
@@ -232,8 +237,8 @@ FORCEINLINE void Map::Details::PackLightmap() {
 			for (u16 vtx_index = 0; vtx_index < vtx_count; ++vtx_index) {
 				vec2& lightmap_uv = uv[vtx_index].zw;
 				vec3& p = pos[vtx_index];
-				lightmap_uv.x = (p[s_axis] / Lightmap::Scale - uv_bounds.mins.x + rect.min[0]) / Lightmap::Width;
-				lightmap_uv.y = (p[t_axis] / Lightmap::Scale - uv_bounds.mins.y + rect.min[1]) / Lightmap::Height;
+				lightmap_uv.x = (p[s_axis] / Lightmap::TexelSize - uv_bounds.mins.x + rect.min[0]) / Lightmap::Width;
+				lightmap_uv.y = (p[t_axis] / Lightmap::TexelSize - uv_bounds.mins.y + rect.min[1]) / Lightmap::Height;
 			}
 
 			vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width + rect.min[0];
@@ -244,7 +249,7 @@ FORCEINLINE void Map::Details::PackLightmap() {
 					vec3 pos = uv_unmap(x, y);
 
 					if (0) {
-						const float MaxBorder = Lightmap::Scale;
+						const float MaxBorder = Lightmap::TexelSize;
 
 						float edge_dist = 0.f;
 						for (u16 i = brushes.start[brush_index]; i < end_plane_index; ++i) {
@@ -414,8 +419,8 @@ void Map::ComputeLighting(bool shadows) {
 							if (Map::TraceRay(occlusion_trace)) {
 								const u16 Divs = 2;
 								const float
-									Scale =  Lightmap::Scale / float(Divs),
-									Bias  = -Lightmap::Scale * (0.5f - 0.5f / Divs)
+									Scale =  Lightmap::TexelSize / float(Divs),
+									Bias  = -Lightmap::TexelSize * (0.5f - 0.5f / Divs)
 								;
 
 								for (u16 i = 0; i < Divs * Divs; ++i) {
