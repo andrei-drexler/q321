@@ -158,13 +158,9 @@ namespace Win32 {
 				if (::GetRawInputData((HRAWINPUT)lParam, RID_INPUT, &raw, &data_size, sizeof(RAWINPUTHEADER)) != UINT(-1)) {
 					if (raw.header.dwType == RIM_TYPEMOUSE) {
 						auto& mouse = raw.data.mouse;
-						g_mouse_x += mouse.lLastX;
-						g_mouse_y += mouse.lLastY;
-						if (raw.data.mouse.usFlags != MOUSE_MOVE_RELATIVE) {
-							g_mouse_x -= g_last_mouse_x;
-							g_mouse_y -= g_last_mouse_y;
-							g_last_mouse_x = mouse.lLastX;
-							g_last_mouse_y = mouse.lLastY;
+						if (!(raw.data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)) {
+							g_mouse_x += mouse.lLastX;
+							g_mouse_y += mouse.lLastY;
 						}
 					}
 				}

@@ -810,3 +810,4 @@
 42755,disabled jittering
 42793,copy texel pos
 42765,always detect startsolid
+42742,removed support for absolute raw mouse movement
