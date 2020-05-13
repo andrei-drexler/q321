@@ -1703,6 +1703,12 @@ void shiny() {
 	FCol = vec4(c.xyz * Light(), 1);
 }
 
+// skies/blacksky
+void blacksky() {
+	FCol = vec4(0);
+}
+
+// skies/tim_hell
 void timhel() {
 	vec3 d = normalize(Pos - Cam.xyz);
 	d.z = d.z * 4. + 2.;

@@ -79,6 +79,7 @@
 	x(dmnd2cjp_m,			MapVertexBits)\
 	x(lpdmnd,				FSVertexBits)\
 	x(lpdmnd_m,				MapVertexBits)\
+	x(blacksky,				MapVertexBits)\
 	x(timhel,				MapVertexBits)\
 	x(lava,					MapVertexBits)\
 	x(lavaf,				MapVertexBits)\
@@ -212,7 +213,7 @@
 	x("gothic_floor/center2trn",			gcntr2trn_m,	gcntr2trn,	Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahell_750",				lava,			White,		Solid,		Opaque,					(500,16,5,2))\
 	x("base_wall/protobanner",				bwprtbnr_m,		bwprtbnr,	Solid,		Opaque|NeedsUV,			(0))\
-	x("skies/blacksky",						Generic,		White,		Solid,		Invisible,				(0))\
+	x("skies/blacksky",						blacksky,		White,		Solid,		Sky,					(0))\
 	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\
 	x("sfx/beam",							beam,			White,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("sfx/flame1_hell",					flame,			_128x256,	NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
