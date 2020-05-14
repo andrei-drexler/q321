@@ -417,11 +417,14 @@ void Map::ComputeLighting(bool shadows) {
 							occlusion_trace.delta = nor;
 
 							if (Map::TraceRay(occlusion_trace)) {
-								const u16 Divs = 2;
+								const u16 Divs = 4;
 								const float
 									Scale =  Lightmap::TexelSize / float(Divs),
 									Bias  = -Lightmap::TexelSize * (0.5f - 0.5f / Divs)
 								;
+
+								vec4 average_offset;
+								MemSet(&average_offset);
 
 								for (u16 i = 0; i < Divs * Divs; ++i) {
 									vec3 offset = nor;
@@ -433,10 +436,13 @@ void Map::ComputeLighting(bool shadows) {
 									occlusion_trace.start.z = pos.z + offset.z;
 
 									if (!Map::TraceRay(occlusion_trace)) {
-										pos = occlusion_trace.start;
-										break;
+										average_offset.xyz += offset;
+										++average_offset.w;
 									}
 								}
+
+								if (average_offset.w)
+									mad(pos, average_offset.xyz, 1.f / average_offset.w);
 							}
 						}
 
