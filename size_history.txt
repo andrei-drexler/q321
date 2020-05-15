@@ -817,3 +817,4 @@
 42810,reverted uniform tmin change
 42989,centroid sampling for occluded lightmap texels
 42810,disabled occluded texel jittering
+43057,added basic light bounce step

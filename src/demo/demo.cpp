@@ -36,7 +36,9 @@ namespace Demo {
 
 	void GenerateLightmap(void*) {
 		g_updated_lightmap = false;
-		Map::ComputeLighting();
+		Map::ComputeLighting(Map::LightMode::Shadows);
+		if (r_bounce.integer)
+			Map::ComputeLighting(Map::LightMode::Bounce);
 	}
 
 	void RenderSprite(const vec3& point, float size) {

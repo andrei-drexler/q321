@@ -69,10 +69,13 @@ namespace Map {
 		Array<u16,  MAX_NUM_BRUSHES>	start;
 		Array<vec4, MAX_NUM_PLANES>		planes;
 		Array<u8,   MAX_NUM_PLANES>		plane_mat_uv_axis;	// material: 6, uv_axis: 2
+		Array<vec2, MAX_NUM_PLANES>		plane_lmap_offset;
 		Array<u8,   MAX_NUM_BRUSHES>	entity;
 
 		u8								GetPlaneMaterial(u32 plane_index) const { return plane_mat_uv_axis[plane_index] >> 2; }
 		u8								GetPlaneUVAxis(u32 plane_index) const { return plane_mat_uv_axis[plane_index] & 3; }
+		static u8						GetSAxis(u8 uv_axis) { return (uv_axis == 0);     } // 1 0 0
+		static u8						GetTAxis(u8 uv_axis) { return (uv_axis != 2) + 1; } // 2 2 1
 
 		struct {
 			u32							data;
@@ -187,6 +190,7 @@ namespace Map {
 
 	struct {
 		u32*						data;
+		u32*						bounce_data;
 		vec3*						pos;
 		vec3*						nor;
 		RectPacker					packer;
@@ -199,8 +203,14 @@ namespace Map {
 	LightList						lights;
 	u16								num_lights;
 
+	enum class LightMode {
+		Draft,
+		Shadows,
+		Bounce,
+	};
+
 	void							AllocLightmap();
-	void							ComputeLighting(bool shadows = true);
+	void							ComputeLighting(LightMode mode = LightMode::Shadows);
 	void							UpdateLightmapTexture();
 
 	/* Internal functions */
@@ -639,7 +649,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 	Details::InitLights();
 	Details::CreatePartition();
 	Details::PackLightmap();
-	ComputeLighting(false);
+	ComputeLighting(LightMode::Draft);
 
 	Gfx::ResetArena(Gfx::Arena::Level);
 	gpu_addr.positions = Gfx::UploadGeometry(&positions[0], num_total_vertices, Gfx::Arena::Level);
