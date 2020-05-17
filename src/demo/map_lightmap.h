@@ -644,42 +644,46 @@ void Map::ComputeLighting(LightMode mode) {
 			}
 		}
 	} else {
-		// fill lightmap with debug info (see Lightmap::Debug)
+		Details::DebugFillLightmap();
+	}
+}
 
-		for (u16 tile_index = 0, tile_count = lightmap.packer.GetNumTiles(); tile_index < tile_count; ++tile_index) {
-			auto& rect = lightmap.packer.GetTile(tile_index);
+FORCEINLINE void Map::Details::DebugFillLightmap() {
+	using namespace Demo;
 
-			u32* texel = lightmap.data + rect.min[1] * Lightmap::Width;
-			vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width;
-			vec3* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width;
+	for (u16 tile_index = 0, tile_count = lightmap.packer.GetNumTiles(); tile_index < tile_count; ++tile_index) {
+		auto& rect = lightmap.packer.GetTile(tile_index);
 
-			for (u16 y = rect.min[1]; y < rect.max[1]; ++y, texel += Lightmap::Width, texel_pos += Lightmap::Width, texel_nor += Lightmap::Width) {
-				for (u16 x = rect.min[0]; x < rect.max[0]; ++x) {
-					switch (Lightmap::Debug) {
-						case Lightmap::DebugMode::Tiles:
-							texel[x] = tile_index * 0x45d9f3b;
-							break;
+		u32* texel = lightmap.data + rect.min[1] * Lightmap::Width;
+		vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width;
+		vec3* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width;
 
-						case Lightmap::DebugMode::Checker:
-							texel[x] = (x ^ y) & 1 ? 0xffff'ffff : 0x3f3f'3f3f;
-							break;
+		for (u16 y = rect.min[1]; y < rect.max[1]; ++y, texel += Lightmap::Width, texel_pos += Lightmap::Width, texel_nor += Lightmap::Width) {
+			for (u16 x = rect.min[0]; x < rect.max[0]; ++x) {
+				switch (Lightmap::Debug) {
+					case Lightmap::DebugMode::Tiles:
+						texel[x] = tile_index * 0x45d9f3b;
+						break;
 
-						case Lightmap::DebugMode::Positions:
-							texel[x] = Lightmap::PackVec3({
-								fract(texel_pos[x].x / 64.f),
-								fract(texel_pos[x].y / 64.f),
-								fract(texel_pos[x].z / 64.f)
-							});
-							break;
+					case Lightmap::DebugMode::Checker:
+						texel[x] = (x ^ y) & 1 ? 0xffff'ffff : 0x3f3f'3f3f;
+						break;
 
-						case Lightmap::DebugMode::Normals:
-							texel[x] = Lightmap::PackVec3(texel_nor[x] * 0.5f + 0.5f);
-							break;
+					case Lightmap::DebugMode::Positions:
+						texel[x] = Lightmap::PackVec3({
+							fract(texel_pos[x].x / 64.f),
+							fract(texel_pos[x].y / 64.f),
+							fract(texel_pos[x].z / 64.f)
+						});
+						break;
 
-						default:
-							texel[x] = 0xFF00FF;
-							break;
-					}
+					case Lightmap::DebugMode::Normals:
+						texel[x] = Lightmap::PackVec3(texel_nor[x] * 0.5f + 0.5f);
+						break;
+
+					default:
+						texel[x] = 0xFF00FF;
+						break;
 				}
 			}
 		}

@@ -225,6 +225,7 @@ namespace Map {
 		void						InitEntities();
 		void						InitLights();
 		void						PackLightmap();
+		void						DebugFillLightmap();
 
 		static u16					MirrorPlaneIndex(u16 brush_plane, u8 axis);
 	}
