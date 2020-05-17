@@ -819,3 +819,6 @@
 42810,disabled occluded texel jittering
 43057,added basic light bounce step
 43057,separate debugfilllightmap function
+43256,temporarily enabled occluded lightmap texel jittering
+43256,separate getunoccludedpos function
+43057,disabled jittering

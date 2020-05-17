@@ -445,39 +445,8 @@ void Map::ComputeLighting(LightMode mode) {
 						vec3 x_axis, y_axis;
 						ComputeTangentFrame(nor, x_axis, y_axis);
 
-						if constexpr (Lightmap::JitterOccluded) {
-							occlusion_trace.start = pos + nor;
-							occlusion_trace.delta = nor;
-
-							if (Map::TraceRay(occlusion_trace)) {
-								const u16 Divs = 4;
-								const float
-									Scale =  Lightmap::TexelSize / float(Divs),
-									Bias  = -Lightmap::TexelSize * (0.5f - 0.5f / Divs)
-								;
-
-								vec4 average_offset;
-								MemSet(&average_offset);
-
-								for (u16 i = 0; i < Divs * Divs; ++i) {
-									vec3 offset = nor;
-									mad(offset, x_axis, (i % Divs) * Scale + Bias);
-									mad(offset, y_axis, (i / Divs) * Scale + Bias);
-
-									occlusion_trace.start.x = pos.x + offset.x;
-									occlusion_trace.start.y = pos.y + offset.y;
-									occlusion_trace.start.z = pos.z + offset.z;
-
-									if (!Map::TraceRay(occlusion_trace)) {
-										average_offset.xyz += offset;
-										++average_offset.w;
-									}
-								}
-
-								if (average_offset.w)
-									mad(pos, average_offset.xyz, 1.f / average_offset.w);
-							}
-						}
+						if constexpr (Lightmap::JitterOccluded)
+							Details::GetUnoccludedPos(pos, nor, x_axis, y_axis, occlusion_trace);
 
 						if (params->mode != LightMode::Bounce) {
 							for (u16 light_index = 0; light_index < Map::num_lights; ++light_index) {
@@ -648,6 +617,50 @@ void Map::ComputeLighting(LightMode mode) {
 	}
 }
 
+////////////////////////////////////////////////////////////////
+// Test if sampling position is occluded and, if so, compute
+// an average unoccluded position.
+//
+// Trace needs to be pre-filled (at least type = Lightmap)
+////////////////////////////////////////////////////////////////
+FORCEINLINE void Map::Details::GetUnoccludedPos(vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace) {
+	using namespace Demo;
+
+	trace.start = pos + nor;
+	trace.delta = nor;
+
+	if (Map::TraceRay(trace)) {
+		const u16 Divs = 4;
+		const float
+			Scale =  Lightmap::TexelSize / float(Divs),
+			Bias  = -Lightmap::TexelSize * (0.5f - 0.5f / Divs)
+		;
+
+		vec4 average_offset;
+		MemSet(&average_offset);
+
+		for (u16 i = 0; i < Divs * Divs; ++i) {
+			vec3 offset = nor;
+			mad(offset, x_axis, (i % Divs) * Scale + Bias);
+			mad(offset, y_axis, (i / Divs) * Scale + Bias);
+
+			trace.start.x = pos.x + offset.x;
+			trace.start.y = pos.y + offset.y;
+			trace.start.z = pos.z + offset.z;
+
+			if (!Map::TraceRay(trace)) {
+				average_offset.xyz += offset;
+				++average_offset.w;
+			}
+		}
+
+		if (average_offset.w)
+			mad(pos, average_offset.xyz, 1.f / average_offset.w);
+	}
+}
+
+////////////////////////////////////////////////////////////////
+
 FORCEINLINE void Map::Details::DebugFillLightmap() {
 	using namespace Demo;
 
@@ -689,6 +702,8 @@ FORCEINLINE void Map::Details::DebugFillLightmap() {
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Map::UpdateLightmapTexture() {
 	Gfx::SetTextureContents(Demo::Texture::Lightmap, lightmap.data);

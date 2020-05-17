@@ -226,6 +226,7 @@ namespace Map {
 		void						InitLights();
 		void						PackLightmap();
 		void						DebugFillLightmap();
+		void						GetUnoccludedPos(vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace);
 
 		static u16					MirrorPlaneIndex(u16 brush_plane, u8 axis);
 	}
