@@ -822,3 +822,4 @@
 43256,temporarily enabled occluded lightmap texel jittering
 43256,separate getunoccludedpos function
 43057,disabled jittering
+43198,tweaked main entrance uv offset
