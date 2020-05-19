@@ -1400,10 +1400,6 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 		std::sort(order.begin(), order.end(), [&] (size_t a, size_t b) {
 			return sort_keys[a] < sort_keys[b];
 		});
-
-		for (size_t i = 0; i < order.size(); ++i) {
-			printf("Sort: %lld\n", sort_keys[order[i]]);
-		}
 	}
 
 	print << "\nconst u32 "sv << patch_array_name << "[] = {"sv;
@@ -2116,7 +2112,7 @@ int main() {
 	options.trim_unwanted_uvs	= true;		// saves 1k!
 	options.wrap_uvs			= false;	// minor net loss
 	options.sort_lights			= true;
-	options.sort_patches		= false;
+	options.sort_patches		= true;
 	options.verbose				= false;
 
 	FILE* out = fopen(options.out_path, "w");
