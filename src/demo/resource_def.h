@@ -56,6 +56,7 @@
 	x(gkarnarcfnltp,		FSVertexBits)\
 	x(gkarnarcfnlmd,		FSVertexBits)\
 	x(gkarnarcfnlbt,		FSVertexBits)\
+	x(gkblkgmtrn,			FSVertexBits)\
 	x(giron01e,				FSVertexBits)\
 	x(giron01nt3,			FSVertexBits)\
 	x(gxstrtop4,			FSVertexBits)\
@@ -142,6 +143,7 @@
 	x(gkarnarcfnltp,	Shader::gkarnarcfnltp,	256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkarnarcfnlmd,	Shader::gkarnarcfnlmd,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkarnarcfnlbt,	Shader::gkarnarcfnlbt,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkblkgmtrn,		Shader::gkblkgmtrn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(giron01e,			Shader::giron01e,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(giron01nt3,		Shader::giron01nt3,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bwprtbnr,			Shader::bwprtbnr,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -208,6 +210,7 @@
 	x("gothic_door/km_arena1archfinalc_top",	Lmapped,		gkarnarcfnltp,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_door/km_arena1archfinald_mid",	Lmapped,		gkarnarcfnlmd,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_door/km_arena1archfinald_bot",	Lmapped,		gkarnarcfnlbt,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_block/killblockgeomtrn",			Lmapped,		gkblkgmtrn,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/iron01_e",					Lmapped,		giron01e,		Solid,		Opaque,					(0))\
 	x("gothic_wall/iron01_ntech3",				Lmapped,		giron01nt3,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_floor/xstairtop4",				Lmapped,		gxstrtop4,		Solid,		Opaque|NeedsUV,			(0))\
@@ -242,7 +245,6 @@
 	x("gothic_block/killblock_i4",				"gothic_block/blocks15")\
 	x("gothic_block/blocks1",					"gothic_block/blocks15")\
 	x("gothic_block/demon_block15fx",			"gothic_block/blocks15")\
-	x("gothic_block/killblockgeomtrn",			"gothic_block/blocks15")\
 	x("gothic_trim/metaldemonkillblock",		"gothic_block/blocks15")\
 	x("sfx/computer_blocks17",					"gothic_block/blocks15")\
 	x("gothic_trim/pitted_rust",				"gothic_trim/pitted_rust3")\
