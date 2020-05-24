@@ -159,7 +159,10 @@ NOINLINE void Demo::Texture::GenerateAll() {
 		Sys::RasterizeFont(descriptor + 1, descriptor[0], 0, font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height, packer, UI::glyphs[font_index]);
 	}
 
-	// 'Impact' is decent match for the large Q3 font, but it's not perfect.
+	// Hack: remap large font lowercase glyphs to uppercase
+	MemCopy(UI::glyphs[UI::LargeFont] + 'a' - Sys::Font::Glyph::Begin, UI::glyphs[UI::LargeFont] + 'A' - Sys::Font::Glyph::Begin, 'z' - 'a' + 1);
+
+	// 'Impact' is a decent match for the large Q3 font, but it's not perfect.
 	// We can get somewhat closer with a few glyph spacing tweaks, though:
 
 	// increase space glyph advance by 100%

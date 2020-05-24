@@ -827,3 +827,4 @@
 43960,basic km_arena1archfinal*
 43993,more material id bits
 44036,added gothic_block/killblockgeomtrn
+44048,remap large font lowercase to uppercase
