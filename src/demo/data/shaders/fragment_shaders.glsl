@@ -113,6 +113,11 @@ mat2 rot(float x) {
 	return mat2(v.y, v.x, -v.x, v.y);
 }
 
+// Normalized angle [0..1]
+float nang(vec2 p) {
+	return fract(atan(p.y, p.x) / TAU);
+}
+
 // UV distortions //////////////////////////////////////////////
 
 // p = integral number of half periods
@@ -577,11 +582,12 @@ vec3 pattern(vec2 p, float sc, float bv) {
 	return r;
 }
 
-vec2 voro1(vec2 p, vec2 grid) {
+// xy = offset; z = edge distance
+vec3 voro1(vec2 p, vec2 grid) {
 	p *= grid;
 	vec2 n = floor(p), f = p - n, mr, g, o, r;
 
-	float md = 8.0, d;
+	float md = 8., sd = md, d;
 	for (int i=0; i<9; ++i) {
 		g = vec2(i % 3 - 1, i / 3 - 1);
 		o = H2(mod(n + g, grid));
@@ -589,12 +595,15 @@ vec2 voro1(vec2 p, vec2 grid) {
 		d = sum(abs(r));
 
 		if (d < md) {
+			sd = md;
 			md = d;
 			mr = r;
+		} else if (d < sd) {
+			sd = d;
 		}
 	}
 
-	return mr;
+	return vec3(mr, sd - md);
 }
 
 float env(vec3 p) {
@@ -774,9 +783,9 @@ TEX(mtlfw10) {
 // xy = tile id, z = edge
 vec3 mtlfw15_d(vec2 uv) {
 	float e = 3e-3, a = 0.;
-	vec2 g = vec2(6), r = voro1(uv, g);
+	vec2 g = vec2(6), r = voro1(uv, g).xy;
 	for (int i=0; i<9; ++i)
-		a += sum(abs(voro1(vec2(i % 3 - 1, i / 3 - 1) * e + uv, g) - r));
+		a += sum(abs(voro1(vec2(i % 3 - 1, i / 3 - 1) * e + uv, g).xy - r));
 	return vec3(uv + r.xy / g, a);
 }
 
@@ -1074,6 +1083,205 @@ TEX(gkarnclma2r) {
 	c *= .3 + sqrt(ridged(uv.x)); // darken left/right sides
 
 	return c;
+}
+
+vec3 gkarnarcfnl_layer(vec3 c, vec2 p, float s, float m) {
+	s = voro1(p, vec2(s)).z / s * 1e2;
+	c *= 1.
+		+ .5 * m * ls(.9, .2, s)
+		- .5 * m * tri(2.5, .5, .3, s)
+		;
+	return c;
+}
+
+// Used by
+// - gothic_door/km_arena1archfinald_mid
+// - gothic_block/killblockgeomtrn
+vec3 gkarnarcfnl_inner_gear(vec3 c, vec2 uv) {
+	float
+		b = FBMT(uv, vec2(4, 9), .9, 3., 4), // base FBM
+		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
+		a, // angle
+		d, // distance
+		m, // mask
+		s, // segment
+		k, i, v, r, z; // ugh...
+	vec3
+		mt = mix(RGB(133, 100, 88), RGB(133, 100, 100), b) * t; // metal color
+	vec2
+		p, q;
+
+	p = q = uv;
+	q.x = abs(q.x); // symmetry
+	d = circ(p, .31);
+	v = nang(q); // relative angle; note: uses symmetric coords!
+	m = ls(.01, .0, d);
+	c = mix(c * ls(.0, .05, d), vec3(.13 * t), m); // background color
+	c = gkarnarcfnl_layer(c, p, 37., ls(.04, .02, abs(d + .07))); // random lines
+	a = v * 22.;
+	i = floor(a); // segment id
+	s = a - i; // segment fraction
+	k = ls(.23, .22, abs(v - .25)) + R1(i) * ls(.0, .1, q.y);
+	d -= r = (d * .3 + .005) * k; // extra thickness for top part
+	m = ls(.0, .1, q.y) * msk(abs(d + .015) - .015);
+	c = mix(c, mt, tri(-.005, .01, d)); // highlight
+	c = mix(c, RGB(130, 75, 44) * t, tri(-.02, .005, d) * ls(.0, .1, q.y)); // colored reflection
+	c *= 1.
+		- .3 * ls(.025, .03, -d) // darken interior
+		- .5 * ls(.4, .5, abs(s - .5)) * m // dark edge between top segments
+		+ .2 * tri(.5, .3, abs(s - .5)) * m // top segment edge highlight
+		- .5 * tri(-.015, .007, d) // dark edge
+		- .5 * tri(-.03, .007, d) // dark edge
+		- .5 * tri(-.1, .005, d + r) // dark edge
+		- .5 * tri(-.115, .005, d + r) // dark edge
+		- .5 * tri(-.125, .015, d + r) // dark edge
+		- .5 * tri(-.145, .005, d + r) // dark edge
+		+ .9 * tri(-.11, .007, d + r) // highlight
+		+ .5 * tri(-.14, .005, d + r) // highlight
+		- b * tri(.225, .005, abs(v - .25)) * msk(abs(d + .015) - .015) // dark edge
+		;
+	a = v * 72.;
+	i = floor(a); // segment id
+	s = a - i; // segment fraction
+	k = step(.7, H(i)) // 30% of segments
+		* step(q.y, .0) // below horizon
+		* ls(.02, .0, abs(d + .02)) // distance from circle between [-0.4 and 0]
+		;
+	c = mix(c, vec3(mt * .6), k * ls(.4, .3, abs(s - .5))); // background color
+	c *= 1.
+		- .7 * k * tri(.4, .1, abs(s - .5)) // dark segment edge
+		;
+
+	return c;
+}
+
+// (256 x 576) Combination of:
+// - gothic_door/km_arena1archfinalc_top (256 x 64)
+// - gothic_door/km_arena1archfinald_mid (256 x 256)
+// - gothic_door/km_arena1archfinald_bot (256 x 256)
+vec3 gkarnarcfnl(vec2 uv) {
+	float
+		b = FBMT(uv, vec2(4, 9), .9, 3., 4), // base FBM
+		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
+		a, // angle
+		d, // distance
+		m, // mask
+		s, // segment
+		k, i, v, r, z; // ugh...
+	vec3
+		mt = mix(RGB(133, 100, 88), RGB(133, 100, 100), b) * t, // metal color
+		c = vec3(.1 * t); // base color
+	vec2
+		p, q;
+
+	/* bottom arch */
+	p.x = uv.x - .5;
+	p.y = max(uv.y - .2, 0.) * 1.89;
+	v = atan(p.y, abs(p.x)) / PI; // relative angle [-1..1]
+	d = circ(p, .48); // arch distance
+	k = ls(.3, .31, v); // mid mask
+	d *= 1. - .2 * ls(.3, .31, v) - .1 * ls(.43, .44, v); // thicken middle parts
+	a = v * (v > .44 ? 2. : v > .3 ? 63. : 31.); // number of segments
+	c = mix(c, mt, ls(.03, .01, abs(d))); // arch background color
+	m = msk(abs(d - .01) - .02);
+	i = floor(a);
+	s = a - i;
+	if (v > .33 && v < .44)
+		s = fract(s + H(i) * .6 - .3); // non-uniform segments
+	c *= 1.
+		//- .5 * m * tri(.435, .005, v) // dark edge
+		- .5 * m * tri(.307, .01, v) // dark edge
+		- t * m * tri(.5, .1 + k * .2, s) // dark edge between segments
+		+ b * m * tri(.52, .2 + k * .2, s) // segment edge highlight
+		;
+	c *= 1.
+		- .9 * tri(-.015, .015, d) // black inner edge
+		- .5 * tri(.0, .01, d) // dark inner edge
+		- .7 * tri(.03, .02, d) // black outer edge
+		+ tri(.01, .015, d) // highlight
+		;
+
+	/* top gothic arch */
+	q = p;
+	q.y -= .5;
+	q.x = abs(q.x) + .6;
+	d = circ(q, 1.13);
+	m = ls(.03, .02, abs(d)) * ls(.5, .6, q.y);
+	c = mix(c, mt * sat(1. - abs(d - .015) / .03), m); // background color
+	c *= 1.
+		- .5 * m * tri(.005, .01, d)
+		+ .5 * m * tri(.017, .005, d)
+		;
+
+	/* small top gears */
+	q.x = abs(uv.x - .5) - .35;
+	q.y = uv.y * 9./4. - 2.1;
+	d = circ(q, .13) * 10.;
+	a = nang(q) * 49.;
+	i = floor(a);
+	s = a - i;
+	v = ls(.85, .9, H(i));
+	for (int j = 0; j < 2; ++j, d += .3) {
+		c = mix(c, mt * (b * .5 + .2), ls(.09, .03, abs(d)));
+		c *= 1.
+			+ .7 * sqr(tri(.01, .05, d))
+			;
+	}
+
+	/* large outer gear above arch */
+	p.y = (uv.y - .7) * 9./4.;
+	d = circ(p, .43);
+	a = atan(p.y, abs(p.x)) / PI; // relative angle [-1..1]
+	a = max(a, -.48); // remove lower mid space spoke
+	r = a;
+	i = floor(a *= 23.); // segment id
+	s = a - i; // segment fraction
+	k = R1(i) * .2 - .1 * ls(.0, .1, -d);
+	v = ls(.1, .2, abs(s - .5) - k);
+	d += v * .007; // offset spokes
+	r = (1. - v) * sqr(tri(.5, .3, r)) * ls(.25, .05, abs(s - .5)); // top spikes
+	d -= .17 * r;
+	m = tri(.04, .0, -.4, d); // mask
+	c = mix(c, mt * (b * .4 + .4), m); // background color
+	c = gkarnarcfnl_layer(c, p, 31., ls(.1, .05, abs(d + .15)) * v); // random lines between spokes
+	c *= mix(1., 1. - tri(.1, .2, .4, abs(s - .5) - k), m * b); // spoke shadows
+	c *= 1.
+		- .7 * sqr(tri(.03, .03, d)) // black outer edge
+		- .7 * sqr(tri(.03, .03, d + .05)) * v // dark shadow between 1st and 2nd circles
+		- .7 * sqr(tri(.0, .02, d + .05)) * v // dark shadow under 2nd circle
+		- .3 * ls(.04, .06, -d) * v // darken space between spokes
+		+ .5 * tri(.02, .0, -.1, d) // smooth highlight
+		+ tri(.0, .01 + .07 * r, d) // sharp highlight
+		+ tri(.0, .01, d + .03) * v // sharp highlight
+		;
+
+	/* smaller inner gear above arch */
+	p.y -= .05;
+	c = gkarnarcfnl_inner_gear(c, p);
+
+	return c;
+}
+
+// gothic_door/km_arena1archfinalc_top
+TEX(gkarnarcfnltp) {
+	uv.y = (uv.y + 8.) / 9.;
+	return gkarnarcfnl(uv);
+}
+
+// gothic_door/km_arena1archfinald_mid
+TEX(gkarnarcfnlmd) {
+	uv.y = (uv.y * 4. + 4.) / 9.;
+	return gkarnarcfnl(uv);
+}
+
+// gothic_door/km_arena1archfinald_bot
+TEX(gkarnarcfnlbt) {
+	// Hack: reduce bilinear artifacts at the top by changing
+	// the bottom row of pixels to match the bottom row in _mid
+	if (uv.y < .01)
+		++uv.y;
+	uv.y = uv.y * 4. / 9.;
+	return gkarnarcfnl(uv);
 }
 
 TEX(glrgbk3b) {

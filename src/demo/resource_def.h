@@ -53,6 +53,9 @@
 	x(gkarntwr4a,			FSVertexBits)\
 	x(gkarntwrst,			FSVertexBits)\
 	x(gkarnclma2r,			FSVertexBits)\
+	x(gkarnarcfnltp,		FSVertexBits)\
+	x(gkarnarcfnlmd,		FSVertexBits)\
+	x(gkarnarcfnlbt,		FSVertexBits)\
 	x(giron01e,				FSVertexBits)\
 	x(giron01nt3,			FSVertexBits)\
 	x(gxstrtop4,			FSVertexBits)\
@@ -93,63 +96,66 @@
 ////////////////////////////////////////////////////////////////
 
 #define DEMO_TEXTURES(x)\
-	/*Name,			ProcGenShader,		Width,	Height,	Format,		Flags*/\
-	x(White,		Gfx::InvalidID,		16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
-	x(Grey,			Gfx::InvalidID,		16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
-	x(icon,			Shader::icon,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(Lightmap,		Gfx::InvalidID,		1024,	256,	BGRA8,		Gfx::Texture::Flags::Default|Gfx::Texture::Flags::NoMips)\
-	x(LevelshotZ,	Gfx::InvalidID,		512,	512,	Z32F,		Gfx::Texture::Flags::ZBuffer)\
-	x(Levelshot,	Gfx::InvalidID,		512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
-	x(Font,			Gfx::InvalidID,		512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(dmnd2c,		Shader::dmnd2c,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(dmnd2cow,		Shader::dmnd2cow,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(dmnd2pnt,		Shader::dmnd2pnt,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(cmet52,		Shader::cmet52,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(ptrshn,		Shader::ptrshn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(dmnd2cjp,		Shader::dmnd2cjp,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(lpdmnd,		Shader::lpdmnd,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlfw10,		Shader::mtlfw10,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlfw15,		Shader::mtlfw15,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlfw15ow,	Shader::mtlfw15ow,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlfb3,		Shader::mtlfb3,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlt12f,		Shader::mtlt12f,	128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlt6f,		Shader::mtlt6f,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlbk03,		Shader::mtlbk03,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(skcpthrt,		Shader::skcpthrt,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskull4,		Shader::gskull4,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gcntr2trn,	Shader::gcntr2trn,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gwdclg1a,		Shader::gwdclg1a,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gwdclg1bd,	Shader::gwdclg1bd,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gsltrfc,		Shader::gsltrfc,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gmtlbg6,		Shader::gmtlbg6,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(glrgbk3b,		Shader::glrgbk3b,	512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gblks15,		Shader::gblks15,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gblks18c,		Shader::gblks18c,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gklblki,		Shader::gklblki,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gtprst3,		Shader::gtprst3,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gblks17f2,	Shader::gblks17f2,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gmtlspsld,	Shader::gmtlspsld,	128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gmtlsp4b,		Shader::gmtlsp4b,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gspbdrbb,		Shader::gspbdrbb,	64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gkarntwr4a,	Shader::gkarntwr4a,	256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gkarntwrst,	Shader::gkarntwrst,	64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	/*Name,				ProcGenShader,			Width,	Height,	Format,		Flags*/\
+	x(White,			Gfx::InvalidID,			16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
+	x(Grey,				Gfx::InvalidID,			16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
+	x(icon,				Shader::icon,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(Lightmap,			Gfx::InvalidID,			1024,	256,	BGRA8,		Gfx::Texture::Flags::Default|Gfx::Texture::Flags::NoMips)\
+	x(LevelshotZ,		Gfx::InvalidID,			512,	512,	Z32F,		Gfx::Texture::Flags::ZBuffer)\
+	x(Levelshot,		Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
+	x(Font,				Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(dmnd2c,			Shader::dmnd2c,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(dmnd2cow,			Shader::dmnd2cow,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(dmnd2pnt,			Shader::dmnd2pnt,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(cmet52,			Shader::cmet52,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(ptrshn,			Shader::ptrshn,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(dmnd2cjp,			Shader::dmnd2cjp,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(lpdmnd,			Shader::lpdmnd,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlfw10,			Shader::mtlfw10,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlfw15,			Shader::mtlfw15,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlfw15ow,		Shader::mtlfw15ow,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlfb3,			Shader::mtlfb3,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlt12f,			Shader::mtlt12f,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlt6f,			Shader::mtlt6f,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlbk03,			Shader::mtlbk03,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(skcpthrt,			Shader::skcpthrt,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskull4,			Shader::gskull4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gcntr2trn,		Shader::gcntr2trn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gwdclg1a,			Shader::gwdclg1a,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gwdclg1bd,		Shader::gwdclg1bd,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gsltrfc,			Shader::gsltrfc,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gmtlbg6,			Shader::gmtlbg6,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(glrgbk3b,			Shader::glrgbk3b,		512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gblks15,			Shader::gblks15,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gblks18c,			Shader::gblks18c,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gklblki,			Shader::gklblki,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gtprst3,			Shader::gtprst3,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gblks17f2,		Shader::gblks17f2,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gmtlspsld,		Shader::gmtlspsld,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gmtlsp4b,			Shader::gmtlsp4b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gspbdrbb,			Shader::gspbdrbb,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarntwr4a,		Shader::gkarntwr4a,		256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarntwrst,		Shader::gkarntwrst,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* Note: original km_arena1columna2R texture was 66x640, but since it's only used here on a patch*/\
 	/* (which already has normalized UVs), the exact dimensions of the texture are not important.    */\
-	x(gkarnclma2r,	Shader::gkarnclma2r,64,		512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(giron01e,		Shader::giron01e,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(giron01nt3,	Shader::giron01nt3,	128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(bwprtbnr,		Shader::bwprtbnr,	128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gxstrtop4,	Shader::gxstrtop4,	256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(bmtsprt,		Shader::bmtsprt,	256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(cable,		Shader::cable,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(brdr11b,		Shader::brdr11b,	64,		32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(blt414k,		Shader::blt414k,	64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(lt2,			Shader::lt2,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gpntgmlt1k,	Shader::gpntgmlt1k,	64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(light5,		Shader::light5,		16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(q3bnr,		Shader::q3bnr,		512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarnclma2r,		Shader::gkarnclma2r,	64,		512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarnarcfnltp,	Shader::gkarnarcfnltp,	256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarnarcfnlmd,	Shader::gkarnarcfnlmd,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarnarcfnlbt,	Shader::gkarnarcfnlbt,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(giron01e,			Shader::giron01e,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(giron01nt3,		Shader::giron01nt3,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(bwprtbnr,			Shader::bwprtbnr,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gxstrtop4,		Shader::gxstrtop4,		256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(bmtsprt,			Shader::bmtsprt,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(cable,			Shader::cable,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(brdr11b,			Shader::brdr11b,		64,		32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(blt414k,			Shader::blt414k,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(lt2,				Shader::lt2,			64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gpntgmlt1k,		Shader::gpntgmlt1k,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(light5,			Shader::light5,			16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(q3bnr,			Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
-	x(_128x256,		Gfx::InvalidID,		128,	256,	BGRA8,		Gfx::Texture::Flags::NoMips)\
+	x(_128x256,			Gfx::InvalidID,			128,	256,	BGRA8,		Gfx::Texture::Flags::NoMips)\
 
 ////////////////////////////////////////////////////////////////
 
@@ -162,85 +168,88 @@
 #endif
 
 #define DEMO_MATERIALS(x)\
-	/*Path									Shader			Texture		Contents	Draw					Light*/\
+	/*Path										Shader			Texture			Contents	Draw					Light*/\
 	DEMO_FALLBACK_MATERIAL(x)\
-	x("common/caulk",						Generic,		White,		Solid,		Invisible|BlocksLight,	(0))\
-	x("base_wall/c_met5_2",					Lmapped,		cmet52,		Solid,		Opaque,					(0))\
-	x("base_trim/pewter_shiney",			shiny,			ptrshn,		Solid,		Opaque,					(0))\
-	x("base_floor/diamond2c",				Lmapped,		dmnd2c,		Solid,		Opaque,					(0))\
-	x("base_floor/diamond2c_ow",			Lmapped,		dmnd2cow,	Solid,		Opaque|NeedsUV,			(0))\
-	x("sfx/pentfloor_diamond2c",			dmnd2pnt_m,		dmnd2pnt,	Solid,		Opaque|NeedsUV,			(0))\
-	x("base_wall/metalfloor_wall_10",		Lmapped,		mtlfw10,	Solid,		Opaque,					(0))\
-	x("base_wall/metalfloor_wall_15",		Lmapped,		mtlfw15,	Solid,		Opaque|NeedsUV,			(0))\
-	x("base_wall/metalfloor_wall_15ow",		mtlfw15ow_m,	mtlfw15ow,	Solid,		Opaque|NeedsUV,			(0))\
-	x("base_wall/metfloor_block_3",			Lmapped,		mtlfb3,		Solid,		Opaque,					(0))\
-	x("base_wall/metaltech12final",			Lmapped,		mtlt12f,	Solid,		Opaque,					(0))\
-	x("base_wall/metaltech06final",			Lmapped,		mtlt6f,		Solid,		Opaque,					(0))\
-	x("base_wall/metalblack03",				Lmapped,		mtlbk03,	Solid,		Opaque,					(0))\
-	x("base_trim/basemetalsupport",			Lmapped,		bmtsprt,	Solid,		Opaque,					(0))\
-	x("base_trim/border11b",				Lmapped,		brdr11b,	Solid,		Opaque|NeedsUV,			(0))\
-	x("base_support/cable",					Lmapped,		cable,		Solid,		Opaque,					(0))\
-	x("base_light/baslt4_1_4k",				fixture,		blt414k,	Solid,		Opaque|NeedsUV,			(4000,16,15,13))\
-	x("base_light/lt2_2000",				fixture,		lt2,		Solid,		Opaque|NeedsUV,			(2000,16,11,12))\
-	x("base_light/lt2_8000",				fixture,		lt2,		Solid,		Opaque|NeedsUV,			(8000,16,11,12))\
-	x("base_light/light5_5k",				fixture,		light5,		Solid,		Opaque|NeedsUV,			(5000))\
-	x("sfx/diamond2cjumppad",				dmnd2cjp_m,		dmnd2cjp,	Solid,		Opaque|NeedsUV,			(200,100,0))\
-	x("sfx/launchpad_diamond",				lpdmnd_m,		lpdmnd,		Solid,		Opaque|NeedsUV,			(0))\
-	x("base_wall/main_q3abanner",			q3bnr_m,		q3bnr,		Solid,		Opaque|NeedsUV,			(20,2,0,0))\
-	x("gothic_floor/metalbridge06",			Lmapped,		gmtlbg6,	Solid,		Opaque,					(0))\
-	x("gothic_floor/largerblock3b",			Lmapped,		glrgbk3b,	Solid,		Opaque,					(0))\
-	x("gothic_block/blocks15",				Lmapped,		gblks15,	Solid,		Opaque,					(0))\
-	x("gothic_block/blocks18c",				Lmapped,		gblks18c,	Solid,		Opaque,					(0))\
-	x("gothic_trim/pitted_rust3",			Lmapped,		gtprst3,	Solid,		Opaque,					(0))\
-	x("gothic_floor/blocks17floor2",		Lmapped,		gblks17f2,	Solid,		Opaque,					(0))\
-	x("gothic_trim/metalsupsolid",			Lmapped,		gmtlspsld,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_trim/metalsupport4b",			Lmapped,		gmtlsp4b,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_wall/supportborder_blue_b",	Lmapped,		gspbdrbb,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_trim/km_arena1tower4_a",		Lmapped,		gkarntwr4a,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_trim/km_arena1tower_short",	Lmapped,		gkarntwrst,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_door/km_arena1columna2R",		Lmapped,		gkarnclma2r,Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_wall/iron01_e",				Lmapped,		giron01e,	Solid,		Opaque,					(0))\
-	x("gothic_wall/iron01_ntech3",			Lmapped,		giron01nt3,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_floor/xstairtop4",			Lmapped,		gxstrtop4,	Solid,		Opaque|NeedsUV,			(0))\
-	x("liquids/lavahellflat_400",			lavaf,			White,		Solid,		Opaque,					(400,16,5,2))\
-	x("gothic_ceiling/woodceiling1a",		Lmapped,		gwdclg1a,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_ceiling/woodceiling1b_dark",	Lmapped,		gwdclg1bd,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_block/killblock_i",			Lmapped,		gklblki,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_wall/slateroofc",				Lmapped,		gsltrfc,	Solid,		Opaque|NeedsUV,			(0))\
-	x("gothic_light/pentagram_light1_1k",	fixture,		gpntgmlt1k,	Solid,		Opaque|NeedsUV,			(1000,19,17,10))\
-	x("skin/chapthroat",					Lmapped,		skcpthrt,	Solid,		Opaque,					(0))\
-	x("gothic_wall/skull4",					Lmapped,		gskull4,	Solid,		Opaque,					(0))\
-	x("gothic_floor/center2trn",			gcntr2trn_m,	gcntr2trn,	Solid,		Opaque|NeedsUV,			(0))\
-	x("liquids/lavahell_750",				lava,			White,		Solid,		Opaque,					(500,16,5,2))\
-	x("base_wall/protobanner",				bwprtbnr_m,		bwprtbnr,	Solid,		Opaque|NeedsUV,			(0))\
-	x("skies/blacksky",						blacksky,		White,		Solid,		Sky,					(0))\
-	x("skies/tim_hell",						timhel,			White,		Solid,		Sky,					(0))\
-	x("sfx/beam",							beam,			White,		NonSolid,	Translucent|NeedsUV,	(0))\
-	x("sfx/flame1_hell",					flame,			_128x256,	NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
-	x("common/weapclip",					Generic,		White,		Solid,		Invisible,				(0))\
-	x("common/clip",						Generic,		White,		Solid,		Invisible,				(0))\
-	x("common/nodraw",						Generic,		White,		Solid,		Invisible,				(0))\
-	x("common/nodrawnonsolid",				Generic,		White,		NonSolid,	Invisible,				(0))\
-	x("common/trigger",						Generic,		White,		NonSolid,	Invisible,				(0))\
-	x("common/nodrop",						Generic,		White,		NoDrop,		Invisible,				(0))\
+	x("common/caulk",							Generic,		White,			Solid,		Invisible|BlocksLight,	(0))\
+	x("base_wall/c_met5_2",						Lmapped,		cmet52,			Solid,		Opaque,					(0))\
+	x("base_trim/pewter_shiney",				shiny,			ptrshn,			Solid,		Opaque,					(0))\
+	x("base_floor/diamond2c",					Lmapped,		dmnd2c,			Solid,		Opaque,					(0))\
+	x("base_floor/diamond2c_ow",				Lmapped,		dmnd2cow,		Solid,		Opaque|NeedsUV,			(0))\
+	x("sfx/pentfloor_diamond2c",				dmnd2pnt_m,		dmnd2pnt,		Solid,		Opaque|NeedsUV,			(0))\
+	x("base_wall/metalfloor_wall_10",			Lmapped,		mtlfw10,		Solid,		Opaque,					(0))\
+	x("base_wall/metalfloor_wall_15",			Lmapped,		mtlfw15,		Solid,		Opaque|NeedsUV,			(0))\
+	x("base_wall/metalfloor_wall_15ow",			mtlfw15ow_m,	mtlfw15ow,		Solid,		Opaque|NeedsUV,			(0))\
+	x("base_wall/metfloor_block_3",				Lmapped,		mtlfb3,			Solid,		Opaque,					(0))\
+	x("base_wall/metaltech12final",				Lmapped,		mtlt12f,		Solid,		Opaque,					(0))\
+	x("base_wall/metaltech06final",				Lmapped,		mtlt6f,			Solid,		Opaque,					(0))\
+	x("base_wall/metalblack03",					Lmapped,		mtlbk03,		Solid,		Opaque,					(0))\
+	x("base_trim/basemetalsupport",				Lmapped,		bmtsprt,		Solid,		Opaque,					(0))\
+	x("base_trim/border11b",					Lmapped,		brdr11b,		Solid,		Opaque|NeedsUV,			(0))\
+	x("base_support/cable",						Lmapped,		cable,			Solid,		Opaque,					(0))\
+	x("base_light/baslt4_1_4k",					fixture,		blt414k,		Solid,		Opaque|NeedsUV,			(4000,16,15,13))\
+	x("base_light/lt2_2000",					fixture,		lt2,			Solid,		Opaque|NeedsUV,			(2000,16,11,12))\
+	x("base_light/lt2_8000",					fixture,		lt2,			Solid,		Opaque|NeedsUV,			(8000,16,11,12))\
+	x("base_light/light5_5k",					fixture,		light5,			Solid,		Opaque|NeedsUV,			(5000))\
+	x("sfx/diamond2cjumppad",					dmnd2cjp_m,		dmnd2cjp,		Solid,		Opaque|NeedsUV,			(200,100,0))\
+	x("sfx/launchpad_diamond",					lpdmnd_m,		lpdmnd,			Solid,		Opaque|NeedsUV,			(0))\
+	x("base_wall/main_q3abanner",				q3bnr_m,		q3bnr,			Solid,		Opaque|NeedsUV,			(20,2,0,0))\
+	x("gothic_floor/metalbridge06",				Lmapped,		gmtlbg6,		Solid,		Opaque,					(0))\
+	x("gothic_floor/largerblock3b",				Lmapped,		glrgbk3b,		Solid,		Opaque,					(0))\
+	x("gothic_block/blocks15",					Lmapped,		gblks15,		Solid,		Opaque,					(0))\
+	x("gothic_block/blocks18c",					Lmapped,		gblks18c,		Solid,		Opaque,					(0))\
+	x("gothic_trim/pitted_rust3",				Lmapped,		gtprst3,		Solid,		Opaque,					(0))\
+	x("gothic_floor/blocks17floor2",			Lmapped,		gblks17f2,		Solid,		Opaque,					(0))\
+	x("gothic_trim/metalsupsolid",				Lmapped,		gmtlspsld,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_trim/metalsupport4b",				Lmapped,		gmtlsp4b,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_wall/supportborder_blue_b",		Lmapped,		gspbdrbb,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_trim/km_arena1tower4_a",			Lmapped,		gkarntwr4a,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_trim/km_arena1tower_short",		Lmapped,		gkarntwrst,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/km_arena1columna2R",			Lmapped,		gkarnclma2r,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/km_arena1archfinalc_top",	Lmapped,		gkarnarcfnltp,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/km_arena1archfinald_mid",	Lmapped,		gkarnarcfnlmd,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/km_arena1archfinald_bot",	Lmapped,		gkarnarcfnlbt,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_wall/iron01_e",					Lmapped,		giron01e,		Solid,		Opaque,					(0))\
+	x("gothic_wall/iron01_ntech3",				Lmapped,		giron01nt3,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_floor/xstairtop4",				Lmapped,		gxstrtop4,		Solid,		Opaque|NeedsUV,			(0))\
+	x("liquids/lavahellflat_400",				lavaf,			White,			Solid,		Opaque,					(400,16,5,2))\
+	x("gothic_ceiling/woodceiling1a",			Lmapped,		gwdclg1a,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_ceiling/woodceiling1b_dark",		Lmapped,		gwdclg1bd,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_block/killblock_i",				Lmapped,		gklblki,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_wall/slateroofc",					Lmapped,		gsltrfc,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_light/pentagram_light1_1k",		fixture,		gpntgmlt1k,		Solid,		Opaque|NeedsUV,			(1000,19,17,10))\
+	x("skin/chapthroat",						Lmapped,		skcpthrt,		Solid,		Opaque,					(0))\
+	x("gothic_wall/skull4",						Lmapped,		gskull4,		Solid,		Opaque,					(0))\
+	x("gothic_floor/center2trn",				gcntr2trn_m,	gcntr2trn,		Solid,		Opaque|NeedsUV,			(0))\
+	x("liquids/lavahell_750",					lava,			White,			Solid,		Opaque,					(500,16,5,2))\
+	x("base_wall/protobanner",					bwprtbnr_m,		bwprtbnr,		Solid,		Opaque|NeedsUV,			(0))\
+	x("skies/blacksky",							blacksky,		White,			Solid,		Sky,					(0))\
+	x("skies/tim_hell",							timhel,			White,			Solid,		Sky,					(0))\
+	x("sfx/beam",								beam,			White,			NonSolid,	Translucent|NeedsUV,	(0))\
+	x("sfx/flame1_hell",						flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
+	x("common/weapclip",						Generic,		White,			Solid,		Invisible,				(0))\
+	x("common/clip",							Generic,		White,			Solid,		Invisible,				(0))\
+	x("common/nodraw",							Generic,		White,			Solid,		Invisible,				(0))\
+	x("common/nodrawnonsolid",					Generic,		White,			NonSolid,	Invisible,				(0))\
+	x("common/trigger",							Generic,		White,			NonSolid,	Invisible,				(0))\
+	x("common/nodrop",							Generic,		White,			NoDrop,		Invisible,				(0))\
 
 #define DEMO_MATERIAL_SUBSTITUTIONS(x)\
-	x("gothic_block/blocks18c_3",			"gothic_block/blocks18c")\
-	x("gothic_block/killblock",				"gothic_block/blocks15")\
-	x("gothic_block/blocks18b",				"gothic_block/blocks15")\
-	x("gothic_block/blocks11b",				"gothic_block/blocks15")\
-	x("gothic_block/blocks17",				"gothic_block/blocks15")\
-	x("gothic_block/killblock_i4",			"gothic_block/blocks15")\
-	x("gothic_block/blocks1",				"gothic_block/blocks15")\
-	x("gothic_block/demon_block15fx",		"gothic_block/blocks15")\
-	x("gothic_block/killblockgeomtrn",		"gothic_block/blocks15")\
-	x("gothic_trim/metaldemonkillblock",	"gothic_block/blocks15")\
-	x("sfx/computer_blocks17",				"gothic_block/blocks15")\
-	x("gothic_trim/pitted_rust",			"gothic_trim/pitted_rust3")\
-	x("gothic_trim/pitted_rust2",			"gothic_trim/pitted_rust3")\
-	x("gothic_trim/pitted_rust2_trans",		"gothic_trim/pitted_rust3")\
-	x("gothic_trim/km_arena1tower4",		"gothic_wall/supportborder_blue_b")\
-	x("skin/chapthroat2",					"skin/chapthroat")\
+	x("gothic_block/blocks18c_3",				"gothic_block/blocks18c")\
+	x("gothic_block/killblock",					"gothic_block/blocks15")\
+	x("gothic_block/blocks18b",					"gothic_block/blocks15")\
+	x("gothic_block/blocks11b",					"gothic_block/blocks15")\
+	x("gothic_block/blocks17",					"gothic_block/blocks15")\
+	x("gothic_block/killblock_i4",				"gothic_block/blocks15")\
+	x("gothic_block/blocks1",					"gothic_block/blocks15")\
+	x("gothic_block/demon_block15fx",			"gothic_block/blocks15")\
+	x("gothic_block/killblockgeomtrn",			"gothic_block/blocks15")\
+	x("gothic_trim/metaldemonkillblock",		"gothic_block/blocks15")\
+	x("sfx/computer_blocks17",					"gothic_block/blocks15")\
+	x("gothic_trim/pitted_rust",				"gothic_trim/pitted_rust3")\
+	x("gothic_trim/pitted_rust2",				"gothic_trim/pitted_rust3")\
+	x("gothic_trim/pitted_rust2_trans",			"gothic_trim/pitted_rust3")\
+	x("gothic_trim/km_arena1tower4",			"gothic_wall/supportborder_blue_b")\
+	x("skin/chapthroat2",						"skin/chapthroat")\
 
 ////////////////////////////////////////////////////////////////
 

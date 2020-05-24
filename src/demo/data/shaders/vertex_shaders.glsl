@@ -57,6 +57,9 @@ void gklblki() { FS(); }
 void gtprst3() { FS(); }
 void gblks17f2() { FS(); }
 void gkarnclma2r() { FS(); }
+void gkarnarcfnltp() { FS(); }
+void gkarnarcfnlmd() { FS(); }
+void gkarnarcfnlbt() { FS(); }
 void skcpthrt() { FS(); }
 void gskull4() { FS(); }
 void gcntr2trn() { FS(); }
