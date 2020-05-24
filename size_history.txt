@@ -825,3 +825,4 @@
 43198,tweaked main entrance uv offset
 43191,sorted patches
 43960,basic km_arena1archfinal*
+43993,more material id bits

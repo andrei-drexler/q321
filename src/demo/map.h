@@ -52,7 +52,6 @@ namespace Map {
 
 	void					Load(const PackedMap& packed);
 
-	u8						num_materials;
 	i8						symmetry_axis;
 	i16						symmetry_level;
 	bool					UseSymmetry() { return u8(symmetry_axis) < 3; }
@@ -68,7 +67,7 @@ namespace Map {
 		BoundsList 						bounds;
 		Array<u16,  MAX_NUM_BRUSHES>	start;
 		Array<vec4, MAX_NUM_PLANES>		planes;
-		Array<u8,   MAX_NUM_PLANES>		plane_mat_uv_axis;	// material: 6, uv_axis: 2
+		Array<u16,  MAX_NUM_PLANES>		plane_mat_uv_axis;	// material: 8, uv_axis: 2
 		Array<vec2, MAX_NUM_PLANES>		plane_lmap_offset;
 		Array<u8,   MAX_NUM_BRUSHES>	entity;
 
@@ -346,11 +345,8 @@ FORCEINLINE void Map::Details::InitEntities() {
 
 NOINLINE void Map::Load(const PackedMap& packed) {
 	source = &packed;
-	num_materials = packed.num_materials;
 	symmetry_axis = packed.symmetry_axis;
 	symmetry_level = packed.symmetry_level;
-
-	assert(num_materials <= Demo::Material::Count);
 
 	MemSet(&num_mat_verts);
 	MemSet(&num_mat_indices);
@@ -365,7 +361,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		if (pass == 1) {
 			num_total_vertices = 0;
 			num_total_indices = 0;
-			for (u8 mat = 0; mat < num_materials; ++mat) {
+			for (u8 mat = 0; mat < Demo::Material::Count; ++mat) {
 				mat_vertex_offset[mat] = num_total_vertices;
 				num_total_vertices += num_mat_verts[mat];
 				num_mat_verts[mat] = 0;
@@ -553,8 +549,8 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 					texture_size.y = descriptor.height;
 				}
 
-				u8 s_axis = (uv_axis == 0);			// 1 0 0
-				u8 t_axis = (uv_axis != 2) + 1;		// 2 2 1
+				u8 s_axis = brushes.GetSAxis(uv_axis);
+				u8 t_axis = brushes.GetTAxis(uv_axis);
 				vec2 rot{sin(uv.angle), cos(uv.angle)};
 				
 				auto uv_map = [&] (const vec3& v) -> vec2 {
@@ -665,7 +661,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 FORCEINLINE void Map::Details::ComputeNormals() {
 	MemSet(&normals);
 
-	for (u8 material = 0; material < num_materials; ++material) {
+	for (u8 material = 0; material < Demo::Material::Count; ++material) {
 		vec3* pos = positions + mat_vertex_offset[material];
 		vec3* nor = normals + mat_vertex_offset[material];
 		u32* idx = indices + mat_index_offset[material];
@@ -699,7 +695,7 @@ void Map::Render() {
 	// but it seems to help crinkler and it does no harm...
 	mesh.vertices[Attrib::Normal].normalized = true;
 
-	auto num_materials = min<u8>(size(Material::Properties), Map::num_materials);
+	auto num_materials = Demo::Material::Count;
 	for (u8 material = 0; material < num_materials; ++material) {
 		auto visibility = Material::Properties[material] & Material::MaskVisibility;
 

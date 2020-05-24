@@ -1179,7 +1179,7 @@ void ApplyMaterialSubstitutions(Map& map) {
 	}
 }
 
-void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options, const ShaderProperties* shader_props, string_view count_name, string_view array_name) {
+void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options, const ShaderProperties* shader_props, string_view array_name) {
 	auto& world = map.World();
 
 	printf("Writing plane materials\n");
@@ -1222,8 +1222,7 @@ void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options,
 
 	/* write plane materials + uv axes */
 	print
-		<< "\nconst u8 "sv << count_name << " = "sv << i32(std::size(DemoMaterialNames)) << ", "sv
-		<< array_name << "[] = {"sv;
+		<< "\nconst u16 "sv << array_name << "[] = {"sv;
 	for (auto& brush : world.brushes) {
 		for (auto& plane : brush.planes) {
 			i32 index = shader_props[plane.material].map_material;
@@ -2038,7 +2037,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 	WriteEntities			(print, map, options, brush_count,								"entity_brushes"sv,			"entity_data"sv			);
 	WriteBrushBounds		(print, map, options,											"world_bounds"sv,			"brush_bounds"sv		);
 	WriteUnalignedPlanes	(print, map, options,											"num_nonaxial_planes"sv,	"nonaxial_planes"sv,	"nonaxial_counts"sv);
-	WriteMaterials			(print, map, options, shader_props.data(),						"num_materials"sv,			"plane_materials"sv		);
+	WriteMaterials			(print, map, options, shader_props.data(),						"plane_materials"sv);
 	WriteBrushUVs			(print, map, options, shader_props.data(),						"uv_set"sv,					"plane_uvs"sv			);
 	WriteBrushAsymmetry		(print, map, options,											"brush_asymmetry"									);
 	WritePatchData			(print, map, options, shader_props.data(),						"patches"sv,				"patch_verts"sv			);
@@ -2064,7 +2063,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 		"    world_bounds, brush_bounds,\n"
 		"    num_nonaxial_planes, nonaxial_planes, nonaxial_counts,\n"
 		"    brush_asymmetry,\n"
-		"    num_materials, plane_materials,\n"
+		"    plane_materials,\n"
 		"    uv_set, plane_uvs,\n"
 		"    patches, patch_verts,\n"
 		"    light_data, num_spotlights,\n"

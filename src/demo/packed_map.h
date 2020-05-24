@@ -13,7 +13,6 @@ struct PackedMap {
 	u8					num_entities;
 	u8					num_brush_entities;
 	u8					num_uvs;
-	u8					num_materials;
 	u8					num_lights;
 	u8					num_spotlights;
 	u32					skylight;
@@ -24,7 +23,7 @@ struct PackedMap {
 	const i16*			brush_bounds;
 	const i32*			plane_data;
 	const u16*			nonaxial_counts;
-	const u8*			plane_materials;
+	const u16*			plane_materials;
 	const float*		uv_data;
 	const u8*			plane_uvs;
 	const u32*			patches;
@@ -67,8 +66,7 @@ struct PackedMap {
 		const i32	(&plane_data)		[NumPlaneEntries],
 		const u16	(&nonaxial_counts)	[NumNonaxialEntries],
 		const u8	(&brush_asymmetry)	[NumAsymmetryEntries],
-		u8								num_materials,
-		const u8	(&plane_materials)	[NumMaterialEntries],
+		const u16	(&plane_materials)	[NumMaterialEntries],
 		const float (&uv_data)			[NumUVEntries],
 		const u8	(&plane_uvs)		[NumPlaneUVEntries],
 		const u32	(&patches)			[NumPatches],
@@ -105,7 +103,6 @@ struct PackedMap {
 		patches					(patches),
 		patch_vertices			(patch_verts),
 		num_patch_verts			(NumPatchVertEntries / 5),
-		num_materials			(num_materials),
 		light_data				(light_data),
 		num_lights				((NumLightEntries - num_spotlights * 3) / 5),
 		num_spotlights			(num_spotlights),

@@ -1097,7 +1097,7 @@ vec3 gkarnarcfnl_layer(vec3 c, vec2 p, float s, float m) {
 // Used by
 // - gothic_door/km_arena1archfinald_mid
 // - gothic_block/killblockgeomtrn
-vec3 gkarnarcfnl_inner_gear(vec3 c, vec2 uv) {
+vec3 gkarnarcfnl_inner_gear(vec3 c, vec2 uv, float shadow_bias) {
 	float
 		b = FBMT(uv, vec2(4, 9), .9, 3., 4), // base FBM
 		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
@@ -1116,7 +1116,7 @@ vec3 gkarnarcfnl_inner_gear(vec3 c, vec2 uv) {
 	d = circ(p, .31);
 	v = nang(q); // relative angle; note: uses symmetric coords!
 	m = ls(.01, .0, d);
-	c = mix(c * ls(.0, .05, d), vec3(.13 * t), m); // background color
+	c = mix(c * ls(.0, .05, d + shadow_bias), vec3(.13 * t), m); // background color + outer shadow
 	c = gkarnarcfnl_layer(c, p, 37., ls(.04, .02, abs(d + .07))); // random lines
 	a = v * 22.;
 	i = floor(a); // segment id
@@ -1257,7 +1257,7 @@ vec3 gkarnarcfnl(vec2 uv) {
 
 	/* smaller inner gear above arch */
 	p.y -= .05;
-	c = gkarnarcfnl_inner_gear(c, p);
+	c = gkarnarcfnl_inner_gear(c, p, 0.);
 
 	return c;
 }
@@ -1284,23 +1284,6 @@ TEX(gkarnarcfnlbt) {
 	return gkarnarcfnl(uv);
 }
 
-TEX(glrgbk3b) {
-	float
-		b = FBMT(wavy(uv, 5., .02), vec2(5), 1., 3., 5),
-		n = NT(uv, vec2(13));
-	vec2
-		p = brick(uv, vec2(8)),
-		q = fract(p),
-		id = p - q;
-	vec3 c = RGB(91, 61, 42) * (.8 + .8 * b * b);
-	c = mix(c, RGB(70, 30, 15) * (.8 + .8 * b * b), brick_edge(q, .1).z * .3);
-	c *= 1. - sqr(brick_edge(q, .01 + b * .05).z) * n * b * b;
-	c *= 1. + tri(.4, .3, brick_edge(q, .01 + b * .07).z) * sqrt(b) * .3;
-	c *= .9 + .2 * H(id) * (1. - brick_edge(q, .1).z);
-	c *= .9 + .4 * pow(FBMT_ridged(uv - H(id / 8.), vec2(5), .6, 2., 4), 4.);
-	return c;
-}
-
 // gothic_block/blocks15
 TEX(gblks15) {
 	float
@@ -1323,6 +1306,14 @@ TEX(gblks15) {
 	c *= 1. + e * b * (d.y - .5) * .7;
 	c *= .9 + .2 * id;
 	c *= .9 + .2 * ridged(NT(uv - pt.yx, vec2(5)));
+	return c;
+}
+
+// gothic_block/killblockgeomtrn
+TEX(gkblkgmtrn) {
+	vec3 c = gblks15(uv);
+	uv -= .5;
+	c = gkarnarcfnl_inner_gear(c, uv * .9, .02);
 	return c;
 }
 
@@ -1379,6 +1370,23 @@ TEX(gklblki) {
 	if (uv.y > .09 && uv.y < .3)
 		c = add_rivet(c, vec2((abs(p.x) - .035) * 36., fract(uv.y * 36.) - .5), .1);
 
+	return c;
+}
+
+TEX(glrgbk3b) {
+	float
+		b = FBMT(wavy(uv, 5., .02), vec2(5), 1., 3., 5),
+		n = NT(uv, vec2(13));
+	vec2
+		p = brick(uv, vec2(8)),
+		q = fract(p),
+		id = p - q;
+	vec3 c = RGB(91, 61, 42) * (.8 + .8 * b * b);
+	c = mix(c, RGB(70, 30, 15) * (.8 + .8 * b * b), brick_edge(q, .1).z * .3);
+	c *= 1. - sqr(brick_edge(q, .01 + b * .05).z) * n * b * b;
+	c *= 1. + tri(.4, .3, brick_edge(q, .01 + b * .07).z) * sqrt(b) * .3;
+	c *= .9 + .2 * H(id) * (1. - brick_edge(q, .1).z);
+	c *= .9 + .4 * pow(FBMT_ridged(uv - H(id / 8.), vec2(5), .6, 2., 4), 4.);
 	return c;
 }
 

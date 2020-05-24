@@ -60,6 +60,7 @@ void gkarnclma2r() { FS(); }
 void gkarnarcfnltp() { FS(); }
 void gkarnarcfnlmd() { FS(); }
 void gkarnarcfnlbt() { FS(); }
+void gkblkgmtrn() { FS(); }
 void skcpthrt() { FS(); }
 void gskull4() { FS(); }
 void gcntr2trn() { FS(); }
