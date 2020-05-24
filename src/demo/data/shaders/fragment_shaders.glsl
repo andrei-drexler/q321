@@ -1317,6 +1317,49 @@ TEX(gkblkgmtrn) {
 	return c;
 }
 
+// (256 x 576) Combination of:
+// - gothic_door/skull_door_a ( 64 x 256 - bottom right)
+// - gothic_door/skull_door_b (256 x 256 - bottom mid)
+// - gothic_door/skull_door_c ( 64 x 256 - bottom left)
+// - gothic_door/skull_door_d ( 64 x 128 - top right)
+// - gothic_door/skull_door_e (256 x 128 - top mid)
+// - gothic_door/skull_door_f ( 64 x 128 - top left)
+vec3 gskdr(vec2 uv) {
+	uv *= 1.5;
+	vec3 c = gblks15(uv);
+	return c;
+}
+
+// gothic_door/skull_door_a ( 64 x 256 - bottom right)
+TEX(gskdr_a) {
+	return gskdr(vec2(5, 0) / 6. + uv * vec2(1, 4) / 6.);
+}
+
+// gothic_door/skull_door_b (256 x 256 - bottom mid)
+TEX(gskdr_b) {
+	return gskdr(vec2(1, 0) / 6. + uv * vec2(4) / 6.);
+}
+
+// gothic_door/skull_door_c ( 64 x 256 - bottom left)
+TEX(gskdr_c) {
+	return gskdr(uv * vec2(1, 4) / 6.);
+}
+
+// gothic_door/skull_door_d ( 64 x 128 - top right)
+TEX(gskdr_d) {
+	return gskdr(vec2(5, 4) / 6. + uv * vec2(1, 2) / 6.);
+}
+
+// gothic_door/skull_door_e (256 x 128 - top mid)
+TEX(gskdr_e) {
+	return gskdr(vec2(1, 4) / 6. + uv * vec2(4, 2) / 6.);
+}
+
+// gothic_door/skull_door_f ( 64 x 128 - top left)
+TEX(gskdr_f) {
+	return gskdr(vec2(0, 4) / 6. + uv * vec2(1, 2) / 6.);
+}
+
 // gothic_block/blocks18c
 TEX(gblks18c) {
 	float b = FBMT(uv, vec2(13, 1), .7, 2., 3); // mostly vertical noise

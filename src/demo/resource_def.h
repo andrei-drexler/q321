@@ -49,6 +49,12 @@
 	x(gskull4,				FSVertexBits)\
 	x(gcntr2trn,			FSVertexBits)\
 	x(gcntr2trn_m,			MapVertexBits)\
+	x(gskdr_a,				FSVertexBits)\
+	x(gskdr_b,				FSVertexBits)\
+	x(gskdr_c,				FSVertexBits)\
+	x(gskdr_d,				FSVertexBits)\
+	x(gskdr_e,				FSVertexBits)\
+	x(gskdr_f,				FSVertexBits)\
 	x(gspbdrbb,				FSVertexBits)\
 	x(gkarntwr4a,			FSVertexBits)\
 	x(gkarntwrst,			FSVertexBits)\
@@ -122,6 +128,12 @@
 	x(skcpthrt,			Shader::skcpthrt,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskull4,			Shader::gskull4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gcntr2trn,		Shader::gcntr2trn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_a,			Shader::gskdr_a,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_b,			Shader::gskdr_b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_c,			Shader::gskdr_c,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_d,			Shader::gskdr_d,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_e,			Shader::gskdr_e,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_f,			Shader::gskdr_f,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1a,			Shader::gwdclg1a,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1bd,		Shader::gwdclg1bd,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gsltrfc,			Shader::gsltrfc,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -223,6 +235,12 @@
 	x("skin/chapthroat",						Lmapped,		skcpthrt,		Solid,		Opaque,					(0))\
 	x("gothic_wall/skull4",						Lmapped,		gskull4,		Solid,		Opaque,					(0))\
 	x("gothic_floor/center2trn",				gcntr2trn_m,	gcntr2trn,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/skull_door_a",				Lmapped,		gskdr_a,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/skull_door_b",				Lmapped,		gskdr_b,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/skull_door_c",				Lmapped,		gskdr_c,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/skull_door_d",				Lmapped,		gskdr_d,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/skull_door_e",				Lmapped,		gskdr_e,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_door/skull_door_f",				Lmapped,		gskdr_f,		Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahell_750",					lava,			White,			Solid,		Opaque,					(500,16,5,2))\
 	x("base_wall/protobanner",					bwprtbnr_m,		bwprtbnr,		Solid,		Opaque|NeedsUV,			(0))\
 	x("skies/blacksky",							blacksky,		White,			Solid,		Sky,					(0))\

@@ -18,8 +18,6 @@ namespace Demo {
 		DEMO_MATERIALS(PP_DEMO_MATERIAL_TEXTURE)
 		#undef PP_DEMO_MATERIAL_TEXTURE
 	};
-
-	static_assert(size(MaterialTextures) <= 64, "Can't fit material + UV axis in 8 bits");
 }
 
 ////////////////////////////////////////////////////////////////

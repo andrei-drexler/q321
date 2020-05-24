@@ -61,6 +61,12 @@ void gkarnarcfnltp() { FS(); }
 void gkarnarcfnlmd() { FS(); }
 void gkarnarcfnlbt() { FS(); }
 void gkblkgmtrn() { FS(); }
+void gskdr_a() { FS(); }
+void gskdr_b() { FS(); }
+void gskdr_c() { FS(); }
+void gskdr_d() { FS(); }
+void gskdr_e() { FS(); }
+void gskdr_f() { FS(); }
 void skcpthrt() { FS(); }
 void gskull4() { FS(); }
 void gcntr2trn() { FS(); }
