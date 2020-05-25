@@ -1326,7 +1326,35 @@ TEX(gkblkgmtrn) {
 // - gothic_door/skull_door_f ( 64 x 128 - top left)
 vec3 gskdr(vec2 uv) {
 	uv *= 1.5;
+
+	float
+		b = FBMT(wavy(uv, 7., .02), vec2(13), .6, 3., 4), // base FBM
+		t = .2 + .8 * b, // base texture (remapped FBM)
+		n = NT(uv, vec2(13)), // smooth noise
+		a, // angle
+		s, // segment fraction [0..1]
+		d; // SDF
 	vec3 c = gblks15(uv);
+	vec2 p;
+
+	p.x = abs(uv.x - .75);
+	p.y = max(uv.y - .58, 0.) * 1.15;
+	a = atan(p.x, p.y) / PI; // angle [-1..1]
+	s = fract(a * 7. + .5); // segments
+	d = circ(p, .45); // base arch
+	d -= .06 * ls(.4, .33, uv.y); // outer buttress
+	d -= .05 * ls(.15, .07, abs(s - .5)) * step(.63, uv.y);
+	d = exclude(d, uv.y - .107); // bilinear hack: exclude bottom pixel row
+	d = exclude(d,
+		circ(p, .6) // carve out interior
+		+ .06 * ls(.49, .43, uv.y) // inner buttress
+	);
+	c = mix(c, RGB(144, 125, 115) * t, msk(d - .1, .005));
+	c *= 1.
+		- .3 * tri(.12, .11, .1, d) // outer shadow
+		+ .5 * tri(.1, .005 + .015 * n * n, d) // highlight
+		;
+
 	return c;
 }
 
