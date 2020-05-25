@@ -721,6 +721,8 @@ void Map::Render() {
 
 		if (r_lightmap.integer)
 			Uniform::Texture0 = Texture::Grey;
+		if (r_fullbright.integer)
+			Uniform::Texture1 = Texture::Grey;
 
 		Gfx::UpdateUniforms();
 		Gfx::Draw(mesh);

@@ -829,3 +829,4 @@
 44036,added gothic_block/killblockgeomtrn
 44048,remap large font lowercase to uppercase
 44053,added gothic_door/skull_door* stubs
+44066,added r_fullbright

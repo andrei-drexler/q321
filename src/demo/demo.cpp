@@ -7,6 +7,7 @@
 //#define SAVE_ICON
 //#define SAVE_LIGHTMAP
 //#define SHOW_LIGHTMAP
+//#define FULLBRIGHT
 //#define START_NOCLIP
 
 #define START_MAP					dm1
@@ -363,6 +364,10 @@ int FORCEINLINE demo_main() {
 
 #ifdef SHOW_LIGHTMAP
 	Demo::r_lightmap.Set(1);
+#endif
+
+#ifdef FULLBRIGHT
+	Demo::r_fullbright.Set(1);
 #endif
 
 	auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
