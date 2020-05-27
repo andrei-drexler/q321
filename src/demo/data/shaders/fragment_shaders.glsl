@@ -1328,8 +1328,8 @@ vec3 gskdr(vec2 uv) {
 	uv *= 1.5;
 
 	float
-		b = FBMT(wavy(uv, 7., .02), vec2(13), .6, 3., 4), // base FBM
-		t = .2 + .8 * b, // base texture (remapped FBM)
+		b = FBMT(wavy(uv, 7., .02), vec2(9), .7, 3., 2), // base FBM
+		t = b, // base texture intensity (remapped FBM)
 		n = NT(uv, vec2(13)), // smooth noise
 		a, // angle
 		s, // segment fraction [0..1]
@@ -1344,10 +1344,11 @@ vec3 gskdr(vec2 uv) {
 	d = circ(p, .45); // base arch
 	d -= .06 * ls(.4, .33, uv.y); // outer buttress
 	d -= .05 * ls(.15, .07, abs(s - .5)) * step(.63, uv.y);
-	d = exclude(d, uv.y - .107); // bilinear hack: exclude bottom pixel row
+	d = exclude(d, uv.y - .107); // bilinear filtering hack: exclude bottom pixel row
+	d = exclude(d, exclude(abs(p.x - .493) - .113, .6 - uv.y)); // bilinear filtering hack
 	d = exclude(d,
 		circ(p, .6) // carve out interior
-		+ .06 * ls(.49, .43, uv.y) // inner buttress
+		+ .044 * ls(.48, .43, uv.y) // inner buttress
 	);
 	c = mix(c, RGB(144, 125, 115) * t, msk(d - .1, .005));
 	c *= 1.

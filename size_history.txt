@@ -831,3 +831,4 @@
 44053,added gothic_door/skull_door* stubs
 44066,added r_fullbright
 44159,basic skull_door* shape
+44179,tweaked skull_door
