@@ -223,6 +223,7 @@ namespace Gfx {
 	void RegisterUniforms(const char* names, const Uniform::Type* types, const void* const* values, u16 count);
 	void RegisterTextures(const Texture::Descriptor* textures, u16 count);
 	void RegisterShaders(const char* names, const Shader::Flags* flags, u16 count, const char* vertex_shaders, const char* fragment_shaders);
+	void CompileShaders(Shader::ID first, u16 count);
 
 	template <int Size>
 	void FORCEINLINE RegisterTextures(const Texture::Descriptor (&descriptors)[Size]) {

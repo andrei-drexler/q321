@@ -265,6 +265,8 @@ namespace GL {
 		const Gfx::Shader::Flags*			shader_flags;
 		GLint								shader_uniforms[MaxNumUniforms];
 		GLuint								shader_programs[MaxNumShaders];
+		const char*							shader_names[MaxNumShaders];
+		const char*							shader_sources[2];
 
 		TextureState						texture_state[MaxNumTextures];
 		const Gfx::Texture::Descriptor*		texture_descriptors;
@@ -318,25 +320,34 @@ FORCEINLINE void Gfx::RegisterShaders(const char* names, const Shader::Flags* fl
 
 	g_state.shader_flags		= flags;
 	g_state.num_shaders			= count;
+	g_state.shader_sources[0]	= vertex_shaders;
+	g_state.shader_sources[1]	= fragment_shaders;
 
 	assert(g_state.num_shaders <= size(g_state.shader_programs));
 	assert(g_state.num_shaders * g_state.num_uniforms <= size(g_state.shader_uniforms));
 
+	const char* shader_name = names;
+	for (u16 shader_index = 0; shader_index < count; ++shader_index, shader_name = NextAfter(shader_name)) {
+		g_state.shader_names[shader_index] = shader_name;
+	}
+}
+
+NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
+	using namespace GL;
+
 	// Two passes, to enable parallel shader compilation
 
-	const char* shader_name = names;
-	for (u16 shader_index = 0; shader_index<count; ++shader_index, shader_name = NextAfter(shader_name)) {
+	for (u16 shader_index = first, end = first + count; shader_index < end; ++shader_index) {
 		auto& program = g_state.shader_programs[shader_index];
 		program = glCreateProgram();
 		if (!program)
 			Sys::Fatal(Error::Shader);
 
-		const char*			sources			[] = {vertex_shaders, fragment_shaders};
 		const GLenum		gl_stage_enums	[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 		const char* const	gl_stage_names	[] = {"Vertex", "Fragment"};
 		int					shaders			[] = {0, 0};
-		
-		const u32		NumStages		= size(gl_stage_enums);
+
+		const u32			NumStages		= size(gl_stage_enums);
 
 		for (u32 i=0; i<NumStages; ++i) {
 			int stage_enum = gl_stage_enums[i];
@@ -347,8 +358,8 @@ FORCEINLINE void Gfx::RegisterShaders(const char* names, const Shader::Flags* fl
 
 			const char* src[] = {
 				"#version 330\n",
-				sources[i],
-				"void main(){", shader_name, "();}\n",
+				g_state.shader_sources[i],
+				"void main(){", g_state.shader_names[shader_index], "();}\n",
 			};
 
 			glShaderSource(shader, size(src), src, nullptr);
@@ -394,8 +405,8 @@ FORCEINLINE void Gfx::RegisterShaders(const char* names, const Shader::Flags* fl
 #endif
 	}
 
-	auto uniforms = g_state.shader_uniforms;
-	for (u16 shader_index = 0; shader_index<count; ++shader_index, uniforms += g_state.num_uniforms) {
+	auto uniforms = g_state.shader_uniforms + first * g_state.num_uniforms;
+	for (u16 shader_index = first, end = first + count; shader_index < end; ++shader_index, uniforms += g_state.num_uniforms) {
 		auto& program = g_state.shader_programs[shader_index];
 
 		GLint is_linked = 0;
