@@ -834,3 +834,4 @@
 44179,tweaked skull_door
 44183,split texture::generateall
 44384,shader compilation loading screen
+44385,startup flicker workaround

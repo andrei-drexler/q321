@@ -127,14 +127,24 @@ namespace Demo {
 		Gfx::CompileShaders(0, Shader::UI + 1);
 
 		/* show a basic loading screen while compiling shaders */
-		Gfx::SetRenderTarget(Gfx::Backbuffer);
-		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
-		vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.375f};
-		vec2 ui_scale = UI::GetScale() * 0.75f;
-		vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;
-		UI::PrintShadowed("starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
-		UI::FlushGeometry();
-		Gfx::Present();
+		for (i8 frame = 4; frame >= 0; --frame) {
+			// HACK: we hide the inevitable OpenGL black frame flickering
+			// on startup for 'borderless full-screen' windows by drawing
+			// a few fully black frames before the actual loading screen
+
+			Gfx::SetRenderTarget(Gfx::Backbuffer);
+			Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
+
+			if (frame == 0) {
+				vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.375f};
+				vec2 ui_scale = UI::GetScale() * 0.75f;
+				vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;
+				UI::PrintShadowed("starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
+				UI::FlushGeometry();
+			}
+
+			Gfx::Present();
+		}
 
 		/* compile remaining shaders */
 		Gfx::CompileShaders(Shader::UI + 1, Shader::Count - Shader::UI - 1);
