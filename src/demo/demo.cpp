@@ -359,7 +359,6 @@ int FORCEINLINE demo_main() {
 	Gfx::InitMemory(16 * Mem::MB, 16 * Mem::MB);
 	Demo::RegisterGfxResources();
 	Map::AllocLightmap();
-	Demo::Texture::GenerateAll();
 	Demo::UpdateWindowIcon();
 
 #ifdef SHOW_LIGHTMAP

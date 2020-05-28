@@ -44,7 +44,9 @@ namespace Demo {
 			#undef PP_DEMO_TEXTURE_PROCGEN_DESCRIPTOR
 		};
 
-		void GenerateAll();
+		void GenerateSolidTextures();
+		void GenerateFont();
+		void GenerateProceduralTextures();
 	}
 
 	namespace Uniform {
@@ -108,13 +110,16 @@ namespace Demo {
 	FORCEINLINE void RegisterGfxResources() {
 		Uniform::RegisterAll();
 		Gfx::RegisterTextures(Texture::Descriptors);
+		Texture::GenerateSolidTextures();
+		Texture::GenerateFont();
 		Shader::RegisterAll(g_vertex_shaders, g_fragment_shaders);
-		
+		Texture::GenerateProceduralTextures();
+
 		constexpr u8 QuadVertexOrder[6] = {
 			0, 1, 2,
 			0, 2, 3,
 		};
-		
+
 		for (u16 i = 0, v = 0; i < UI::MAX_NUM_INDICES; v += 4) {
 			for (u16 j = 0; j < 6; ++j)
 				UI::indices[i++] = v + QuadVertexOrder[j];
@@ -126,8 +131,7 @@ namespace Demo {
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Demo::Texture::GenerateAll() {
-	/* solid color textures */
+FORCEINLINE void Demo::Texture::GenerateSolidTextures() {
 	for (u16 i = 0; i < 2; ++i) {
 		const u32 WhiteTextureSize = Descriptors[Texture::White].width * Descriptors[Texture::White].height;
 		u32 white[WhiteTextureSize];
@@ -135,20 +139,9 @@ NOINLINE void Demo::Texture::GenerateAll() {
 		Gfx::SetTextureContents(Texture::White + i, white);
 		Gfx::GenerateMipMaps(Texture::White + i);
 	}
+}
 
-	/* procedural textures */
-	for (u32 texture_id = 0; texture_id < Texture::Count; ++texture_id) {
-		auto& shader = ProcGen[texture_id];
-		if (shader == Gfx::InvalidID)
-			continue;
-		
-		Gfx::SetRenderTarget(texture_id);
-		Gfx::SetShader(shader);
-		Gfx::DrawFullScreen();
-		Gfx::GenerateMipMaps(texture_id);
-	}
-
-	/* font texture/glyph data */
+FORCEINLINE void Demo::Texture::GenerateFont() {
 	u32* font_pixels = Sys::Alloc<u32>(UI::TexDescriptor.width * UI::TexDescriptor.height);
 
 	RectPacker packer;
@@ -180,6 +173,19 @@ NOINLINE void Demo::Texture::GenerateAll() {
 	Gfx::GenerateMipMaps(Texture::Font);
 
 	Sys::Free(font_pixels);
+}
+
+FORCEINLINE void Demo::Texture::GenerateProceduralTextures() {
+	for (u32 texture_id = 0; texture_id < Texture::Count; ++texture_id) {
+		auto& shader = ProcGen[texture_id];
+		if (shader == Gfx::InvalidID)
+			continue;
+
+		Gfx::SetRenderTarget(texture_id);
+		Gfx::SetShader(shader);
+		Gfx::DrawFullScreen();
+		Gfx::GenerateMipMaps(texture_id);
+	}
 }
 
 ////////////////////////////////////////////////////////////////
