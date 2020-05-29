@@ -1442,7 +1442,7 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 		divx = std::clamp(divx - overflow, 0, MaxLevel);
 		divy = std::clamp(divy - overflow, 0, MaxLevel);
 
-		u32 packed	= width | (height << 3) | (divx << 6) | (divy << 9) | (material << 12);
+		u32 packed	= width | (height << 3) | (divx << 6) | (divy << 9) | (material << 12) | (patch.extra.asymmetric << 20);
 
 		assert(patch.width >= 3);
 		assert(patch.width <= MaxPatchSize);

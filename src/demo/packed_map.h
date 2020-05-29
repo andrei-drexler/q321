@@ -133,6 +133,7 @@ struct PackedMap {
 		u8		divx;
 		u8		divy;
 		u8		material;
+		bool	asymmetric;
 
 		/* used for delta decoding */
 		struct {
@@ -196,11 +197,12 @@ NOINLINE PackedMap::Patch PackedMap::GetPatch(u32 patch_index) const {
 	Patch patch;
 	MemSet(&patch);
 
-	patch.width		= ((data & 7) << 1) + 3;
-	patch.height	= (((data >> 3) & 7) << 1) + 3;
-	patch.divx		= 1 << ((data >> 6) & 7);
-	patch.divy		= 1 << ((data >> 9) & 7);
-	patch.material	= data >> 12;
+	patch.width			= ((data & 7) << 1) + 3;
+	patch.height		= (((data >> 3) & 7) << 1) + 3;
+	patch.divx			= 1 << ((data >> 6) & 7);
+	patch.divy			= 1 << ((data >> 9) & 7);
+	patch.material		= data >> 12;
+	patch.asymmetric	= (data >> 20) & 1;
 
 	return patch;
 }
