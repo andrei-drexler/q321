@@ -1625,11 +1625,12 @@ TEX(gskull4) {
 	return c;
 }
 
+// gothic_trim/metalsupsolid
 TEX(gmtlspsld) {
 	float
 		b = FBMT(uv, vec2(7), .9, 3., 4),
-		n = FBMT(uv, vec2(5), .9, 3., 4);
-	vec3 c = mix(RGB(103, 56, 53), RGB(73, 58, 71), smoothstep(.4, .5, n)) * (.75 + b * b);
+		n = FBMT(uv, vec2(3), .5, 3., 4);
+	vec3 c = mix(RGB(103, 56, 53), RGB(73, 58, 71), ls(.1, .7, n)) * (.75 + b * b);
 	return c;
 }
 

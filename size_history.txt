@@ -840,3 +840,4 @@
 44366,added gothic_trim/skullsvertgray02b
 44385,added support for asymmetric patches
 44414,asymmetric main entry pillars
+44412,tweaked gothic_trim/metalsupsolid
