@@ -839,3 +839,4 @@
 44379,fixed arch uv
 44366,added gothic_trim/skullsvertgray02b
 44385,added support for asymmetric patches
+44414,asymmetric main entry pillars
