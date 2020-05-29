@@ -1590,6 +1590,25 @@ TEX(gtprst3) {
 	return c;
 }
 
+// gothic_trim/skullsvertgray02b
+TEX(gsklvtg02b) {
+	float
+		b = FBMT(uv, vec2(5), .9, 3., 4);
+	vec3
+		c = RGB(67, 64, 63) * (.6 + .5 * b),
+		g;
+
+	uv = wavy(uv, 31., .003);
+	EVAL_GRAD(
+		g, uv,
+		sqrt(NT(p[i], vec2(53, 93)))
+	);
+
+	c *= 1. - .3 * g.y * g.z * g.z;
+
+	return c;
+}
+
 // skin/chapthroat
 TEX(skcpthrt) {
 	float b = FBMT(wavy(uv, 7., .01), vec2(9), .7, 2., 4);

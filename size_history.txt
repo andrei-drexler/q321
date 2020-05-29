@@ -837,3 +837,4 @@
 44385,startup flicker workaround
 44380,fixed skull_door on intel
 44379,fixed arch uv
+44366,added gothic_trim/skullsvertgray02b

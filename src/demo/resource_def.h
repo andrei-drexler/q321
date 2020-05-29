@@ -78,6 +78,7 @@
 	x(gblks17f2,			FSVertexBits)\
 	x(gmtlspsld,			FSVertexBits)\
 	x(gmtlsp4b,				FSVertexBits)\
+	x(gsklvtg02b,			FSVertexBits)\
 	x(bmtsprt,				FSVertexBits)\
 	x(cable,				FSVertexBits)\
 	x(brdr11b,				FSVertexBits)\
@@ -146,6 +147,7 @@
 	x(gblks17f2,		Shader::gblks17f2,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlspsld,		Shader::gmtlspsld,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlsp4b,			Shader::gmtlsp4b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gsklvtg02b,		Shader::gsklvtg02b,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gspbdrbb,			Shader::gspbdrbb,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkarntwr4a,		Shader::gkarntwr4a,		256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkarntwrst,		Shader::gkarntwrst,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -215,6 +217,7 @@
 	x("gothic_floor/blocks17floor2",			Lmapped,		gblks17f2,		Solid,		Opaque,					(0))\
 	x("gothic_trim/metalsupsolid",				Lmapped,		gmtlspsld,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/metalsupport4b",				Lmapped,		gmtlsp4b,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_trim/skullsvertgray02b",			Lmapped,		gsklvtg02b,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/supportborder_blue_b",		Lmapped,		gspbdrbb,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/km_arena1tower4_a",			Lmapped,		gkarntwr4a,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/km_arena1tower_short",		Lmapped,		gkarntwrst,		Solid,		Opaque|NeedsUV,			(0))\
