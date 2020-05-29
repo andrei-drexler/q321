@@ -1345,7 +1345,8 @@ vec3 gskdr(vec2 uv) {
 	d -= .06 * ls(.4, .33, uv.y); // outer buttress
 	d -= .05 * ls(.15, .07, abs(s - .5)) * step(.63, uv.y);
 	d = exclude(d, uv.y - .107); // bilinear filtering hack: exclude bottom pixel row
-	d = exclude(d, exclude(abs(p.x - .493) - .113, .6 - uv.y)); // bilinear filtering hack
+	if (uv.y < .6)
+		d = exclude(d, abs(p.x - .493) - .113); // bilinear filtering hack
 	d = exclude(d,
 		circ(p, .6) // carve out interior
 		+ .044 * ls(.48, .43, uv.y) // inner buttress

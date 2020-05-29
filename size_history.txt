@@ -835,3 +835,4 @@
 44183,split texture::generateall
 44384,shader compilation loading screen
 44385,startup flicker workaround
+44380,fixed skull_door on intel
