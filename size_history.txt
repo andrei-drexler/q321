@@ -841,3 +841,4 @@
 44385,added support for asymmetric patches
 44414,asymmetric main entry pillars
 44412,tweaked gothic_trim/metalsupsolid
+44460,added gothic_block/killblock_i4 stub

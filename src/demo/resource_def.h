@@ -74,6 +74,7 @@
 	x(gblks15,				FSVertexBits)\
 	x(gblks18c,				FSVertexBits)\
 	x(gklblki,				FSVertexBits)\
+	x(gklblki4,				FSVertexBits)\
 	x(gtprst3,				FSVertexBits)\
 	x(gblks17f2,			FSVertexBits)\
 	x(gmtlspsld,			FSVertexBits)\
@@ -143,6 +144,7 @@
 	x(gblks15,			Shader::gblks15,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gblks18c,			Shader::gblks18c,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gklblki,			Shader::gklblki,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gklblki4,			Shader::gklblki4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gtprst3,			Shader::gtprst3,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gblks17f2,		Shader::gblks17f2,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlspsld,		Shader::gmtlspsld,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -233,6 +235,7 @@
 	x("gothic_ceiling/woodceiling1a",			Lmapped,		gwdclg1a,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_ceiling/woodceiling1b_dark",		Lmapped,		gwdclg1bd,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_block/killblock_i",				Lmapped,		gklblki,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_block/killblock_i4",				Lmapped,		gklblki4,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/slateroofc",					Lmapped,		gsltrfc,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_light/pentagram_light1_1k",		fixture,		gpntgmlt1k,		Solid,		Opaque|NeedsUV,			(1000,19,17,10))\
 	x("skin/chapthroat",						Lmapped,		skcpthrt,		Solid,		Opaque,					(0))\
@@ -263,7 +266,6 @@
 	x("gothic_block/blocks18b",					"gothic_block/blocks15")\
 	x("gothic_block/blocks11b",					"gothic_block/blocks15")\
 	x("gothic_block/blocks17",					"gothic_block/blocks15")\
-	x("gothic_block/killblock_i4",				"gothic_block/blocks15")\
 	x("gothic_block/blocks1",					"gothic_block/blocks15")\
 	x("gothic_block/demon_block15fx",			"gothic_block/blocks15")\
 	x("gothic_trim/metaldemonkillblock",		"gothic_block/blocks15")\

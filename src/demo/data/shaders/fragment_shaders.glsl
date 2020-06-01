@@ -1398,31 +1398,42 @@ TEX(gblks18c) {
 	return c;
 }
 
-// gothic_block/killblock_i
-TEX(gklblki) {
+// s.x = specular size
+// s.y = specular intensity
+vec3 gklblki_base(vec2 uv, vec2 s) {
 	float
 		b = FBMT(uv, vec2(5), .9, 3., 4), // base FBM
 		n = FBMT(uv, vec2(31, 3), .5, 3., 3), // mostly vertical noise (for drip stains)
-		t = .75 + b * b, // base texture intensity (remapped FBM)
-		d, o, i;
+		t = .75 + b * b; // base texture intensity (remapped FBM)
 
 	vec2 p = uv;
 	vec3 c = gblks15(uv);
 
-	if (uv.y > .38)
-		return c;
-
-	c = mix(RGB(92, 43, 15), RGB(66, 44, 33), ls(.1, .05, uv.y)) // base color
-		* t * (.5 + .5 * ls(.0, .35, uv.y)) // intensity
-		;
+	if (uv.y < .38)
+		c = mix(RGB(92, 43, 15), RGB(66, 44, 33), ls(.1, .05, uv.y)) // base color
+			* t * (.5 + .5 * ls(.0, .35, uv.y)) // intensity
+			;
 	c +=
-		sqr(tri(.32, .015, uv.y)) * b // highlight edge
+		b * s.y * sqr(tri(.32, s.x * .015, uv.y)) // highlight edge
 		+ .3 * b * tri(.34, .05, uv.y) // highlight top
 		;
 	c *= 1.
-		- tri(.38, .01 + b * b * .03, uv.y) // shadow under blocks
+		- tri(.38, .005 + b * b * .03, uv.y) // shadow under blocks
 		+ 3. * tri(.15, .2, uv.y) * (n - .5) // dark drip stains
 		;
+
+	return c;
+}
+
+// gothic_block/killblock_i
+TEX(gklblki) {
+	float
+		b = FBMT(uv, vec2(5), .9, 3., 4), // base FBM
+		t = .75 + b * b, // base texture intensity (remapped FBM)
+		d, o, i;
+
+	vec2 p = uv;
+	vec3 c = gklblki_base(uv, vec2(1));
 
 	// thingmajigs
 	p.x = mod(p.x, 1./7.) - .07; // repeat 7x horizontally
@@ -1444,6 +1455,11 @@ TEX(gklblki) {
 		c = add_rivet(c, vec2((abs(p.x) - .035) * 36., fract(uv.y * 36.) - .5), .1);
 
 	return c;
+}
+
+// gothic_block/killblock_i4
+TEX(gklblki4) {
+	return gklblki_base(uv, vec2(4, .3));
 }
 
 TEX(glrgbk3b) {
