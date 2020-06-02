@@ -1457,9 +1457,45 @@ TEX(gklblki) {
 	return c;
 }
 
+// Simple skull shape
+// x = light intensity
+// y = alpha
+vec2 skull(vec2 p) {
+	p.x = abs(p.x); // symmetry
+	vec2 q = p;
+	q.y -= .5;
+	float
+		d = circ(q, .35), // base skull sdf
+		e, // secondary sdf
+		c; // light intensity
+	q.y += .25;
+	q.x -= .15;
+	d = min(d, box(q, vec2(.09, .05)) - .1); // cheekbones
+	e = elips(q, vec2(.15, .1)) / 5e1; // eye socket sdf
+	c = .1 + sat(.1 - d * 2.5); // base color + top highlight
+	q.y += .2;
+	q.x = p.x; // recenter
+	c = max(c, sat(.5 - length(q))); // brigten up bottom
+	c -= .5 * msk(e + .12, .15); // darken eye sockets
+	d = min(d, box(q, vec2(.09 - ls(-.15, .15, q.y) * .07, .03)) - .09); // nose
+	q.y -= .05;
+	c -= .5 * msk(elips(q, vec2(.05 - ls(-.1, .1, q.y) * .03, .06)) / 1e3 + .02, .05); // darken nose
+	//q.y += .15;
+	//d = min(d, box(q, vec2(.1 - sqr(ls(.1, -.1, q.y)) * .03, .05)) - .05);
+	return vec2(sat(c), msk(d + .01, .02));
+}
+
 // gothic_block/killblock_i4
 TEX(gklblki4) {
-	return gklblki_base(uv, vec2(4, .3));
+	float
+		b = FBMT(uv, vec2(9), .7, 2., 4), // base FBM
+		t = .75 + b * b; // base texture intensity (remapped FBM)
+	vec3 c = gklblki_base(uv, vec2(4, .3));
+	vec2 p = uv, s;
+	p.x = mod(p.x, .2); // repeat x5 horizontally
+	p -= .1;
+	s = skull(p * 5.);
+	return mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, s.y);
 }
 
 TEX(glrgbk3b) {

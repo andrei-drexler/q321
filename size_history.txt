@@ -844,3 +844,4 @@
 44460,added gothic_block/killblock_i4 stub
 44460,minor gothic_wall/iron01_ntech3 tweak
 44468,remapped gothic_door/xian_tourneyarch_inside2
+44627,added basic killblock_i4 skull shape
