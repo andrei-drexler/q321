@@ -270,6 +270,7 @@
 	x("gothic_block/demon_block15fx",			"gothic_block/blocks15")\
 	x("gothic_trim/metaldemonkillblock",		"gothic_block/blocks15")\
 	x("sfx/computer_blocks17",					"gothic_block/blocks15")\
+	x("gothic_door/xian_tourneyarch_inside2",	"gothic_trim/pitted_rust3")\
 	x("gothic_trim/pitted_rust",				"gothic_trim/pitted_rust3")\
 	x("gothic_trim/pitted_rust2",				"gothic_trim/pitted_rust3")\
 	x("gothic_trim/pitted_rust2_trans",			"gothic_trim/pitted_rust3")\
