@@ -846,3 +846,4 @@
 44468,remapped gothic_door/xian_tourneyarch_inside2
 44627,added basic killblock_i4 skull shape
 44635,remapped gothic_door/skullarch_*
+44641,fixed dm1 plasma room entrance uvs
