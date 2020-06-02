@@ -978,7 +978,7 @@ TEX(giron01nt3) {
 	c2 = mix(c2, vec3(n * .2), tri(0., 4., r) * b); // desaturate edges
 	c2 *= 1. - .4 * pow(tri(.0, 3., r), 4.); // darken outer edge
 	c2 += (c2 + .6) * sqrt(b) * sqr(tri(-6., 8., r) * tri(.66, .04, uv.y)) * msk(r); // specular
-	if (uv.y < .55)
+	if (uv.y < .56)
 		c2 = add_rivet(c2, vec2(24. * abs(uv.x - .25) - 1.85, fract(uv.y * 24. + .5) - .5), .15);
 
 	// top part - we also fill in the bottom row to avoid bilinear artifacts
