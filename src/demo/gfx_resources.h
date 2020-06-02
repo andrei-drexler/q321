@@ -150,6 +150,9 @@ namespace Demo {
 		Gfx::CompileShaders(Shader::UI + 1, Shader::Count - Shader::UI - 1);
 
 		Texture::GenerateProceduralTextures();
+#ifdef SAVE_TEXTURE
+		Gfx::SaveTGA(PP_STRINGIZE(SAVE_TEXTURE) ".tga", Demo::Texture::SAVE_TEXTURE);
+#endif
 	}
 }
 

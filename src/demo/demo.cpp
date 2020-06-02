@@ -4,6 +4,7 @@
 //#define DRAW_LIGHTS
 //#define DRAW_POINT_ENTITIES
 //#define DRAW_CLIPPING
+//#define SAVE_TEXTURE gblks15
 //#define SAVE_ICON
 //#define SAVE_LIGHTMAP
 //#define SHOW_LIGHTMAP
