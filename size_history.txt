@@ -852,3 +852,4 @@
 44982,added skin/tongue_trans
 44873,optimized voronoi functions
 44956,added skin/chapthroat2
+44955,remapped chapthroatooz
