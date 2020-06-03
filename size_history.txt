@@ -848,3 +848,4 @@
 44635,remapped gothic_door/skullarch_*
 44641,fixed dm1 plasma room entrance uvs
 44755,matched brick brushes w/ texture
+44761,tweaked skull function

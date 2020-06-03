@@ -1462,27 +1462,32 @@ TEX(gklblki) {
 // y = alpha
 vec2 skull(vec2 p) {
 	p.x = abs(p.x); // symmetry
-	vec2 q = p;
+	vec2 q = p, v;
 	q.y -= .5;
 	float
-		d = circ(q, .35), // base skull sdf
+		d = circ(q, .35),
 		e, // secondary sdf
 		c; // light intensity
+	v = q / .35;
 	q.y += .25;
-	q.x -= .15;
+	q.x -= .15; // eye offset
 	d = min(d, box(q, vec2(.09, .05)) - .1); // cheekbones
 	e = elips(q, vec2(.15, .1)) / 5e1; // eye socket sdf
-	c = .1 + sat(.1 - d * 2.5); // base color + top highlight
+	c = .1 + dot(vec2(v.y, sqrt(sat(1. - lsq(v)))), vec2(.3, .3)); // base intensity
 	q.y += .2;
 	q.x = p.x; // recenter
-	c = max(c, sat(.5 - length(q))); // brigten up bottom
-	c -= .5 * msk(e + .12, .15); // darken eye sockets
-	d = min(d, box(q, vec2(.09 - ls(-.15, .15, q.y) * .07, .03)) - .09); // nose
-	q.y -= .05;
-	c -= .5 * msk(elips(q, vec2(.05 - ls(-.1, .1, q.y) * .03, .06)) / 1e3 + .02, .05); // darken nose
+	c = max(c, sat(.4 - length(q))); // brigten up bottom
+	c +=
+		.15 * tri(.0, .1, e) // highlight eye socket edge
+		- .1 * msk(e + .12, .15) // darken eye socket interior
+		;
+	d = min(d, box(q, vec2(.15 - ls(-.15, .15, q.y) * .07, .03)) - .09); // nose
+	c *= 1. - ls(.05, .25, q.x) * ls(.2, .1, abs(q.y + .12)); // maxilla gradient
+	q.y -= .06;
+	c -= .5 * msk(elips(q, vec2(.05 - ls(-.1, .1, q.y) * .03, .06)) / 1e3 + .03, .05); // darken nose
 	//q.y += .15;
 	//d = min(d, box(q, vec2(.1 - sqr(ls(.1, -.1, q.y)) * .03, .05)) - .05);
-	return vec2(sat(c), msk(d + .01, .02));
+	return vec2(sat(c), msk(d, .02));
 }
 
 // gothic_block/killblock_i4
