@@ -1673,11 +1673,18 @@ TEX(gsklvtg02b) {
 
 // skin/chapthroat
 TEX(skcpthrt) {
-	float b = FBMT(wavy(uv, 7., .01), vec2(9), .7, 2., 4);
+	uv = wavy(uv, 7., .01);
+	float
+		b = FBMT(uv, vec2(9), .7, 2., 4),
+		n = FBMT(uv, vec2(13), .5, 2., 4)
+		;
 	vec3 c = RGB(127, 70, 55) * (.85 + .3 * b);
-	c *= 1. - .2 * sqr(ls(.2, .05, b * b));
-	c *= 1. + .3 * ls(.6, .9, b);
-	c *= 1. - .2 * sqr(tri(.6, .3, FBMT(wavy(uv, 5., .03), vec2(6), .6, 2., 4)));
+	c *= 1.
+		- .2 * sqr(ls(.3, .0, b * b))
+		- .2 * sqr(tri(.6, .3, FBMT(wavy(uv, 5., .03), vec2(6), .6, 2., 4)))
+		- .3 * ls(.6, .77, n)
+		+ .3 * ls(.5, .9, b)
+		;
 	return c;
 }
 
