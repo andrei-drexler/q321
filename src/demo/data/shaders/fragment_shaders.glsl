@@ -1681,6 +1681,31 @@ TEX(skcpthrt) {
 	return c;
 }
 
+// skin/chapthroat2
+TEX(skcpthrt2) {
+	vec2 p = uv - .5;
+	p = wavy(p, 17., .007);
+	p.x *= 2. - uv.y * 1.5;
+	float
+		b = FBMT(uv, vec2(9), .7, 2., 4),
+		n = NT(uv, vec2(7)),
+		d = length(p),
+		s;
+	vec3 c = skcpthrt(uv);
+	s = fract(d *= 13.);
+	if (d <= 6.) {
+		c *= 1.
+			- pow(ls(6., .5, d + b * b), 4.) // darken interior
+			;
+		n = ls(.3, .8, n); // remap noise
+		c *= 1.
+			- n * b * sqr(tri(.4, .3, s)) // darken edges
+			+ n * b * tri(.6, .4, s) // highlight edges
+			;
+	}
+	return c;
+}
+
 // skin/tongue_trans
 TEX(sktongue) {
 	uv = wavy(uv, 13., .003);
