@@ -111,6 +111,7 @@ void gcntr2trn_m() { Generic(); }
 void blacksky() { Generic(); }
 void timhel() { Generic(); }
 void lavaf() { Generic(); }
+void skcpthrtooz() { Generic(); }
 
 void wave(float div, float amp, float freq) {
 	gl_Position += amp * MVP * vec4(N, 0) * sin(6.28 * (Time.x * freq + dot(P.xyz/div, vec3(1))));

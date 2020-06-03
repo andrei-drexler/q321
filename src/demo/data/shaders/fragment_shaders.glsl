@@ -208,7 +208,7 @@ float H(float p) {
 vec3 H3(float p) {
    vec3 p3 = fract(vec3(p) * vec3(.1031, .1030, .0973));
    p3 += dot(p3, p3.yzx+33.33);
-   return fract((p3.xxy+p3.yzz)*p3.zyx); 
+   return fract((p3.xxy+p3.yzz)*p3.zyx);
 }
 
 vec2 H2(vec2 p) {
@@ -339,7 +339,7 @@ float NT(float x, float p) {
 // vec3 H3(float p) {
 // 	vec3 q = fract(p * HASHSCALE.xyz);
 // 	q += dot(q, q.yzx + 19.19);
-// 	return fract((q.xxy + q.yzz) * q.zyx); 
+// 	return fract((q.xxy + q.yzz) * q.zyx);
 // }
 
 // vec4 H4(float p) {
@@ -537,7 +537,7 @@ vec3 add_rivet(vec3 c, vec2 uv, float s) {
 vec3 pattern(vec2 p, float sc, float bv) {
 	vec3 e = vec3(-1, 0, 1), r = vec3(1e5);
 	vec2 ip = floor(p*sc), tileID = e.yy;
-	p -= (ip + .5) / sc; 
+	p -= (ip + .5) / sc;
 
 	float
 		h11 = .5 * HT(ip + e.yy, vec2(sc)),
@@ -551,7 +551,7 @@ vec3 pattern(vec2 p, float sc, float bv) {
 		h20 = .5 * HT(ip + e.xx, vec2(sc));
 
 	vec2[4] ctr, l;
-	if (mod(ip.x + ip.y, 2.) < .5) { 
+	if (mod(ip.x + ip.y, 2.) < .5) {
 		l[0] = 1. + vec2(h21 - h10, h11 - h20);
 		l[1] = 1. + vec2(h12 - h21, h11 - h22);
 		l[2] = 1. + vec2(h01 - h10, h00 - h11);
@@ -560,7 +560,7 @@ vec3 pattern(vec2 p, float sc, float bv) {
 		ctr[1] = vec2(h21, h11);
 		ctr[2] = vec2(h01, h11);
 		ctr[3] = vec2(h01, h11);
-	} else { 
+	} else {
 		l[0] = 1. + vec2(h11 - h20, h10 - h21);
 		l[1] = 1. + vec2(h22 - h11, h12 - h21);
 		l[2] = 1. + vec2(h11 - h00, h01 - h10);
@@ -634,7 +634,7 @@ int dom(vec3 n) {
 // https://www.shadertoy.com/view/MsS3Wc
 vec3 hsv(vec3 c) {
 	vec3 rgb = sat(abs(mod(c.x * 6. + vec3(0, 4, 2), 6.) - 3.) - 1.);
-	rgb *= rgb * (3. - 2. * rgb); // cubic smoothing	
+	rgb *= rgb * (3. - 2. * rgb); // cubic smoothing
 	return c.z * mix(vec3(1.), rgb, c.y);
 }
 
@@ -1672,20 +1672,34 @@ TEX(gsklvtg02b) {
 }
 
 // skin/chapthroat
-TEX(skcpthrt) {
+TEXA(skcpthrt) {
 	uv = wavy(uv, 7., .01);
 	float
 		b = FBMT(uv, vec2(9), .7, 2., 4),
-		n = FBMT(uv, vec2(13), .5, 2., 4)
+		n = FBMT(uv, vec2(13), .5, 2., 4),
+		m = .2 * sqr(tri(.6, .3, FBMT(wavy(uv, 5., .03), vec2(6), .6, 2., 4)))
 		;
 	vec3 c = RGB(127, 70, 55) * (.85 + .3 * b);
 	c *= 1.
+		- .5 * m
 		- .2 * sqr(ls(.3, .0, b * b))
-		- .2 * sqr(tri(.6, .3, FBMT(wavy(uv, 5., .03), vec2(6), .6, 2., 4)))
 		- .3 * ls(.6, .77, n)
 		+ .3 * ls(.5, .9, b)
 		;
-	return c;
+	return vec4(c, m);
+}
+
+// skin/chapthroatooz
+void skcpthrtooz() {
+	vec4 c = texture(Texture0, UV);
+	vec2 uv = fract(UV);
+	uv.y -= .1 * Time.x;
+	uv = wavy(uv, 7., .02);
+	float
+		b = FBMT(uv, vec2(5), .9, 2., 4),
+		t = b * b
+		;
+	FCol = vec4(mix(c.xyz, RGB(133, 80, 55) * t, c.w) * Light(), 1);
 }
 
 // skin/chapthroat2
@@ -1698,11 +1712,11 @@ TEX(skcpthrt2) {
 		n = NT(uv, vec2(7)),
 		d = length(p),
 		s;
-	vec3 c = skcpthrt(uv);
+	vec3 c = skcpthrt(uv).xyz;
 	s = fract(d *= 13.);
 	if (d <= 6.) {
 		c *= 1.
-			- pow(ls(6., .5, d + b * b), 4.) // darken interior
+			- pow(ls(6., .5, d + b * b), 6.) // darken interior
 			;
 		n = ls(.3, .8, n); // remap noise
 		c *= 1.
