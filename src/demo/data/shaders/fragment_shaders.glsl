@@ -582,29 +582,34 @@ vec3 pattern(vec2 p, float sc, float bv) {
 	return r;
 }
 
+// Voronoi diagram
 // xy = offset; z = edge distance
-vec3 voro1(vec2 p, vec2 grid) {
-	p *= grid;
-	vec2 n = floor(p), f = p - n, mr, g, o, r;
-
-	float md = 8., sd = md, d;
-	for (int i=0; i<9; ++i) {
-		g = vec2(i % 3 - 1, i / 3 - 1);
-		o = H2(mod(n + g, grid));
-		r = g + o - f;
-		d = sum(abs(r));
-
-		if (d < md) {
-			sd = md;
-			md = d;
-			mr = r;
-		} else if (d < sd) {
-			sd = d;
-		}
+#define VORO_FUNC(name, norm)							\
+	vec3 name(vec2 p, vec2 grid) {						\
+		p *= grid;										\
+		vec2 n = floor(p), f = p - n, mr, g, o, r;		\
+														\
+		float md = 8., sd = md, d;						\
+		for (int i=0; i<9; ++i) {						\
+			g = vec2(i % 3 - 1, i / 3 - 1);				\
+			o = H2(mod(n + g, grid));					\
+			r = g + o - f;								\
+			d = norm;									\
+														\
+			if (d < md) {								\
+				sd = md;								\
+				md = d;									\
+				mr = r;									\
+			} else if (d < sd) {						\
+				sd = d;									\
+			}											\
+		}												\
+														\
+		return vec3(mr, sd - md);						\
 	}
 
-	return vec3(mr, sd - md);
-}
+VORO_FUNC(voro1, sum(abs(r))) // L1 (Manhattan) norm
+VORO_FUNC(voro, length(r)) // L2 norm
 
 float env(vec3 p) {
 	p = normalize(p);
@@ -1673,6 +1678,21 @@ TEX(skcpthrt) {
 	c *= 1. - .2 * sqr(ls(.2, .05, b * b));
 	c *= 1. + .3 * ls(.6, .9, b);
 	c *= 1. - .2 * sqr(tri(.6, .3, FBMT(wavy(uv, 5., .03), vec2(6), .6, 2., 4)));
+	return c;
+}
+
+// skin/tongue_trans
+TEX(sktongue) {
+	uv = wavy(uv, 13., .003);
+	float
+		b = FBMT(uv, vec2(7), .9, 3., 4), // base FBM
+		n = FBMT(uv, vec2(5), .5, 2., 4), // smoother FBM
+		t = .5 + b // base texture intensity (remapped fbm)
+		;
+	vec3
+		c = RGB(80, 38, 34), // base color
+		v = voro(uv, vec2(23));
+	c = mix(c, mix(RGB(180, 125, 118), RGB(165, 78, 51), n), b * tri(.0, .4 + n * .4, v.z)) * t;
 	return c;
 }
 

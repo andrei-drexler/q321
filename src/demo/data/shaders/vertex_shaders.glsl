@@ -70,6 +70,7 @@ void gskdr_d() { FS(); }
 void gskdr_e() { FS(); }
 void gskdr_f() { FS(); }
 void skcpthrt() { FS(); }
+void sktongue() { FS(); }
 void gskull4() { FS(); }
 void gcntr2trn() { FS(); }
 void gmtlspsld() { FS(); }

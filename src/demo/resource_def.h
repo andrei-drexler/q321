@@ -46,6 +46,7 @@
 	x(mtlt6f,				FSVertexBits)\
 	x(mtlbk03,				FSVertexBits)\
 	x(skcpthrt,				FSVertexBits)\
+	x(sktongue,				FSVertexBits)\
 	x(gskull4,				FSVertexBits)\
 	x(gcntr2trn,			FSVertexBits)\
 	x(gcntr2trn_m,			MapVertexBits)\
@@ -128,6 +129,7 @@
 	x(mtlt6f,			Shader::mtlt6f,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(mtlbk03,			Shader::mtlbk03,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(skcpthrt,			Shader::skcpthrt,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(sktongue,			Shader::sktongue,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskull4,			Shader::gskull4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gcntr2trn,		Shader::gcntr2trn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr_a,			Shader::gskdr_a,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -238,6 +240,7 @@
 	x("gothic_block/killblock_i4",				Lmapped,		gklblki4,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/slateroofc",					Lmapped,		gsltrfc,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_light/pentagram_light1_1k",		fixture,		gpntgmlt1k,		Solid,		Opaque|NeedsUV,			(1000,19,17,10))\
+	x("skin/tongue_trans",						Lmapped,		sktongue,		Solid,		Opaque,					(0))\
 	x("skin/chapthroat",						Lmapped,		skcpthrt,		Solid,		Opaque,					(0))\
 	x("gothic_wall/skull4",						Lmapped,		gskull4,		Solid,		Opaque,					(0))\
 	x("gothic_floor/center2trn",				gcntr2trn_m,	gcntr2trn,		Solid,		Opaque|NeedsUV,			(0))\
