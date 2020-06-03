@@ -1982,27 +1982,57 @@ TEXA(gpntgmlt1k) {
 	return vec4(c + 1.*vec3(1, 1, .3) * a, a);
 }
 
-float icon_sdf(vec2 uv) {
+// Quake 3 logo SDF
+// t = 0.0 : app icon (chunky)
+// t = 1.0 : background logo (slim)
+float icon_sdf(vec2 uv, float t) {
 	uv.x = abs(uv.x);
 	uv.y -= .07;
-	float d = elips(uv, vec2(.31, .12)) / 50.;
-	d = max(d, -elips(uv - vec2(0, .01), vec2(.28, .07)) / 120.);
-	d = max(d, -box(uv - vec2(.0, .1), vec2(.22, .12)));
-	d = max(d, -box(uv - vec2(.0, .1), vec2(.09, .31)));
-	d = min(d, box1(uv - vec2(.0, -.09), vec2(tri(-.09, .32, uv.y)*.04, .32)));
-	d = min(d, box1(uv - vec2(.11, -.21), vec2(tri(-.07, .3, uv.y)*.03, .15)));
+	float d = elips(uv, vec2(.31, .12 - t * .02)) / 50.; // base ellipse
+	d = max(d, -elips(uv - vec2(0, .01 + t * .01), vec2(.28, .07 + t * .01)) / 50.); // negative inner ellipse
+	d = max(d, -box(uv - vec2(.0, .1), vec2(.22 - t * .02, .12))); // cut off far part
+	d = max(d, -box(uv - vec2(.0, .1), vec2(.084 - t * .012, .31))); // cut off mid part
+	d = min(d, box1(uv - vec2(.0, -.09), vec2(tri(-.09, .32, uv.y)*(.04 - t * .015), .32))); // middle rhombus
+	d = min(d, box1(uv - vec2(.11 - t * .02, -.21), vec2(tri(-.07, .3, uv.y)*(.03 - t * .01), .15))); // outer rhombi
 	return d;
 }
 
 TEXA(icon) {
 	uv -= vec2(.48, .5);
 	float
-		d = icon_sdf(uv),
+		d = icon_sdf(uv, 0.),
 		b = length(uv) - .47;
 	vec3 c = 1. - vec3(.5, 1, 1) * msk(max(.007 - d, b + .04));
 	return vec4(c, 1) * msk(b);
 }
 
+TEX(bglogo) {
+	uv -= .5;
+
+	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
+	uv /= r / mx(r); // correct aspect ratio
+	uv *= .8; // scale up a bit
+	uv.y -= .03; // move up a bit
+
+	float
+		b = FBMT(uv, vec2(53, 5), .7, 2., 3), // base FBM - mostly vertical noise
+		t = .8 + .8 * b * b, // intensity variation (remapped FBM)
+		d = icon_sdf(uv, 1.), // logo SDF
+		e = icon_sdf(uv + vec2(0, .002), 1.), // offset logo SDF, for lighting
+		l = (e - d) * 5e2 + .5 // lighting
+		;
+	vec3 c = vec3(.3 * t, 0, 0) * msk(d, .004); // base color
+	c *= 1.
+		- ls(.1, .33, abs(uv.x)) // horizontal gradient
+		- .5 * ls(.1, .3, abs(uv.y - .1)) // vertical gradient
+		;
+	c = c
+		+ .3 * tri(.0, .004, d) * tri(.1, .2, uv.y) * ls(.0, .1, abs(uv.x - .05)) * l // top light
+		+ .5 * tri(.005, .005, d) * ls(.2, -.1, uv.y) * sat(-l) // bottom light
+		;
+
+	return c;
+}
 float banner_fold(vec2 uv, float s, float i, float amp) {
 	i = (uv.y - sqr(abs(uv.x - .5)) * amp) * s - i;
 	return 2. * tri(.5, .4, i) * (fract(i) - .5);
@@ -2018,7 +2048,7 @@ TEXA(bwprtbnr) {
 		d; // sdf
 	vec3 c = RGB(77, 60, 44) * t; // base color
 	vec2 p = uv * vec2(1, 2) - vec2(.5, .7);
-	c *= 1. - .55 * msk(exclude(circ(p, .3), icon_sdf(rot(45.) * p * .8) - .01)); // logo
+	c *= 1. - .55 * msk(exclude(circ(p, .3), icon_sdf(rot(45.) * p * .8, 0.) - .01)); // logo
 	c *= 1.
 		+ sqr(ls(.6, .9, b)) // noisy highlights
 		+ tri(.2, .5, uv.y) * tri(.2, .3, x) * banner_fold(uv, 4., .2, 4.) // bottom fold

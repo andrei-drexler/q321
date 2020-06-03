@@ -136,6 +136,9 @@ namespace Demo {
 			Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
 
 			if (frame == 0) {
+				Gfx::SetShader(Shader::bglogo);
+				Gfx::DrawFullScreen();
+
 				vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.375f};
 				vec2 ui_scale = UI::GetScale() * 0.75f;
 				vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;

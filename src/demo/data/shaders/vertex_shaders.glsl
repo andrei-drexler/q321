@@ -93,6 +93,7 @@ void light5() { FS(); }
 void lt2() { FS(); }
 void gpntgmlt1k() { FS(); }
 void icon() { FS(); }
+void bglogo() { FS(); }
 void bwprtbnr() { FS(); }
 void q3bnr() { FS(); }
 void Loading() { FS(); }

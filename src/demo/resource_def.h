@@ -26,6 +26,7 @@
 	/*Name,					VertexBits*/\
 	x(Generic,				MapVertexBits)\
 	x(icon,					FSVertexBits)\
+	x(bglogo,				FSVertexBits)\
 	x(Loading,				FSVertexBits)\
 	x(UI,					UIVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(Lmapped,				MapVertexBits)\
