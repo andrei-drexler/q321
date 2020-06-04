@@ -103,11 +103,12 @@ namespace Demo {
 
 		VertexFormat*	AddQuads(u16 count);
 		void			FlushGeometry();
+		void			InitIndices();
 	}
 
 	////////////////////////////////////////////////////////////////
 
-	FORCEINLINE void InitGfxResources() {
+	FORCEINLINE void UI::InitIndices() {
 		constexpr u8 QuadVertexOrder[6] = {
 			0, 1, 2,
 			0, 2, 3,
@@ -117,8 +118,11 @@ namespace Demo {
 			for (u16 j = 0; j < 6; ++j)
 				UI::indices[i++] = v + QuadVertexOrder[j];
 		}
+	}
 
-		/* register essential resources */
+	FORCEINLINE void InitGfxResources() {
+		/* initialize essential resources */
+		UI::InitIndices();
 		Gfx::RegisterTextures(Texture::Descriptors);
 		Texture::GenerateSolidTextures();
 		Texture::GenerateFont();

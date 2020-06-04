@@ -857,3 +857,4 @@
 45013,added skin/chapthroatooz
 45158,added background logo during preload
 45170,tweaked chapthroat
+45168,separate ui::initindices function
