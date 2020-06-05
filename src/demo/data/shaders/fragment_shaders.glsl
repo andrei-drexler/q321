@@ -1,3 +1,70 @@
+#define smoothen(x)	((x)*(x)*(3.-2.*(x)))
+#define sqr(x)		((x)*(x))
+#define lsq(x)		dot(x, x)
+#define sat(x)		clamp(x, 0., 1.)
+#define RGB(r,g,b)	(vec3(r,g,b)/255.)
+
+#define ridged(v)	tri(.5,.5,v)
+
+// $protect ^void[ \t]+([_a-zA-Z][_a-zA-Z0-9]*)\(\)
+// $protect ^TEX[A]?\(([a-z][_a-z0-9]*)\)
+#define TEX(name)	vec3 name(vec2); void name() { FCol = vec4(name(UV), 1); } vec3 name(vec2 uv)
+#define TEXA(name)	vec4 name(vec2); void name() { FCol = name(UV); } vec4 name(vec2 uv)
+
+////////////////////////////////////////////////////////////////
+
+// Hardware derivates are computed at half resolution (pixel quads).
+// To get full-resolution results, we need to evaluate 3 taps.
+// The macro below helps automate that process a bit.
+//
+// Arguments:
+// - res = name of vec3 output variable to receive the results:
+//   .xy = normalized gradient
+//   .z  = function value
+// - uv  = 2d point where function is to be evaluated
+
+#define EVAL_GRAD(res, uv, code)								 	\
+	{																\
+		vec2 p[3];													\
+	 	float r[3];													\
+		p[0] = uv;													\
+		p[1] = uv + dFdx(uv);										\
+		p[2] = uv + dFdy(uv);										\
+	for (int i = 0; i < 3; ++i)										\
+		r[i] = code;												\
+		res = vec3(safe_normalize(vec2(r[1], r[2]) - r[0]), r[0]);	\
+	}
+
+////////////////////////////////////////////////////////////////
+
+// Voronoi diagram
+// xy = offset; z = edge distance
+#define VORO_FUNC(name, norm)										\
+	vec3 name(vec2 p, vec2 grid) {									\
+		p *= grid;													\
+		vec2 n = floor(p), f = p - n, mr, g, o, r;					\
+																	\
+		float md = 8., sd = md, d;									\
+		for (int i = 0; i < 9; ++i) {								\
+			g = vec2(i % 3 - 1, i / 3 - 1);							\
+			o = H2(mod(n + g, grid));								\
+			r = g + o - f;											\
+			d = norm;												\
+																	\
+			if (d < md) {											\
+				sd = md;											\
+				md = d;												\
+				mr = r;												\
+			} else if (d < sd) {									\
+				sd = d;												\
+			}														\
+		}															\
+																	\
+		return vec3(mr, sd - md);									\
+	}
+
+////////////////////////////////////////////////////////////////
+
 uniform vec4 Time, Cam;
 uniform sampler2D Texture0, Texture1;
 
@@ -8,12 +75,6 @@ in vec4 Clr;
 out vec4 FCol;
 
 ////////////////////////////////////////////////////////////////
-
-#define smoothen(x)	((x)*(x)*(3.-2.*(x)))
-#define sqr(x)		((x)*(x))
-#define lsq(x)		dot(x, x)
-#define sat(x)		clamp(x, 0., 1.)
-#define RGB(r,g,b)	(vec3(r,g,b)/255.)
 
 float
 	PI		= 3.1415927,
@@ -417,8 +478,6 @@ float FBMT(vec2 p, vec2 scale, float gain, float lac) {
 	return FBMT(p, scale, gain, lac, 4);
 }
 
-#define ridged(v) tri(.5,.5,v)
-
 float FBMT_ridged(vec2 p, vec2 scale, float gain, float lac, int lyrs) {
 	float acc = ridged(NT(p, scale)), ow = 1., tw = 1.;
 	for (int i=0; i<lyrs; ++i) {
@@ -478,30 +537,6 @@ float msk(float s, float d) {
 float msk(float s) {
 	return sat(1. - s/fwidth(s));
 }
-
-////////////////////////////////////////////////////////////////
-
-// Hardware derivates are computed at half resolution (pixel quads).
-// To get full-resolution results, we need to evaluate 3 taps.
-// The macro below helps automate that process a bit.
-//
-// Arguments:
-// - res = name of vec3 output variable to receive the results:
-//   .xy = normalized gradient
-//   .z  = function value
-// - uv  = 2d point where function is to be evaluated
-
-#define EVAL_GRAD(res, uv, code)								 	\
-	{																\
-		vec2 p[3];													\
-	 	float r[3];													\
-		p[0] = uv;													\
-		p[1] = uv + dFdx(uv);										\
-		p[2] = uv + dFdy(uv);										\
-	for (int i = 0; i < 3; ++i)										\
-		r[i] = code;												\
-		res = vec3(safe_normalize(vec2(r[1], r[2]) - r[0]), r[0]);	\
-	}
 
 ////////////////////////////////////////////////////////////////
 
@@ -582,32 +617,6 @@ vec3 pattern(vec2 p, float sc, float bv) {
 	return r;
 }
 
-// Voronoi diagram
-// xy = offset; z = edge distance
-#define VORO_FUNC(name, norm)							\
-	vec3 name(vec2 p, vec2 grid) {						\
-		p *= grid;										\
-		vec2 n = floor(p), f = p - n, mr, g, o, r;		\
-														\
-		float md = 8., sd = md, d;						\
-		for (int i=0; i<9; ++i) {						\
-			g = vec2(i % 3 - 1, i / 3 - 1);				\
-			o = H2(mod(n + g, grid));					\
-			r = g + o - f;								\
-			d = norm;									\
-														\
-			if (d < md) {								\
-				sd = md;								\
-				md = d;									\
-				mr = r;									\
-			} else if (d < sd) {						\
-				sd = d;									\
-			}											\
-		}												\
-														\
-		return vec3(mr, sd - md);						\
-	}
-
 VORO_FUNC(voro1, sum(abs(r))) // L1 (Manhattan) norm
 VORO_FUNC(voro, length(r)) // L2 norm
 
@@ -645,12 +654,6 @@ vec3 Light() {
 		l = 1. - ls(14., -6., length(d.xy) - b * 8.) * ls(128., 48., d.z) * step(.1, Nor.z);
 	return texture(Texture1, LUV).xyz * 2. * l;
 }
-
-// $protect ^void[ \t]+([_a-zA-Z][_a-zA-Z0-9]*)\(\)
-// $protect ^TEX[A]?\(([a-z][_a-z0-9]*)\)
-
-#define TEX(name)	vec3 name(vec2); void name() { FCol = vec4(name(UV), 1); } vec3 name(vec2 uv)
-#define TEXA(name)	vec4 name(vec2); void name() { FCol = name(UV); } vec4 name(vec2 uv)
 
 TEX(cmet52) {
 	float b = FBMT(uv, vec2(5), .9, 3., 4);
