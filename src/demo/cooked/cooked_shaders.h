@@ -8,7 +8,7 @@
 // rename_globals      : true
 // min_macro_savings   : 8
 
-// src/demo/data/shaders/fragment_shaders.glsl: 63990 => 27147 (42.4%)
+// src/demo/data/shaders/fragment_shaders.glsl: 63992 => 27149 (42.4%)
 const char g_fragment_shaders[] =
 "#define B vec2\n"
 "#define C float\n"
@@ -37,7 +37,7 @@ const char g_fragment_shaders[] =
 "#define aQ normalize\n"
 "uniform Q ag,Cam;uniform sampler2D am,Texture1;in F Pos,Nor,Ref;in B X,LUV;in Q Clr;out Q ae;\n"
 "#define bi(x)((x)*(x)*(3.-2.*(x)))\n"
-"#define O(x)(x)*(x)\n"
+"#define O(x)((x)*(x))\n"
 "#define bj(x)az(x,x)\n"
 "#define ai(x)clamp(x,0.,1.)\n"
 "#define K(r,g,b)(F(r,g,b)/255.)\n"

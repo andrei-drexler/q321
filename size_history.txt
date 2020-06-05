@@ -858,3 +858,4 @@
 45158,added background logo during preload
 45170,tweaked chapthroat
 45168,separate ui::initindices function
+45168,sqr macro parentheses

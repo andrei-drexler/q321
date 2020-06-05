@@ -9,8 +9,8 @@ out vec4 FCol;
 
 ////////////////////////////////////////////////////////////////
 
-#define smoothen(x) ((x)*(x)*(3.-2.*(x)))
-#define sqr(x)		(x)*(x)
+#define smoothen(x)	((x)*(x)*(3.-2.*(x)))
+#define sqr(x)		((x)*(x))
 #define lsq(x)		dot(x, x)
 #define sat(x)		clamp(x, 0., 1.)
 #define RGB(r,g,b)	(vec3(r,g,b)/255.)
