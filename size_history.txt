@@ -864,3 +864,4 @@
 44547,removed shader names
 44603,tweaked chapthroat
 44543,stable sort in shader compiler
+44528,reordered vertex shaders
