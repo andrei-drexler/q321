@@ -1718,9 +1718,9 @@ TEX(skcpthrt2) {
 		c *= 1.
 			- pow(ls(6., .5, d + b * b), 6.) // darken interior
 			;
-		n = ls(.3, .8, n); // remap noise
+		n = ls(.3, .7, n); // remap noise
 		c *= 1.
-			- n * b * sqr(tri(.4, .3, s)) // darken edges
+			- n * b * tri(.4, .2, s) // darken edges
 			+ n * b * tri(.6, .4, s) // highlight edges
 			;
 	}
