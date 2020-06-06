@@ -1680,7 +1680,7 @@ TEXA(skcpthrt) {
 	float
 		b = FBMT(uv, vec2(9), .7, 2., 4),
 		n = FBMT(uv, vec2(13), .5, 2., 4),
-		m = sqr(tri(.6, .3, FBMT(wavy(uv, 5., .03), vec2(6), .6, 2., 4)))
+		m = ls(.6, .9, FBMT(wavy(uv, 5., .03), vec2(11), .6, 2., 4))
 		;
 	vec3 c = RGB(127, 70, 55) * (.85 + .3 * b);
 	c *= 1.
@@ -1697,9 +1697,9 @@ TEXA(skcpthrt) {
 void skcpthrtooz() {
 	vec4 c = texture(Texture0, UV);
 	vec2 uv = fract(UV);
-	uv.y -= .1 * Time.x;
+	uv.y -= .2 * Time.x;
 	float b = FBMT(wavy(uv, 7., .02), vec2(5), .9, 2., 4);
-	FCol = vec4(mix(c.xyz, RGB(60, 25, 20) * b, ls(.5, 2., c.w)) * Light(), 1);
+	FCol = vec4(mix(c.xyz, RGB(25, 10, 8) * b, c.w) * Light(), 1);
 }
 
 // skin/chapthroat2
