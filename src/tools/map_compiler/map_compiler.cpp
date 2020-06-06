@@ -2125,8 +2125,8 @@ int main() {
 		"\n"
 		"// auto-generated, do not modify\n"
 	);
-	fprintf(out, "static_assert(0x%08xU == Demo::Material::Version, \"Material definition mismatch, please recompile the maps\");\n", Demo::Material::Version);
-	fprintf(out, "static_assert(0x%08xU == Demo::Entity::Version, \"Entity definition mismatch, please recompile the maps\");\n", Demo::Entity::Version);
+	fprintf(out, "static_assert(0x%08xU == Demo::Material::Version, \"Material definition mismatch, please recompile the map compiler & maps\");\n", Demo::Material::Version);
+	fprintf(out, "static_assert(0x%08xU == Demo::Entity::Version, \"Entity definition mismatch, please recompile the map compiler & maps\");\n", Demo::Entity::Version);
 
 	std::vector<char> source;
 	for (auto& map_entry : DemoMaps) {

@@ -1,8 +1,8 @@
 #pragma once
 
 // auto-generated, do not modify
-static_assert(0xda94256aU == Demo::Material::Version, "Material definition mismatch, please recompile the maps");
-static_assert(0xb1891f61U == Demo::Entity::Version, "Entity definition mismatch, please recompile the maps");
+static_assert(0xda94256aU == Demo::Material::Version, "Material definition mismatch, please recompile the map compiler & maps");
+static_assert(0xb1891f61U == Demo::Entity::Version, "Entity definition mismatch, please recompile the map compiler & maps");
 
 ////////////////////////////////////////////////////////////////
 // The Longest Yard (q3dm17sample.map)
