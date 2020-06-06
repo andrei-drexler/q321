@@ -1,5 +1,7 @@
 #pragma once
+
 // auto-generated, do not modify
+static_assert(0x02923967U == Demo::Shader::Version, "Shader definition mismatch, please recompile the shader compiler & shaders");
 
 // ../../demo/data/shaders/fragment_shaders.glsl: 64195 => 26632 (41.5%)
 static constexpr char g_fragment_shaders[] =

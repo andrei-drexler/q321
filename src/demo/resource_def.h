@@ -313,3 +313,21 @@
 	x(Time,					vec4)\
 
 ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+
+namespace Demo::Material {
+	constexpr u32 Version = Hash(
+		#define PP_DEMO_HASH_MATERIAL_NAME(path, shader, texture, contents, draw, light)		path "*" #texture "*" #contents "*" #draw "*"
+		DEMO_MATERIALS(PP_DEMO_HASH_MATERIAL_NAME)
+		#undef PP_DEMO_HASH_MATERIAL_NAME
+	);
+}
+
+namespace Demo::Shader {
+	constexpr u32 Version = Hash(
+		#define PP_DEMO_HASH_SHADER_NAME(name, ...)		#name "*"
+		DEMO_SHADERS(PP_DEMO_HASH_SHADER_NAME)
+		#undef PP_DEMO_HASH_SHADER_NAME
+	);
+}

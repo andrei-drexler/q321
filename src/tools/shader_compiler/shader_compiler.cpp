@@ -389,10 +389,13 @@ int main(int argc, const char** argv) {
 	}
 	auto close_output = scope_exit { fclose(out); out = nullptr; };
 
-	/* write header */
+	/* write header/version check */
 	fprintf(out,
 		"#pragma once\n"
+		"\n"
 		"// auto-generated, do not modify\n"
+		"static_assert(0x%08xU == Demo::Shader::Version, \"Shader definition mismatch, please recompile the shader compiler & shaders\");\n",
+		Demo::Shader::Version
 	);
 
 	/* list all .glsl files */
