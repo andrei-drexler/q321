@@ -252,7 +252,7 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 	identifiers.reserve(ident_usage.size());
 	for (auto& v : ident_usage)
 		identifiers.push_back({v.first, v.second});
-	std::sort(identifiers.begin(), identifiers.end());
+	std::stable_sort(identifiers.begin(), identifiers.end());
 
 	/* generate new identifier names */
 	NameGenerator name_generator;
