@@ -315,7 +315,7 @@ void GL::TrimLog(char* buf, int lines) {
 	}
 }
 
-FORCEINLINE void Gfx::RegisterShaders(const char* names, const Shader::Flags* flags, u16 count, const char* vertex_shaders, const char* fragment_shaders) {
+FORCEINLINE void Gfx::RegisterShaders(const Shader::Flags* flags, u16 count, const char* vertex_shaders, const char* fragment_shaders) {
 	using namespace GL;
 
 	g_state.shader_flags		= flags;
@@ -325,11 +325,6 @@ FORCEINLINE void Gfx::RegisterShaders(const char* names, const Shader::Flags* fl
 
 	assert(g_state.num_shaders <= size(g_state.shader_programs));
 	assert(g_state.num_shaders * g_state.num_uniforms <= size(g_state.shader_uniforms));
-
-	const char* shader_name = names;
-	for (u16 shader_index = 0; shader_index < count; ++shader_index, shader_name = NextAfter(shader_name)) {
-		g_state.shader_names[shader_index] = shader_name;
-	}
 }
 
 NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
@@ -356,10 +351,14 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 			if (!shader)
 				Sys::Fatal(Error::Shader);
 
+			char entrypoint[64];
+			entrypoint[0] = '_';
+			IntToString(shader_index, entrypoint + 1);
+
 			const char* src[] = {
 				"#version 330\n",
 				g_state.shader_sources[i],
-				"void main(){", g_state.shader_names[shader_index], "();}\n",
+				"void main(){", entrypoint, "();}\n",
 			};
 
 			glShaderSource(shader, size(src), src, nullptr);
@@ -374,7 +373,7 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 				char* buf = Mem::Alloc<char>(max_length);
 				glGetShaderInfoLog(shader, max_length, &max_length, buf);
 				auto stage_name = gl_stage_names[i];
-				Sys::DebugStream << stage_name << " shader compilation failed (" << g_state.shader_names[shader_index] << "):\n" << buf << "\n";
+				Sys::DebugStream << stage_name << " shader compilation failed (" << shader_index << "):\n" << buf << "\n";
 				TrimLog(buf, 8);
 				MessageBoxA(0, buf, "Shader compilation failed", MB_OK);
 				Sys::Fatal(Error::Shader);

@@ -285,7 +285,7 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 			if (entry_iter != entry_points.end()) {
 				char buf[64];
 				sprintf(buf, "_%d", entry_iter->second);
-				//new_name = atoms.Intern(buf);
+				new_name = atoms.Intern(buf);
 			} else {
 				new_name = atoms.Intern(name_generator.Next());
 			}
