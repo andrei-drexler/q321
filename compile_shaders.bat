@@ -7,6 +7,7 @@ set src_folder=src/demo/data/shaders/
 set sources=%src_folder%*.glsl
 set out_folder=src/demo/cooked/
 set out_file=%out_folder%cooked_shaders.h
+set compiler=%~dp0output/Win32/Release/shader_compiler/shader_compiler.exe
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -16,13 +17,16 @@ for /f "usebackq delims=" %%a in (`echo %cmdcmdline% ^| find /i /c /v "%~dpn0"`)
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-if not exist "%out_folder%" md "%out_folder%"
+if exist "%compiler%" goto has_compiler
+echo ERROR: Compiler not found.
+goto end
 
-set source_list=
-for %%f in (%sources%) do (
-	set source_list=!source_list! !src_folder!%%~nxf
-)
-cscript /nologo src/scripts/cook_shader.js !source_list! -o !out_file!
+:has_compiler
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+if not exist "%out_folder%" md "%out_folder%"
+%compiler% %src_folder% %out_file%
 
 :end
 if %interactive% EQU 0 (echo. && pause)
