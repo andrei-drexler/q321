@@ -50,6 +50,7 @@
 	x(skcpthrt2,			FSVertexBits)\
 	x(skcpthrtooz,			MapVertexBits)\
 	x(sktongue,				FSVertexBits)\
+	x(sksurf8,				FSVertexBits)\
 	x(gskull4,				FSVertexBits)\
 	x(gcntr2trn,			FSVertexBits)\
 	x(gcntr2trn_m,			MapVertexBits)\
@@ -134,6 +135,7 @@
 	x(skcpthrt,			Shader::skcpthrt,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(skcpthrt2,		Shader::skcpthrt2,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(sktongue,			Shader::sktongue,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(sksurf8,			Shader::sksurf8,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskull4,			Shader::gskull4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gcntr2trn,		Shader::gcntr2trn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr_a,			Shader::gskdr_a,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -248,6 +250,7 @@
 	x("skin/chapthroat",						Lmapped,		skcpthrt,		Solid,		Opaque,					(0))\
 	x("skin/chapthroat2",						Lmapped,		skcpthrt2,		Solid,		Opaque,					(0))\
 	x("skin/chapthroatooz",						skcpthrtooz,	skcpthrt,		Solid,		Opaque,					(0))\
+	x("skin/surface8_trans",					Lmapped,		sksurf8,		Solid,		Opaque,					(0))\
 	x("gothic_wall/skull4",						Lmapped,		gskull4,		Solid,		Opaque,					(0))\
 	x("gothic_floor/center2trn",				gcntr2trn_m,	gcntr2trn,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_door/skull_door_a",				Lmapped,		gskdr_a,		Solid,		Opaque|NeedsUV,			(0))\

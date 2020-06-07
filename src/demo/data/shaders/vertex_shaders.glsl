@@ -61,6 +61,7 @@ void skcpthrt() { FS(); }
 void skcpthrt2() { FS(); }
 void skcpthrtooz() { Generic(); }
 void sktongue() { FS(); }
+void sksurf8()  { FS(); }
 void gskull4() { FS(); }
 void gcntr2trn() { FS(); }
 void gcntr2trn_m() { Generic(); }

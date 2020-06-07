@@ -1739,6 +1739,36 @@ TEX(sktongue) {
 	return c;
 }
 
+// skin/surface8
+TEX(sksurf8) {
+	float
+		b = FBMT(uv, vec2(7), .9, 3., 4), // base FBM
+		t = .8 +.4 * b, // base texture intensity (remapped FBM)
+		i, // cell ID
+		r = .7, // radius
+		l, // light intensity
+		m // mask
+		;
+	vec3
+		c, // base color
+		v = voro(uv, vec2(23)); // voronoi diagram
+	vec2
+		p = v.xy / r,
+		q = uv + v.xy / 23.;
+
+	i = H(fract(q) * 3.3);
+	c = mix(RGB(155, 55, 55), RGB(200, 166, 155), ls(.75, .45, q.y)) * t;
+	m = tri(.5, .5, length(p));
+	l = dot(vec2(-p.y, sqrt(sat(1. - lsq(p)))), vec2(.6 + i * .3, .3));
+	c *= 1.
+		- b * .8 * ls(.5, .1, v.z)
+		+ b * m * l
+		;
+	c *= t * t * t * t; // add some noise
+
+	return c;
+}
+
 // gothic_wall/skull4
 TEX(gskull4) {
 	float
