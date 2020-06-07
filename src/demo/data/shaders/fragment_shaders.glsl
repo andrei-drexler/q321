@@ -1775,21 +1775,20 @@ TEX(gskull4) {
 		b = FBMT(uv, vec2(13), .9, 3., 4), // base FBM
 		t = .4 + b * b, // base texture intensity (remapped FBM)
 		n = ridged(NT(wavy(uv, 12., .02), vec2(48))),
-		i, // cell ID
-		r, // skull size (varies per cell)
-		l, // light intensity
-		m // skull mask
-		;
+		i, r, l, m;
 	vec3
 		c = RGB(60, 50, 46) * t, // base color
 		v = voro(uv, vec2(17)); // voronoi diagram
 
-	i = H(fract(uv + v.xy / 17.));
-	r = .4 + .3 * i;
-	vec2 p = v.xy / r;
-	m = ls(1.1, 1., length(p));
-	l = dot(vec2(-p.y, sqrt(sat(1. - lsq(p)))), vec2(.1 + i * .3, .3));
+	i = H(fract(uv + v.xy / 17.)); // cell ID
+	r = .4 + .3 * i; // skull size (varies per cell)
+	vec2 p = v.xy / r; // normalized offset from skull center
+	m = min(ls(1.1, 1., length(p)), ls(.0, .5, v.z)); // skull region mask
+	l = dot(vec2(-p.y, sqrt(sat(1. - lsq(p)))), vec2(.1 + i * .2, .3)); // light intensity (varies per cell)
 	c += b * m * l * n;
+
+	n = ridged(FBMT(wavy(uv, 13., .01), vec2(23, 43), .5, 2., 3)); // stretched, wavy noise
+	c *= 1. + (1. - m) * tri(.4, .4, n); // light variation between skulls (simulating bones)
 
 	return c;
 }
