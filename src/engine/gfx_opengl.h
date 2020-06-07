@@ -373,7 +373,7 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 				char* buf = Mem::Alloc<char>(max_length);
 				glGetShaderInfoLog(shader, max_length, &max_length, buf);
 				auto stage_name = gl_stage_names[i];
-				Sys::DebugStream << stage_name << " shader compilation failed (" << shader_index << "):\n" << buf << "\n";
+				Sys::Printf("%s shader compilation failed (shader #%d):\n%s\n", stage_name, shader_index, buf);
 				TrimLog(buf, 8);
 				MessageBoxA(0, buf, "Shader compilation failed", MB_OK);
 				Sys::Fatal(Error::Shader);
