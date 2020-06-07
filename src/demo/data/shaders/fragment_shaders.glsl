@@ -1739,9 +1739,28 @@ TEX(sktongue) {
 	return c;
 }
 
+// gothic_wall/skull4
 TEX(gskull4) {
-	float b = FBMT(uv, vec2(13), .9, 3., 4);
-	vec3 c = RGB(60, 50, 46) * (.875 + b * b);
+	float
+		b = FBMT(uv, vec2(13), .9, 3., 4), // base FBM
+		t = .4 + b * b, // base texture intensity (remapped FBM)
+		n = ridged(NT(wavy(uv, 12., .02), vec2(48))),
+		i, // cell ID
+		r, // skull size (varies per cell)
+		l, // light intensity
+		m // skull mask
+		;
+	vec3
+		c = RGB(60, 50, 46) * t, // base color
+		v = voro(uv, vec2(17)); // voronoi diagram
+
+	i = H(fract(uv + v.xy / 17.));
+	r = .4 + .3 * i;
+	vec2 p = v.xy / r;
+	m = ls(1.1, 1., length(p));
+	l = dot(vec2(-p.y, sqrt(sat(1. - lsq(p)))), vec2(.1 + i * .3, .3));
+	c += b * m * l * n;
+
 	return c;
 }
 
