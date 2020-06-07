@@ -474,10 +474,6 @@ float FBMT(vec2 p, vec2 scale, float gain, float lac, int lyrs) {
 	return acc / tw;
 }
 
-float FBMT(vec2 p, vec2 scale, float gain, float lac) {
-	return FBMT(p, scale, gain, lac, 4);
-}
-
 float FBMT_ridged(vec2 p, vec2 scale, float gain, float lac, int lyrs) {
 	float acc = ridged(NT(p, scale)), ow = 1., tw = 1.;
 	for (int i=0; i<lyrs; ++i) {
@@ -668,7 +664,7 @@ TEX(ptrshn) {
 }
 
 TEX(dmnd2c) {
-	float b = FBMT(uv, vec2(7), .9, 3.);
+	float b = FBMT(uv, vec2(7), .9, 3., 4);
 	uv.x *= -1.5;
 	uv.y += uv.x * .5;
 	uv.x = 1. - uv.x + uv.y;
@@ -682,9 +678,10 @@ TEX(dmnd2c) {
 }
 
 TEX(dmnd2cow) {
-	float b = FBMT(uv, vec2(7), .9, 3.);
+	float
+	b = FBMT(uv, vec2(7), .9, 3., 4),
+		r = length(uv - .5);
 	vec3 c = dmnd2c(uv);
-	float r = length(uv - .5);
 	c = mix(c, c * RGB(70, 61, 53), ls(.5, .2, r + b*b*b));
 	return c;
 }
@@ -702,7 +699,7 @@ float pentagram(vec2 uv, float s) {
 TEXA(dmnd2pnt) {
 	vec3 c = dmnd2cow(uv);
 	uv = fract(uv) - .5;
-	float b = FBMT(uv, vec2(3), .9, 3.), d = min(abs(length(uv) - .4), pentagram(uv, .35));
+	float b = FBMT(uv, vec2(3), .9, 3., 4), d = min(abs(length(uv) - .4), pentagram(uv, .35));
 	return vec4(c, msk(d - .02 + b * .02, .01));
 }
 
@@ -737,7 +734,7 @@ vec2 knob(vec2 uv, float s) {
 }
 
 TEXA(lpdmnd) {
-	float b = FBMT(uv, vec2(5), .9, 3.), t, o, k, r;
+	float b = FBMT(uv, vec2(5), .9, 3., 4), t, o, k, r;
 	vec3 c = dmnd2c(uv);
 	vec2 u, v;
 	u.x = abs(uv.x - .5);
@@ -2118,7 +2115,7 @@ void q3bnr_m() {
 void beam() {
 	vec2 uv = fract(uvmap(Pos.xyz, dom(Nor)) / 128.);
 	uv.x += Time.x / 33.;
-	float b = FBMT(uv, vec2(7), .9, 2.), f = fract(Pos.z/128.-.375);
+	float b = FBMT(uv, vec2(7), .9, 2., 4), f = fract(Pos.z/128.-.375);
 	FCol = vec4(2. * RGB(95, 85, 80) * f*f*f*f * mix(1., b, .5), 0.);
 }
 
