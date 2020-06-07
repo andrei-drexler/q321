@@ -346,50 +346,56 @@ namespace Demo {
 #endif
 		Sys::Free(pixels);
 	}
+
+	////////////////////////////////////////////////////////////////
+
+	FORCEINLINE void Init() {
+		Sys::Printf("%s", "Starting up...\n");
+
+		Mem::Init();
+		Demo::Console::Init();
+		Sys::InitWindow(&Sys::g_window, nullptr, "Q320");
+		Sys::SetFPSMode(&Sys::g_window);
+		Gfx::InitMemory(16 * Mem::MB, 16 * Mem::MB);
+		Demo::InitGfxResources();
+		Map::AllocLightmap();
+		Demo::UpdateWindowIcon();
+
+#ifdef SHOW_LIGHTMAP
+		Demo::r_lightmap.Set(1);
+#endif
+
+#ifdef FULLBRIGHT
+		Demo::r_fullbright.Set(1);
+#endif
+
+		auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
+		#define PP_DEMO_MODEL_TOUCH(name)	touch(name::vertices); touch(name::uvs); touch(name::indices);
+		DEMO_MODELS(PP_DEMO_MODEL_TOUCH)
+		#undef PP_DEMO_MODEL_TOUCH
+
+		Map::Load(START_MAP::map);
+		Map::UpdateLightmapTexture();
+		Demo::GenerateLevelShot();
+
+		Demo::g_updated_lightmap = false;
+		Demo::g_loading_thread.work = &Demo::GenerateLightmap;
+		Sys::SpawnThread(Demo::g_loading_thread);
+
+		Demo::g_player.Spawn();
+	}
 }
 
 ////////////////////////////////////////////////////////////////
 
 int FORCEINLINE demo_main() {
-	Sys::Printf("%s", "Starting up...\n");
-
-	Mem::Init();
-	Demo::Console::Init();
-	Sys::InitWindow(&Sys::g_window, nullptr, "Q320");
-	Sys::SetFPSMode(&Sys::g_window);
-	Gfx::InitMemory(16 * Mem::MB, 16 * Mem::MB);
-	Demo::InitGfxResources();
-	Map::AllocLightmap();
-	Demo::UpdateWindowIcon();
-
-#ifdef SHOW_LIGHTMAP
-	Demo::r_lightmap.Set(1);
-#endif
-
-#ifdef FULLBRIGHT
-	Demo::r_fullbright.Set(1);
-#endif
-
-	auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
-	#define PP_DEMO_MODEL_TOUCH(name)	touch(name::vertices); touch(name::uvs); touch(name::indices);
-	DEMO_MODELS(PP_DEMO_MODEL_TOUCH)
-	#undef PP_DEMO_MODEL_TOUCH
-
-	Map::Load(START_MAP::map);
-	Map::UpdateLightmapTexture();
-	Demo::GenerateLevelShot();
-	
-	Demo::g_updated_lightmap = false;
-	Demo::g_loading_thread.work = &Demo::GenerateLightmap;
-	Sys::SpawnThread(Demo::g_loading_thread);
-
-	Demo::g_player.Spawn();
+	Demo::Init();
 
 	auto last_tick = Sys::GetTime();
 	auto next_time = last_tick;
 
 	int code = 0;
-	
+
 	while (Sys::PumpMessages(&code)) {
 		Demo::g_time = Sys::GetTime();
 		Demo::Tick(Demo::g_time - last_tick);
