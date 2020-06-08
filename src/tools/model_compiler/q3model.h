@@ -53,6 +53,8 @@ namespace MD3 {
 
 		i16					pos[3];
 		i16					nor;
+
+		vec3				GetPosition() const { return vec3(pos[0], pos[1], pos[2]) / float(Scale); }
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -163,4 +165,19 @@ namespace MD3 {
 
 		return true;
 	}
+
+	////////////////////////////////////////////////////////////////
+
+	struct Model {
+		std::vector<char> contents;
+
+		bool Load(const char* path) {
+			if (!ReadFile(path, contents, ReadMode::Silent))
+				return false;
+			return CheckModel(GetHeader());
+		}
+
+		Header&			GetHeader() { return *reinterpret_cast<Header*>(contents.data()); }
+		const Header&	GetHeader() const { return *reinterpret_cast<const Header*>(contents.data()); }
+	};
 }

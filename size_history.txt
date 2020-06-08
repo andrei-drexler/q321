@@ -872,3 +872,4 @@
 44635,added skin/surface8
 44662,more detailed gothic_wall/skull4
 44663,tweaked gothic_wall/skull4
+44793,added model lights

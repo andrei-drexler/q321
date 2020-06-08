@@ -3,6 +3,7 @@
 #include "../../demo/material.h"
 #include "../../demo/entity.h"
 #include "q3map.h"
+#include "../model_compiler/q3model.h"
 #include "../print_array.h"
 #include "export_obj.h"
 #include "export_map.h"
@@ -43,7 +44,6 @@ struct Options {
 	bool		use_area_lights		= true;
 
 	bool		verbose				= false;
-
 };
 
 ////////////////////////////////////////////////////////////////
@@ -1637,7 +1637,13 @@ void WriteLights
 	}
 
 	size_t num_area_lights = 0;
+	size_t num_model_lights = 0;
 	if (options.use_area_lights) {
+		const float
+			AreaScale		= 0.25f / 7500.f,
+			SurfaceOffset	= 4.f
+		;
+
 		std::vector<size_t> face_edges;
 		std::vector<vec3> face_corners;
 		face_edges.reserve(64);
@@ -1708,21 +1714,12 @@ void WriteLights
 					face_corners.push_back(e.first_plane == plane_index ? e.first_point : e.second_point);
 				}
 
-				const float
-					AreaScale		= 0.25f / 7500.f,
-					SurfaceOffset	= 4.f
-				;
-
 				float area = 0.f;
 				for (size_t corner_index = 2; corner_index < face_corners.size(); ++corner_index) {
 					const vec3& a = face_corners[corner_index - 2];
 					const vec3& b = face_corners[corner_index - 1];
 					const vec3& c = face_corners[corner_index - 0];
-					float ab = length(b - a);
-					float bc = length(c - b);
-					float ca = length(a - c);
-					float p = (ab + bc + ca) * 0.5f;
-					area += sqrtf(p * (p - ab) * (p - bc) * (p - ca));
+					area += GetTriangleArea(a, b, c);
 				}
 
 				auto& light = lights.emplace_back();
@@ -1743,6 +1740,76 @@ void WriteLights
 						map.materials[plane.material].name.c_str(), light.pos.x, light.pos.y, light.pos.z, light.intensity);
 
 				++num_area_lights;
+			}
+		}
+
+		/* add model lights */
+		MD3::Model model;
+		std::string base_path = "../../demo/data/";
+		for (auto& entity : map.entities) {
+			if (entity.GetProperty("classname"sv) != "misc_model"sv)
+				continue;
+
+			auto model_str = entity.GetProperty("model"sv);
+			auto origin_str = entity.GetProperty("origin"sv);
+
+			vec3 origin;
+			if (!Parse(origin_str, origin, false)) {
+				continue;
+			}
+
+			if (symmetry && origin[symmetry.axis] > symmetry.level + 1.f)
+				continue;
+
+			// TODO: caching?
+			if (model_str.empty() || !model.Load((base_path + std::string{model_str}).c_str())) {
+				continue;
+			}
+
+			const MD3::Header& header = model.GetHeader();
+			const MD3::Surface* surf = header.GetFirstSurface();
+			for (u16 surf_index = 0; surf_index < header.num_surfaces; ++surf_index, surf = surf->GetNext()) {
+				string_view shader = surf->GetShaders()[0].name;
+				RemovePrefix(shader, "textures/");
+				RemoveSuffix(shader, ".tga");
+
+				int material = -1;
+				for (u16 material_index = 0; material_index < std::size(Demo::Material::Paths); ++material_index) {
+					if (shader == Demo::Material::Paths[material_index]) {
+						material = material_index;
+						break;
+					}
+				}
+				if (material < 0)
+					continue;
+
+				auto emissive = Demo::Material::UnpackSurfaceLight(Demo::Material::Lights[material]);
+				if (emissive.intensity == 0)
+					continue;
+
+				float area = 0.f;
+				vec3 center = 0.f;
+				for (u16 tri_index = 0; tri_index < surf->num_tris; ++tri_index) {
+					const MD3::Triangle& t = surf->GetTris()[tri_index];
+					const MD3::Vertex* v = surf->GetVerts();
+					vec3 a = v[t.indices[0]].GetPosition();
+					vec3 b = v[t.indices[1]].GetPosition();
+					vec3 c = v[t.indices[2]].GetPosition();
+					float triangle_area = GetTriangleArea(a, b, c);
+					center += (a + b + c) * triangle_area;
+					area += triangle_area;
+				}
+
+				if (area <= 0.f)
+					continue;
+				center /= area * 3.f;
+				++num_model_lights;
+
+				auto& light = lights.emplace_back();
+				light.pos = floor(origin + center + 0.5f);
+				light.intensity = area * AreaScale * emissive.intensity;
+				SnapMantissa(light.intensity, 21);
+				light.color = emissive.color;
 			}
 		}
 	}
@@ -1794,8 +1861,8 @@ void WriteLights
 	print << "const u8 "sv << spot_count_name << " = "sv << i32(num_spotlights) << ";"sv;
 	print.Flush();
 
-	printf(INDENT "%zd lights (%zd surface lights, %zd spotlights), %zd unique light values\n",
-		lights.size(), num_area_lights, num_spotlights, light_values.items.size()
+	printf(INDENT "%zd lights (%zd model/%zd surf, %zd spot), %zd unique light values\n",
+		lights.size(), num_model_lights, num_area_lights, num_spotlights, light_values.items.size()
 	);
 }
 

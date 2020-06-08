@@ -77,12 +77,18 @@ struct scope_exit_token {
 
 ////////////////////////////////////////////////////////////////
 
-bool ReadFile(const char* file_name, std::vector<char>& contents) {
+enum class ReadMode {
+	Silent,
+	LogErrors,
+};
+
+bool ReadFile(const char* file_name, std::vector<char>& contents, ReadMode mode = ReadMode::LogErrors) {
 	contents.clear();
 
 	FILE* file = fopen(file_name, "rb");
 	if (!file) {
-		fprintf(stderr, "ERROR: Could not open file '%s'.\n", file_name);
+		if (mode != ReadMode::Silent)
+			fprintf(stderr, "ERROR: Could not open file '%s'.\n", file_name);
 		return false;
 	}
 	auto close_file = scope_exit { fclose(file); file = NULL; };
@@ -93,7 +99,8 @@ bool ReadFile(const char* file_name, std::vector<char>& contents) {
 
 	contents.resize(file_size);
 	if (!fread(contents.data(), file_size, 1, file)) {
-		fprintf(stderr, "ERROR: Could not read file '%s'.\n", file_name);
+		if (mode != ReadMode::Silent)
+			fprintf(stderr, "ERROR: Could not read file '%s'.\n", file_name);
 		return false;
 	}
 
@@ -125,6 +132,20 @@ void ReplaceAll(std::string& dest, std::string_view old, std::string replacement
 		dest.replace(pos, old.size(), replacement.data(), replacement.size());
 		start = pos + replacement.size();
 	}
+}
+
+bool RemovePrefix(std::string_view& str, std::string_view prefix) {
+	if (str.size() < prefix.size() || str.substr(0, prefix.size()) != prefix)
+		return false;
+	str.remove_prefix(prefix.size());
+	return true;
+}
+
+bool RemoveSuffix(std::string_view& str, std::string_view suffix) {
+	if (str.size() < suffix.size() || str.substr(str.size() - suffix.size(), suffix.size()) != suffix)
+		return false;
+	str.remove_suffix(suffix.size());
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////

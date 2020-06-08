@@ -774,6 +774,21 @@ FORCEINLINE void MakePerspective(vec2 fov, float znear, float zfar, mat4& out) {
 
 ////////////////////////////////////////////////////////////////
 
+float GetTriangleArea(float ab, float bc, float ca) {
+	float p = (ab + bc + ca) * 0.5f;
+	return Math::sqrt(p * (p - ab) * (p - bc) * (p - ca));
+}
+
+float GetTriangleArea(const vec2& a, const vec2& b, const vec2& c) {
+	return GetTriangleArea(length(b - a), length(c - b), length(a - c));
+}
+
+float GetTriangleArea(const vec3& a, const vec3& b, const vec3& c) {
+	return GetTriangleArea(length(b - a), length(c - b), length(a - c));
+}
+
+////////////////////////////////////////////////////////////////
+
 FORCEINLINE void IntersectPlanes(const vec4& p0, const vec4& p1, vec3& origin, vec3& direction) {
 	cross(p0.xyz, p1.xyz, direction);
 	direction /= length(direction);
