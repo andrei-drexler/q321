@@ -2051,6 +2051,7 @@ TEXA(icon) {
 	return vec4(c, 1) * msk(b);
 }
 
+// sfx/logo512
 TEX(bglogo) {
 	uv -= .5;
 
@@ -2060,6 +2061,7 @@ TEX(bglogo) {
 	uv.y -= .03; // move up a bit
 
 	float
+		x = abs(uv.x),
 		b = FBMT(uv, vec2(53, 5), .7, 2., 3), // base FBM - mostly vertical noise
 		t = .8 + .8 * b * b, // intensity variation (remapped FBM)
 		d = icon_sdf(uv, 1.), // logo SDF
@@ -2071,13 +2073,15 @@ TEX(bglogo) {
 		- ls(.1, .33, abs(uv.x)) // horizontal gradient
 		- .5 * ls(.1, .3, abs(uv.y - .1)) // vertical gradient
 		;
-	c = c
-		+ .3 * tri(.0, .004, d) * tri(.1, .2, uv.y) * ls(.0, .1, abs(uv.x - .05)) * l // top light
+	c +=
+		+ .3 * tri(.0, .005 - .01 * x, d) * tri(.1, .2, uv.y) * ls(.4, .2, x) * l // top light
+		+ .5 * ls(.004, .0, d) * tri(.13, .07, uv.y) * tri(.29, .07, x) * vec3(.9, .9, 1) // back light
 		+ .5 * tri(.005, .005, d) * ls(.2, -.1, uv.y) * sat(-l) // bottom light
 		;
 
 	return c;
 }
+
 float banner_fold(vec2 uv, float s, float i, float amp) {
 	i = (uv.y - sqr(abs(uv.x - .5)) * amp) * s - i;
 	return 2. * tri(.5, .4, i) * (fract(i) - .5);
