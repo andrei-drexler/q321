@@ -1,4 +1,5 @@
 //#define ENABLE_RENDERDOC
+//#define DISABLE_SHADER_CACHE
 #define USE_RAW_INPUT
 //#define DISABLE_PARTITION
 //#define DRAW_LIGHTS

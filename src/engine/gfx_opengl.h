@@ -355,13 +355,26 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 			entrypoint[0] = '_';
 			IntToString(shader_index, entrypoint + 1);
 
-			const char* src[] = {
+#ifdef DISABLE_SHADER_CACHE
+			char no_shader_cache[64];
+			{
+				no_shader_cache[0] = '/';
+				no_shader_cache[1] = '/';
+				char* p = IntToString(Random(), no_shader_cache + 2);
+				p[0] = '\n';
+				p[1] = 0;
+			}
+#endif
+			const char* sources[] = {
 				"#version 330\n",
 				g_state.shader_sources[i],
 				"void main(){", entrypoint, "();}\n",
+#ifdef DISABLE_SHADER_CACHE
+				no_shader_cache,
+#endif
 			};
 
-			glShaderSource(shader, size(src), src, nullptr);
+			glShaderSource(shader, size(sources), sources, nullptr);
 			glCompileShader(shader);
 
 #ifdef DEV
