@@ -2034,14 +2034,15 @@ float icon_sdf(vec2 uv, float t) {
 	uv.x = abs(uv.x);
 	uv.y -= .07;
 	float d = elips(uv, vec2(.31, .12 - t * .02)) / 50.; // base ellipse
-	d = max(d, -elips(uv - vec2(0, .01 + t * .01), vec2(.28, .07 + t * .01)) / 50.); // negative inner ellipse
+	d = max(d, -elips(uv - vec2(0, .01 + t * .01), vec2(.28 + t * .01, .07)) / 50.); // negative inner ellipse
 	d = max(d, -box(uv - vec2(.0, .1), vec2(.22 - t * .02, .12))); // cut off far part
 	d = max(d, -box(uv - vec2(.0, .1), vec2(.084 - t * .012, .31))); // cut off mid part
 	d = min(d, box1(uv - vec2(.0, -.09), vec2(tri(-.09, .32, uv.y)*(.04 - t * .015), .32))); // middle rhombus
-	d = min(d, box1(uv - vec2(.11 - t * .02, -.21), vec2(tri(-.07, .3, uv.y)*(.03 - t * .01), .15))); // outer rhombi
+	d = min(d, box1(uv - vec2(.11 - t * .02, -.21 + t * .01), vec2(tri(-.07, .3, uv.y)*(.03 - t * .01), .15))); // outer rhombi
 	return d;
 }
 
+// Window icon
 TEXA(icon) {
 	uv -= vec2(.48, .5);
 	float
@@ -2070,13 +2071,13 @@ TEX(bglogo) {
 		;
 	vec3 c = vec3(.3 * t, 0, 0) * msk(d, .004); // base color
 	c *= 1.
-		- ls(.1, .33, abs(uv.x)) // horizontal gradient
+		- sqr(ls(.0, .3, x)) // horizontal gradient
 		- .5 * ls(.1, .3, abs(uv.y - .1)) // vertical gradient
 		;
 	c +=
-		+ .3 * tri(.0, .005 - .01 * x, d) * tri(.1, .2, uv.y) * ls(.4, .2, x) * l // top light
-		+ .5 * ls(.004, .0, d) * tri(.13, .07, uv.y) * tri(.29, .07, x) * vec3(.9, .9, 1) // back light
-		+ .5 * tri(.005, .005, d) * ls(.2, -.1, uv.y) * sat(-l) // bottom light
+		+ .3 * tri(.0, .005, d) * tri(.1, .2, uv.y) * ls(.3, .2, x) * l // top light
+		+ .5 * ls(.004, .0, d) * ls(.07, .1, uv.y) * tri(.23, .1, x) * vec3(.9, .9, 1) // back light
+		+ .5 * tri(.005, .005, d) * ls(.2, -.1, uv.y) * ls(.3, .2, x) * sat(-l) // bottom light
 		;
 
 	return c;

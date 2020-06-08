@@ -874,3 +874,4 @@
 44663,tweaked gothic_wall/skull4
 44793,added model lights
 44703,tweaked bglogo
+44701,tweaked bglogo some more
