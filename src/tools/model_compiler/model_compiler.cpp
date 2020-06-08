@@ -93,6 +93,8 @@ namespace MD3 {
 		
 		Triangle*			GetTris()				{ return GetPtr<Triangle>(this, ofs_tris); }
 		const Triangle*		GetTris() const			{ return GetPtr<Triangle>(this, ofs_tris); }
+		u32*				GetIndices()			{ return GetPtr<u32>(this, ofs_tris); }
+		const u32*			GetIndices() const		{ return GetPtr<u32>(this, ofs_tris); }
 		Shader*				GetShaders()			{ return GetPtr<Shader>(this, ofs_shaders); }
 		const Shader*		GetShaders() const		{ return GetPtr<Shader>(this, ofs_shaders); }
 		UV*					GetUVs()				{ return GetPtr<UV>(this, ofs_uvs); }
@@ -126,8 +128,8 @@ namespace MD3 {
 
 		Frame*				GetFrames()				{ return GetPtr<Frame>(this, ofs_frames); }
 		const Frame*		GetFrames() const		{ return GetPtr<Frame>(this, ofs_frames); }
-		Surface*			GetSurfaces()			{ return GetPtr<Surface>(this, ofs_surfaces); }
-		const Surface*		GetSurfaces() const		{ return GetPtr<Surface>(this, ofs_surfaces); }
+		Surface*			GetFirstSurface()		{ return GetPtr<Surface>(this, ofs_surfaces); }
+		const Surface*		GetFirstSurface() const	{ return GetPtr<Surface>(this, ofs_surfaces); }
 		Tag*				GetTags()				{ return GetPtr<Tag>(this, ofs_tags); }
 		const Tag*			GetTags() const			{ return GetPtr<Tag>(this, ofs_tags); }
 	};
@@ -143,7 +145,7 @@ bool ExportObj(const MD3::Header& model, const char* path) {
 
 	const i16 ChopBits = 4;
 
-	auto* surf = model.GetSurfaces();
+	const MD3::Surface* surf = model.GetFirstSurface();
 	for (u32 i = 0, base = 1; i < model.num_surfaces; ++i, base += surf->num_verts, surf = surf->GetNext()) {
 		fprintf(out, "g surface_%d\n", i);
 
@@ -188,6 +190,13 @@ bool CheckModel(const MD3::Header& model) {
 		return false;
 	}
 
+	const MD3::Surface* surf = model.GetFirstSurface();
+	for (u32 i = 0; i < model.num_surfaces; ++i, surf = surf->GetNext()) {
+		if (surf->num_shaders < 0) {
+			return false;
+		}
+	}
+
 	return true;
 }
 
@@ -200,7 +209,7 @@ void SortVertices(MD3::Header& model, const Options& options) {
 	std::vector<MD3::Vertex> sorted_verts;
 	std::vector<MD3::UV> sorted_uvs;
 
-	auto* surf = model.GetSurfaces();
+	MD3::Surface* surf = model.GetFirstSurface();
 	for (u32 i = 0; i < model.num_surfaces; ++i, surf = surf->GetNext()) {
 		i16 mins[3] = {0x7fff, 0x7fff, 0x7fff};
 		i16 maxs[3] = {0x8000, 0x8000, 0x8000};
@@ -259,10 +268,10 @@ void SortVertices(MD3::Header& model, const Options& options) {
 void SortIndices(MD3::Header& model, const Options& options) {
 	printf(INDENT "Sorting indices\n");
 
-	auto* surf = model.GetSurfaces();
+	MD3::Surface* surf = model.GetFirstSurface();
 	for (u32 i = 0; i < model.num_surfaces; ++i, surf = surf->GetNext()) {
-		auto* tris = surf->GetTris();
-		
+		MD3::Triangle* tris = surf->GetTris();
+
 		for (u16 j = 0; j < surf->num_tris; ++j) {
 			auto& idx = tris[j].indices;
 			u16 min_pos = 0;
@@ -296,11 +305,11 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 
 	ArrayPrinter print(out);
 
-	auto* surf = model.GetSurfaces();
-	auto* shaders = surf->GetShaders();
-	auto* verts = surf->GetVerts();
-	auto* uvs = surf->GetUVs();
-	auto* tris = surf->GetTris();
+	const MD3::Surface*		surf	= model.GetFirstSurface();
+	const MD3::Shader*		shaders	= surf->GetShaders();
+	const MD3::Vertex*		verts	= surf->GetVerts();
+	const MD3::UV*			uvs		= surf->GetUVs();
+	const MD3::Triangle*	tris	= surf->GetTris();
 
 	auto encode_pos = [](i16 value) {
 		const u16 ChopBits = 4;
