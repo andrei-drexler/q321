@@ -3,4 +3,7 @@
   <ItemGroup>
     <ClCompile Include="model_compiler.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="q3model.h" />
+  </ItemGroup>
 </Project>

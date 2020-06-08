@@ -21,6 +21,9 @@
   <ItemGroup>
     <ClCompile Include="model_compiler.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="q3model.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B3BE3697-E3FD-4191-8230-4691C14EA1CB}</ProjectGuid>
