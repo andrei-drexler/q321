@@ -1783,7 +1783,7 @@ TEX(gskull4) {
 	i = H(fract(uv + v.xy / 17.)); // cell ID
 	r = .4 + .3 * i; // skull size (varies per cell)
 	vec2 p = v.xy / r; // normalized offset from skull center
-	m = min(ls(1.1, 1., length(p)), ls(.0, .5, v.z)); // skull region mask
+	m = min(ls(1.1, 1., length(p)), ls(.0, .15, v.z)); // skull region mask
 	l = dot(vec2(-p.y, sqrt(sat(1. - lsq(p)))), vec2(.1 + i * .2, .3)); // light intensity (varies per cell)
 	c += b * m * l * n;
 
