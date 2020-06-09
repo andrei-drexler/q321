@@ -2063,7 +2063,7 @@ TEX(bglogo) {
 
 	float
 		x = abs(uv.x),
-		b = FBMT(uv, vec2(53, 5), .7, 2., 3), // base FBM - mostly vertical noise
+		b = FBMT(uv, vec2(31, 5), .7, 2., 3), // base FBM - mostly vertical noise
 		t = .8 + .8 * b * b, // intensity variation (remapped FBM)
 		d = icon_sdf(uv, 1.), // logo SDF
 		e = icon_sdf(uv + vec2(0, .002), 1.), // offset logo SDF, for lighting
@@ -2075,9 +2075,9 @@ TEX(bglogo) {
 		- .5 * ls(.1, .3, abs(uv.y - .1)) // vertical gradient
 		;
 	c +=
-		+ .3 * tri(.0, .005, d) * tri(.1, .2, uv.y) * ls(.3, .2, x) * l // top light
-		+ .5 * ls(.004, .0, d) * ls(.07, .1, uv.y) * tri(.23, .1, x) * vec3(.9, .9, 1) // back light
-		+ .5 * tri(.005, .005, d) * ls(.2, -.1, uv.y) * ls(.3, .2, x) * sat(-l) // bottom light
+		+ t * .2 * tri(.0, .01 - .01 * x, d) * tri(.1, .2, uv.y) * ls(.3, .2, x) * l // top light
+		+ t * .5 * ls(.004, .0, d) * ls(.07, .1, uv.y) * tri(.23, .1, x) * vec3(.9, .9, 1) // back light
+		+ t * .4 * tri(.005, .005, d) * ls(.2, -.1, uv.y) * ls(.3, .2, x) * sat(-l) // bottom light
 		;
 
 	return c;
