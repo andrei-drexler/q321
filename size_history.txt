@@ -878,3 +878,4 @@
 44719,full alpha for grey/black textures
 44721,inverted skin/chapthroat alpha channel
 44728,more bglogo tweaks
+44820,more detailed gothic_floor/largerblock3b

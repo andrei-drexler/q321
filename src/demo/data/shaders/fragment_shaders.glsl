@@ -1508,19 +1508,30 @@ TEX(gklblki4) {
 	return mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, s.y);
 }
 
+// gothic_floor/largerblock3b
 TEX(glrgbk3b) {
-	float
-		b = FBMT(wavy(uv, 5., .02), vec2(5), 1., 3., 5),
-		n = NT(uv, vec2(13));
 	vec2
 		p = brick(uv, vec2(8)),
 		q = fract(p),
+		v = wavy(uv, 31., .002), // bump UVs
 		id = p - q;
-	vec3 c = RGB(91, 61, 42) * (.8 + .8 * b * b);
-	c = mix(c, RGB(70, 30, 15) * (.8 + .8 * b * b), brick_edge(q, .1).z * .3);
-	c *= 1. - sqr(brick_edge(q, .01 + b * .05).z) * n * b * b;
-	c *= 1. + tri(.4, .3, brick_edge(q, .01 + b * .07).z) * sqrt(b) * .3;
-	c *= .9 + .2 * H(id) * (1. - brick_edge(q, .1).z);
+	float
+		b = FBMT(wavy(uv, 5., .02), vec2(7), 1., 3., 4),
+		t = .8 + .8 * b * b,
+		n = NT(uv + R2(H(id) * 64.), vec2(17)),
+		m = FBMT(uv, vec2(9), .7, 3., 4),
+		d = FBMT(v, vec2(63), .7, 3., 4),
+		r = FBMT(v - vec2(0, .002), vec2(63), .7, 3., 4),
+		l = d - r,
+		e = brick_edge(q, .02 + .07 * ridged(n)).z;
+	vec3 c = mix(RGB(91, 61, 42), RGB(70, 30, 15), e * b);
+	c = mix(c, RGB(70, 48, 35), ls(.5, .6, m)) * t;
+	c *= 1.
+		+ l * (.1 + n + tri(.6, .1, m)) * (1. - e) // bump lighting
+		- t * ls(.7, 1., e) * NT(uv, vec2(13)) // dark edges
+		+ .5 * b * tri(.3, .3, e) // edge highlights
+		;
+	c *= .9 + .2 * H(id) * (1. - e); // vary intensity per tile
 	c *= .9 + .4 * pow(FBMT_ridged(uv - H(id / 8.), vec2(5), .6, 2., 4), 4.);
 	return c;
 }
