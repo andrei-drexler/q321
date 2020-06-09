@@ -1511,28 +1511,36 @@ TEX(gklblki4) {
 // gothic_floor/largerblock3b
 TEX(glrgbk3b) {
 	vec2
-		p = brick(uv, vec2(8)),
-		q = fract(p),
-		v = wavy(uv, 31., .002), // bump UVs
-		id = p - q;
+		p = brick(uv, vec2(8)), // brick layout
+		q = fract(p), // position inside brick [0..1]
+		v = wavy(uv, 31., .002), // wavy uv, for bumps
+		id = p - q; // brick id
 	float
-		b = FBMT(wavy(uv, 5., .02), vec2(7), 1., 3., 4),
-		t = .8 + .8 * b * b,
-		n = NT(uv + R2(H(id) * 64.), vec2(17)),
-		m = FBMT(uv, vec2(9), .7, 3., 4),
-		d = FBMT(v, vec2(63), .7, 3., 4),
-		r = FBMT(v - vec2(0, .002), vec2(63), .7, 3., 4),
-		l = d - r,
-		e = brick_edge(q, .02 + .07 * ridged(n)).z;
-	vec3 c = mix(RGB(91, 61, 42), RGB(70, 30, 15), e * b);
-	c = mix(c, RGB(70, 48, 35), ls(.5, .6, m)) * t;
+		b = FBMT(wavy(uv, 5., .02), vec2(7), 1., 3., 4), // base FBM
+		t = .8 + .8 * b * b, // base intensity (remapped FBM)
+		n = NT(uv + R2(H(id) * 64.), vec2(23)), // smooth noise, for brick edge size variation
+		m = FBMT(uv, vec2(9), .7, 3., 4), // another FBM, for dark splotches
+		d = FBMT(v, vec2(63), .7, 3., 4), // bump FBM
+		r = FBMT(v - vec2(0, .002), vec2(63), .7, 3., 4), // offset bump FBM, for lighting
+		l = d - r, // lighting
+		e = brick_edge(q, .03 + .03 * ridged(n)).z, // edge intensity: 1 = on edge, 0 = inside brick
+		h = H(id); // hashed brick id
+	vec3 c = mix(RGB(91, 61, 42), RGB(70, 30, 15), e * b); // base colors
+	c = mix(c, RGB(70, 48, 35), ls(.5, .6, m)) // add dark splotches
+		* t // and vary intensity
+		;
 	c *= 1.
 		+ l * (.1 + n + tri(.6, .1, m)) * (1. - e) // bump lighting
-		- t * ls(.7, 1., e) * NT(uv, vec2(13)) // dark edges
-		+ .5 * b * tri(.3, .3, e) // edge highlights
+		- t * ls(.7, 1., e) * NT(uv, vec2(13)) // dark brick edges
+		+ .5 * b * tri(.3, .3, e) // brick edge highlights
 		;
-	c *= .9 + .2 * H(id) * (1. - e); // vary intensity per tile
-	c *= .9 + .4 * pow(FBMT_ridged(uv - H(id / 8.), vec2(5), .6, 2., 4), 4.);
+	d = FBMT(v, vec2(23), .5, 2., 4); // hole FBM
+	c *= 1.
+		- .2 * ls(.6, .7, d) * h // darken interior
+		+ .3 * tri(.6, .05, d) * h * n // highlight edges
+		;
+	c *= .9 + .2 * h * (1. - e); // vary intensity per brick
+	c *= .9 + .4 * pow(FBMT_ridged(uv - H(id / 8.), vec2(5), .6, 2., 4), 4.); // some ridge-like intensity variation
 	return c;
 }
 
