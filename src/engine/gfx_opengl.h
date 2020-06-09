@@ -219,6 +219,14 @@ namespace GL {
 		GLenum								type;
 	};
 
+	namespace ShaderStage {
+		enum Type {
+			Vertex,
+			Fragment,
+			Count,
+		};
+	}
+
 	struct State {
 		enum : u32 {
 			ShaderIDBits					= 8,
@@ -266,7 +274,7 @@ namespace GL {
 		GLint								shader_uniforms[MaxNumUniforms];
 		GLuint								shader_programs[MaxNumShaders];
 		const char*							shader_names[MaxNumShaders];
-		const char*							shader_sources[2];
+		const char*							shader_sources[ShaderStage::Count];
 
 		TextureState						texture_state[MaxNumTextures];
 		const Gfx::Texture::Descriptor*		texture_descriptors;
