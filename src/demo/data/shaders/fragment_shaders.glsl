@@ -1681,13 +1681,13 @@ TEXA(skcpthrt) {
 		;
 	vec3 c = RGB(127, 70, 55) * (.85 + .3 * b);
 	c *= 1.
-		- .2 * m
 		- .2 * sqr(ls(.3, .0, b * b))
+		- .2 * m
 		- .3 * ls(.6, .77, n)
 		+ .3 * ls(.5, .9, b)
 		;
 	c += .5 * sqr(ls(.5, 1., FBMT(uv, vec2(17), 1., 2., 3)));
-	return vec4(c, m);
+	return vec4(c, 1. - m);
 }
 
 // skin/chapthroatooz
@@ -1696,7 +1696,7 @@ void skcpthrtooz() {
 	vec2 uv = fract(UV);
 	uv.y -= .2 * Time.x;
 	float b = FBMT(wavy(uv, 7., .02), vec2(5), .9, 2., 4);
-	FCol = vec4(mix(c.xyz, RGB(25, 10, 8) * b, c.w) * Light(), 1);
+	FCol = vec4(mix(RGB(25, 10, 8) * b, c.xyz, c.w) * Light(), 1);
 }
 
 // skin/chapthroat2

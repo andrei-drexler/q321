@@ -876,3 +876,4 @@
 44703,tweaked bglogo
 44701,tweaked bglogo some more
 44719,full alpha for grey/black textures
+44721,inverted skin/chapthroat alpha channel
