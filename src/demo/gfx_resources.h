@@ -171,7 +171,7 @@ FORCEINLINE void Demo::Texture::GenerateSolidTextures() {
 	for (u16 i = 0; i < 2; ++i) {
 		const u32 WhiteTextureSize = Descriptors[Texture::White].width * Descriptors[Texture::White].height;
 		u32 white[WhiteTextureSize];
-		MemSet(white, 255 >> i, WhiteTextureSize);
+		MemSet32(white, (255 >> i) * 0x01'01'01 | 0xFF'00'00'00, WhiteTextureSize);
 		Gfx::SetTextureContents(Texture::White + i, white);
 		Gfx::GenerateMipMaps(Texture::White + i);
 	}
