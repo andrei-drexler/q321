@@ -65,6 +65,8 @@ void sksurf8()  { FS(); }
 void gskull4() { FS(); }
 void gcntr2trn() { FS(); }
 void gcntr2trn_m() { Generic(); }
+void scmpblk17() { FS(); }
+void scmpblk17_m() { Generic(); }
 void gskdr_a() { FS(); }
 void gskdr_b() { FS(); }
 void gskdr_c() { FS(); }

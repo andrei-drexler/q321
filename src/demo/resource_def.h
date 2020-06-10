@@ -54,6 +54,8 @@
 	x(gskull4,				FSVertexBits)\
 	x(gcntr2trn,			FSVertexBits)\
 	x(gcntr2trn_m,			MapVertexBits)\
+	x(scmpblk17,			FSVertexBits)\
+	x(scmpblk17_m,			MapVertexBits)\
 	x(gskdr_a,				FSVertexBits)\
 	x(gskdr_b,				FSVertexBits)\
 	x(gskdr_c,				FSVertexBits)\
@@ -138,6 +140,7 @@
 	x(sksurf8,			Shader::sksurf8,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskull4,			Shader::gskull4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gcntr2trn,		Shader::gcntr2trn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(scmpblk17,		Shader::scmpblk17,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr_a,			Shader::gskdr_a,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr_b,			Shader::gskdr_b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr_c,			Shader::gskdr_c,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -253,6 +256,7 @@
 	x("skin/surface8_trans",					Lmapped,		sksurf8,		Solid,		Opaque,					(0))\
 	x("gothic_wall/skull4",						Lmapped,		gskull4,		Solid,		Opaque,					(0))\
 	x("gothic_floor/center2trn",				gcntr2trn_m,	gcntr2trn,		Solid,		Opaque|NeedsUV,			(0))\
+	x("sfx/computer_blocks17",					scmpblk17_m,	scmpblk17,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_door/skull_door_a",				Lmapped,		gskdr_a,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_door/skull_door_b",				Lmapped,		gskdr_b,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_door/skull_door_c",				Lmapped,		gskdr_c,		Solid,		Opaque|NeedsUV,			(0))\
@@ -282,7 +286,6 @@
 	x("gothic_block/blocks1",					"gothic_block/blocks15")\
 	x("gothic_block/demon_block15fx",			"gothic_block/blocks15")\
 	x("gothic_trim/metaldemonkillblock",		"gothic_block/blocks15")\
-	x("sfx/computer_blocks17",					"gothic_block/blocks15")\
 	x("gothic_door/skullarch_a",				"gothic_door/km_arena1archfinalc_top")\
 	x("gothic_door/skullarch_b",				"gothic_door/km_arena1archfinald_mid")\
 	x("gothic_door/skullarch_c",				"gothic_door/km_arena1archfinald_bot")\

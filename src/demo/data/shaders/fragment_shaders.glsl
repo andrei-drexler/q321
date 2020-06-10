@@ -179,6 +179,11 @@ float nang(vec2 p) {
 	return fract(atan(p.y, p.x) / TAU);
 }
 
+// Polar mod
+vec2 pmod(vec2 p, float n) {
+	return p * rot(360. / n * (floor(nang(p) * n + 1.5) - 1.));
+}
+
 // UV distortions //////////////////////////////////////////////
 
 // p = integral number of half periods
@@ -558,6 +563,23 @@ vec3 add_rivet(vec3 c, vec2 uv, float s) {
 	c *= 1. + top_light(b.xyz) * msk(b.w) * .5;
 	c *= 1. - sqr(rivet_shadow(uv, 20. * s)) * (1. - msk(b.w)) * .3;
 	return c;
+}
+
+////////////////////////////////////////////////////////////////
+
+// Quake 3 logo SDF
+// t = 0.0 : app icon (chunky)
+// t = 1.0 : background logo (slim)
+float icon_sdf(vec2 uv, float t) {
+	uv.x = abs(uv.x);
+	uv.y -= .07;
+	float d = elips(uv, vec2(.31, .12 - t * .02)) / 50.; // base ellipse
+	d = max(d, -elips(uv - vec2(0, .01 + t * .01), vec2(.28 + t * .01, .07)) / 75.); // negative inner ellipse
+	d = max(d, -box(uv - vec2(.0, .1), vec2(.22 - t * .02, .12))); // cut off far part
+	d = max(d, -box(uv - vec2(.0, .1), vec2(.084 - t * .012, .31))); // cut off mid part
+	d = min(d, box1(uv - vec2(.0, -.09), vec2(tri(-.09, .32, uv.y)*(.04 - t * .015), .32))); // middle rhombus
+	d = min(d, box1(uv - vec2(.11 - t * .02, -.21 + t * .01), vec2(tri(-.07, .3, uv.y)*(.03 - t * .01), .15))); // outer rhombi
+	return d;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1652,6 +1674,67 @@ TEXA(gcntr2trn_m) {
 	return c;
 }
 
+float scmpblk17_sdf(vec2 p) {
+	p = pmod(p, 8.);
+	float d = circ(p, .4);
+	d = min(d, box((p - vec2(.35, 0)) * rot(45.), vec2(.1)));
+	d = max(d, p.x - .45);
+	return d;
+}
+
+// sfx/computer_blocks17
+TEX(scmpblk17) {
+	vec2
+		p = uv - .5,
+		q;
+	float
+		b = FBMT(uv, vec2(9), .7, 2., 4), // base FBM
+		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
+		r = circ(p, .4), // outer ring SDF
+		d = scmpblk17_sdf(p), // base SDF
+		e = scmpblk17_sdf(p - vec2(0, .04)), // offset SDF, for lighting
+		l = (d - e) / .04, // lighting
+		m = msk(d + .005, .01), // SDF mask
+		a = nang(p), // normalized angle
+		n
+		;
+	vec3 c = gblks15(uv);
+	c *= 1.
+		- (.5 * -l + .5) * ls(.03, .0, d) // outer shadow
+		;
+	c = mix(c, RGB(155, 135, 111) * t, m);
+	e = length(p) * 5.;
+	q.x = a * floor(e + 1.) * 3.;
+	q.y = fract(e);
+	n = FBMT(q, vec2(3, 7), .7, 3., 4) * (.2 + .8 * SR1(e * 7.)); // polar noise
+	c = mix(c, RGB(99, 88, 77) * n, msk(r + .15, .02)); // inner vortex
+	c *= 1.
+		+ l * m * ls(.01, .0, -d) * ls(.0, .01, r) // outer edge lighting
+		+ tri(-.035, .015, r) // outer ring highlight
+		+ .5 * tri(-.13, .01, r) // inner ring highlight
+		- .7 * sqr(tri(-.01, .04, r)) * m // outer ring outer shadow
+		- .7 * sqr(tri(.13, .06, .03, -r)) // outer ring inner shadow
+		- .5 * sqr(tri(-.12, .02, r)) * m // inner ring outer shadow
+		;
+
+	c += vec3(.8, .8, 1) * pow(sat(1. - length(uv - vec2(.41, .59)) / .35), 8.); // specular
+
+	return c;
+}
+
+// sfx/computer_blocks17 (map shader)
+void scmpblk17_m() {
+	vec3 c = texture(Texture0, UV).xyz * Light();
+	vec2 uv = fract(UV) - .5;
+	float
+		t = Time.x,
+		i = mod(t, 2.),
+		d = icon_sdf(uv * 2., 1.);
+	if (i < 1.)
+		c += msk(d, .02) * fract(-t) * vec3(.5, .1, .1);
+	FCol = vec4(c, 1);
+}
+
 // gothic_trim/pitted_rust3
 TEX(gtprst3) {
 	float
@@ -2044,21 +2127,6 @@ TEXA(gpntgmlt1k) {
 	c *= 1. + (b + .5) * msk(abs(o) - .01, .01);
 	c *= 1. - ls(.1, .05, d) * msk(circ(uv, .4));
 	return vec4(c + 1.*vec3(1, 1, .3) * a, a);
-}
-
-// Quake 3 logo SDF
-// t = 0.0 : app icon (chunky)
-// t = 1.0 : background logo (slim)
-float icon_sdf(vec2 uv, float t) {
-	uv.x = abs(uv.x);
-	uv.y -= .07;
-	float d = elips(uv, vec2(.31, .12 - t * .02)) / 50.; // base ellipse
-	d = max(d, -elips(uv - vec2(0, .01 + t * .01), vec2(.28 + t * .01, .07)) / 50.); // negative inner ellipse
-	d = max(d, -box(uv - vec2(.0, .1), vec2(.22 - t * .02, .12))); // cut off far part
-	d = max(d, -box(uv - vec2(.0, .1), vec2(.084 - t * .012, .31))); // cut off mid part
-	d = min(d, box1(uv - vec2(.0, -.09), vec2(tri(-.09, .32, uv.y)*(.04 - t * .015), .32))); // middle rhombus
-	d = min(d, box1(uv - vec2(.11 - t * .02, -.21 + t * .01), vec2(tri(-.07, .3, uv.y)*(.03 - t * .01), .15))); // outer rhombi
-	return d;
 }
 
 // Window icon
