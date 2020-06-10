@@ -881,3 +881,4 @@
 44820,more detailed gothic_floor/largerblock3b
 44839,more largerblock3b tweaks
 45047,added basic sfx/computer_blocks17
+45207,sfx/computer_blocks17 logo cycle + tweaks

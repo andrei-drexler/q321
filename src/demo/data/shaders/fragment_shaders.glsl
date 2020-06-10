@@ -206,6 +206,14 @@ vec2 mirr(vec2 v, float m) {
 	return v;
 }
 
+// x = variable to repeat
+// p = period
+// l = low limit
+// h = high limit
+float repeat(float x, float p, float l, float h) {
+	return x - p * clamp(floor(x / p + .5), l, h);
+}
+
 // Running bond: s = (rows, columns)
 vec2 brick(vec2 uv, vec2 s) {
 	uv.x += floor(uv.y * s.y) * (.5 / s.x);
@@ -574,11 +582,29 @@ float icon_sdf(vec2 uv, float t) {
 	uv.x = abs(uv.x);
 	uv.y -= .07;
 	float d = elips(uv, vec2(.31, .12 - t * .02)) / 50.; // base ellipse
-	d = max(d, -elips(uv - vec2(0, .01 + t * .01), vec2(.28 + t * .01, .07)) / 75.); // negative inner ellipse
-	d = max(d, -box(uv - vec2(.0, .1), vec2(.22 - t * .02, .12))); // cut off far part
-	d = max(d, -box(uv - vec2(.0, .1), vec2(.084 - t * .012, .31))); // cut off mid part
-	d = min(d, box1(uv - vec2(.0, -.09), vec2(tri(-.09, .32, uv.y)*(.04 - t * .015), .32))); // middle rhombus
-	d = min(d, box1(uv - vec2(.11 - t * .02, -.21 + t * .01), vec2(tri(-.07, .3, uv.y)*(.03 - t * .01), .15))); // outer rhombi
+	d = max(d, -elips(uv - vec2(0, .01 + .01 * t), vec2(.28 + t * .01, .07)) / 75.); // negative inner ellipse
+	d = max(d, -box(uv - vec2(0, .1), vec2(.22 - .02 * t, .12))); // cut off far part
+	d = max(d, -box(uv - vec2(0, .1), vec2(.084 - .012 * t, .31))); // cut off mid part
+	d = min(d, box1(uv - vec2(0, -.09), vec2(tri(-.09, .32, uv.y)*(.04 - .015 * t), .32))); // middle rhombus
+	d = min(d, box1(uv - vec2(.11 - .02 * t, -.21 + .01 * t), vec2(tri(-.07, .3, uv.y)*(.03 - .01 * t), .15))); // outer rhombi
+	return d;
+}
+
+// Quake 1 logo SDF
+float sdf_Q(vec2 uv) {
+	float d = circ(uv - vec2(0, .17), .32);
+	d = exclude(d, circ(uv - vec2(0, .235), .27));
+	d = exclude(d, circ(uv - vec2(0, .5), .15));
+
+	// nail
+	uv.y -= .09;
+	vec2 s = vec2(.09, .52);
+	float h = sat(-uv.y / s.y);
+	s *= .5;
+	s.x *= ls(1.05, .6, h) + sqr(ls(.1, .02, h));
+	uv.y += s.y;
+	d = min(d, box(uv, s));
+
 	return d;
 }
 
@@ -1676,13 +1702,13 @@ TEXA(gcntr2trn_m) {
 
 float scmpblk17_sdf(vec2 p) {
 	p = pmod(p, 8.);
-	float d = circ(p, .4);
-	d = min(d, box((p - vec2(.35, 0)) * rot(45.), vec2(.1)));
+	float d = circ(p, .41);
+	d = min(d, box((p - vec2(.34, 0)) * rot(45.), vec2(.1)));
 	d = max(d, p.x - .45);
 	return d;
 }
 
-// sfx/computer_blocks17
+// sfx/computer_blocks17 (texture)
 TEX(scmpblk17) {
 	vec2
 		p = uv - .5,
@@ -1690,31 +1716,33 @@ TEX(scmpblk17) {
 	float
 		b = FBMT(uv, vec2(9), .7, 2., 4), // base FBM
 		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
-		r = circ(p, .4), // outer ring SDF
+		r = circ(p, .41), // outer ring SDF
 		d = scmpblk17_sdf(p), // base SDF
 		e = scmpblk17_sdf(p - vec2(0, .04)), // offset SDF, for lighting
 		l = (d - e) / .04, // lighting
-		m = msk(d + .005, .01), // SDF mask
+		m = msk(d + .01, .007), // SDF mask
 		a = nang(p), // normalized angle
 		n
 		;
-	vec3 c = gblks15(uv);
+	vec3 c = gblks15(uv); // base layer (stone blocks)
 	c *= 1.
 		- (.5 * -l + .5) * ls(.03, .0, d) // outer shadow
 		;
-	c = mix(c, RGB(155, 135, 111) * t, m);
-	e = length(p) * 5.;
+	c = mix(c, RGB(155, 135, 111) * t, m); // metallic background
+	e = length(p) * 9.;
 	q.x = a * floor(e + 1.) * 3.;
 	q.y = fract(e);
-	n = FBMT(q, vec2(3, 7), .7, 3., 4) * (.2 + .8 * SR1(e * 7.)); // polar noise
-	c = mix(c, RGB(99, 88, 77) * n, msk(r + .15, .02)); // inner vortex
+	n = tri(.5, .2, NT(wavy(uv, 7., .03), vec2(41)));
+	n = FBMT(q, vec2(3, 9), .5, 2., 4) * tri(.5, .5 + .5 * n, q.y); // polar noise
+	c = mix(c, RGB(100, 85, 80) * ridged(n) * b, msk(r + .15, .02)); // inner vortex
 	c *= 1.
-		+ l * m * ls(.01, .0, -d) * ls(.0, .01, r) // outer edge lighting
-		+ tri(-.035, .015, r) // outer ring highlight
-		+ .5 * tri(-.13, .01, r) // inner ring highlight
-		- .7 * sqr(tri(-.01, .04, r)) * m // outer ring outer shadow
-		- .7 * sqr(tri(.13, .06, .03, -r)) // outer ring inner shadow
-		- .5 * sqr(tri(-.12, .02, r)) * m // inner ring outer shadow
+		+ l * m * ls(.02, .0, -d) * ls(.01, .0, -r) // outer edge lighting
+		+ tri(.035, .015, -r) // outer ring highlight
+		+ .5 * tri(.13, .01, -r) // inner ring highlight
+		- .7 * sqr(tri(.01, .04, -r)) // outer ring outer shadow
+		- .6 * sqr(tri(.13, .06, .03, -r)) // outer ring inner shadow
+		- .5 * sqr(tri(.12, .02, -r)) * m // inner ring outer shadow
+		- .9 * sqr(tri(.12, .15, .2, -r)) * m // inner ring inner shadow
 		;
 
 	c += vec3(.8, .8, 1) * pow(sat(1. - length(uv - vec2(.41, .59)) / .35), 8.); // specular
@@ -1725,14 +1753,35 @@ TEX(scmpblk17) {
 // sfx/computer_blocks17 (map shader)
 void scmpblk17_m() {
 	vec3 c = texture(Texture0, UV).xyz * Light();
-	vec2 uv = fract(UV) - .5;
+
+	vec2
+		uv = fract(UV) - .5,
+		p = uv;
 	float
-		t = Time.x,
-		i = mod(t, 2.),
-		d = icon_sdf(uv * 2., 1.);
-	if (i < 1.)
-		c += msk(d, .02) * fract(-t) * vec3(.5, .1, .1);
-	FCol = vec4(c, 1);
+		t = mod(Time.x * 2., 7.),
+		i = floor(t),
+		d = 1e6;
+
+	if (i == 0.)
+		d = sdf_Q(p * 2.4 + vec2(0, .05));
+
+	if (i == 1.) {
+		p.x = repeat(p.x, .1, -1., 1.); // repeat x3
+		d = box(p, vec2(.02, .15)) * 2.;
+	}
+
+	if (i == 2.) {
+		// A
+		d = min(d, box(mirr(p, .0) + vec2(.13 - ls(-.3, .3, uv.y) * .17, 0), vec2(.02, .15)));
+		d = min(d, box(p + vec2(0, .07), vec2(.07, .02))) * 2.;
+	}
+
+	if (i == 4.)
+		d = icon_sdf(p * 1.8, .5);
+	else
+		d = onion(d, .005);
+
+	FCol = vec4(c + msk(d, .02) * fract(-t) * vec3(.5, .05, .05), 1);
 }
 
 // gothic_trim/pitted_rust3
