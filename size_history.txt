@@ -884,3 +884,4 @@
 45207,sfx/computer_blocks17 logo cycle + tweaks
 45313,more sfx/computer_blocks17 details
 45444,even more sfx/computer_blocks17 details
+45452,tweaked brick wall near plasma
