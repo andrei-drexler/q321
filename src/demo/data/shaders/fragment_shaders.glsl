@@ -506,6 +506,10 @@ vec2 seg(vec2 p, vec2 a, vec2 b) {
 	return ab*t + a;
 }
 
+float half_plane(vec2 uv, vec2 d) {
+	return dot(uv, rot(90.) * normalize(d));
+}
+
 float box(vec2 p, vec2 b) {
 	vec2 d = abs(p) - b;
 	return min(max(d.x, d.y), 0.) + length(max(d, 0.));
@@ -1722,7 +1726,7 @@ TEX(scmpblk17) {
 		l = (d - e) / .04, // lighting
 		m = msk(d + .01, .007), // SDF mask
 		a = nang(p), // normalized angle
-		n
+		n, x
 		;
 	vec3 c = gblks15(uv); // base layer (stone blocks)
 	c *= 1.
@@ -1735,14 +1739,34 @@ TEX(scmpblk17) {
 	n = tri(.5, .2, NT(wavy(uv, 7., .03), vec2(41)));
 	n = FBMT(q, vec2(3, 9), .5, 2., 4) * tri(.5, .5 + .5 * n, q.y); // polar noise
 	c = mix(c, RGB(100, 85, 80) * ridged(n) * b, msk(r + .15, .02)); // inner vortex
+
+	e = max(max(d, half_plane(q = abs(p), -vec2(.08, .4))), abs(r + .06) - .09); // top/bottom clamps
+	x = msk(-e, .01); // mask that excludes clamps
+
 	c *= 1.
 		+ l * m * ls(.02, .0, -d) * ls(.01, .0, -r) // outer edge lighting
-		+ tri(.035, .015, -r) // outer ring highlight
-		+ .5 * tri(.13, .01, -r) // inner ring highlight
-		- .7 * sqr(tri(.01, .04, -r)) // outer ring outer shadow
-		- .6 * sqr(tri(.13, .06, .03, -r)) // outer ring inner shadow
-		- .5 * sqr(tri(.12, .02, -r)) * m // inner ring outer shadow
+		+ x * tri(.035, .015, -r) // outer ring highlight
+		+ x * .5 * tri(.13, .01, -r) // inner ring highlight
+		+ .7 * tri(-.02, .04, r) * (1. - x) // clamp highlight
+		+ .2 * sqr(tri(.03, .01, -e)) // clamp inner edge highlight
+		- .7 * x * sqr(tri(.01, .04, -r)) // outer ring outer shadow
+		- .6 * x * sqr(tri(.13, .06, .03, -r)) // outer ring inner shadow
+		- .5 * x * sqr(tri(.12, .02, -r)) * m // inner ring outer shadow
 		- .9 * sqr(tri(.12, .15, .2, -r)) * m // inner ring inner shadow
+		- .5 * sqr(tri(.0, .05, e)) // clamp outer shadow
+		- .1 * sqr(tri(.04, .01, -e)) // clamp inner shadow
+		- .5 * ls(-.03, -.04, e) * (1. - x) // darken clamp interior
+		;
+
+	/* ring wires */
+	q.x = a;
+	q.y = ls(.05, .12, -r);
+	e = voro1(q, vec2(37, 1)).z; // polar voronoi with manhattan distance
+	m = tri(.085, .035, -r) * x; // interior mask, excluding clamps
+
+	c *= 1.
+		+ .5 * m * tri(.0, .2, e) // wire highlight
+		- .3 * m * tri(.3, .3, e) // wire shadow
 		;
 
 	c += vec3(.8, .8, 1) * pow(sat(1. - length(uv - vec2(.41, .59)) / .35), 8.); // specular
