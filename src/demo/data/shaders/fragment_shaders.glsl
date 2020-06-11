@@ -1722,17 +1722,17 @@ TEX(scmpblk17) {
 		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
 		r = circ(p, .41), // outer ring SDF
 		d = scmpblk17_sdf(p), // base SDF
-		e = scmpblk17_sdf(p - vec2(0, .04)), // offset SDF, for lighting
-		l = (d - e) / .04, // lighting
+		l = dFdy(d) / .004, // top light
 		m = msk(d + .01, .007), // SDF mask
 		a = nang(p), // normalized angle
-		n, x
-		;
-	vec3 c = gblks15(uv); // base layer (stone blocks)
+		e, n, x, z;
+	vec3
+		c = gblks15(uv), // base color (stone blocks)
+		k = RGB(155, 135, 115) * t; // metallic color
 	c *= 1.
 		- (.5 * -l + .5) * ls(.03, .0, d) // outer shadow
 		;
-	c = mix(c, RGB(155, 135, 111) * t, m); // metallic background
+	c = mix(c, k, m); // metallic background
 	e = length(p) * 9.;
 	q.x = a * floor(e + 1.) * 3.;
 	q.y = fract(e);
@@ -1740,36 +1740,55 @@ TEX(scmpblk17) {
 	n = FBMT(q, vec2(3, 9), .5, 2., 4) * tri(.5, .5 + .5 * n, q.y); // polar noise
 	c = mix(c, RGB(100, 85, 80) * ridged(n) * b, msk(r + .15, .02)); // inner vortex
 
-	e = max(max(d, half_plane(q = abs(p), -vec2(.08, .4))), abs(r + .06) - .09); // top/bottom clamps
-	x = msk(-e, .01); // mask that excludes clamps
+	q = p;
+	q.x = abs(p.x);
+	e = max(max(d, half_plane(q, -vec2(.08, .4))), abs(r + .06) - .09); // top clamp
+	z = box(q - vec2(0, .3), vec2(.01, .03));
+	e = exclude(e, z - .02);
+	x = msk(-e, .01); // mask that excludes the top clamp
 
 	c *= 1.
 		+ l * m * ls(.02, .0, -d) * ls(.01, .0, -r) // outer edge lighting
 		+ x * tri(.035, .015, -r) // outer ring highlight
-		+ x * .5 * tri(.13, .01, -r) // inner ring highlight
-		+ .7 * tri(-.02, .04, r) * (1. - x) // clamp highlight
-		+ .2 * sqr(tri(.03, .01, -e)) // clamp inner edge highlight
+		+ .5 * x * tri(.13, .01, -r) // inner ring highlight
+		+ .7 * tri(.08, .007, z) * (1. - x) // top clamp highlight
 		- .7 * x * sqr(tri(.01, .04, -r)) // outer ring outer shadow
 		- .6 * x * sqr(tri(.13, .06, .03, -r)) // outer ring inner shadow
 		- .5 * x * sqr(tri(.12, .02, -r)) * m // inner ring outer shadow
 		- .9 * sqr(tri(.12, .15, .2, -r)) * m // inner ring inner shadow
-		- .5 * sqr(tri(.0, .05, e)) // clamp outer shadow
-		- .1 * sqr(tri(.04, .01, -e)) // clamp inner shadow
-		- .5 * ls(-.03, -.04, e) * (1. - x) // darken clamp interior
+		- .5 * sqr(tri(.0, .05, e)) // top clamp outer shadow
 		;
+
+	c += vec3(.8, .8, 1) * pow(sat(1. - length(uv - vec2(.41, .59)) / .35), 8.); // specular
 
 	/* ring wires */
 	q.x = a;
 	q.y = ls(.05, .12, -r);
 	e = voro1(q, vec2(37, 1)).z; // polar voronoi with manhattan distance
-	m = tri(.085, .035, -r) * x; // interior mask, excluding clamps
+	m = tri(.085, .035, -r) * x; // interior mask, excluding the top clamp
 
 	c *= 1.
 		+ .5 * m * tri(.0, .2, e) // wire highlight
 		- .3 * m * tri(.3, .3, e) // wire shadow
 		;
 
-	c += vec3(.8, .8, 1) * pow(sat(1. - length(uv - vec2(.41, .59)) / .35), 8.); // specular
+	/* bottom clamp */
+	e = box(p + vec2(0, .33), vec2(.01, .03)) - .03; // SDF
+	l = dFdy(e) / .004; // top light
+	c = mix(c, k * (.4 + .8 * ls(.25, .41, -p.y)), z = msk(e, .01)); // base color
+	c *= 1.
+		+ .7 * tri(.005, .01, e) * l // edge lighting
+		- .5 * tri(.0, .01, .05, e) // outer shadow
+		;
+
+	/* led box */
+	e = box(q = p + vec2(0, .35), vec2(.01, .015)) - .01; // SDF
+	l = dFdy(e) / .004; // top light
+	c *= 1.
+		+ .5 * tri(.005, .01, e)
+		- .5 * sqr(tri(.0, .01, e))
+		;
+	c += vec3(1, .7, .5) * pow(sat(1. - length(q) / .11), 8.); // light glow
 
 	return c;
 }
