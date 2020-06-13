@@ -60,19 +60,6 @@ void Reorder(std::vector<T>& items, const size_t* order) {
 
 ////////////////////////////////////////////////////////////////
 
-constexpr u32 EncodeSignMagnitude(i32 i) {
-	u32 s = u32(i) >> 31;
-	return (((u32(i) ^ -s) + s) << 1) | s;
-}
-
-constexpr i32 DecodeSignMagnitude(u32 u) {
-	bool negative = u & 1;
-	u >>= 1;
-	return negative ? -u : u;
-}
-
-////////////////////////////////////////////////////////////////
-
 struct ShaderProperties {
 	Content::Flags		content_flags;
 	Surface::Flags		surface_flags;

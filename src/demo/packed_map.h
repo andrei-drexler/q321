@@ -168,14 +168,6 @@ struct PackedMap {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE i32 DecodeSignMagnitude(u32 i) {
-	bool negative = i & 1;
-	i32 value = (i >> 1);
-	return negative ? -value : value;
-};
-
-////////////////////////////////////////////////////////////////
-
 FORCEINLINE PackedMap::UV PackedMap::GetPlaneUV(u32 plane_index) const {
 	const float* data = uv_data + plane_uvs[plane_index];
 

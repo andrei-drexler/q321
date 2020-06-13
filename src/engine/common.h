@@ -337,6 +337,19 @@ FORCEINLINE u32 SelectBits(u32 condition, u32 true_value, u32 false_value) {
 
 ////////////////////////////////////////////////////////////////
 
+NOINLINE constexpr u32 EncodeSignMagnitude(i32 i) {
+	u32 s = u32(i) >> 31;
+	return (u32((i ^ -i32(s)) + s) << 1) | s;
+}
+
+NOINLINE constexpr i32 DecodeSignMagnitude(u32 u) {
+	bool negative = u & 1;
+	u >>= 1;
+	return negative ? -i32(u) : i32(u);
+}
+
+////////////////////////////////////////////////////////////////
+
 template <typename T, size_t Size>
 struct StaticArray {
 	T data[Size];
