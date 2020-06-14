@@ -155,7 +155,6 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	const MD3::Shader*		shaders	= surf->GetShaders();
 	const MD3::Vertex*		verts	= surf->GetVerts();
 	const MD3::UV*			uvs		= surf->GetUVs();
-	const MD3::Triangle*	tris	= surf->GetTris();
 
 	auto quantize_pos = [](i16 value) {
 		const u16
@@ -198,10 +197,13 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	print << "};"sv;
 	print.Flush();
 
+	const u32* indices = surf->GetIndices();
 	print << "const u16 "sv << "indices"sv << "[] = {"sv;
-	for (u16 i = 0; i < surf[0].num_tris; ++i) {
-		auto& idx = tris[i].indices;
-		print << idx[0] << ","sv << idx[1] << ","sv << idx[2] << ","sv;
+	for (u16 i = 0; i < surf[0].num_tris * 3; ++i) {
+		i32 idx = indices[i];
+		if (i > 0)
+			idx -= indices[i - 1];
+		print << (i32)EncodeSignMagnitude(idx) << ","sv;
 	}
 	print << "};"sv;
 	print.Flush();
