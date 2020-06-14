@@ -889,3 +889,4 @@
 45310,single array for model vert pos+uv
 44905,sort model vertices by uvs
 44352,delta-encoded model indices
+44892,model loading + flipped model faces

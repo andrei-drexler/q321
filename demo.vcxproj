@@ -29,6 +29,7 @@
     <ClInclude Include="src\demo\map_partition.h" />
     <ClInclude Include="src\demo\map_patch.h" />
     <ClInclude Include="src\demo\material.h" />
+    <ClInclude Include="src\demo\models.h" />
     <ClInclude Include="src\demo\packed_map.h" />
     <ClInclude Include="src\demo\player.h" />
     <ClInclude Include="src\demo\player_move.h" />

@@ -20,6 +20,7 @@
 #include "console.h"
 #include "resource_def.h"
 #include "gfx_resources.h"
+#include "models.h"
 #include "map.h"
 #include "cooked/cooked_maps.h"
 #include "cooked/cooked_models.h"
@@ -361,6 +362,7 @@ namespace Demo {
 		Demo::InitGfxResources();
 		Map::AllocLightmap();
 		Demo::UpdateWindowIcon();
+		Demo::Model::LoadAll(cooked_models);
 
 #ifdef SHOW_LIGHTMAP
 		Demo::r_lightmap.Set(1);
@@ -371,9 +373,6 @@ namespace Demo {
 #endif
 
 		auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
-		#define PP_DEMO_MODEL_TOUCH(name)	touch(name::vertices); touch(name::indices);
-		DEMO_MODELS(PP_DEMO_MODEL_TOUCH)
-		#undef PP_DEMO_MODEL_TOUCH
 
 		Map::Load(START_MAP::map);
 		Map::UpdateLightmapTexture();

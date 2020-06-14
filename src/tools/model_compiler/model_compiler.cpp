@@ -29,9 +29,9 @@ bool ExportObj(const MD3::Header& model, const char* path) {
 		auto* verts = surf->GetVerts();
 		for (u32 j = 0; j < surf->num_verts; ++j) {
 			fprintf(out, "v %g %g %g\n",
-				 (verts[j].pos[0] >> ChopBits) / float(MD3::Vertex::Scale),
-				 (verts[j].pos[2] >> ChopBits) / float(MD3::Vertex::Scale),
-				-(verts[j].pos[1] >> ChopBits) / float(MD3::Vertex::Scale)
+				 (verts[j].pos[0] >> ChopBits << ChopBits) / float(MD3::Vertex::Scale),
+				 (verts[j].pos[2] >> ChopBits << ChopBits) / float(MD3::Vertex::Scale),
+				-(verts[j].pos[1] >> ChopBits << ChopBits) / float(MD3::Vertex::Scale)
 			);
 		}
 
@@ -159,7 +159,7 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	auto quantize_pos = [](i16 value) {
 		const u16
 			ChopBits = 4,
-			RoundingBias = (1 << ChopBits) - 1;
+			RoundingBias = 1 << (ChopBits - 1);
 		bool negative = value < 0;
 		value = (abs(value) + RoundingBias) >> ChopBits;
 		return negative ? -value : value;
@@ -169,10 +169,10 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 		return i16(std::floor(value * 128.f + 0.5f));
 	};
 
-	print << "const i16 "sv << "vertices"sv << "[] = {"sv;
+	print << "const i16 vertices[] = {"sv;
 	for (u16 pass = 0; pass < 5; ++pass) {
-		i32 prev = 0;
-		i32 current = 0;
+		i16 prev = 0;
+		i16 current = 0;
 		for (u32 i = 0; i < surf->num_verts; ++i) {
 			switch (pass) {
 				case 0:
@@ -197,13 +197,39 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	print << "};"sv;
 	print.Flush();
 
-	const u32* indices = surf->GetIndices();
-	print << "const u16 "sv << "indices"sv << "[] = {"sv;
-	for (u16 i = 0; i < surf[0].num_tris * 3; ++i) {
+	const u32* base_indices = surf->GetIndices();
+	std::vector<u32> indices;
+
+	indices.clear();
+	indices.resize(surf[0].num_tris * 3);
+	/* flip faces the lazy way */
+	for (size_t i = 0; i < indices.size(); i += 3) {
+		indices[i + 0] = base_indices[i + 0];
+		indices[i + 1] = base_indices[i + 2];
+		indices[i + 2] = base_indices[i + 1];
+	}
+
+	print << "const u16 indices[] = {"sv;
+	for (size_t i = 0; i < indices.size(); ++i) {
 		i32 idx = indices[i];
 		if (i > 0)
 			idx -= indices[i - 1];
 		print << (i32)EncodeSignMagnitude(idx) << ","sv;
+	}
+	print << "};"sv;
+	print.Flush();
+
+	print << "const Demo::PackedModel::Part parts[] = {"sv;
+	for (u16 i = 0; i < 1; ++i) {
+		auto& part = surf[i];
+		u8 shader = 0;
+		print
+			<< "{"sv
+			<<		(i32)shader << ","sv
+			<<		(i32)part.num_verts << ","sv
+			<<		(i32)part.num_tris * 3 << ","sv
+			<< "},"sv
+		;
 	}
 	print << "};"sv;
 	print.Flush();
@@ -238,6 +264,9 @@ int main() {
 	std::vector<char> contents;
 	int num_errors = 0;
 
+	std::vector<std::string> model_names;
+	model_names.reserve(256);
+
 	for (auto& path : options.md3_paths) {
 		printf("Compiling %s\n", path.c_str());
 
@@ -256,7 +285,21 @@ int main() {
 		SortIndices(model, options);
 		//ExportObj(model, (std::string("d:\\temp\\") + std::string(ExtractFileName({path})) + ".obj").c_str());
 		CompileModel(model, options, path, out);
+
+		model_names.emplace_back(ExtractFileName({path}));
 	}
+
+	/* footer */
+	fprintf(out,
+		"\n"
+		"////////////////////////////////////////////////////////////////\n"
+		"\n"
+		"static constexpr Demo::PackedModel cooked_models[] = {\n"
+		"\t#define PP_ADD_MODEL_ENTRY(name,...) {size(name::parts),size(name::vertices)/5,size(name::indices),name::parts,name::vertices,name::indices},\n"
+		"\tDEMO_MODELS(PP_ADD_MODEL_ENTRY)\n"
+		"\t#undef PP_ADD_MODEL_ENTRY\n"
+		"};\n"
+	);
 
 	return num_errors;
 }

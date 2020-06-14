@@ -84,6 +84,9 @@
     <ClInclude Include="src\demo\packed_map.h">
       <Filter>Demo</Filter>
     </ClInclude>
+    <ClInclude Include="src\demo\models.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\demo\demo.cpp">
