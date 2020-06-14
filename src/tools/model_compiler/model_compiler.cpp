@@ -59,19 +59,20 @@ void SortVertices(MD3::Header& model, const Options& options) {
 
 	MD3::Surface* surf = model.GetFirstSurface();
 	for (u32 i = 0; i < model.num_surfaces; ++i, surf = surf->GetNext()) {
-		i16 mins[3] = {0x7fff, 0x7fff, 0x7fff};
-		i16 maxs[3] = {0x8000, 0x8000, 0x8000};
+		i16 mins[2] = {0x7fff, 0x7fff};
+		i16 maxs[2] = {0x8000, 0x8000};
 
 		auto* verts = surf->GetVerts();
+		auto* uvs = surf->GetUVs();
 		for (u16 j = 0; j < surf->num_verts; ++j) {
-			auto& v = verts[j];
-			for (u16 k = 0; k < 3; ++k) {
-				Math::assign_min(mins[k], v.pos[k]);
-				Math::assign_max(maxs[k], v.pos[k]);
+			auto& v = uvs[j];
+			for (u16 k = 0; k < 2; ++k) {
+				Math::assign_min(mins[k], v[k]);
+				Math::assign_max(maxs[k], v[k]);
 			}
 		}
 
-		for (u16 j = 0; j < 3; ++j)
+		for (u16 j = 0; j < 2; ++j)
 			maxs[j] -= mins[j];
 
 		morton.resize(surf->num_verts);
@@ -83,18 +84,16 @@ void SortVertices(MD3::Header& model, const Options& options) {
 			new_to_old[j] = j;
 		
 		for (u16 j = 0; j < surf->num_verts; ++j) {
-			auto& v = verts[j];
-			i32 x = std::clamp(i32((v.pos[0] - mins[0]) * 1023.f / maxs[0] + 0.5f), 0, 1023);
-			i32 z = std::clamp(i32((v.pos[2] - mins[2]) * 1023.f / maxs[2] + 0.5f), 0, 1023);
-			i32 y = std::clamp(i32(abs(v.pos[1] - mins[1] - maxs[1] / 2) * (2.f * 1023.f) / maxs[1] + 0.5f), 0, 1023);
-			morton[j] = Interleave3(x, y, z);
+			auto& v = uvs[j];
+			i32 x = std::clamp(i32((v[0] - mins[0]) * 65535.f / maxs[0] + 0.5f), 0, 65535);
+			i32 y = std::clamp(i32((v[1] - mins[1]) * 65535.f / maxs[1] + 0.5f), 0, 65535);
+			morton[j] = Interleave2(x, y);
 		}
 
 		std::sort(new_to_old.begin(), new_to_old.end(), [&] (u32 a, u32 b) {
 			return morton[a] < morton[b];
 		});
 
-		auto* uvs = surf->GetUVs();
 		for (u16 j = 0; j < surf->num_verts; ++j) {
 			auto old_vert = new_to_old[j];
 			sorted_verts[j] = verts[old_vert];
@@ -207,7 +206,8 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	print << "};"sv;
 	print.Flush();
 
-	printf(INDENT "Wrote %d verts, %d tris\n", surf[0].num_verts, surf[0].num_tris);}
+	printf(INDENT "Wrote %d verts, %d tris\n", surf[0].num_verts, surf[0].num_tris);
+}
 
 ////////////////////////////////////////////////////////////////
 
