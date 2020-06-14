@@ -141,9 +141,8 @@ void SortIndices(MD3::Header& model, const Options& options) {
 void CompileModel(const MD3::Header& model, const Options& options, const std::string& path, FILE* out) {
 	string_view clean_path = path;
 	auto name = ExtractFileName({path});
-	constexpr string_view Prefix = "../";
-	while (clean_path.size() >= Prefix.size() && 0 == memcmp(clean_path.data(), Prefix.data(), Prefix.size()))
-		clean_path.remove_prefix(Prefix.size());
+	while (RemovePrefix(clean_path, "../"sv))
+		;
 
 	fprintf(out, "\n// %.*s\n", int(clean_path.size()), clean_path.data());
 	fprintf(out, "namespace %.*s {\n", int(name.size()), name.data());
@@ -159,32 +158,42 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	const MD3::UV*			uvs		= surf->GetUVs();
 	const MD3::Triangle*	tris	= surf->GetTris();
 
-	auto encode_pos = [](i16 value) {
-		const u16 ChopBits = 4;
+	auto quantize_pos = [](i16 value) {
+		const u16
+			ChopBits = 4,
+			RoundingBias = (1 << ChopBits) - 1;
 		bool negative = value < 0;
-		value = (abs(value) + ((1 << ChopBits) - 1)) >> ChopBits;
-		return u16((value << 1) + negative);
+		value = (abs(value) + RoundingBias) >> ChopBits;
+		return negative ? -value : value;
+	};
+
+	auto quantize_uv = [](float value) {
+		return i16(std::floor(value * 128.f + 0.5f));
 	};
 
 	print << "const i16 "sv << "vertices"sv << "[] = {"sv;
-	for (u16 pass = 0; pass < 3; ++pass) {
+	for (u16 pass = 0; pass < 5; ++pass) {
+		i32 prev = 0;
+		i32 current = 0;
 		for (u32 i = 0; i < surf->num_verts; ++i) {
-			auto& v = verts[i];
 			switch (pass) {
-				case 0: print << encode_pos(v.pos[0]) << ","sv; break;
-				case 1: print << encode_pos(v.pos[1]) << ","sv; break;
-				case 2: print << encode_pos(v.pos[2]) << ","sv; break;
-			}
-		}
-	}
-	print << "};"sv;
-	print.Flush();
+				case 0:
+				case 1:
+				case 2:
+					current = quantize_pos(verts[i].pos[pass]);
+					print << (i32)EncodeSignMagnitude(current) << ","sv;
+					prev = current;
+					break;
+				case 3:
+				case 4:
+					current = quantize_uv(uvs[i][pass - 3]);
+					print << current << ","sv;
+					prev = current;
+					break;
 
-	print << "const i16 "sv << "uvs"sv << "[] = {"sv;
-	for (u16 pass = 0; pass < 2; ++pass) {
-		for (u32 i = 0; i < surf[0].num_verts; ++i) {
-			auto v = uvs[i][pass];
-			print << i16(v * 128.f + 0.5f) << ","sv;
+				default:
+					break;
+			}
 		}
 	}
 	print << "};"sv;
@@ -197,7 +206,8 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	}
 	print << "};"sv;
 	print.Flush();
-}
+
+	printf(INDENT "Wrote %d verts, %d tris\n", surf[0].num_verts, surf[0].num_tris);}
 
 ////////////////////////////////////////////////////////////////
 

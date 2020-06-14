@@ -886,3 +886,4 @@
 45444,even more sfx/computer_blocks17 details
 45452,tweaked brick wall near plasma
 45454,moved encode/decodesignmagnitude to common.h
+45310,single array for model vert pos+uv
