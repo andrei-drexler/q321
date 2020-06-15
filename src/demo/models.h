@@ -109,9 +109,6 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 
 		const u16* src_pos = packed.verts;
 		const u16* src_idx = packed.indices;
-		vec3* pos = Storage::vertices + dst_ofs_verts;
-		vec3* nor = Storage::normals + dst_ofs_verts;
-		u32* idx = Storage::indices + dst_ofs_idx;
 
 		/* model -> part association */
 		Storage::first_model_part[model_index] = dst_ofs_part;
@@ -147,7 +144,11 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 				Storage::indices[dst_ofs_idx] = index;
 			}
 		
-			Demo::ComputeNormals(pos, idx, src_part.num_verts, src_part.num_indices, nor);
+			/* compute normals */
+			vec3* pos = Storage::vertices + dst_part.ofs_verts;
+			vec3* nor = Storage::normals + dst_part.ofs_verts;
+			u32* idx = Storage::indices + dst_part.ofs_idx;
+			Demo::ComputeNormals(pos, idx, dst_part.num_verts, dst_part.num_indices, nor);
 		}
 	}
 

@@ -151,11 +151,6 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 
 	ArrayPrinter print(out);
 
-	const MD3::Surface*		surf	= model.GetFirstSurface();
-	const MD3::Shader*		shaders	= surf->GetShaders();
-	const MD3::Vertex*		verts	= surf->GetVerts();
-	const MD3::UV*			uvs		= surf->GetUVs();
-
 	auto quantize_pos = [](i16 value) {
 		const u16
 			ChopBits = 4,
@@ -169,72 +164,85 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 		return i16(std::floor(value * 128.f + 0.5f));
 	};
 
-	print << "const u16 vertices[] = {"sv;
-	for (u16 pass = 0; pass < 5; ++pass) {
-		i16 prev = 0;
-		i16 current = 0;
-		for (u32 i = 0; i < surf->num_verts; ++i) {
-			switch (pass) {
-				case 0:
-				case 1:
-				case 2:
-					current = quantize_pos(verts[i].pos[pass]);
-					print << (i32)EncodeSignMagnitude(current) << ","sv;
-					prev = current;
-					break;
-				case 3:
-				case 4:
-					current = quantize_uv(uvs[i][pass - 3]);
-					print << current << ","sv;
-					prev = current;
-					break;
+	struct Part {
+		u32 shader;
+		u32 num_vertices;
+		u32 num_indices;
+	};
 
-				default:
-					break;
-			}
+	std::vector<u32> flipped_indices;
+	std::vector<u16> output_vertices;
+	std::vector<u16> output_indices;
+	std::vector<Part> output_parts;
+
+	const MD3::Surface* surf = model.GetFirstSurface();
+	for (u32 surface_index = 0; surface_index < model.num_surfaces; ++surface_index, surf = surf->GetNext()) {
+		const MD3::Shader*		shaders	= surf->GetShaders();
+		const MD3::Vertex*		verts	= surf->GetVerts();
+		const MD3::UV*			uvs		= surf->GetUVs();
+
+		output_parts.push_back({0, surf->num_verts, surf->num_tris * 3});
+
+		for (u16 i = 0; i < surf->num_verts; ++i) {
+			output_vertices.push_back(EncodeSignMagnitude(quantize_pos(verts[i].pos[0])));
+			output_vertices.push_back(EncodeSignMagnitude(quantize_pos(verts[i].pos[1])));
+			output_vertices.push_back(EncodeSignMagnitude(quantize_pos(verts[i].pos[2])));
+			output_vertices.push_back(quantize_uv(uvs[i][0]));
+			output_vertices.push_back(quantize_uv(uvs[i][1]));
 		}
+
+		const u32* base_indices = surf->GetIndices();
+
+		flipped_indices.clear();
+		flipped_indices.resize(surf->num_tris * 3);
+		/* flip faces the lazy way */
+		for (size_t i = 0; i < flipped_indices.size(); i += 3) {
+			flipped_indices[i + 0] = base_indices[i + 0];
+			flipped_indices[i + 1] = base_indices[i + 2];
+			flipped_indices[i + 2] = base_indices[i + 1];
+		}
+
+		for (size_t i = 0; i < flipped_indices.size(); ++i) {
+			i32 idx = flipped_indices[i];
+			assert(u32(idx) < u32(surf->num_verts));
+			if (i > 0)
+				idx -= flipped_indices[i - 1];
+			output_indices.push_back(EncodeSignMagnitude(idx));
+		}
+	}
+
+	print << "const u16 vertices[] = {"sv;
+	for (u8 pass = 0; pass < 5; ++pass) {
+		size_t step = output_vertices.size() / 5;
+		for (size_t i = pass; i < output_vertices.size(); i += 5)
+			print << i32(output_vertices[i]) << ","sv;
 	}
 	print << "};"sv;
 	print.Flush();
 
-	const u32* base_indices = surf->GetIndices();
-	std::vector<u32> indices;
-
-	indices.clear();
-	indices.resize(surf[0].num_tris * 3);
-	/* flip faces the lazy way */
-	for (size_t i = 0; i < indices.size(); i += 3) {
-		indices[i + 0] = base_indices[i + 0];
-		indices[i + 1] = base_indices[i + 2];
-		indices[i + 2] = base_indices[i + 1];
-	}
-
 	print << "const u16 indices[] = {"sv;
-	for (size_t i = 0; i < indices.size(); ++i) {
-		i32 idx = indices[i];
-		if (i > 0)
-			idx -= indices[i - 1];
-		print << (i32)EncodeSignMagnitude(idx) << ","sv;
-	}
+	for (auto v : output_indices)
+		print << i32(v) << ","sv;
 	print << "};"sv;
 	print.Flush();
 
 	print << "const Demo::PackedModel::Part parts[] = {"sv;
-	for (u16 i = 0; i < 1; ++i) {
-		auto& part = surf[i];
+	for (auto& part : output_parts) {
 		u8 shader = 0;
 		print
 			<< "{"sv
-			<<		(i32)shader << ","sv
-			<<		(i32)part.num_verts << ","sv
-			<<		(i32)part.num_tris * 3 << ","sv
+			<<		(i32)part.shader << ","sv
+			<<		(i32)part.num_vertices << ","sv
+			<<		(i32)part.num_indices << ","sv
 			<< "},"sv
 		;
 	}
 	print << "};"sv;
 	print.Flush();
 
-	printf(INDENT "Wrote %d verts, %d tris\n", surf[0].num_verts, surf[0].num_tris);
+	printf(INDENT "Wrote %d parts, %d verts, %d tris\n",
+		output_parts.size(), output_vertices.size() / 5, output_indices.size() / 3
+	);
 }
 
 ////////////////////////////////////////////////////////////////

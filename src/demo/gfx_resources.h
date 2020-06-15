@@ -171,6 +171,9 @@ namespace Demo {
 				u32 i0 = indices[j];
 				u32 i1 = indices[Next[j]];
 				u32 i2 = indices[Next[j + 1]];
+				assert(i0 < num_verts);
+				assert(i1 < num_verts);
+				assert(i2 < num_verts);
 				normals[i0] += cross(positions[i1] - positions[i0], positions[i2] - positions[i1]);
 			}
 		}
