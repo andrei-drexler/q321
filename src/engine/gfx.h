@@ -201,6 +201,7 @@ namespace Gfx {
 
 	namespace Arena {
 		enum Type {
+			Permanent,
 			Level,
 			Dynamic,
 
@@ -211,7 +212,7 @@ namespace Gfx {
 		constexpr u32 BaseOffset = 4096;
 	};
 
-	void InitMemory(u32 fixed_size, u32 dynamic_size);
+	void InitMemory(const u32 sizes[Arena::Count]);
 	void ResetArena(Arena::Type type);
 	u32 UploadGeometry(const void* data, u32 size, Arena::Type type = Arena::Type::Dynamic);
 

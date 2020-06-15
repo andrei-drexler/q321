@@ -29,6 +29,12 @@
 ////////////////////////////////////////////////////////////////
 
 namespace Demo {
+	static const u32 GPUPoolSizes[Gfx::Arena::Count] = {
+		8  * Mem::MB,	// permanent
+		16 * Mem::MB,	// level
+		16 * Mem::MB,	// dynamic
+	};
+
 	Sys::Thread				g_loading_thread;
 	bool					g_updated_lightmap;
 	Sys::Time				g_load_time;
@@ -121,6 +127,25 @@ namespace Demo {
 #ifdef DRAW_POINT_ENTITIES
 		DrawPointEntities();
 #endif
+
+		Gfx::SetShader(Demo::Shader::Generic);
+		Demo::Uniform::Time.w = 0;
+
+		mat4 mvp = Demo::Uniform::MVP;
+		mat4 rotation, translation, scale;
+
+		transpose(MakeRotation(vec3{float(g_time) * 180.f, 0.f, 0.f} * Math::DEG2RAD), rotation);
+		translation = i4x4;
+		scale = i4x4;
+		translation.SetPosition(vec3{672, 2096, 16});
+		translation.w.z += sin(Math::TAU * float(g_time)) * 4.f + 4.f + 8.f;
+		scale.x.x = scale.y.y = scale.z.z = 1.5f;
+		Demo::Uniform::MVP = mvp * translation * rotation * scale;
+
+		Gfx::UpdateUniforms();
+		Demo::Model::Draw(Demo::Model::ID::rocketl);
+
+		Demo::Uniform::MVP = mvp;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -358,7 +383,7 @@ namespace Demo {
 		Demo::Console::Init();
 		Sys::InitWindow(&Sys::g_window, nullptr, "Q320");
 		Sys::SetFPSMode(&Sys::g_window);
-		Gfx::InitMemory(16 * Mem::MB, 16 * Mem::MB);
+		Gfx::InitMemory(GPUPoolSizes);
 		Demo::InitGfxResources();
 		Map::AllocLightmap();
 		Demo::UpdateWindowIcon();

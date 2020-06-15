@@ -523,7 +523,7 @@ FORCEINLINE void Gfx::RegisterTextures(const Texture::Descriptor* textures, u16 
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Gfx::InitMemory(u32 fixed_size, u32 dynamic_size) {
+FORCEINLINE void Gfx::InitMemory(const u32 sizes[Arena::Count]) {
 	using namespace GL;
 
 	assert(g_state.vbo == 0);
@@ -532,10 +532,13 @@ FORCEINLINE void Gfx::InitMemory(u32 fixed_size, u32 dynamic_size) {
 	glGenVertexArrays(1, &g_state.vao);
 	glBindVertexArray(g_state.vao);
 
-	u32 total_size = fixed_size + dynamic_size;
-	g_state.arena[Arena::Level].size = fixed_size;
-	g_state.arena[Arena::Dynamic].size = dynamic_size;
-	g_state.arena[Arena::Dynamic].start_offset = fixed_size;
+	u32 total_size = 0;
+	for (u8 arena_index = 0; arena_index < Arena::Count; ++arena_index) {
+		GL::State::Arena& arena = g_state.arena[arena_index];
+		arena.start_offset = total_size;
+		arena.size = sizes[arena_index];
+		total_size += sizes[arena_index];
+	}
 
 	glGenBuffers(1, &g_state.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, g_state.vbo);

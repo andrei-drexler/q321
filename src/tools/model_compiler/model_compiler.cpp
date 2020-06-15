@@ -169,7 +169,7 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 		return i16(std::floor(value * 128.f + 0.5f));
 	};
 
-	print << "const i16 vertices[] = {"sv;
+	print << "const u16 vertices[] = {"sv;
 	for (u16 pass = 0; pass < 5; ++pass) {
 		i16 prev = 0;
 		i16 current = 0;

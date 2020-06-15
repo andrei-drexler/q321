@@ -13,7 +13,7 @@ namespace Demo {
 		u16				num_indices;
 
 		const Part*		parts;
-		const i16*		verts; // separate X/Y/Z/S/T streams
+		const u16*		verts; // separate X/Y/Z/S/T streams
 		const u16*		indices;
 	};
 
@@ -70,6 +70,7 @@ namespace Demo {
 		Entry list[Model::Count];
 
 		void LoadAll(const PackedModel* models);
+		void Draw(Model::ID id);
 	};
 }
 
@@ -90,8 +91,8 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 
 	/* alloc resources */
 	Storage::vertices         = Mem::Alloc< vec3 >(Storage::num_verts);
-	Storage::normals          = Mem::Alloc< vec3 >(Storage::num_verts);
 	Storage::uvs              = Mem::Alloc< vec2 >(Storage::num_verts);
+	Storage::normals          = Mem::Alloc< vec3 >(Storage::num_verts);
 	Storage::indices          = Mem::Alloc< u32  >(Storage::num_indices);
 	Storage::parts            = Mem::Alloc< Part >(Storage::num_parts);
 	Storage::first_model_part = Mem::Alloc< u16  >(Model::Count + 1);
@@ -108,11 +109,11 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 
 		vec3* pos = Storage::vertices + dst_ofs_verts;
 		vec3* nor = Storage::normals + dst_ofs_verts;
-		vec3* uv = Storage::normals + dst_ofs_verts;
+		vec2* uv = Storage::uvs + dst_ofs_verts;
 
 		/* decode vertices */
 		for (u16 vertex_index = 0; vertex_index < packed.num_verts; ++vertex_index) {
-			const i16* src_pos = packed.verts + vertex_index;
+			const u16* src_pos = packed.verts + vertex_index;
 			float unpack[5];
 
 			// separate XYZST streams
@@ -133,6 +134,7 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			idx[i] = index;
 		}
 		
+		/* compute normals */
 		for (u32 i = 0; i < packed.num_indices; i += 3, idx += 3) {
 			constexpr u8 Next[] = {1, 2, 0, 1};
 			for (u8 j = 0; j < 3; ++j) {
@@ -142,7 +144,6 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 				nor[i0] += cross(pos[i1] - pos[i0], pos[i2] - pos[i1]);
 			}
 		}
-
 		for (u32 i = 0; i < packed.num_indices; ++i)
 			safe_normalize(nor[i]);
 
@@ -164,5 +165,42 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 		}
 	}
 
+	assert(dst_ofs_verts == Storage::num_verts);
+	assert(dst_ofs_idx == Storage::num_indices);
+	assert(dst_ofs_part == Storage::num_parts);
+
 	Storage::first_model_part[Model::Count] = dst_ofs_part;
+
+	/* upload GPU data */
+	Storage::gpu_addr.vertices = Gfx::UploadGeometry(Storage::vertices, Storage::num_verts,   Gfx::Arena::Permanent);
+	Storage::gpu_addr.uvs      = Gfx::UploadGeometry(Storage::uvs,      Storage::num_verts,   Gfx::Arena::Permanent);
+	Storage::gpu_addr.normals  = Gfx::UploadGeometry(Storage::normals,  Storage::num_verts,   Gfx::Arena::Permanent);
+	Storage::gpu_addr.indices  = Gfx::UploadGeometry(Storage::indices,  Storage::num_indices, Gfx::Arena::Permanent);
+}
+
+////////////////////////////////////////////////////////////////
+
+NOINLINE void Demo::Model::Draw(Model::ID id) {
+	Gfx::Mesh mesh;
+	memset(&mesh, 0, sizeof(mesh));
+
+	const u16
+		part_begin = Model::Storage::first_model_part[id],
+		part_end = Model::Storage::first_model_part[id + 1]
+	;
+
+	for (u16 part_index = part_begin; part_index < part_end; ++part_index) {
+		const Model::Part& part = Storage::parts[part_index];
+
+		u32 offset = part.ofs_verts;
+		mesh.vertices[Attrib::Position	].SetData<vec3>(Storage::gpu_addr.vertices, offset);
+		mesh.vertices[Attrib::TexCoord	].SetData<vec2>(Storage::gpu_addr.uvs,      offset);
+		mesh.vertices[Attrib::Normal	].SetData<vec3>(Storage::gpu_addr.normals,  offset);
+
+		mesh.index_addr			= Storage::gpu_addr.indices + part.ofs_idx * sizeof(u32);
+		mesh.num_vertices		= part.num_verts;
+		mesh.num_indices		= part.num_indices;
+
+		Gfx::Draw(mesh);
+	}
 }
