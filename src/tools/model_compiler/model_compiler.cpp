@@ -155,9 +155,7 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 		const u16
 			ChopBits = 4,
 			RoundingBias = 1 << (ChopBits - 1);
-		bool negative = value < 0;
-		value = (abs(value) + RoundingBias) >> ChopBits;
-		return negative ? -value : value;
+		return (value + RoundingBias) >> ChopBits;
 	};
 
 	auto quantize_uv = [](float value) {
