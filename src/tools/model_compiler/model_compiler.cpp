@@ -59,8 +59,8 @@ void SortVertices(MD3::Header& model, const Options& options) {
 
 	MD3::Surface* surf = model.GetFirstSurface();
 	for (u32 i = 0; i < model.num_surfaces; ++i, surf = surf->GetNext()) {
-		i16 mins[2] = {0x7fff, 0x7fff};
-		i16 maxs[2] = {0x8000, 0x8000};
+		vec2 mins = FLT_MAX;
+		vec2 maxs = -FLT_MAX;
 
 		auto* verts = surf->GetVerts();
 		auto* uvs = surf->GetUVs();
@@ -90,7 +90,7 @@ void SortVertices(MD3::Header& model, const Options& options) {
 			morton[j] = Interleave2(x, y);
 		}
 
-		std::sort(new_to_old.begin(), new_to_old.end(), [&] (u32 a, u32 b) {
+		std::stable_sort(new_to_old.begin(), new_to_old.end(), [&] (u32 a, u32 b) {
 			return morton[a] < morton[b];
 		});
 
@@ -180,6 +180,15 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 		const MD3::UV*			uvs		= surf->GetUVs();
 
 		output_parts.push_back({0, surf->num_verts, surf->num_tris * 3});
+
+		u16 prev[5];
+		memset(&prev, 0, sizeof(prev));
+
+		auto delta_encode = [] (u16 current, u16& prev) {
+			i16 delta = current - prev;
+			prev = current;
+			return EncodeSignMagnitude(delta);
+		};
 
 		for (u16 i = 0; i < surf->num_verts; ++i) {
 			output_vertices.push_back(EncodeSignMagnitude(quantize_pos(verts[i].pos[0])));
@@ -287,7 +296,7 @@ int main() {
 			continue;
 		}
 
-		SortVertices(model, options);
+		//SortVertices(model, options);
 		SortIndices(model, options);
 		//ExportObj(model, (std::string("d:\\temp\\") + std::string(ExtractFileName({path})) + ".obj").c_str());
 		CompileModel(model, options, path, out);

@@ -894,3 +894,5 @@
 45114,computenormals function + per-part init
 49804,all model parts
 49815,more consistent vertex snapping
+50384,fixed vertex sorting
+49587,disabled vertex sorting
