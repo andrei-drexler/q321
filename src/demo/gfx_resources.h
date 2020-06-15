@@ -161,6 +161,23 @@ namespace Demo {
 		Gfx::SaveTGA(PP_STRINGIZE(SAVE_TEXTURE) ".tga", Demo::Texture::SAVE_TEXTURE);
 #endif
 	}
+
+	NOINLINE void ComputeNormals(const vec3* positions, const u32* indices, u32 num_verts, u32 num_indices, vec3* normals) {
+		MemSet(normals, 0, num_verts);
+
+		for (u32 i = 0; i < num_indices; i += 3, indices += 3) {
+			constexpr u8 Next[] = {1, 2, 0, 1};
+			for (u8 j = 0; j < 3; ++j) {
+				u32 i0 = indices[j];
+				u32 i1 = indices[Next[j]];
+				u32 i2 = indices[Next[j + 1]];
+				normals[i0] += cross(positions[i1] - positions[i0], positions[i2] - positions[i1]);
+			}
+		}
+
+		for (u32 i = 0; i < num_verts; ++i)
+			safe_normalize(normals[i]);
+	}
 }
 
 ////////////////////////////////////////////////////////////////

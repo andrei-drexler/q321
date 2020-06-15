@@ -891,3 +891,4 @@
 44352,delta-encoded model indices
 44892,model loading + flipped model faces
 45162,basic model rendering
+45114,computenormals function + per-part init

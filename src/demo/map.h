@@ -657,25 +657,12 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 ////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Map::Details::ComputeNormals() {
-	MemSet(&normals);
-
 	for (u8 material = 0; material < Demo::Material::Count; ++material) {
 		vec3* pos = positions + mat_vertex_offset[material];
 		vec3* nor = normals + mat_vertex_offset[material];
 		u32* idx = indices + mat_index_offset[material];
 
-		for (u32 i = 0; i < num_mat_indices[material]; i += 3, idx += 3) {
-			constexpr u8 Next[] = {1, 2, 0, 1};
-			for (u8 j = 0; j < 3; ++j) {
-				u32 i0 = idx[j];
-				u32 i1 = idx[Next[j]];
-				u32 i2 = idx[Next[j + 1]];
-				nor[i0] += cross(pos[i1] - pos[i0], pos[i2] - pos[i1]);
-			}
-		}
-
-		for (u32 i = 0; i < num_mat_verts[material]; ++i)
-			safe_normalize(nor[i]);
+		Demo::ComputeNormals(pos, idx, num_mat_verts[material], num_mat_indices[material], nor);
 	}
 }
 

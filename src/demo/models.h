@@ -107,45 +107,11 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 	for (u16 model_index = 0; model_index < Model::Count; ++model_index) {
 		const PackedModel& packed = models[model_index];
 
+		const u16* src_pos = packed.verts;
+		const u16* src_idx = packed.indices;
 		vec3* pos = Storage::vertices + dst_ofs_verts;
 		vec3* nor = Storage::normals + dst_ofs_verts;
-		vec2* uv = Storage::uvs + dst_ofs_verts;
-
-		/* decode vertices */
-		for (u16 vertex_index = 0; vertex_index < packed.num_verts; ++vertex_index) {
-			const u16* src_pos = packed.verts + vertex_index;
-			float unpack[5];
-
-			// separate XYZST streams
-			for (u16 stream_index = 0; stream_index < 5; ++stream_index, src_pos += packed.num_verts) {
-				float div = (stream_index > 2) ? 128.f : 4.f;
-				unpack[stream_index] = float(DecodeSignMagnitude(*src_pos)) / div;
-			}
-
-			MemCopy(pos + vertex_index, unpack, 3 * sizeof(float));
-			MemCopy(uv + vertex_index, unpack + 3, 2 * sizeof(float));
-		}
-
 		u32* idx = Storage::indices + dst_ofs_idx;
-
-		/* decode indices */
-		for (u16 i = 0, index = 0; i < packed.num_indices; ++i) {
-			index += DecodeSignMagnitude(packed.indices[i]);
-			idx[i] = index;
-		}
-		
-		/* compute normals */
-		for (u32 i = 0; i < packed.num_indices; i += 3, idx += 3) {
-			constexpr u8 Next[] = {1, 2, 0, 1};
-			for (u8 j = 0; j < 3; ++j) {
-				u32 i0 = idx[j];
-				u32 i1 = idx[Next[j]];
-				u32 i2 = idx[Next[j + 1]];
-				nor[i0] += cross(pos[i1] - pos[i0], pos[i2] - pos[i1]);
-			}
-		}
-		for (u32 i = 0; i < packed.num_indices; ++i)
-			safe_normalize(nor[i]);
 
 		/* model -> part association */
 		Storage::first_model_part[model_index] = dst_ofs_part;
@@ -160,8 +126,28 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			dst_part.ofs_verts = dst_ofs_verts;
 			dst_part.ofs_idx = dst_ofs_idx;
 
-			dst_ofs_verts += src_part.num_verts;
-			dst_ofs_idx += src_part.num_indices;
+			/* decode vertices */
+			for (u32 dst_ofs_verts_end = dst_ofs_verts + src_part.num_verts; dst_ofs_verts < dst_ofs_verts_end; ++dst_ofs_verts, ++src_pos) {
+				// separate XYZST streams
+				float unpack[5];
+				const u16* src = src_pos;
+				for (u16 stream_index = 0; stream_index < 5; ++stream_index, src += packed.num_verts) {
+					float div = (stream_index > 2) ? 128.f : 4.f;
+					unpack[stream_index] = float(DecodeSignMagnitude(*src)) / div;
+				}
+
+				MemCopy(dst_ofs_verts + Storage::vertices, unpack, 3 * sizeof(float));
+				MemCopy(dst_ofs_verts + Storage::uvs, unpack + 3, 2 * sizeof(float));
+			}
+
+			/* decode indices */
+			u16 index = 0;
+			for (u32 dst_ofs_idx_end = dst_ofs_idx + src_part.num_indices; dst_ofs_idx < dst_ofs_idx_end; ++dst_ofs_idx, ++src_idx) {
+				index += DecodeSignMagnitude(*src_idx);
+				Storage::indices[dst_ofs_idx] = index;
+			}
+		
+			Demo::ComputeNormals(pos, idx, src_part.num_verts, src_part.num_indices, nor);
 		}
 	}
 
