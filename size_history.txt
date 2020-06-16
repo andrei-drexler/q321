@@ -898,3 +898,4 @@
 49587,disabled vertex sorting
 48640,tom forsyth vertex cache optimization
 48131,tweaked last triangle score
+47717,rotate tri indices

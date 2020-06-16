@@ -451,6 +451,17 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 			index = new_index;
 		}
 
+		/* rotate triangle indices so that the lowest index comes first */
+		for (u16 i = 0; i < num_indices; i += 3) {
+			u32* idx = flipped_indices.data() + i;
+			u16 min_pos = 0;
+			if (idx[1] < idx[0])
+				min_pos = 1;
+			if (idx[2] < idx[min_pos])
+				min_pos = 2;
+			std::rotate(idx, idx + min_pos, idx + 3);
+		}
+
 		output_parts.push_back({0, num_vertices, num_indices});
 
 		/* sort vertices */
