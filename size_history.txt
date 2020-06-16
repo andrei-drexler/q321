@@ -899,3 +899,4 @@
 48640,tom forsyth vertex cache optimization
 48131,tweaked last triangle score
 47717,rotate tri indices
+47699,removed model index pre-sorting

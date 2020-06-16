@@ -50,93 +50,6 @@ bool ExportObj(const MD3::Header& model, const char* path) {
 
 ////////////////////////////////////////////////////////////////
 
-void SortVertices(MD3::Header& model, const Options& options) {
-	printf(INDENT "Sorting vertices\n");
-
-	std::vector<u32> morton, new_to_old, old_to_new;
-	std::vector<MD3::Vertex> sorted_verts;
-	std::vector<MD3::UV> sorted_uvs;
-
-	MD3::Surface* surf = model.GetFirstSurface();
-	for (u32 i = 0; i < model.num_surfaces; ++i, surf = surf->GetNext()) {
-		vec2 mins = FLT_MAX;
-		vec2 maxs = -FLT_MAX;
-
-		auto* verts = surf->GetVerts();
-		auto* uvs = surf->GetUVs();
-		for (u16 j = 0; j < surf->num_verts; ++j) {
-			auto& v = uvs[j];
-			for (u16 k = 0; k < 2; ++k) {
-				Math::assign_min(mins[k], v[k]);
-				Math::assign_max(maxs[k], v[k]);
-			}
-		}
-
-		for (u16 j = 0; j < 2; ++j)
-			maxs[j] -= mins[j];
-
-		morton.resize(surf->num_verts);
-		new_to_old.resize(surf->num_verts);
-		old_to_new.resize(surf->num_verts);
-		sorted_verts.resize(surf->num_verts);
-		sorted_uvs.resize(surf->num_verts);
-		for (u16 j = 0; j < surf->num_verts; ++j)
-			new_to_old[j] = j;
-		
-		for (u16 j = 0; j < surf->num_verts; ++j) {
-			auto& v = uvs[j];
-			i32 x = std::clamp(i32((v[0] - mins[0]) * 65535.f / maxs[0] + 0.5f), 0, 65535);
-			i32 y = std::clamp(i32((v[1] - mins[1]) * 65535.f / maxs[1] + 0.5f), 0, 65535);
-			morton[j] = Interleave2(x, y);
-		}
-
-		std::stable_sort(new_to_old.begin(), new_to_old.end(), [&] (u32 a, u32 b) {
-			return morton[a] < morton[b];
-		});
-
-		for (u16 j = 0; j < surf->num_verts; ++j) {
-			auto old_vert = new_to_old[j];
-			sorted_verts[j] = verts[old_vert];
-			sorted_uvs[j] = uvs[old_vert];
-			old_to_new[old_vert] = j;
-		}
-		memcpy(verts, sorted_verts.data(), surf->num_verts * sizeof(verts[0]));
-		memcpy(uvs, sorted_uvs.data(), surf->num_verts * sizeof(uvs[0]));
-
-		auto* tris = surf->GetTris();
-		for (u16 j = 0; j < surf->num_tris; ++j) {
-			tris[j].indices[0] = old_to_new[tris[j].indices[0]];
-			tris[j].indices[1] = old_to_new[tris[j].indices[1]];
-			tris[j].indices[2] = old_to_new[tris[j].indices[2]];
-		}
-	}
-}
-
-void SortIndices(MD3::Header& model, const Options& options) {
-	printf(INDENT "Sorting indices\n");
-
-	MD3::Surface* surf = model.GetFirstSurface();
-	for (u32 i = 0; i < model.num_surfaces; ++i, surf = surf->GetNext()) {
-		MD3::Triangle* tris = surf->GetTris();
-
-		for (u16 j = 0; j < surf->num_tris; ++j) {
-			auto& idx = tris[j].indices;
-			u16 min_pos = 0;
-			if (idx[1] < idx[0])
-				min_pos = 1;
-			if (idx[2] < idx[min_pos])
-				min_pos = 2;
-			std::rotate(idx, idx + min_pos, idx + 3);
-		}
-
-		std::sort(tris, tris + surf->num_tris, [&] (const MD3::Triangle& a, const MD3::Triangle& b) {
-			return a.indices[0] < b.indices[0];
-		});
-	}
-}
-
-////////////////////////////////////////////////////////////////
-
 namespace Forsyth {
 	/*
 	Linear-Speed Vertex Cache Optimisation / Tom Forsyth
@@ -535,7 +448,7 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	print << "};"sv;
 	print.Flush();
 
-	printf(INDENT "Wrote %d parts, %d verts, %d tris\n",
+	printf(INDENT "%d parts, %d verts, %d tris\n",
 		output_parts.size(), output_vertices.size() / 5, output_indices.size() / 3
 	);
 }
@@ -584,8 +497,6 @@ int main() {
 			continue;
 		}
 
-		//SortVertices(model, options);
-		SortIndices(model, options);
 		//ExportObj(model, (std::string("d:\\temp\\") + std::string(ExtractFileName({path})) + ".obj").c_str());
 		CompileModel(model, options, path, out);
 
