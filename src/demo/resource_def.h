@@ -309,7 +309,7 @@
 	x(rocketl)\
 	x(shotgun)\
 
-#define DEMO_MODELS_USE_DELTA_ENCODING 1
+#define DEMO_MODELS_USE_DELTA_ENCODING 0
 
 ////////////////////////////////////////////////////////////////
 
