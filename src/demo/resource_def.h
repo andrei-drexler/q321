@@ -309,6 +309,8 @@
 	x(rocketl)\
 	x(shotgun)\
 
+#define DEMO_MODELS_USE_DELTA_ENCODING 1
+
 ////////////////////////////////////////////////////////////////
 
 #define DEMO_UNIFORMS(x)\
@@ -341,6 +343,7 @@ namespace Demo::Shader {
 
 namespace Demo::Model {
 	constexpr u32 Version = Hash(
+		PP_STRINGIZE(DEMO_MODELS_USE_DELTA_ENCODING)	"@"
 		#define PP_DEMO_HASH_MODEL_NAME(name, ...)		#name "*"
 		DEMO_SHADERS(PP_DEMO_HASH_MODEL_NAME)
 		#undef PP_DEMO_HASH_MODEL_NAME

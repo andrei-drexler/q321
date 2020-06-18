@@ -123,8 +123,10 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			dst_part.ofs_verts = dst_ofs_verts;
 			dst_part.ofs_idx = dst_ofs_idx;
 
+#if DEMO_MODELS_USE_DELTA_ENCODING
 			i16 accum[5];
 			MemSet(&accum);
+#endif
 
 			/* decode vertices */
 			for (u32 dst_ofs_verts_end = dst_ofs_verts + src_part.num_verts; dst_ofs_verts < dst_ofs_verts_end; ++dst_ofs_verts, ++src_pos) {
@@ -132,9 +134,14 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 				float unpack[5];
 				const u16* src = src_pos;
 				for (u16 stream_index = 0; stream_index < 5; ++stream_index, src += packed.num_verts) {
+					u16 raw_value = *src;
+#if DEMO_MODELS_USE_DELTA_ENCODING
 					float div = (stream_index > 2) ? 128.f : 4.f;
-					accum[stream_index] += DecodeSignMagnitude(*src);
+					accum[stream_index] += DecodeSignMagnitude(raw_value);
 					unpack[stream_index] = float(accum[stream_index]) / div;
+#else
+					unpack[stream_index] = (stream_index < 3) ? DecodeSignMagnitude(raw_value) / 4.f : raw_value / 128.f;
+#endif // DEMO_MODELS_USE_DELTA_ENCODING
 				}
 
 				MemCopy(dst_ofs_verts + Storage::vertices, unpack, 3 * sizeof(float));

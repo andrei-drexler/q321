@@ -415,11 +415,19 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 		};
 
 		for (u16 i = 0; i < num_vertices; ++i) {
-			output_vertices.push_back(delta_encode(sorted_vertices[i].pos[0], accum[0]));
-			output_vertices.push_back(delta_encode(sorted_vertices[i].pos[1], accum[1]));
-			output_vertices.push_back(delta_encode(sorted_vertices[i].pos[2], accum[2]));
-			output_vertices.push_back(delta_encode(sorted_vertices[i].uv[0], accum[3]));
-			output_vertices.push_back(delta_encode(sorted_vertices[i].uv[1], accum[4]));
+			if (DEMO_MODELS_USE_DELTA_ENCODING) {
+				output_vertices.push_back(delta_encode(sorted_vertices[i].pos[0], accum[0]));
+				output_vertices.push_back(delta_encode(sorted_vertices[i].pos[1], accum[1]));
+				output_vertices.push_back(delta_encode(sorted_vertices[i].pos[2], accum[2]));
+				output_vertices.push_back(delta_encode(sorted_vertices[i].uv[0], accum[3]));
+				output_vertices.push_back(delta_encode(sorted_vertices[i].uv[1], accum[4]));
+			} else {
+				output_vertices.push_back(EncodeSignMagnitude(sorted_vertices[i].pos[0]));
+				output_vertices.push_back(EncodeSignMagnitude(sorted_vertices[i].pos[1]));
+				output_vertices.push_back(EncodeSignMagnitude(sorted_vertices[i].pos[2]));
+				output_vertices.push_back(sorted_vertices[i].uv[0]);
+				output_vertices.push_back(sorted_vertices[i].uv[1]);
+			}
 		}
 
 		/* write part indices, pairing triangles if possible */
