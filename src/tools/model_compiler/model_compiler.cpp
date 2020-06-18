@@ -289,6 +289,8 @@ namespace Forsyth {
 	}
 }
 
+////////////////////////////////////////////////////////////////
+
 void CompileModel(const MD3::Header& model, const Options& options, const std::string& path, FILE* out) {
 	string_view clean_path = path;
 	auto name = ExtractFileName({path});
@@ -411,12 +413,13 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 			output_vertices.push_back(delta_encode(sorted_vertices[i].uv[1], accum[4]));
 		}
 
+		/* write part indices */
+		u32 watermark = 0;
 		for (size_t i = 0; i < num_indices; ++i) {
-			i32 idx = flipped_indices[i];
-			assert(u32(idx) < u32(num_vertices));
-			if (i > 0)
-				idx -= flipped_indices[i - 1];
-			output_indices.push_back(EncodeSignMagnitude(idx));
+			u32 idx = flipped_indices[i];
+			assert(idx < num_vertices);
+			output_indices.push_back(watermark + 1 - idx);
+			watermark = std::max<u32>(watermark, idx);
 		}
 	}
 
@@ -510,7 +513,7 @@ int main() {
 		"////////////////////////////////////////////////////////////////\n"
 		"\n"
 		"static constexpr Demo::PackedModel cooked_models[] = {\n"
-		"\t#define PP_ADD_MODEL_ENTRY(name,...) {size(name::parts),size(name::vertices)/5,size(name::indices),name::parts,name::vertices,name::indices},\n"
+		"\t#define PP_ADD_MODEL_ENTRY(name,...) {size(name::parts),size(name::vertices)/5,name::parts,name::vertices,name::indices},\n"
 		"\tDEMO_MODELS(PP_ADD_MODEL_ENTRY)\n"
 		"\t#undef PP_ADD_MODEL_ENTRY\n"
 		"};\n"

@@ -901,3 +901,4 @@
 47717,rotate tri indices
 47699,removed model index pre-sorting
 47912,vertex delta encoding
+47643,watermark index encoding

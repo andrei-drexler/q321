@@ -10,7 +10,6 @@ namespace Demo {
 
 		u8				num_parts;
 		u16				num_verts;
-		u16				num_indices;
 
 		const Part*		parts;
 		const u16*		verts; // separate X/Y/Z/S/T streams
@@ -85,7 +84,8 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 	for (u16 model_index = 0; model_index < Model::Count; ++model_index) {
 		const PackedModel& packed = models[model_index];
 		Storage::num_verts += packed.num_verts;
-		Storage::num_indices += packed.num_indices;
+		for (u16 part_index = 0; part_index < packed.num_parts; ++part_index)
+			Storage::num_indices += packed.parts[part_index].num_indices;
 		Storage::num_parts += packed.num_parts;
 	}
 
@@ -142,12 +142,15 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			}
 
 			/* decode indices */
-			u16 index = 0;
+			u16 watermark = 0;
 			for (u32 dst_ofs_idx_end = dst_ofs_idx + src_part.num_indices; dst_ofs_idx < dst_ofs_idx_end; ++dst_ofs_idx, ++src_idx) {
-				index += DecodeSignMagnitude(*src_idx);
+				u16 index = watermark + 1 - *src_idx;
+				assign_max(watermark, index);
 				Storage::indices[dst_ofs_idx] = index;
 			}
-		
+
+			assert(dst_ofs_idx == dst_part.ofs_idx + dst_part.num_indices);
+
 			/* compute normals */
 			vec3* pos = Storage::vertices + dst_part.ofs_verts;
 			vec3* nor = Storage::normals + dst_part.ofs_verts;
