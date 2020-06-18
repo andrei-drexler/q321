@@ -123,6 +123,9 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			dst_part.ofs_verts = dst_ofs_verts;
 			dst_part.ofs_idx = dst_ofs_idx;
 
+			i16 accum[5];
+			MemSet(&accum);
+
 			/* decode vertices */
 			for (u32 dst_ofs_verts_end = dst_ofs_verts + src_part.num_verts; dst_ofs_verts < dst_ofs_verts_end; ++dst_ofs_verts, ++src_pos) {
 				// separate XYZST streams
@@ -130,7 +133,8 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 				const u16* src = src_pos;
 				for (u16 stream_index = 0; stream_index < 5; ++stream_index, src += packed.num_verts) {
 					float div = (stream_index > 2) ? 128.f : 4.f;
-					unpack[stream_index] = float(DecodeSignMagnitude(*src)) / div;
+					accum[stream_index] += DecodeSignMagnitude(*src);
+					unpack[stream_index] = float(accum[stream_index]) / div;
 				}
 
 				MemCopy(dst_ofs_verts + Storage::vertices, unpack, 3 * sizeof(float));

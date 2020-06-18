@@ -393,8 +393,9 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 			dst.uv[1] = quantize_uv(uvs[src][1]);
 		}
 
-		u16 prev[5];
-		memset(&prev, 0, sizeof(prev));
+		/* write part vertices */
+		u16 accum[5];
+		memset(&accum, 0, sizeof(accum));
 
 		auto delta_encode = [] (u16 current, u16& prev) {
 			i16 delta = current - prev;
@@ -403,11 +404,11 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 		};
 
 		for (u16 i = 0; i < num_vertices; ++i) {
-			output_vertices.push_back(EncodeSignMagnitude(sorted_vertices[i].pos[0]));
-			output_vertices.push_back(EncodeSignMagnitude(sorted_vertices[i].pos[1]));
-			output_vertices.push_back(EncodeSignMagnitude(sorted_vertices[i].pos[2]));
-			output_vertices.push_back(sorted_vertices[i].uv[0]);
-			output_vertices.push_back(sorted_vertices[i].uv[1]);
+			output_vertices.push_back(delta_encode(sorted_vertices[i].pos[0], accum[0]));
+			output_vertices.push_back(delta_encode(sorted_vertices[i].pos[1], accum[1]));
+			output_vertices.push_back(delta_encode(sorted_vertices[i].pos[2], accum[2]));
+			output_vertices.push_back(delta_encode(sorted_vertices[i].uv[0], accum[3]));
+			output_vertices.push_back(delta_encode(sorted_vertices[i].uv[1], accum[4]));
 		}
 
 		for (size_t i = 0; i < num_indices; ++i) {

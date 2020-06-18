@@ -900,3 +900,4 @@
 48131,tweaked last triangle score
 47717,rotate tri indices
 47699,removed model index pre-sorting
+47912,vertex delta encoding
