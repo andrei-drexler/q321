@@ -291,6 +291,15 @@ namespace Forsyth {
 
 ////////////////////////////////////////////////////////////////
 
+int FindEdge(const u32* indices, u32 a, u32 b) {
+	for (int i = 0; i < 3; ++i)
+		if (indices[i] == a && indices[(i + 1) % 3] == b)
+			return i;
+	return -1;
+}
+
+////////////////////////////////////////////////////////////////
+
 void CompileModel(const MD3::Header& model, const Options& options, const std::string& path, FILE* out) {
 	string_view clean_path = path;
 	auto name = ExtractFileName({path});
@@ -413,13 +422,70 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 			output_vertices.push_back(delta_encode(sorted_vertices[i].uv[1], accum[4]));
 		}
 
-		/* write part indices */
+		/* write part indices, pairing triangles if possible */
 		u32 watermark = 0;
-		for (size_t i = 0; i < num_indices; ++i) {
-			u32 idx = flipped_indices[i];
-			assert(idx < num_vertices);
-			output_indices.push_back(watermark + 1 - idx);
-			watermark = std::max<u32>(watermark, idx);
+		for (size_t i = 0; i < num_indices; i += 3) {
+			const u32* tri = flipped_indices.data() + i;
+			const u32* next = tri + 3;
+
+			int edge_tri = -1; // edge starting position in current triangle [0..2] or -1
+			int edge_next = -1; // (mirrored) edge starting position in next triangle [0..2] or -1
+			if (i + 5 < num_indices) { // we have at least 2 triangles left
+				for (size_t j = 0; j < 3; ++j) {
+					u32 v0 = tri[j];
+					u32 v1 = tri[(j + 1) % 3];
+					edge_next = FindEdge(next, v1, v0);
+					if (edge_next != -1) {
+						edge_tri = j;
+						break;
+					}
+				}
+			}
+
+			u32 buffer[4];
+			u32 num_entries = 0;
+
+			if (edge_next != -1) { // sharing an edge with the next triangle?
+				u32 edge_v0 = tri[edge_tri];
+				u32 edge_v1 = tri[(edge_tri + 1) % 3];
+
+				// For paired triangles, the first 2 indices represent the shared edge.
+				// Note: first edge index *MUST* be lower than the second, this is how
+				// the decoder distinguishes paired triangles from single ones.
+
+				if (edge_v0 < edge_v1) {
+					// already in the right order
+					buffer[0] = edge_v0;
+					buffer[1] = edge_v1;
+					buffer[2] = tri[(edge_tri + 2) % 3];
+					buffer[3] = next[(edge_next + 2) % 3];
+				} else {
+					// If the indices are in the wrong order in the first triangle,
+					// then they must be in the right order in the second triangle,
+					// so we write the second triangle first.
+					// Not: this affects the max watermark delta.
+					buffer[0] = edge_v1;
+					buffer[1] = edge_v0;
+					buffer[2] = next[(edge_next + 2) % 3];
+					buffer[3] = tri[(edge_tri + 2) % 3];
+				}
+				i += 3;
+				num_entries = 4;
+				assert(buffer[0] < buffer[1]);
+			} else {
+				buffer[0] = tri[2];
+				buffer[1] = tri[0];
+				buffer[2] = tri[1];
+				num_entries = 3;
+				assert(buffer[0] > buffer[1]);
+			}
+
+			for (u32 j = 0; j < num_entries; ++j) {
+				u32 idx = buffer[j];
+				assert(idx < num_vertices);
+				output_indices.push_back(watermark + 3 - idx);
+				watermark = std::max<u32>(watermark, idx);
+			}
 		}
 	}
 

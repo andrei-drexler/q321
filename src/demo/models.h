@@ -143,10 +143,23 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 
 			/* decode indices */
 			u16 watermark = 0;
-			for (u32 dst_ofs_idx_end = dst_ofs_idx + src_part.num_indices; dst_ofs_idx < dst_ofs_idx_end; ++dst_ofs_idx, ++src_idx) {
-				u16 index = watermark + 1 - *src_idx;
+			auto read_next_index = [&] {
+				u16 index = watermark + 3 - *src_idx++;
 				assign_max(watermark, index);
-				Storage::indices[dst_ofs_idx] = index;
+				return index;
+			};
+
+			for (u32 dst_ofs_idx_end = dst_ofs_idx + src_part.num_indices; dst_ofs_idx < dst_ofs_idx_end; /**/) {
+				for (u32 i = 0; i < 3; ++i)
+					Storage::indices[dst_ofs_idx++] = read_next_index();
+
+				/* decode paired triangle */
+				if (dst_ofs_idx + 2 < dst_ofs_idx_end && Storage::indices[dst_ofs_idx - 3] < Storage::indices[dst_ofs_idx - 2]) {
+					Storage::indices[dst_ofs_idx + 0] = Storage::indices[dst_ofs_idx - 2];
+					Storage::indices[dst_ofs_idx + 1] = Storage::indices[dst_ofs_idx - 3];
+					Storage::indices[dst_ofs_idx + 2] = read_next_index();
+					dst_ofs_idx += 3;
+				}
 			}
 
 			assert(dst_ofs_idx == dst_part.ofs_idx + dst_part.num_indices);
