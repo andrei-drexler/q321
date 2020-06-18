@@ -338,3 +338,11 @@ namespace Demo::Shader {
 		#undef PP_DEMO_HASH_SHADER_NAME
 	);
 }
+
+namespace Demo::Model {
+	constexpr u32 Version = Hash(
+		#define PP_DEMO_HASH_MODEL_NAME(name, ...)		#name "*"
+		DEMO_SHADERS(PP_DEMO_HASH_MODEL_NAME)
+		#undef PP_DEMO_HASH_MODEL_NAME
+	);
+}

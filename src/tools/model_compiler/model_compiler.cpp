@@ -540,11 +540,13 @@ int main() {
 		return false;
 	auto close_output = scope_exit { fclose(out); out = NULL; };
 
-	/* header */
+	/* header/version check */
 	fprintf(out,
 		"#pragma once\n"
 		"\n"
 		"// auto-generated, do not modify\n"
+		"static_assert(0x%08xU == Demo::Model::Version, \"Model definition mismatch, please recompile the model compiler & models\");\n",
+		Demo::Model::Version
 	);
 
 	std::vector<char> contents;

@@ -1,6 +1,7 @@
 #pragma once
 
 // auto-generated, do not modify
+static_assert(0x325726dbU == Demo::Model::Version, "Model definition mismatch, please recompile the model compiler & models");
 
 // demo/data/models/mega_cross.md3
 namespace mega_cross {
