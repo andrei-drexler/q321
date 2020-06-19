@@ -13,7 +13,7 @@ namespace Demo {
 
 		const Part*		parts;
 		const u16*		verts; // separate X/Y/Z/S/T streams
-		const u16*		indices;
+		const u8*		indices; // varint encoded
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 		const PackedModel& packed = models[model_index];
 
 		const u16* src_pos = packed.verts;
-		const u16* src_idx = packed.indices;
+		const u8* src_idx = packed.indices;
 
 		/* model -> part association */
 		Storage::first_model_part[model_index] = dst_ofs_part;
@@ -130,7 +130,7 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 
 			/* decode vertices */
 			for (u32 dst_ofs_verts_end = dst_ofs_verts + src_part.num_verts; dst_ofs_verts < dst_ofs_verts_end; ++dst_ofs_verts, ++src_pos) {
-				// separate XYZST streams
+				/* separate XYZST streams */
 				float unpack[5];
 				const u16* src = src_pos;
 				for (u16 stream_index = 0; stream_index < 5; ++stream_index, src += packed.num_verts) {
@@ -151,7 +151,18 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			/* decode indices */
 			u16 watermark = 0;
 			auto read_next_index = [&] {
-				u16 index = watermark + 3 - *src_idx++;
+				/* varint decoding */
+				u16 value = 0;
+				u8 shift = 0;
+				u8 fragment;
+				do {
+					fragment = *src_idx++;
+					value |= (fragment & 127) << shift;
+					shift += 7;
+				} while (fragment >= 128);
+
+				/* watermark delta decoding */
+				u16 index = watermark + 3 - value;
 				assign_max(watermark, index);
 				return index;
 			};
@@ -168,8 +179,6 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 					dst_ofs_idx += 3;
 				}
 			}
-
-			assert(dst_ofs_idx == dst_part.ofs_idx + dst_part.num_indices);
 
 			/* compute normals */
 			vec3* pos = Storage::vertices + dst_part.ofs_verts;

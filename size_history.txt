@@ -904,3 +904,4 @@
 47643,watermark index encoding
 47485,triangle pairing
 47315,disabled delta encoding
+47111,varint indices

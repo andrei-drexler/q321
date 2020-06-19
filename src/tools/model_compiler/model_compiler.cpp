@@ -506,12 +506,19 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	print << "};"sv;
 	print.Flush();
 
-	print << "const u16 indices[] = {"sv;
-	for (auto v : output_indices)
-		print << i32(v) << ","sv;
+	print << "const u8 indices[] = {"sv;
+	for (auto v : output_indices) {
+		do {
+			/* varint encoding */
+			print << i32((v & 127u) | (u8(v >= 128) << 7)) << ","sv;
+			v >>= 7;
+		} while (v);
+	}
 	print << "};"sv;
 	print.Flush();
 
+	size_t num_vertices = 0;
+	size_t num_tris = 0;
 	print << "const Demo::PackedModel::Part parts[] = {"sv;
 	for (auto& part : output_parts) {
 		u8 shader = 0;
@@ -522,12 +529,14 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 			<<		(i32)part.num_indices << ","sv
 			<< "},"sv
 		;
+		num_vertices += part.num_vertices;
+		num_tris += part.num_indices / 3;
 	}
 	print << "};"sv;
 	print.Flush();
 
 	printf(INDENT "%d parts, %d verts, %d tris\n",
-		output_parts.size(), output_vertices.size() / 5, output_indices.size() / 3
+		output_parts.size(), num_vertices, num_tris
 	);
 }
 
