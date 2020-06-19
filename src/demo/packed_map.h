@@ -22,7 +22,7 @@ struct PackedMap {
 	const i16*			world_bounds;
 	const i16*			brush_bounds;
 	const i32*			plane_data;
-	const u16*			nonaxial_counts;
+	const u8*			nonaxial_counts;
 	const u16*			plane_materials;
 	const float*		uv_data;
 	const u8*			plane_uvs;
@@ -64,7 +64,7 @@ struct PackedMap {
 		const i16	(&brush_bounds)		[NumBrushBoundEntries],
 		u16								num_unaligned_planes,
 		const i32	(&plane_data)		[NumPlaneEntries],
-		const u16	(&nonaxial_counts)	[NumNonaxialEntries],
+		const u8	(&nonaxial_counts)	[NumNonaxialEntries],
 		const u8	(&brush_asymmetry)	[NumAsymmetryEntries],
 		const u16	(&plane_materials)	[NumMaterialEntries],
 		const float (&uv_data)			[NumUVEntries],

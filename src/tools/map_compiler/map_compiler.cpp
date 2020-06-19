@@ -1116,7 +1116,7 @@ void WriteUnalignedPlanes
 	print << "};"sv;
 	print.Flush();
 	
-	print << "\nconst u16 "sv << count_array_name << "[] = {"sv;
+	print << "\nconst u8 "sv << count_array_name << "[] = {"sv;
 	for (auto count : nonaxial_counts)
 		print << count << ","sv;
 	print << "};"sv;
