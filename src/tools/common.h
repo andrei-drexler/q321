@@ -309,7 +309,7 @@ protected:
 
 ////////////////////////////////////////////////////////////////
 template <typename T>
-class array_view : range<T*>
+class array_view : public range<T*>
 ////////////////////////////////////////////////////////////////
 {
 	using super = range<T*>;
@@ -328,15 +328,20 @@ public:
 
 ////////////////////////////////////////////////////////////////
 
-template<typename T>
-inline size_t hash_combine(size_t seed, const T& val) {
+template <typename T>
+inline size_t HashValue(const T& val) {
+	return std::hash<T>{}(val);
+}
+
+template <typename T>
+inline size_t HashCombine(size_t seed, const T& val) {
 	return seed ^ (std::hash<T>{}(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
 }
 
 struct PairHasher {
 	template <typename A, typename B>
 	inline size_t operator()(const std::pair<A, B>& p) const {
-		return hash_combine(std::hash<A>{}(p.first), p.second);
+		return HashCombine(std::hash<A>{}(p.first), p.second);
 	}
 };
 
