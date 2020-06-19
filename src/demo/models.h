@@ -12,7 +12,8 @@ namespace Demo {
 		u16				num_verts;
 
 		const Part*		parts;
-		const u16*		verts; // separate X/Y/Z/S/T streams
+		const u8*		verts; // separate X/Y/Z/S/T streams
+		const u16*		stream_lengths;
 		const u8*		indices; // varint encoded
 	};
 
@@ -77,7 +78,7 @@ namespace Demo {
 // Implementation //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE u32 ReadVarint(const u8*& ptr) {
+NOINLINE u32 ReadVarint(const u8*& ptr) {
 	u32 result = 0;
 
 	u8 shift = 0;
@@ -122,8 +123,13 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 	for (u16 model_index = 0; model_index < Model::Count; ++model_index) {
 		const PackedModel& packed = models[model_index];
 
-		const u16* src_pos = packed.verts;
 		const u8* src_idx = packed.indices;
+		const u8* src_pos[5];
+		const u8 *stream = packed.verts;
+		for (u32 i = 0; i < 5; ++i) {
+			src_pos[i] = stream;
+			stream += packed.stream_lengths[i];
+		}
 
 		/* model -> part association */
 		Storage::first_model_part[model_index] = dst_ofs_part;
@@ -144,12 +150,11 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 #endif
 
 			/* decode vertices */
-			for (u32 dst_ofs_verts_end = dst_ofs_verts + src_part.num_verts; dst_ofs_verts < dst_ofs_verts_end; ++dst_ofs_verts, ++src_pos) {
+			for (u32 dst_ofs_verts_end = dst_ofs_verts + src_part.num_verts; dst_ofs_verts < dst_ofs_verts_end; ++dst_ofs_verts) {
 				/* separate XYZST streams */
 				float unpack[5];
-				const u16* src = src_pos;
-				for (u16 stream_index = 0; stream_index < 5; ++stream_index, src += packed.num_verts) {
-					u16 raw_value = *src;
+				for (u16 stream_index = 0; stream_index < 5; ++stream_index) {
+					u16 raw_value = ReadVarint(src_pos[stream_index]);
 #if DEMO_MODELS_USE_DELTA_ENCODING
 					float div = (stream_index > 2) ? 128.f : 4.f;
 					accum[stream_index] += DecodeSignMagnitude(raw_value);

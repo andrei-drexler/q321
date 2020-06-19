@@ -496,12 +496,26 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 		}
 	}
 
-	print << "const u16 vertices[] = {"sv;
+	size_t vertex_stream_lengths[5];
+	std::vector<u8> output_varint_vertices;
+	output_varint_vertices.reserve(output_vertices.size() * 2);
+	size_t prev_size = 0;
 	for (u8 pass = 0; pass < 5; ++pass) {
-		size_t step = output_vertices.size() / 5;
 		for (size_t i = pass; i < output_vertices.size(); i += 5)
-			print << i32(output_vertices[i]) << ","sv;
+			WriteVarint(output_varint_vertices, output_vertices[i]);
+		vertex_stream_lengths[pass] = output_varint_vertices.size() - prev_size;
+		prev_size = output_varint_vertices.size();
 	}
+
+	print << "const u8 vertices[] = {"sv;
+	for (auto v : output_varint_vertices)
+		print << i32(v) << ","sv;
+	print << "};"sv;
+	print.Flush();
+
+	print << "const u16 stream_lengths[] = {"sv;
+	for (auto v : vertex_stream_lengths)
+		print << i32(v) << ","sv;
 	print << "};"sv;
 	print.Flush();
 
@@ -592,7 +606,7 @@ int main() {
 		"////////////////////////////////////////////////////////////////\n"
 		"\n"
 		"static constexpr Demo::PackedModel cooked_models[] = {\n"
-		"\t#define PP_ADD_MODEL_ENTRY(name,...) {size(name::parts),size(name::vertices)/5,name::parts,name::vertices,name::indices},\n"
+		"\t#define PP_ADD_MODEL_ENTRY(name,...) {size(name::parts),size(name::vertices)/5,name::parts,name::vertices,name::stream_lengths,name::indices},\n"
 		"\tDEMO_MODELS(PP_ADD_MODEL_ENTRY)\n"
 		"\t#undef PP_ADD_MODEL_ENTRY\n"
 		"};\n"
