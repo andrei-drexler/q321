@@ -1215,7 +1215,12 @@ void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options,
 			i32 index = shader_props[plane.material].map_material;
 			if (index < 0)
 				index = 0;
-			index = (index << 2) | dominant_axis(plane.xyz);
+			index <<= 2;
+			// Note: we store the dominant axis in the lowest 2 bits.
+			// For the first 6 planes of a brush, however, the axis
+			// can be deduced without ambiguity.
+			if ((&plane - &brush.planes[0]) >= 6)
+				index |= dominant_axis(plane.xyz);
 			print << index << ","sv;
 		}
 	}

@@ -484,7 +484,10 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				}
 
 				auto uv = packed.GetPlaneUV(src_plane_index);
-				auto material = packed.plane_materials[src_plane_index];
+				auto material = packed.plane_materials[src_plane_index]; // bits 0..1 = dominant axis; bits 2+ = material
+				// optimization: for the first 6 planes of a brush the dominant axis is not filled in by the map compiler
+				if (i < 6)
+					material |= i >> 1;
 				++src_plane_index;
 
 				brushes.plane_mat_uv_axis[brush_start + i] = material;
