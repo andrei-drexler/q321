@@ -77,6 +77,21 @@ namespace Demo {
 // Implementation //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
+FORCEINLINE u32 ReadVarint(const u8*& ptr) {
+	u32 result = 0;
+
+	u8 shift = 0;
+	u8 fragment;
+	do {
+		fragment = *ptr++;
+		/* varint decoding */
+		result |= (fragment & 127) << shift;
+		shift += 7;
+	} while (fragment >= 128);
+
+	return result;
+}
+
 FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 	assert(!Storage::parts);
 
@@ -151,18 +166,8 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			/* decode indices */
 			u16 watermark = 0;
 			auto read_next_index = [&] {
-				/* varint decoding */
-				u16 value = 0;
-				u8 shift = 0;
-				u8 fragment;
-				do {
-					fragment = *src_idx++;
-					value |= (fragment & 127) << shift;
-					shift += 7;
-				} while (fragment >= 128);
-
 				/* watermark delta decoding */
-				u16 index = watermark + 3 - value;
+				u16 index = watermark + 3 - ReadVarint(src_idx);
 				assign_max(watermark, index);
 				return index;
 			};
