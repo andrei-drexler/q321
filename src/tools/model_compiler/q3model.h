@@ -180,4 +180,78 @@ namespace MD3 {
 		Header&			GetHeader() { return *reinterpret_cast<Header*>(contents.data()); }
 		const Header&	GetHeader() const { return *reinterpret_cast<const Header*>(contents.data()); }
 	};
+
+	////////////////////////////////////////////////////////////////
+	// Helpers /////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	namespace Details {
+		struct SurfaceRangeEnd { };
+
+		struct ConstSurfaceIterator {
+			const Surface*			surface;
+			u32						remaining;
+
+			const Surface&			operator*() const { return *surface; }
+			const Surface*			operator->() const { return surface; }
+
+			ConstSurfaceIterator&	operator++() { surface = surface->GetNext(); --remaining; return *this; }
+			bool					operator!=(SurfaceRangeEnd) { return remaining; }
+		};
+
+		struct SurfaceIterator : ConstSurfaceIterator {
+			Surface*				operator->() { return const_cast<Surface*>(surface); }
+			Surface&				operator*() { return const_cast<Surface&>(*surface); }
+		};
+
+		struct ConstSurfaceList {
+			const Header*			header;
+
+			ConstSurfaceIterator	begin() { return {header->GetFirstSurface(), header->num_surfaces}; }
+			SurfaceRangeEnd			end() { return {}; }
+		};
+
+		struct SurfaceList {
+			Header*					header;
+
+			SurfaceIterator			begin() { return {header->GetFirstSurface(), header->num_surfaces}; }
+			SurfaceRangeEnd			end() { return {}; }
+		};
+
+		////////////////////////////////////////////////////////////////
+
+		struct PositionHasher {
+			inline size_t operator()(const MD3::Vertex& v) const {
+				size_t result = HashValue(v.pos[0]);
+				result = HashCombine(result, v.pos[1]);
+				result = HashCombine(result, v.pos[2]);
+				return result;
+			}
+		};
+
+		struct PositionEqualityComparator {
+			inline bool operator()(const MD3::Vertex& a, const MD3::Vertex& b) const {
+				return memcmp(a.pos, b.pos, sizeof(a.pos)) == 0;
+			}
+		};
+	} // namespace Details
+
+	////////////////////////////////////////////////////////////////
+
+	Details::SurfaceList			GetSurfaces(Header& header) { return {&header}; }
+	Details::ConstSurfaceList		GetSurfaces(const Header& header) { return {&header}; }
+
+	array_view<Vertex>				GetVertices(Surface& surface) { return {surface.GetVerts(), surface.num_verts}; }
+	array_view<const Vertex>		GetVertices(const Surface& surface) { return {surface.GetVerts(), surface.num_verts}; }
+
+	array_view<UV>					GetUVs(Surface& surface) { return {surface.GetUVs(), surface.num_verts}; }
+	array_view<const UV>			GetUVs(const Surface& surface) { return {surface.GetUVs(), surface.num_verts}; }
+
+	array_view<Triangle>			GetTriangles(Surface& surface) { return {surface.GetTris(), surface.num_tris}; }
+	array_view<const Triangle>		GetTriangles(const Surface& surface) { return {surface.GetTris(), surface.num_tris}; }
+
+	////////////////////////////////////////////////////////////////
+
+	template <typename Value>
+	using VertexPositionHashMap = std::unordered_map<Vertex, Value, Details::PositionHasher, Details::PositionEqualityComparator>;
 }
