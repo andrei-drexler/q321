@@ -4,7 +4,6 @@
 #include "../../demo/entity.h"
 #include "q3map.h"
 #include "../model_compiler/q3model.h"
-#include "../print_array.h"
 #include "export_obj.h"
 #include "export_map.h"
 #include "../rect_packer.h"

@@ -1,5 +1,4 @@
 #include "../common.h"
-#include "../print_array.h"
 #include "../../demo/resource_def.h"
 #include "q3model.h"
 
@@ -507,13 +506,8 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	print.Flush();
 
 	print << "const u8 indices[] = {"sv;
-	for (auto v : output_indices) {
-		do {
-			/* varint encoding */
-			print << i32((v & 127u) | (u8(v >= 128) << 7)) << ","sv;
-			v >>= 7;
-		} while (v);
-	}
+	for (auto v : output_indices)
+		WriteVarint(print, v);
 	print << "};"sv;
 	print.Flush();
 

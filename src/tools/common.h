@@ -26,6 +26,7 @@ using std::string_view;
 #include "../../engine/aabb.h"
 
 #include "parse.h"
+#include "print_array.h"
 
 ////////////////////////////////////////////////////////////////
 
@@ -326,3 +327,31 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////
+
+template<typename T>
+inline size_t hash_combine(size_t seed, const T& val) {
+	return seed ^ (std::hash<T>{}(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+}
+
+struct PairHasher {
+	template <typename A, typename B>
+	inline size_t operator()(const std::pair<A, B>& p) const {
+		return hash_combine(std::hash<A>{}(p.first), p.second);
+	}
+};
+
+////////////////////////////////////////////////////////////////
+
+void WriteVarint(ArrayPrinter& print, u32 v) {
+	do {
+		print << i32((v & 127u) | (u8(v >= 128) << 7)) << ","sv;
+		v >>= 7;
+	} while (v);
+}
+
+void WriteVarint(std::vector<u8>& data, u32 v) {
+	do {
+		data.push_back(i32((v & 127u) | (u8(v >= 128) << 7)));
+		v >>= 7;
+	} while (v);
+}
