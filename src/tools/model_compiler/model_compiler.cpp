@@ -49,6 +49,75 @@ bool ExportObj(const MD3::Header& model, const char* path) {
 
 ////////////////////////////////////////////////////////////////
 
+void AdaptiveQuantization(MD3::Header& model, float quality = 2.f) {
+	MD3::VertexPositionHashMap<u16> min_vertex_dist;
+
+	/* find per-vertex minimum edge distances */
+	for (MD3::Surface& surf : MD3::GetSurfaces(model)) {
+		MD3::Triangle* tris = surf.GetTris();
+		MD3::Vertex* verts = surf.GetVerts();
+
+		for (u16 i = 0; i < surf.num_verts; ++i) {
+			min_vertex_dist[verts[i]] = 0x7fff;
+		}
+
+		for (u16 i = 0; i < surf.num_tris; ++i) {
+			for (u8 j = 0; j < 3; ++j) {
+				u32 i0 = tris[i].indices[j];
+				u32 i1 = tris[i].indices[(j + 1) % 3];
+				MD3::Vertex& v0 = verts[i0];
+				MD3::Vertex& v1 = verts[i1];
+				u16& min_dist = min_vertex_dist[v0];
+				u16 edge_dist = 0;
+				for (u16 k = 0; k < 3; ++k)
+					edge_dist = std::max(edge_dist, (u16)abs(v1.pos[k] - v0.pos[k])); // l1 norm
+				min_dist = std::min(min_dist, edge_dist);
+			}
+		}
+	}
+
+	/* propagate min dist to neighbors */
+	for (MD3::Surface& surf : MD3::GetSurfaces(model)) {
+		for (MD3::Triangle& tri : MD3::GetTriangles(surf)) {
+			for (u8 j = 0; j < 3; ++j) {
+				u32 i0 = tri.indices[j];
+				u32 i1 = tri.indices[(j + 1) % 3];
+				MD3::Vertex& v0 = surf.GetVerts()[i0];
+				MD3::Vertex& v1 = surf.GetVerts()[i1];
+				u16& d0 = min_vertex_dist[v0];
+				u16& d1 = min_vertex_dist[v1];
+				d0 = std::min(d0, d1);
+			}
+		}
+	}
+
+	/* snap vertices */
+	for (MD3::Surface& surf : MD3::GetSurfaces(model)) {
+		for (MD3::Vertex& v : MD3::GetVertices(surf)) {
+			u16 min_dist = min_vertex_dist[v];
+			if (min_dist <= 0)
+				continue;
+			int bits = (int)std::floor(std::log2(min_dist) - quality);
+			if (bits <= 0)
+				continue;
+			u16 bias = 1 << (bits - 1);
+			u16 mask = (1 << bits) - 1;
+			for (auto& k : v.pos)
+				k = (k + bias) & ~mask;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////
+
+void StripUVs(MD3::Header& model) {
+	for (MD3::Surface& surf : MD3::GetSurfaces(model))
+		for (MD3::UV& uv : MD3::GetUVs(surf))
+			uv = 0.f;
+}
+
+////////////////////////////////////////////////////////////////
+
 namespace Forsyth {
 	/*
 	Linear-Speed Vertex Cache Optimisation / Tom Forsyth
@@ -594,6 +663,8 @@ int main() {
 			continue;
 		}
 
+		//AdaptiveQuantization(model);
+		//StripUVs(model);
 		//ExportObj(model, (std::string("d:\\temp\\") + std::string(ExtractFileName({path})) + ".obj").c_str());
 		CompileModel(model, options, path, out);
 
