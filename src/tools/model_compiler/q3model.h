@@ -250,6 +250,9 @@ namespace MD3 {
 	array_view<Triangle>			GetTriangles(Surface& surface) { return {surface.GetTris(), surface.num_tris}; }
 	array_view<const Triangle>		GetTriangles(const Surface& surface) { return {surface.GetTris(), surface.num_tris}; }
 
+	array_view<u32>					GetIndices(Surface& surface) { return {surface.GetIndices(), surface.num_tris * 3}; }
+	array_view<const u32>			GetIndices(const Surface& surface) { return {surface.GetIndices(), surface.num_tris * 3}; }
+
 	////////////////////////////////////////////////////////////////
 
 	template <typename Value>
