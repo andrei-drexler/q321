@@ -324,6 +324,9 @@ public:
 	{ }
 
 	constexpr array_view() = default;
+
+	constexpr T* data() { return super::begin(); }
+	constexpr const T* data() const { return super::begin(); }
 };
 
 ////////////////////////////////////////////////////////////////
