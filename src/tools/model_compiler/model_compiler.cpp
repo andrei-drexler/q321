@@ -158,26 +158,25 @@ void AdaptiveQuantization(MD3::Header& model, float quality = 2.f) {
 ////////////////////////////////////////////////////////////////
 
 void WeldVertices(MD3::Header& header) {
-	struct VertexRef {
+	struct VertexRefHasher {
 		MD3::Surface* surface;
-		size_t index;
 
-		bool operator==(const VertexRef& other) const {
-			const MD3::Vertex* v0 = surface->GetVerts() + index;
-			const MD3::Vertex* v1 = surface->GetVerts() + other.index;
-			const MD3::UV* uv0 = surface->GetUVs() + index;
-			const MD3::UV* uv1 = surface->GetUVs() + other.index;
+		/* equality comparison */
+		bool operator()(u32 i0, u32 i1) const {
+			const MD3::Vertex* v0 = surface->GetVerts() + i0;
+			const MD3::Vertex* v1 = surface->GetVerts() + i1;
+			const MD3::UV* uv0 = surface->GetUVs() + i0;
+			const MD3::UV* uv1 = surface->GetUVs() + i1;
 			return
 				0 == memcmp(v0,  v1,  sizeof(*v0)) &&
 				0 == memcmp(uv0, uv1, sizeof(*uv0))
 			;
 		}
-	};
 
-	struct VertexRefHasher {
-		size_t operator()(const VertexRef& ref) const {
-			const MD3::Vertex& v = ref.surface->GetVerts()[ref.index];
-			const MD3::UV& uv = ref.surface->GetUVs()[ref.index];
+		/* hashing */
+		size_t operator()(u32 index) const {
+			const MD3::Vertex& v = surface->GetVerts()[index];
+			const MD3::UV& uv = surface->GetUVs()[index];
 			size_t result = HashValue(v.pos[0]);
 			result = HashCombine(result, v.pos[1]);
 			result = HashCombine(result, v.pos[2]);
@@ -187,17 +186,19 @@ void WeldVertices(MD3::Header& header) {
 		}
 	};
 
-	std::unordered_map<VertexRef, u32, VertexRefHasher> hash_map;
+	using VertexHashMap = std::unordered_map<u32, u32, VertexRefHasher, VertexRefHasher>;
+
 	std::vector<u32> remap;
 
 	for (MD3::Surface& surf : MD3::GetSurfaces(header)) {
-		hash_map.clear();
-		hash_map.reserve(surf.num_verts);
+		/* initializate hasher and key_eq with surface pointer */
+		VertexHashMap hash_map(surf.num_verts * 2, {&surf}, {&surf});
+
 		remap.clear();
 		remap.resize(surf.num_verts);
 
 		for (u32 i = 0; i < surf.num_verts; ++i) {
-			u32& index = hash_map[{&surf, i}];
+			u32& index = hash_map[i];
 			if (index == 0)
 				index = i + 1;
 			remap[i] = index - 1;
