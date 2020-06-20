@@ -118,7 +118,7 @@ namespace MD3 {
 		String				name;
 		u32					flags;
 
-		i32					num_frames;
+		u32					num_frames;
 		u32					num_tags;
 		u32					num_surfaces;
 		u32					num_skins;
@@ -252,6 +252,12 @@ namespace MD3 {
 
 	array_view<u32>					GetIndices(Surface& surface) { return {surface.GetIndices(), surface.num_tris * 3}; }
 	array_view<const u32>			GetIndices(const Surface& surface) { return {surface.GetIndices(), surface.num_tris * 3}; }
+
+	array_view<Frame>				GetFrames(Header& header) { return {header.GetFrames(), header.num_frames}; }
+	array_view<const Frame>			GetFrames(const Header& header) { return {header.GetFrames(), header.num_frames}; }
+
+	array_view<Tag>					GetTags(Header& header) { return {header.GetTags(), header.num_tags}; }
+	array_view<const Tag>			GetTags(const Header& header) { return {header.GetTags(), header.num_tags}; }
 
 	////////////////////////////////////////////////////////////////
 
