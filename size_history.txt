@@ -911,3 +911,4 @@
 46955,varint model vertices
 47002,fixed model vertex counting
 44192,removed model uvs
+43266,vertex welding

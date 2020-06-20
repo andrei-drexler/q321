@@ -157,6 +157,59 @@ void AdaptiveQuantization(MD3::Header& model, float quality = 2.f) {
 
 ////////////////////////////////////////////////////////////////
 
+void WeldVertices(MD3::Header& header) {
+	struct VertexRef {
+		MD3::Surface* surface;
+		size_t index;
+
+		bool operator==(const VertexRef& other) const {
+			const MD3::Vertex* v0 = surface->GetVerts() + index;
+			const MD3::Vertex* v1 = surface->GetVerts() + other.index;
+			const MD3::UV* uv0 = surface->GetUVs() + index;
+			const MD3::UV* uv1 = surface->GetUVs() + other.index;
+			return
+				0 == memcmp(v0,  v1,  sizeof(*v0)) &&
+				0 == memcmp(uv0, uv1, sizeof(*uv0))
+			;
+		}
+	};
+
+	struct VertexRefHasher {
+		size_t operator()(const VertexRef& ref) const {
+			const MD3::Vertex& v = ref.surface->GetVerts()[ref.index];
+			const MD3::UV& uv = ref.surface->GetUVs()[ref.index];
+			size_t result = HashValue(v.pos[0]);
+			result = HashCombine(result, v.pos[1]);
+			result = HashCombine(result, v.pos[2]);
+			result = HashCombine(result, uv[0]);
+			result = HashCombine(result, uv[1]);
+			return result;
+		}
+	};
+
+	std::unordered_map<VertexRef, u32, VertexRefHasher> hash_map;
+	std::vector<u32> remap;
+
+	for (MD3::Surface& surf : MD3::GetSurfaces(header)) {
+		hash_map.clear();
+		hash_map.reserve(surf.num_verts);
+		remap.clear();
+		remap.resize(surf.num_verts);
+
+		for (u32 i = 0; i < surf.num_verts; ++i) {
+			u32& index = hash_map[{&surf, i}];
+			if (index == 0)
+				index = i + 1;
+			remap[i] = index - 1;
+		}
+
+		for (u32& i : MD3::GetIndices(surf))
+			i = remap[i];
+	}
+}
+
+////////////////////////////////////////////////////////////////
+
 void ClearUVs(MD3::Header& model) {
 	for (MD3::Surface& surf : MD3::GetSurfaces(model))
 		for (MD3::UV& uv : MD3::GetUVs(surf))
@@ -710,8 +763,9 @@ int main() {
 			continue;
 		}
 
-		//AdaptiveQuantization(model);
 		ClearUVs(model);
+		WeldVertices(model);
+		//AdaptiveQuantization(model);
 		//ExportObj(model, (std::string("d:\\temp\\") + std::string(ExtractFileName({path})) + ".obj").c_str());
 		CompileModel(model, options, path, out);
 
