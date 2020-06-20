@@ -13,32 +13,79 @@ struct Options {
 
 ////////////////////////////////////////////////////////////////
 
-bool ExportObj(const MD3::Header& model, const char* path) {
+bool ExportObj(const MD3::Header& model, const char* path, int frac_bits = 2) {
 	FILE* out = fopen(path, "w");
 	if (!out)
 		return false;
 	auto close_output = scope_exit { fclose(out); out = NULL; };
 
-	const i16 ChopBits = 4;
+	std::vector<vec3> normals;
+
+	const i16
+		ChopBits = std::max(MD3::Vertex::FracBits - frac_bits, 0),
+		RoundBias = ChopBits > 0 ? 1 << (ChopBits - 1) : 0,
+		RoundMask = (1 << ChopBits) - 1
+	;
+	const float VertexScale = 1.f / float(1 << ChopBits);
 
 	const MD3::Surface* surf = model.GetFirstSurface();
 	for (u32 i = 0, base = 1; i < model.num_surfaces; ++i, base += surf->num_verts, surf = surf->GetNext()) {
 		fprintf(out, "g surface_%d\n", i);
 
-		auto* verts = surf->GetVerts();
+		auto verts = MD3::GetVertices(*surf);
+		auto tris = MD3::GetTriangles(*surf);
+		auto uvs = MD3::GetUVs(*surf);
+
+		// Note: we don't store the original normals in the compiled exe,
+		// so we also recompute them here to replicate demo behavior.
+
+		normals.clear();
+		normals.resize(surf->num_verts, {0.f, 0.f, 0.f});
+
+		for (const MD3::Triangle& tri : tris) {
+			vec3 pos[3];
+			pos[0] = verts[tri.indices[0]].GetPosition();
+			pos[1] = verts[tri.indices[1]].GetPosition();
+			pos[2] = verts[tri.indices[2]].GetPosition();
+
+			vec3 delta[3];
+			delta[0] = pos[1] - pos[0];
+			delta[1] = pos[2] - pos[1];
+			delta[2] = pos[0] - pos[2];
+
+			for (u32 i = 0; i < 3; ++i)
+				normals[tri.indices[i]] += cross(delta[i], delta[(i+1) % 3]);
+		}
+
+		for (vec3& normal : normals)
+			safe_normalize(normal);
+
 		for (u32 j = 0; j < surf->num_verts; ++j) {
-			fprintf(out, "v %g %g %g\n",
-				 (verts[j].pos[0] >> ChopBits << ChopBits) / float(MD3::Vertex::Scale),
-				 (verts[j].pos[2] >> ChopBits << ChopBits) / float(MD3::Vertex::Scale),
-				-(verts[j].pos[1] >> ChopBits << ChopBits) / float(MD3::Vertex::Scale)
+			fprintf(out,
+				"v %g %g %g\n"
+				"vt %g %g\n"
+				"vn %g %g %g\n",
+				 ((verts[j].pos[0] + RoundBias) >> ChopBits << ChopBits) * VertexScale,
+				 ((verts[j].pos[2] + RoundBias) >> ChopBits << ChopBits) * VertexScale,
+				-((verts[j].pos[1] + RoundBias) >> ChopBits << ChopBits) * VertexScale,
+				uvs[j][0],
+				uvs[j][1],
+				-normals[j][0],
+				-normals[j][2],
+				 normals[j][1]
 			);
 		}
 
-		auto* tris = surf->GetTris();
 		for (u32 j = 0; j < surf->num_tris; ++j) {
-			fprintf(out, "f %d %d %d\n",
+			fprintf(out, "f %d/%d/%d %d/%d/%d %d/%d/%d\n",
+				tris[j].indices[0] + base,
+				tris[j].indices[0] + base,
 				tris[j].indices[0] + base,
 				tris[j].indices[2] + base,
+				tris[j].indices[2] + base,
+				tris[j].indices[2] + base,
+				tris[j].indices[1] + base,
+				tris[j].indices[1] + base,
 				tris[j].indices[1] + base
 			);
 		}
