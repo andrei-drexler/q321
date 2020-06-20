@@ -9,7 +9,6 @@ namespace Demo {
 		};
 
 		u8				num_parts;
-		u16				num_verts;
 
 		const Part*		parts;
 		const u8*		verts; // separate X/Y/Z/S/T streams
@@ -99,9 +98,10 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 	/* count resources */
 	for (u16 model_index = 0; model_index < Model::Count; ++model_index) {
 		const PackedModel& packed = models[model_index];
-		Storage::num_verts += packed.num_verts;
-		for (u16 part_index = 0; part_index < packed.num_parts; ++part_index)
+		for (u16 part_index = 0; part_index < packed.num_parts; ++part_index) {
 			Storage::num_indices += packed.parts[part_index].num_indices;
+			Storage::num_verts += packed.parts[part_index].num_verts;
+		}
 		Storage::num_parts += packed.num_parts;
 	}
 

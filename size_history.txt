@@ -909,3 +909,4 @@
 47081,implicit uv axis for axial planes
 47035,readvarint function
 46955,varint model vertices
+47002,fixed model vertex counting

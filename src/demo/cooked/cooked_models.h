@@ -447,7 +447,7 @@ const Demo::PackedModel::Part parts[] = {{0,6,24,},{0,618,1650,},};
 ////////////////////////////////////////////////////////////////
 
 static constexpr Demo::PackedModel cooked_models[] = {
-	#define PP_ADD_MODEL_ENTRY(name,...) {size(name::parts),size(name::vertices)/5,name::parts,name::vertices,name::stream_lengths,name::indices},
+	#define PP_ADD_MODEL_ENTRY(name,...) {size(name::parts),name::parts,name::vertices,name::stream_lengths,name::indices},
 	DEMO_MODELS(PP_ADD_MODEL_ENTRY)
 	#undef PP_ADD_MODEL_ENTRY
 };

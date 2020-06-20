@@ -677,7 +677,7 @@ int main() {
 		"////////////////////////////////////////////////////////////////\n"
 		"\n"
 		"static constexpr Demo::PackedModel cooked_models[] = {\n"
-		"\t#define PP_ADD_MODEL_ENTRY(name,...) {size(name::parts),size(name::vertices)/5,name::parts,name::vertices,name::stream_lengths,name::indices},\n"
+		"\t#define PP_ADD_MODEL_ENTRY(name,...) {size(name::parts),name::parts,name::vertices,name::stream_lengths,name::indices},\n"
 		"\tDEMO_MODELS(PP_ADD_MODEL_ENTRY)\n"
 		"\t#undef PP_ADD_MODEL_ENTRY\n"
 		"};\n"
