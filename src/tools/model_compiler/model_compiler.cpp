@@ -157,7 +157,7 @@ void AdaptiveQuantization(MD3::Header& model, float quality = 2.f) {
 
 ////////////////////////////////////////////////////////////////
 
-void StripUVs(MD3::Header& model) {
+void ClearUVs(MD3::Header& model) {
 	for (MD3::Surface& surf : MD3::GetSurfaces(model))
 		for (MD3::UV& uv : MD3::GetUVs(surf))
 			uv = 0.f;
@@ -711,7 +711,7 @@ int main() {
 		}
 
 		//AdaptiveQuantization(model);
-		//StripUVs(model);
+		ClearUVs(model);
 		//ExportObj(model, (std::string("d:\\temp\\") + std::string(ExtractFileName({path})) + ".obj").c_str());
 		CompileModel(model, options, path, out);
 
