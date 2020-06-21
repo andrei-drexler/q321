@@ -8,7 +8,7 @@
 	x(targetname,		i16)		\
 	x(angle,			i16)		\
 	/*x(noise,			i16[3])*/	\
-	/*x(model,			i16[3])*/	\
+	x(model,			i16)		\
 	x(_color,			i16)		\
 	x(wait,				i16)		\
 	x(random,			i16)		\

@@ -887,6 +887,22 @@ static constexpr FieldDescriptor EntityFields[] = {
 	#undef PP_DEMO_FIELD_DESC
 };
 
+static constexpr string_view ModelPaths[] = {
+	#define PP_DEMO_MODEL_PATH(path, name, ...) #path "/" #name ".md3",
+	DEMO_MODELS(PP_DEMO_MODEL_PATH)
+	#undef PP_DEMO_MODEL_PATH
+};
+
+// Returns 0 if not found or index + 1 if found
+int FindModel(string_view path) {
+	if (!path.empty()) {
+		for (int i = 0; i < std::size(ModelPaths); ++i)
+			if (path == ModelPaths[i])
+				return i + 1;
+	}
+	return 0;
+}
+
 void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, const std::vector<size_t>& entity_brushes, string_view entity_brushes_name, string_view entity_data_name) {
 	printf("Writing entities\n");
 
@@ -905,19 +921,36 @@ void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, 
 	DEMO_ENTITY_TYPES(PP_MAP_CLASSNAME_TO_TYPE)
 	#undef PP_MAP_CLASSNAME_TO_TYPE
 
+	std::unordered_map<string_view, i32> model_usage; // negative for missing models
+
 	/* gather entity properties */
-	std::vector<Demo::Entity> compiled_entities(map.entities.size());
-	for (size_t entity_index = 0; entity_index < map.entities.size(); ++entity_index) {
-		auto& src_ent = map.entities[entity_index];
-		auto& dst_ent = compiled_entities[entity_index];
+	std::vector<Demo::Entity> compiled_entities;
+	compiled_entities.reserve(map.entities.size());
+	for (auto& src_ent : map.entities) {
+		Demo::Entity dst_ent = {};
 		dst_ent.type = classname_to_type[src_ent.GetProperty("classname"sv)];
+		if (dst_ent.type == Demo::Entity::Type::None)
+			continue;
+
 		for (auto& field : EntityFields) {
 			auto value = src_ent.GetProperty(field.name);
-			field.set(((u8*)&dst_ent) + field.offset, value);
-			if (field.name == "angle"sv && !value.empty()) {
-				dst_ent.angle = (dst_ent.angle + 270) % 360;
+			if (field.name  == "model"sv) {
+				dst_ent.model = FindModel(value);
+				if (!value.empty())
+					model_usage[value] += dst_ent.model ? 1 : -1;
+			} else {
+				field.set(((u8*)&dst_ent) + field.offset, value);
+				if (field.name == "angle"sv && !value.empty()) {
+					dst_ent.angle = (dst_ent.angle + 270) % 360;
+				}
 			}
 		}
+
+		if (dst_ent.type == Demo::Entity::Type::misc_model && !dst_ent.model)
+			continue;
+
+		if (dst_ent.type != Demo::Entity::Type::None)
+			compiled_entities.push_back(dst_ent);
 	}
 
 	/* write entity properties (for all entities) */
@@ -931,6 +964,28 @@ void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, 
 	}
 	print << "};"sv;
 	print.Flush();
+
+	/* report models */
+	std::vector<string_view> model_paths;
+	model_paths.reserve(model_usage.size());
+	for (auto& e : model_usage)
+		model_paths.push_back(e.first);
+
+	/* sort by usage */
+	std::sort(model_paths.begin(), model_paths.end(), [&] (string_view path0, string_view path1) {
+		i32 usage0 = model_usage[path0];
+		i32 usage1 = model_usage[path1];
+		if (abs(usage0) != abs(usage1))
+			return abs(usage0) > abs(usage1);
+		if (usage0 != usage1)
+			return usage0 < usage1; // negative usage first
+		return path0 < path1;
+	});
+
+	DebugPrint("Map models:\n");
+	DebugPrint("------------------------\n");
+	for (auto& path : model_paths)
+		DebugPrint("%.*s (%dx)\n", int(path.size()), path.data(), model_usage[path]);
 }
 
 void WriteBrushBounds(ArrayPrinter& print, const Map& map, const Options& options, string_view bounds_name, string_view array_name) {
@@ -2185,6 +2240,7 @@ int main() {
 	);
 	fprintf(out, "static_assert(0x%08xU == Demo::Material::Version, \"Material definition mismatch, please recompile the map compiler & maps\");\n", Demo::Material::Version);
 	fprintf(out, "static_assert(0x%08xU == Demo::Entity::Version, \"Entity definition mismatch, please recompile the map compiler & maps\");\n", Demo::Entity::Version);
+	fprintf(out, "static_assert(0x%08xU == Demo::Model::Version, \"Model definition mismatch, please recompile the map compiler & maps\");\n", Demo::Model::Version);
 
 	std::vector<char> source;
 	for (auto& map_entry : DemoMaps) {

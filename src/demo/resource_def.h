@@ -298,18 +298,35 @@
 ////////////////////////////////////////////////////////////////
 
 #define DEMO_MODELS(x)\
-	x(mega_cross)\
-	x(small_cross)\
-	x(ammo)\
-	x(shard)\
-	x(quad)\
-	x(armor_red)\
-	x(machinegun_barrel)\
-	x(railgun)\
-	x(rocketl)\
-	x(shotgun)\
+	/*Path										Name*/\
+	x(models/mapobjects,						kmlamp1)\
+	x(models/mapobjects/storch,					tall_torch)\
+	x(models/mapobjects/gratelamp,				gratetorch)\
+	x(models/mapobjects/gratelamp,				gratetorchbig)\
+	x(models/mapobjects/teleporter,				teleporter)\
+	x(models/mapobjects/spotlamp,				spotlamp)\
+	x(models/mapobjects/wallhead,				lion)\
+	x(models/mapobjects/wallhead,				wallhead02)\
+	x(models/mapobjects,						statue_major)\
+	x(models/mapobjects,						visor_posed)\
+	x(models/mapobjects/lamps,					bot_lamp2)\
+	x(models/powerups/ammo,						rocketam)\
+	x(models/powerups/armor,					armor_red)\
+	x(models/powerups/armor,					shard)\
+	x(models/powerups/health,					large_cross)\
+	x(models/powerups/health,					large_sphere)\
+	x(models/powerups/health,					mega_cross)\
+	x(models/powerups/instant,					quad)\
+	x(models/powerups/weapons2/gauntlet,		gauntlet)\
+	x(models/powerups/weapons2/gauntlet,		gauntlet_barrel)\
+	x(models/powerups/weapons2/machinegun,		machinegun)\
+	x(models/powerups/weapons2/machinegun,		machinegun_barrel)\
+	x(models/powerups/weapons2/plasma,			plasma)\
+	x(models/powerups/weapons2/railgun,			railgun)\
+	x(models/powerups/weapons2/rocketl,			rocketl)\
+	x(models/powerups/weapons2/shotgun,			shotgun)\
 
-#define DEMO_MODELS_USE_DELTA_ENCODING 0
+#define DEMO_MODELS_USE_DELTA_ENCODING 1
 
 ////////////////////////////////////////////////////////////////
 

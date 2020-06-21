@@ -724,7 +724,7 @@ int main() {
 	Options options;
 
 	options.md3_paths = {
-		#define PP_DEMO_MODEL_PATH(name)		"../../demo/data/models/" #name ".md3",
+		#define PP_DEMO_MODEL_PATH(path,name)		"../../demo/data/" #path "/" #name ".md3",
 		DEMO_MODELS(PP_DEMO_MODEL_PATH)
 		#undef PP_DEMO_MODEL_PATH
 	};
@@ -779,7 +779,7 @@ int main() {
 		"////////////////////////////////////////////////////////////////\n"
 		"\n"
 		"static constexpr Demo::PackedModel cooked_models[] = {\n"
-		"\t#define PP_ADD_MODEL_ENTRY(name,...) {size(name::parts),name::parts,name::vertices,name::stream_lengths,name::indices},\n"
+		"\t#define PP_ADD_MODEL_ENTRY(path,name,...) {size(name::parts),name::parts,name::vertices,name::stream_lengths,name::indices},\n"
 		"\tDEMO_MODELS(PP_ADD_MODEL_ENTRY)\n"
 		"\t#undef PP_ADD_MODEL_ENTRY\n"
 		"};\n"

@@ -20,7 +20,7 @@ namespace Demo {
 
 	namespace Model {
 		enum ID {
-			#define PP_ADD_MODEL_ID(name,...) name,
+			#define PP_ADD_MODEL_ID(path, name,...) name,
 			DEMO_MODELS(PP_ADD_MODEL_ID)
 			#undef PP_ADD_MODEL_ID
 
