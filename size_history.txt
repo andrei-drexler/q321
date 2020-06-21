@@ -914,3 +914,4 @@
 43266,vertex welding
 52184,added all (most?) models
 52268,added xform to model draw function
+52345,debug draw all misc_models

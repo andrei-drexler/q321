@@ -132,10 +132,23 @@ namespace Demo {
 		transform.position = vec3{672, 2096, 16};
 		transform.position.z += sin(Math::TAU * float(g_time)) * 4.f + 4.f + 8.f;
 		transform.angles = vec3{float(g_time) * 180.f, 0.f, 0.f};
-		transform.scale = 1.f;
+		transform.scale = 1.5f;
 
 		Demo::Uniform::Time.w = 0;
 		Demo::Model::Draw(Demo::Model::ID::rocketl, transform);
+
+		for (u32 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
+			Demo::Entity& ent = Map::entities[i];
+			if (ent.type != Demo::Entity::Type::misc_model)
+				continue;
+		
+			MemCopy(&transform, &Demo::Model::TransformIdentity);
+			for (u16 j = 0; j < 3; ++j)
+				transform.position[j] = ent.origin[j];
+			transform.angles[0] = ent.angle + 90;
+			
+			Demo::Model::Draw(Demo::Model::ID(ent.model - 1), transform);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
