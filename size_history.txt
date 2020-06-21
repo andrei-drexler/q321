@@ -913,3 +913,4 @@
 44192,removed model uvs
 43266,vertex welding
 52184,added all (most?) models
+52268,added xform to model draw function

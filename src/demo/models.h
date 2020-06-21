@@ -27,6 +27,18 @@ namespace Demo {
 			Count,
 		};
 
+		struct Transform {
+			vec3				position;
+			vec3				angles;
+			float				scale;
+		};
+
+		static constexpr Transform TransformIdentity = {
+			{0.f, 0.f, 0.f},	// position
+			{0.f, 0.f, 0.f},	// angles
+			1.f,				// scale
+		};
+
 		struct Part {
 			u16					num_verts;
 			u16					num_indices;
@@ -69,7 +81,7 @@ namespace Demo {
 		Entry list[Model::Count];
 
 		void LoadAll(const PackedModel* models);
-		void Draw(Model::ID id);
+		void Draw(Model::ID id, const Transform& transform = TransformIdentity);
 	};
 }
 
@@ -213,14 +225,22 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Demo::Model::Draw(Model::ID id) {
-	Gfx::Mesh mesh;
-	memset(&mesh, 0, sizeof(mesh));
+NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
+	mat4 model_matrix = MakeRotation(transform.angles * Math::DEG2RAD);
+	for (u16 i = 0; i < 3; ++i)
+		mul(model_matrix.GetAxis(i), transform.scale);
+	model_matrix.SetPosition(transform.position);
+
+	mat4 old_mvp = Demo::Uniform::MVP;
+	Demo::Uniform::MVP = old_mvp * model_matrix;
 
 	const u16
 		part_begin = Model::Storage::first_model_part[id],
-		part_end = Model::Storage::first_model_part[id + 1]
+		part_end   = Model::Storage::first_model_part[id + 1]
 	;
+
+	Gfx::Mesh mesh;
+	memset(&mesh, 0, sizeof(mesh));
 
 	for (u16 part_index = part_begin; part_index < part_end; ++part_index) {
 		const Model::Part& part = Storage::parts[part_index];
@@ -234,6 +254,10 @@ NOINLINE void Demo::Model::Draw(Model::ID id) {
 		mesh.num_vertices		= part.num_verts;
 		mesh.num_indices		= part.num_indices;
 
+		Gfx::SetShader(Demo::Shader::Generic);
+		Gfx::UpdateUniforms();
 		Gfx::Draw(mesh);
 	}
+
+	Demo::Uniform::MVP = old_mvp;
 }

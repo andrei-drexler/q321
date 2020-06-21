@@ -128,24 +128,14 @@ namespace Demo {
 		DrawPointEntities();
 #endif
 
-		Gfx::SetShader(Demo::Shader::Generic);
+		Demo::Model::Transform transform;
+		transform.position = vec3{672, 2096, 16};
+		transform.position.z += sin(Math::TAU * float(g_time)) * 4.f + 4.f + 8.f;
+		transform.angles = vec3{float(g_time) * 180.f, 0.f, 0.f};
+		transform.scale = 1.f;
+
 		Demo::Uniform::Time.w = 0;
-
-		mat4 mvp = Demo::Uniform::MVP;
-		mat4 rotation, translation, scale;
-
-		transpose(MakeRotation(vec3{float(g_time) * 180.f, 0.f, 0.f} * Math::DEG2RAD), rotation);
-		translation = i4x4;
-		scale = i4x4;
-		translation.SetPosition(vec3{672, 2096, 16});
-		translation.w.z += sin(Math::TAU * float(g_time)) * 4.f + 4.f + 8.f;
-		scale.x.x = scale.y.y = scale.z.z = 1.5f;
-		Demo::Uniform::MVP = mvp * translation * rotation * scale;
-
-		Gfx::UpdateUniforms();
-		Demo::Model::Draw(Demo::Model::ID::rocketl);
-
-		Demo::Uniform::MVP = mvp;
+		Demo::Model::Draw(Demo::Model::ID::rocketl, transform);
 	}
 
 	////////////////////////////////////////////////////////////////
