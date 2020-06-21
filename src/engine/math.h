@@ -390,6 +390,18 @@ NOINLINE void mul(vec3& dst, const vec3& a, const vec3& b) {
 	dst[2] = a[2] * b[2];
 }
 
+NOINLINE void mul(vec3& dst, float s) {
+	dst[0] *= s;
+	dst[1] *= s;
+	dst[2] *= s;
+}
+
+NOINLINE void mul(vec3& dst, vec3& s) {
+	dst[0] *= s[0];
+	dst[1] *= s[1];
+	dst[2] *= s[2];
+}
+
 NOINLINE void mad(vec3& dst, const vec3& a, float b) {
 	dst[0] += a[0] * b;
 	dst[1] += a[1] * b;
@@ -658,12 +670,20 @@ struct mat4 {
 
 	mat4& operator=(const mat4& copy) { return *MemCopy(this, &copy); }
 
+	/* column access */
 	constexpr vec4&			operator[](size_t i) { return m[i]; }
 	constexpr const vec4&	operator[](size_t i) const { return m[i]; }
 
-	mat4&					SetRow(int row, const vec4& v)	{ m[0][row] = v.x; m[1][row] = v.y; m[2][row] = v.z; m[3][row] = v.w; return *this; }
-	mat4&					SetPosition(const vec3& pos)	{ w.xyz = pos; return *this; }
-	constexpr const vec3&	GetPosition() const				{ return w.xyz; }
+	mat4&					SetRow(size_t row, const vec4& v)	{ m[0][row] = v.x; m[1][row] = v.y; m[2][row] = v.z; m[3][row] = v.w; return *this; }
+	constexpr vec4			GetRow(size_t row) const			{ return vec4{m[0][row], m[1][row], m[2][row], m[3][row]}; }
+
+	mat4&					SetPosition(const vec3& pos)		{ w.xyz = pos; return *this; }
+	constexpr vec3&			GetPosition()						{ return w.xyz; }
+	constexpr const vec3&	GetPosition() const					{ return w.xyz; }
+
+	mat4&					SetAxis(size_t i, const vec3& v)	{ m[i].xyz = v; return *this; }
+	constexpr vec3&			GetAxis(size_t i)					{ return m[i].xyz; }
+	constexpr const vec3&	GetAxis(size_t i) const				{ return m[i].xyz; }
 };
 
 constexpr mat4 o4x4(0.f);
