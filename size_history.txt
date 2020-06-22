@@ -919,3 +919,4 @@
 52341,optimized rotation matrix computation
 52520,basic viewmodel rendering
 52530,added plasmagun + cells
+52685,draw all entities

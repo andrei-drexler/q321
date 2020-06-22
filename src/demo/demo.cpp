@@ -131,25 +131,92 @@ namespace Demo {
 #endif
 
 		Demo::Model::Transform transform;
-		transform.position = vec3{672, 2096, 16};
-		transform.position.z += sin(Math::TAU * float(g_time)) * 4.f + 4.f + 8.f;
-		transform.angles = vec3{float(g_time) * 180.f, 0.f, 0.f};
-		transform.scale = 1.5f;
-
-		Demo::Uniform::Time.w = 0;
-		Demo::Model::Draw(Demo::Model::ID::rocketl, transform);
 
 		for (u32 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
+			using Type = Demo::Entity::Type;
 			Demo::Entity& ent = Map::entities[i];
-			if (ent.type != Demo::Entity::Type::misc_model)
-				continue;
-		
+			Demo::Uniform::Time.w = float(ent.type);
+
 			MemCopy(&transform, &Demo::Model::TransformIdentity);
 			for (u16 j = 0; j < 3; ++j)
 				transform.position[j] = ent.origin[j];
 			transform.angles[0] = ent.angle;
-			
-			Demo::Model::Draw(Demo::Model::ID(ent.model - 1), transform);
+
+			if (ent.type != Type::misc_model) {
+				transform.angles[0] += float(g_time) * 180.f;
+				float offset = transform.position[0] + transform.position[1];
+				transform.position[2] += sin(Math::TAU * (float(g_time) + offset / 1024.f)) * 4.f + 4.f;
+			}
+
+			float weapon_scale = 1.5f;
+			float weapon_offset = transform.position[2] + 8.f;
+			int model_id = -1;
+
+			switch (ent.type) {
+				case Type::misc_model:
+					model_id = ent.model - 1;
+					break;
+
+				case Type::ammo_bullets:
+				case Type::ammo_rockets:
+				case Type::ammo_shells:
+				case Type::ammo_slugs:
+				case Type::ammo_cells:
+					model_id = Demo::Model::rocketam;
+					break;
+
+				case Type::item_health:
+				case Type::item_health_large:
+					model_id = Demo::Model::large_cross;
+					break;
+
+				case Type::item_health_mega:
+					model_id = Demo::Model::mega_cross;
+					break;
+
+				case Type::weapon_railgun:
+					model_id = Demo::Model::railgun;
+					transform.scale = weapon_scale;
+					transform.position[2] = weapon_offset;
+					break;
+
+				case Type::weapon_rocketlauncher:
+					model_id = Demo::Model::rocketl;
+					transform.scale = weapon_scale;
+					transform.position[2] = weapon_offset;
+					break;
+
+				case Type::weapon_shotgun:
+					model_id = Demo::Model::shotgun;
+					transform.scale = weapon_scale;
+					transform.position[2] = weapon_offset;
+					break;
+
+				case Type::weapon_plasmagun:
+					model_id = Demo::Model::plasma;
+					transform.scale = weapon_scale;
+					transform.position[2] = weapon_offset;
+					break;
+
+				case Type::item_armor_shard:
+					model_id = Demo::Model::shard;
+					break;
+
+				case Type::item_armor_body:
+				case Type::item_armor_combat:
+					model_id = Demo::Model::armor_red;
+					break;
+
+				case Type::item_quad:
+					model_id = Demo::Model::quad;
+					break;
+
+				default:
+					break;
+			}
+
+			if (model_id != -1)
+				Demo::Model::Draw(Demo::Model::ID(model_id), transform);
 		}
 
 		MemCopy(&transform, &Demo::Model::TransformIdentity);
@@ -158,16 +225,16 @@ namespace Demo {
 		mat4 rotation = MakeRotation(g_player.angles * Math::DEG2RAD);
 		transform.position = g_player.position;
 		transform.position.z -= g_player.step;
-		mix_into(transform.position, Demo::Uniform::Cam.xyz, 15.f/16.f);
+		mix_into(transform.position, Demo::Uniform::Cam.xyz, 17.f/16.f);
 
-		float speed = length(g_player.velocity.xy) / 640.f;
+		float speed = length(g_player.velocity.xy) / 320.f;
 		mad(transform.position, rotation.GetAxis(1), speed * sin(g_player.walk_cycle * 10.f));
 		mad(transform.position, rotation.GetAxis(2), speed * sin(g_player.walk_cycle * 20.f) * 0.25f);
 
 		transform.position += rotation * g_weapon_offset;
 
+		Demo::Uniform::Time.w = float(Demo::Entity::Type::weapon_rocketlauncher);
 		Demo::Model::Draw(Demo::Model::ID::rocketl, transform);
-
 	}
 
 	////////////////////////////////////////////////////////////////
