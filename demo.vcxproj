@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="src\demo\console.h" />
     <ClInclude Include="src\demo\cooked\cooked_maps.h" />
+    <ClInclude Include="src\demo\cooked\cooked_models.h" />
     <ClInclude Include="src\demo\cooked\cooked_shaders.h" />
     <ClInclude Include="src\demo\entity.h" />
     <ClInclude Include="src\demo\gfx_resources.h" />

@@ -87,6 +87,9 @@
     <ClInclude Include="src\demo\models.h">
       <Filter>Demo</Filter>
     </ClInclude>
+    <ClInclude Include="src\demo\cooked\cooked_models.h">
+      <Filter>Cooked</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\demo\demo.cpp">
