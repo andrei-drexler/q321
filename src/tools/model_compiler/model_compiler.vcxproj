@@ -22,6 +22,7 @@
     <ClCompile Include="model_compiler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\demo\resource_def.h" />
     <ClInclude Include="q3model.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -5,5 +5,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="q3model.h" />
+    <ClInclude Include="..\..\demo\resource_def.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Demo">
+      <UniqueIdentifier>{180562f9-3132-4bff-b678-4d1a36dbddd5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
