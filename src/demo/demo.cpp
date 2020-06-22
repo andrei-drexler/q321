@@ -119,6 +119,8 @@ namespace Demo {
 		}
 	}
 
+	vec3 g_weapon_offset;
+
 	void RenderDebug() {
 #ifdef DRAW_LIGHTS
 		DrawLights();
@@ -149,6 +151,23 @@ namespace Demo {
 			
 			Demo::Model::Draw(Demo::Model::ID(ent.model - 1), transform);
 		}
+
+		MemCopy(&transform, &Demo::Model::TransformIdentity);
+		transform.angles = g_player.angles;
+
+		mat4 rotation = MakeRotation(g_player.angles * Math::DEG2RAD);
+		transform.position = g_player.position;
+		transform.position.z -= g_player.step;
+		mix_into(transform.position, Demo::Uniform::Cam.xyz, 15.f/16.f);
+
+		float speed = length(g_player.velocity.xy) / 640.f;
+		mad(transform.position, rotation.GetAxis(1), speed * sin(g_player.walk_cycle * 10.f));
+		mad(transform.position, rotation.GetAxis(2), speed * sin(g_player.walk_cycle * 20.f) * 0.25f);
+
+		transform.position += rotation * g_weapon_offset;
+
+		Demo::Model::Draw(Demo::Model::ID::rocketl, transform);
+
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -411,6 +430,8 @@ namespace Demo {
 		Sys::SpawnThread(Demo::g_loading_thread);
 
 		Demo::g_player.Spawn();
+
+		g_weapon_offset = {-9.f, -5.f, -9.f};
 	}
 }
 

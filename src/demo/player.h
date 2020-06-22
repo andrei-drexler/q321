@@ -203,7 +203,7 @@ void Demo::Player::Update(float dt) {
 		float speed = length(velocity.xy);
 		if (speed < 1.f) {
 			velocity.xy = 0.f;
-			walk_cycle = 0.f;
+			//walk_cycle = 0.f;
 		} else {
 			float drop = max(speed, StopSpeed) * Friction * dt;
 			velocity.xy *= max(0.f, speed - drop) / speed;

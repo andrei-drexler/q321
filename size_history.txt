@@ -917,3 +917,4 @@
 52345,debug draw all misc_models
 52331,fixed coordinate system wonkiness
 52341,optimized rotation matrix computation
+52520,basic viewmodel rendering

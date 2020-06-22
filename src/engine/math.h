@@ -744,6 +744,10 @@ constexpr vec4 operator*(const mat4& lhs, const vec4& rhs) {
 	return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z + lhs.w*rhs.w;
 }
 
+constexpr vec3 operator*(const mat4& lhs, const vec3& rhs) {
+	return lhs.x.xyz*rhs.x + lhs.y.xyz*rhs.y + lhs.z.xyz*rhs.z + lhs.w.xyz;
+}
+
 ////////////////////////////////////////////////////////////////
 
 FORCEINLINE float ScaleFov(float fov_radians, float scale) {
