@@ -145,7 +145,7 @@ namespace Demo {
 			MemCopy(&transform, &Demo::Model::TransformIdentity);
 			for (u16 j = 0; j < 3; ++j)
 				transform.position[j] = ent.origin[j];
-			transform.angles[0] = ent.angle + 90;
+			transform.angles[0] = ent.angle;
 			
 			Demo::Model::Draw(Demo::Model::ID(ent.model - 1), transform);
 		}
@@ -163,10 +163,10 @@ namespace Demo {
 	};
 
 	static constexpr mat4 ToYUp = {
-			1.f,  0.f,  0.f,  0.f,
-			0.f,  0.f, -1.f,  0.f,
-			0.f,  1.f,  0.f,  0.f,
-			0.f,  0.f,  0.f,  1.f,
+		 0.f,  0.f, -1.f,  0.f,
+		-1.f,  0.f,  0.f,  0.f,
+		 0.f,  1.f,  0.f,  0.f,
+		 0.f,  0.f,  0.f,  1.f,
 	};
 
 	NOINLINE void RenderWorld(const Frame& frame) {

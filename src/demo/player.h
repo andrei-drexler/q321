@@ -183,8 +183,8 @@ void Demo::Player::Update(float dt) {
 	float cos_pitch = cos(pitch);
 
 	vec3 forward, right;
-	right.x = cos(yaw);
-	right.y = sin(yaw);
+	right.x = sin(yaw);
+	right.y = -cos(yaw);
 	right.z = 0.f;
 	forward.x = -right.y * cos_pitch;
 	forward.y = right.x * cos_pitch;
@@ -293,8 +293,8 @@ void Demo::Player::Update(float dt) {
 					angles[1] = 0.f;
 					angles[2] = 0.f;
 					float yaw = angles[0] * Math::DEG2RAD;
-					velocity.y = cos(yaw) * -TeleportSpeed;
-					velocity.x = sin(yaw) * -TeleportSpeed;
+					velocity.x = cos(yaw) * TeleportSpeed;
+					velocity.y = sin(yaw) * TeleportSpeed;
 					velocity.z = 0.f;
 					step = 0.f;
 				}

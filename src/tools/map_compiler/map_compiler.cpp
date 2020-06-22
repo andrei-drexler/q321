@@ -943,8 +943,6 @@ void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, 
 			}
 		}
 
-		dst_ent.angle = (dst_ent.angle + 270) % 360; // FIXME!
-
 		if (dst_ent.type == Demo::Entity::Type::misc_model && !dst_ent.model)
 			continue;
 

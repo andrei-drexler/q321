@@ -556,6 +556,7 @@ struct mat3 {
 };
 
 static constexpr mat3 o3x3(0.f);
+static constexpr mat3 i3x3(1.f);
 
 NOINLINE void transpose(const mat3& m, mat3& out) {
 	const u32 ORDER =
@@ -757,12 +758,27 @@ NOINLINE mat4 MakeRotation(const vec3& angles) {
 	float cp = Math::cos(angles.y);
 	float cr = Math::cos(angles.z);
 
-	return {
-		cr*cy+sy*sp*sr,		cr*sy-cy*sp*sr,		cp*sr,		0.f,
-		-sy*cp,				cy*cp,				sp,			0.f,
-		cr*sy*sp-cy*sr,		-cr*cy*sp-sy*sr,	cr*cp,		0.f,
-		0.f,				0.f,				0.f,		1.f
-	};
+	mat4 yaw = i4x4;
+	mat4 pitch = i4x4;
+	mat4 roll = i4x4;
+
+	yaw[0][0] = cy;
+	yaw[0][1] = sy;
+	yaw[1][0] = -sy;
+	yaw[1][1] = cy;
+
+	pitch[0][0] = cp;
+	pitch[0][2] = sp;
+	pitch[2][0] = -sp;
+	pitch[2][2] = cp;
+
+	roll[1][1] = cr;
+	roll[1][2] = sr;
+	roll[2][1] = -sr;
+	roll[2][2] = cr;
+
+	// TODO: direct computation
+	return yaw * pitch * roll;
 }
 
 NOINLINE void MakeRotation(const vec3& angles, mat3& out) {
@@ -773,11 +789,27 @@ NOINLINE void MakeRotation(const vec3& angles, mat3& out) {
 	float cp = Math::cos(angles.y);
 	float cr = Math::cos(angles.z);
 
-	out = {
-		cr*cy+sy*sp*sr,		cr*sy-cy*sp*sr,		cp*sr,
-		-sy*cp,				cy*cp,				sp,
-		cr*sy*sp-cy*sr,		-cr*cy*sp-sy*sr,	cr*cp,
-	};
+	mat3 yaw = i3x3;
+	mat3 pitch = i3x3;
+	mat3 roll = i3x3;
+
+	yaw[0][0] = cy;
+	yaw[0][1] = sy;
+	yaw[1][0] = -sy;
+	yaw[1][1] = cy;
+
+	pitch[0][0] = cp;
+	pitch[0][2] = sp;
+	pitch[2][0] = -sp;
+	pitch[2][2] = cp;
+
+	roll[1][1] = cr;
+	roll[1][2] = sr;
+	roll[2][1] = -sr;
+	roll[2][2] = cr;
+
+	// TODO: direct computation
+	out = yaw * pitch * roll;
 }
 
 FORCEINLINE void MakePerspective(vec2 fov, float znear, float zfar, mat4& out) {
