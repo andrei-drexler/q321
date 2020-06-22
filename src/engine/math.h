@@ -758,27 +758,37 @@ NOINLINE mat4 MakeRotation(const vec3& angles) {
 	float cp = Math::cos(angles.y);
 	float cr = Math::cos(angles.z);
 
-	mat4 yaw = i4x4;
-	mat4 pitch = i4x4;
-	mat4 roll = i4x4;
+	if constexpr (1) {
+		// https://www.symbolab.com/solver/matrix-multiply-calculator FTW!
 
-	yaw[0][0] = cy;
-	yaw[0][1] = sy;
-	yaw[1][0] = -sy;
-	yaw[1][1] = cy;
+		return {
+			cy*cp,				sy*cp,				sp,		0.f,	// column 0
+			-cy*sp*sr - cr*sy,	cr*cy - sy*sp*sr,	cp*sr,	0.f,	// column 1
+			sy*sr - cr*cy*sp,	-cy*sr - cr*sy*sp,	cr*cp,	0.f,	// column 2
+			0.f,				0.f,				0.f,	1.f,	// column 3
+		};
+	} else {
+		mat4 yaw = i4x4;
+		mat4 pitch = i4x4;
+		mat4 roll = i4x4;
 
-	pitch[0][0] = cp;
-	pitch[0][2] = sp;
-	pitch[2][0] = -sp;
-	pitch[2][2] = cp;
+		yaw[0][0] = cy;
+		yaw[0][1] = sy;
+		yaw[1][0] = -sy;
+		yaw[1][1] = cy;
 
-	roll[1][1] = cr;
-	roll[1][2] = sr;
-	roll[2][1] = -sr;
-	roll[2][2] = cr;
+		pitch[0][0] = cp;
+		pitch[0][2] = sp;
+		pitch[2][0] = -sp;
+		pitch[2][2] = cp;
 
-	// TODO: direct computation
-	return yaw * pitch * roll;
+		roll[1][1] = cr;
+		roll[1][2] = sr;
+		roll[2][1] = -sr;
+		roll[2][2] = cr;
+
+		return yaw * pitch * roll;
+	}
 }
 
 NOINLINE void MakeRotation(const vec3& angles, mat3& out) {
@@ -789,27 +799,36 @@ NOINLINE void MakeRotation(const vec3& angles, mat3& out) {
 	float cp = Math::cos(angles.y);
 	float cr = Math::cos(angles.z);
 
-	mat3 yaw = i3x3;
-	mat3 pitch = i3x3;
-	mat3 roll = i3x3;
+	if constexpr (1) {
+		// https://www.symbolab.com/solver/matrix-multiply-calculator FTW!
 
-	yaw[0][0] = cy;
-	yaw[0][1] = sy;
-	yaw[1][0] = -sy;
-	yaw[1][1] = cy;
+		out = {
+			cy*cp,				sy*cp,				sp,			// column 0
+			-cy*sp*sr - cr*sy,	cr*cy - sy*sp*sr,	cp*sr,		// column 1
+			sy*sr - cr*cy*sp,	-cy*sr - cr*sy*sp,	cr*cp,		// column 2
+		};
+	} else {
+		mat3 yaw = i3x3;
+		mat3 pitch = i3x3;
+		mat3 roll = i3x3;
 
-	pitch[0][0] = cp;
-	pitch[0][2] = sp;
-	pitch[2][0] = -sp;
-	pitch[2][2] = cp;
+		yaw[0][0] = cy;
+		yaw[0][1] = sy;
+		yaw[1][0] = -sy;
+		yaw[1][1] = cy;
 
-	roll[1][1] = cr;
-	roll[1][2] = sr;
-	roll[2][1] = -sr;
-	roll[2][2] = cr;
+		pitch[0][0] = cp;
+		pitch[0][2] = sp;
+		pitch[2][0] = -sp;
+		pitch[2][2] = cp;
 
-	// TODO: direct computation
-	out = yaw * pitch * roll;
+		roll[1][1] = cr;
+		roll[1][2] = sr;
+		roll[2][1] = -sr;
+		roll[2][2] = cr;
+
+		out = yaw * pitch * roll;
+	}
 }
 
 FORCEINLINE void MakePerspective(vec2 fov, float znear, float zfar, mat4& out) {

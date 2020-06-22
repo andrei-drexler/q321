@@ -916,3 +916,4 @@
 52268,added xform to model draw function
 52345,debug draw all misc_models
 52331,fixed coordinate system wonkiness
+52341,optimized rotation matrix computation
