@@ -34,9 +34,11 @@
 	x(ammo_rockets,					"Rockets")\
 	x(ammo_shells,					"Shells")\
 	x(ammo_slugs,					"Slugs")\
+	x(ammo_cells,					"Cells")\
 	x(weapon_rocketlauncher,		"Rocket launcher")\
 	x(weapon_shotgun,				"Shotgun")\
 	x(weapon_railgun,				"Railgun")\
+	x(weapon_plasmagun,				"Plasma Gun")\
 	x(item_health,					"25 Health")\
 	x(item_health_large,			"50 Health")\
 	x(item_health_mega,				"Mega Health")\
