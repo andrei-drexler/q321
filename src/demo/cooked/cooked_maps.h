@@ -1,7 +1,7 @@
 #pragma once
 
 // auto-generated, do not modify
-static_assert(0x62158b2dU == Demo::Material::Version, "Material definition mismatch, please recompile the map compiler & maps");
+static_assert(0x8930832bU == Demo::Material::Version, "Material definition mismatch, please recompile the map compiler & maps");
 static_assert(0x3aee6ce3U == Demo::Entity::Version, "Entity definition mismatch, please recompile the map compiler & maps");
 static_assert(0x2498e988U == Demo::Model::Version, "Model definition mismatch, please recompile the map compiler & maps");
 

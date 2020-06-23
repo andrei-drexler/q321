@@ -127,6 +127,10 @@ float sum(vec2 v) {
 	return v.x + v.y;
 }
 
+float sum(vec3 v) {
+	return v.x + v.y + v.z;
+}
+
 float minabs(float a, float b) {
 	return abs(a) < abs(b) ? a : b;
 }
@@ -2306,7 +2310,13 @@ TEXA(bwprtbnr_m) {
 }
 
 void statue() {
-	FCol = Clr;
+	vec3
+		n = Nor * Nor,
+		p = Pos / float(textureSize(Texture0, 2).x);
+	FCol = vec4(0);
+	for (int i = 0; i < 3; ++i, p = p.yzx)
+		FCol += texture(Texture0, p.yz) * n[i] / sum(n);
+	FCol *= Clr * 2.;
 }
 
 TEXA(q3bnr) {
