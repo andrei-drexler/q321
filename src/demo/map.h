@@ -166,11 +166,14 @@ namespace Map {
 	Array<vec3, MAX_NUM_VERTS>		positions;
 	Array<vec4, MAX_NUM_VERTS>		texcoords;
 	Array<vec3, MAX_NUM_VERTS>		normals;
+	Array<u32,  MAX_NUM_VERTS>		colors;
 	Array<u32,  MAX_NUM_INDICES>	indices;
 	Array<u32,  MAX_NUM_MATERIALS>	num_mat_verts;
 	Array<u32,  MAX_NUM_MATERIALS>	mat_vertex_offset;
 	Array<u32,  MAX_NUM_MATERIALS>	num_mat_indices;
 	Array<u32,  MAX_NUM_MATERIALS>	mat_index_offset;
+	Array<u32,  MAX_NUM_MATERIALS>	mat_model_vertex_offset;
+	Array<u32,  MAX_NUM_MATERIALS>	mat_model_index_offset;
 	u32								num_total_vertices;
 	u32								num_total_indices;
 
@@ -178,6 +181,7 @@ namespace Map {
 		u32							positions;
 		u32							texcoords;
 		u32							normals;
+		u32							colors;
 		u32							indices;
 	}								gpu_addr;
 
@@ -216,6 +220,7 @@ namespace Map {
 		void						SplitNode(u16 index, i16 bounds[2][3]);
 		void						DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid);
 		void						LoadPatches(const PackedMap& packed, u8 pass);
+		void						LoadModels(u8 pass);
 		void						ComputeNormals();
 		void						CreatePartition();
 
@@ -335,6 +340,57 @@ FORCEINLINE void Map::Details::InitEntities() {
 		i16* dst_data = (i16*)&entities[0] + field;
 		for (u16 entity_index = 0; entity_index < num_entities; ++entity_index, dst_data += NumRawFields) {
 			*dst_data = src_data[entity_index];
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////
+
+FORCEINLINE void Map::Details::LoadModels(u8 pass) {
+	using namespace Demo;
+
+	MemCopy(&Map::mat_model_vertex_offset, &Map::mat_vertex_offset);
+	MemCopy(&Map::mat_model_index_offset,  &Map::mat_index_offset);
+
+	for (const Entity *entity = &entities[num_brush_entities], *entity_end = &entities[num_entities]; entity != entity_end; ++entity) {
+		if (entity->type != Entity::Type::misc_model)
+			continue;
+
+		assert(u32(entity->model - 1) < Model::Count);
+
+		const u16
+			part_begin = Model::Storage::first_model_part[entity->model - 1],
+			part_end   = Model::Storage::first_model_part[entity->model]
+		;
+
+		mat4 transform = MakeRotation({(float)entity->angle * Math::DEG2RAD, 0.f, 0.f});
+		for (u16 i = 0; i < 3; ++i)
+			transform.GetPosition()[i] = entity->origin[i];
+
+		for (u16 part_index = part_begin; part_index < part_end; ++part_index) {
+			const Model::Part& part = Model::Storage::parts[part_index];
+			u16 material = part.material;
+
+			if (pass != 0) {
+				u32 first_vertex   = Map::num_mat_verts[material];
+				u32 dst_vtx_offset = Map::mat_vertex_offset[material] + first_vertex;
+				u32 src_vtx_offset = part.ofs_verts;
+				for (u32 i = 0; i < part.num_verts; ++i) {
+					vec3& pos = Map::positions[dst_vtx_offset + i];
+					vec4& uv  = Map::texcoords[dst_vtx_offset + i];
+					pos = transform * Model::Storage::vertices[src_vtx_offset + i];
+					uv.xy = Model::Storage::uvs[src_vtx_offset + i];
+					uv.zw = 0.f;
+				}
+
+				u32 dst_idx_offset = Map::mat_index_offset[material] + Map::num_mat_indices[material];
+				u32 src_idx_offset = part.ofs_idx;
+				for (u32 i = 0; i < part.num_indices; ++i)
+					Map::indices[dst_idx_offset + i] = Model::Storage::indices[src_idx_offset + i] + first_vertex;
+			}
+
+			Map::num_mat_verts[material] += part.num_verts;
+			Map::num_mat_indices[material] += part.num_indices;
 		}
 	}
 }
@@ -622,6 +678,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 #endif
 
 		Details::LoadPatches(packed, pass);
+		Details::LoadModels(pass);
 	}
 
 	Details::ComputeNormals();
@@ -654,6 +711,7 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 	gpu_addr.positions = Gfx::UploadGeometry(&positions[0], num_total_vertices, Gfx::Arena::Level);
 	gpu_addr.texcoords = Gfx::UploadGeometry(&texcoords[0], num_total_vertices, Gfx::Arena::Level);
 	gpu_addr.normals   = Gfx::UploadGeometry(&normals[0],   num_total_vertices, Gfx::Arena::Level);
+	gpu_addr.colors    = Gfx::UploadGeometry(&colors[0],    num_total_vertices, Gfx::Arena::Level);
 	gpu_addr.indices   = Gfx::UploadGeometry(&indices[0],   num_total_indices,  Gfx::Arena::Level);
 }
 
@@ -692,13 +750,14 @@ void Map::Render() {
 			continue;
 #endif
 		auto offset = mat_vertex_offset[material];
-		mesh.vertices[Attrib::Position	].SetData<vec3>(gpu_addr.positions, offset);
-		mesh.vertices[Attrib::TexCoord	].SetData<vec4>(gpu_addr.texcoords, offset);
-		mesh.vertices[Attrib::Normal	].SetData<vec3>(gpu_addr.normals, offset);
+		mesh.vertices[Attrib::Position].SetData<vec3>(gpu_addr.positions, offset);
+		mesh.vertices[Attrib::TexCoord].SetData<vec4>(gpu_addr.texcoords, offset);
+		mesh.vertices[Attrib::Normal  ].SetData<vec3>(gpu_addr.normals,   offset);
+		mesh.vertices[Attrib::Color   ].SetData<u32 >(gpu_addr.colors,    offset);
 
-		mesh.index_addr			= gpu_addr.indices + mat_index_offset[material] * sizeof(u32) ;
-		mesh.num_vertices		= num_mat_verts[material];
-		mesh.num_indices		= num_mat_indices[material];
+		mesh.index_addr   = gpu_addr.indices + mat_index_offset[material] * sizeof(u32);
+		mesh.num_vertices = num_mat_verts[material];
+		mesh.num_indices  = num_mat_indices[material];
 
 		if (!mesh.num_vertices || !mesh.num_indices)
 			continue;

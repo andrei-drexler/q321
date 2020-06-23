@@ -920,3 +920,5 @@
 52520,basic viewmodel rendering
 52530,added plasmagun + cells
 52685,draw all entities
+52967,appended misc_models to map geo
+53024,added map vertex color stream

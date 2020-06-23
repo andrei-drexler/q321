@@ -3,7 +3,7 @@
 namespace Demo {
 	struct PackedModel {
 		struct Part {
-			u8			shader;
+			u8			material;
 			u16			num_verts;
 			u16			num_indices;
 		};
@@ -42,7 +42,7 @@ namespace Demo {
 		struct Part {
 			u16					num_verts;
 			u16					num_indices;
-			u8					shader;
+			u8					material;
 			u32					ofs_verts;
 			u32					ofs_idx;
 		};

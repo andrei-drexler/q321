@@ -140,23 +140,15 @@ namespace Demo {
 			MemCopy(&transform, &Demo::Model::TransformIdentity);
 			for (u16 j = 0; j < 3; ++j)
 				transform.position[j] = ent.origin[j];
-			transform.angles[0] = ent.angle;
-
-			if (ent.type != Type::misc_model) {
-				transform.angles[0] += float(g_time) * 180.f;
-				float offset = transform.position[0] + transform.position[1];
-				transform.position[2] += sin(Math::TAU * (float(g_time) + offset / 1024.f)) * 4.f + 4.f;
-			}
+			float phase = (transform.position[0] + transform.position[1]) / 1024.f;
+			transform.position[2] += 4.f + 4.f * sin(Math::TAU * (float(g_time) + phase));
+			transform.angles[0] = ent.angle + float(g_time) * 180.f;
 
 			float weapon_scale = 1.5f;
 			float weapon_offset = transform.position[2] + 8.f;
 			int model_id = -1;
 
 			switch (ent.type) {
-				case Type::misc_model:
-					model_id = ent.model - 1;
-					break;
-
 				case Type::ammo_bullets:
 				case Type::ammo_rockets:
 				case Type::ammo_shells:
