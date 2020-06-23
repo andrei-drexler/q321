@@ -793,9 +793,10 @@ namespace GL {
 	template <> struct TypeInfo <vec2> : BaseTypeInfo <2, GL_FLOAT>{};
 	template <> struct TypeInfo <vec3> : BaseTypeInfo <3, GL_FLOAT>{};
 	template <> struct TypeInfo <vec4> : BaseTypeInfo <4, GL_FLOAT>{};
-	template <> struct TypeInfo <u32 > : BaseTypeInfo <4, GL_UNSIGNED_BYTE>{};
+	template <> struct TypeInfo <u32 > : BaseTypeInfo <GL_BGRA, GL_UNSIGNED_BYTE>{}; // Note: using GL_BGRA for size!
 
-	static constexpr u8 AttribSizes[] = {
+	// u16 to accomodate GL_BGRA
+	static constexpr u16 AttribSizes[] = {
 		#define PP_GFX_ADD_ATTRIB_SIZE(name, type)	GL::TypeInfo<type>::size,
 		GFX_VERTEX_ATTRIB_TYPES(PP_GFX_ADD_ATTRIB_SIZE)
 		#undef PP_GFX_ADD_ATTRIB_SIZE

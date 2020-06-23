@@ -392,6 +392,145 @@ namespace R2 {
 
 ////////////////////////////////////////////////////////////////
 
+void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace, vec3& accum, LightMode mode) {
+	using namespace Demo;
+
+	if (mode != LightMode::Bounce) {
+		for (u16 light_index = 0; light_index < Map::num_lights; ++light_index) {
+			const auto& light = Map::lights[light_index];
+			vec3 light_pos = light.position;
+			if (light_index == 0)
+				light_pos += pos;
+
+			vec3 light_dir = pos - light_pos;
+			float angle = -dot(nor, light_dir);
+			if (angle < 0.f)
+				continue;
+
+			float dist = length(light_dir);
+			if (dist > 0.f)
+				angle /= dist;
+			assign_max(dist, 16.f);
+
+			float scale = light.intensity * angle;
+			if (light_index != 0)
+				scale *= Lightmap::PointScale / (dist * dist);
+			if (scale < Lightmap::ThreshIgnore)
+				continue;
+
+			if (light.flags & Light::IsSpotlight) {
+				if (!EnableSpotlights)
+					continue;
+				float dist_by_normal = dot(light_dir, light.spot.xyz);
+				if (dist_by_normal < 0.f)
+					continue;
+
+				const float Radius = 64.f;
+				float radius_by_dist = (Radius + 16.f) / light.spot.w;
+				float radius_at_dist = radius_by_dist * dist_by_normal;
+				vec3 point_at_dist = light.position;
+				mad(point_at_dist, light.spot.xyz, dist_by_normal);
+				float sample_radius = length(pos - point_at_dist);
+				if (sample_radius >= radius_at_dist)
+					continue;
+
+				if (sample_radius > radius_at_dist - 32.f)
+					scale *= (radius_at_dist - sample_radius) * (1.f/32.f);
+			}
+
+			if (mode == LightMode::Shadows) {
+				// offset sampling point towards the light
+				vec3 delta = light_pos - pos;
+				float dist = length(delta);
+				float bias = Lightmap::SurfaceBias / dist;
+				trace.start.x = pos.x + delta.x * bias;
+				trace.start.y = pos.y + delta.y * bias;
+				trace.start.z = pos.z + delta.z * bias;
+				trace.delta.x = light_pos.x - trace.start.x;
+				trace.delta.y = light_pos.y - trace.start.y;
+				trace.delta.z = light_pos.z - trace.start.z;
+
+				bool hit = Map::TraceRay(trace);
+				if (light_index == 0) {
+					using namespace Demo::Material;
+					if (!hit || GetVisibility(brushes.GetPlaneMaterial(trace.plane)) != Sky)
+						continue;
+				} else if (hit) {
+					continue;
+				}
+			}
+
+			mad(accum, light.color, scale);
+		}
+	}
+
+	if (mode == LightMode::Bounce || (mode == LightMode::Shadows && source->skylight)) {
+		vec3 skylight;
+		skylight.r = ((source->skylight      ) & 255) / float(Lightmap::NumEnvSamples);
+		skylight.g = ((source->skylight >>  8) & 255) / float(Lightmap::NumEnvSamples);
+		skylight.b = ((source->skylight >> 16) & 255) / float(Lightmap::NumEnvSamples);
+
+		R2::CosineHemisphere hemisphere;
+		for (u16 i = 0; i < Lightmap::NumEnvSamples; ++i) {
+			trace.start.x = pos.x + nor.x;
+			trace.start.y = pos.y + nor.y;
+			trace.start.z = pos.z + nor.z;
+
+			vec3 dir = hemisphere.NextSample();
+
+			mul(trace.delta, x_axis, Lightmap::EnvRayLength * dir.x);
+			mad(trace.delta, y_axis, Lightmap::EnvRayLength * dir.y);
+			mad(trace.delta, nor,    Lightmap::EnvRayLength * dir.z);
+
+			if (!Map::TraceRay(trace))
+				continue;
+
+			using namespace Demo::Material;
+			auto vis = GetVisibility(brushes.GetPlaneMaterial(trace.plane));
+
+			if (mode == LightMode::Shadows) {
+				if (vis == Sky)
+					accum += skylight;
+			} else {
+				if (vis != Opaque)
+					continue;
+
+				u8 uv_axis = brushes.GetPlaneUVAxis(trace.plane);
+				u8 s_axis = brushes.GetSAxis(uv_axis);
+				u8 t_axis = brushes.GetTAxis(uv_axis);
+
+				const vec2& lightmap_offset = brushes.plane_lmap_offset[trace.plane];
+				i32 x = clamp(i32(trace.hit_point[s_axis] / Lightmap::TexelSize - lightmap_offset[0] - 0.5f), 0, Lightmap::Width - 1);
+				i32 y = clamp(i32(trace.hit_point[t_axis] / Lightmap::TexelSize - lightmap_offset[1] - 0.5f), 0, Lightmap::Height - 1);
+
+				vec3 sample;
+				Lightmap::UnpackVec3(sample, lightmap.bounce_data[y * Lightmap::Width + x]);
+
+				float dist = max(16.f, trace.fraction * Lightmap::EnvRayLength);
+				float scale = Lightmap::BounceScale / Lightmap::NumEnvSamples;
+				scale /= dist;
+
+				mad(accum, sample, min(scale, 0.25f));
+			}
+		}
+	}
+}
+
+NOINLINE u32 Map::Details::ClampColor(const vec3& accum) {
+	// maintain hue instead of clamping to white
+	float max_value = max_component(accum);
+	float scale = 1.f;
+	if (max_value > 255.f)
+		scale = 255.f / max_value;
+
+	return
+		min(i32(accum.x * scale), 255) << 16 | 
+		min(i32(accum.y * scale), 255) <<  8 | 
+		min(i32(accum.z * scale), 255) <<  0 ;
+}
+
+////////////////////////////////////////////////////////////////
+
 void Map::ComputeLighting(LightMode mode) {
 	using namespace Demo;
 
@@ -448,137 +587,10 @@ void Map::ComputeLighting(LightMode mode) {
 						if constexpr (Lightmap::JitterOccluded)
 							Details::GetUnoccludedPos(pos, nor, x_axis, y_axis, occlusion_trace);
 
-						if (params->mode != LightMode::Bounce) {
-							for (u16 light_index = 0; light_index < Map::num_lights; ++light_index) {
-								const auto& light = Map::lights[light_index];
-								vec3 light_pos = light.position;
-								if (light_index == 0)
-									light_pos += pos;
-
-								vec3 light_dir = pos - light_pos;
-								float angle = -dot(nor, light_dir);
-								if (angle < 0.f)
-									continue;
-
-								float dist = length(light_dir);
-								if (dist > 0.f)
-									angle /= dist;
-								assign_max(dist, 16.f);
-
-								float scale = light.intensity * angle;
-								if (light_index != 0)
-									scale *= Lightmap::PointScale / (dist * dist);
-								if (scale < Lightmap::ThreshIgnore)
-									continue;
-
-								if (light.flags & Light::IsSpotlight) {
-									if (!EnableSpotlights)
-										continue;
-									float dist_by_normal = dot(light_dir, light.spot.xyz);
-									if (dist_by_normal < 0.f)
-										continue;
-
-									const float Radius = 64.f;
-									float radius_by_dist = (Radius + 16.f) / light.spot.w;
-									float radius_at_dist = radius_by_dist * dist_by_normal;
-									vec3 point_at_dist = light.position;
-									mad(point_at_dist, light.spot.xyz, dist_by_normal);
-									float sample_radius = length(pos - point_at_dist);
-									if (sample_radius >= radius_at_dist)
-										continue;
-
-									if (sample_radius > radius_at_dist - 32.f)
-										scale *= (radius_at_dist - sample_radius) * (1.f/32.f);
-								}
-
-								if (params->mode == LightMode::Shadows) {
-									// offset sampling point towards the light
-									vec3 delta = light_pos - pos;
-									float dist = length(delta);
-									float bias = Lightmap::SurfaceBias / dist;
-									trace.start.x = pos.x + delta.x * bias;
-									trace.start.y = pos.y + delta.y * bias;
-									trace.start.z = pos.z + delta.z * bias;
-									trace.delta.x = light_pos.x - trace.start.x;
-									trace.delta.y = light_pos.y - trace.start.y;
-									trace.delta.z = light_pos.z - trace.start.z;
-
-									bool hit = Map::TraceRay(trace);
-									if (light_index == 0) {
-										using namespace Demo::Material;
-										if (!hit || GetVisibility(brushes.GetPlaneMaterial(trace.plane)) != Sky)
-											continue;
-									} else if (hit) {
-										continue;
-									}
-								}
-
-								mad(accum, light.color, scale);
-							}
-						}
-
-						if (params->mode == LightMode::Bounce || (params->mode == LightMode::Shadows && source->skylight)) {
-							vec3 skylight;
-							skylight.r = ((source->skylight      ) & 255) / float(Lightmap::NumEnvSamples);
-							skylight.g = ((source->skylight >>  8) & 255) / float(Lightmap::NumEnvSamples);
-							skylight.b = ((source->skylight >> 16) & 255) / float(Lightmap::NumEnvSamples);
-
-							R2::CosineHemisphere hemisphere;
-							for (u16 i = 0; i < Lightmap::NumEnvSamples; ++i) {
-								trace.start.x = pos.x + nor.x;
-								trace.start.y = pos.y + nor.y;
-								trace.start.z = pos.z + nor.z;
-
-								vec3 dir = hemisphere.NextSample();
-
-								mul(trace.delta, x_axis, Lightmap::EnvRayLength * dir.x);
-								mad(trace.delta, y_axis, Lightmap::EnvRayLength * dir.y);
-								mad(trace.delta, nor,    Lightmap::EnvRayLength * dir.z);
-
-								if (!Map::TraceRay(trace))
-									continue;
-
-								using namespace Demo::Material;
-								auto vis = GetVisibility(brushes.GetPlaneMaterial(trace.plane));
-
-								if (params->mode == LightMode::Shadows) {
-									if (vis == Sky)
-										accum += skylight;
-								} else {
-									if (vis != Opaque)
-										continue;
-
-									u8 uv_axis = brushes.GetPlaneUVAxis(trace.plane);
-									u8 s_axis = brushes.GetSAxis(uv_axis);
-									u8 t_axis = brushes.GetTAxis(uv_axis);
-
-									const vec2& lightmap_offset = brushes.plane_lmap_offset[trace.plane];
-									i32 x = clamp(i32(trace.hit_point[s_axis] / Lightmap::TexelSize - lightmap_offset[0] - 0.5f), 0, Lightmap::Width - 1);
-									i32 y = clamp(i32(trace.hit_point[t_axis] / Lightmap::TexelSize - lightmap_offset[1] - 0.5f), 0, Lightmap::Height - 1);
-
-									vec3 sample;
-									Lightmap::UnpackVec3(sample, lightmap.bounce_data[y * Lightmap::Width + x]);
-
-									float dist = max(16.f, trace.fraction * Lightmap::EnvRayLength);
-									float scale = Lightmap::BounceScale / Lightmap::NumEnvSamples;
-									scale /= dist;
-
-									mad(accum, sample, min(scale, 0.25f));
-								}
-							}
-						}
+						Details::SampleLighting(pos, nor, x_axis, y_axis, trace, accum, params->mode);
 					}
 
-					// maintain hue instead of clamping to white
-					float max_value = max_component(accum);
-					if (max_value > 255.f)
-						accum *= 255.f / max_value;
-
-					u32 color = 
-						min((i32)accum.x, 255) << 16 | 
-						min((i32)accum.y, 255) <<  8 | 
-						min((i32)accum.z, 255) <<  0 ;
-					
+					u32 color = Details::ClampColor(accum);
 					if (length_squared(nor) > 0.f)
 						color |= 0xff00'0000;
 
@@ -614,6 +626,39 @@ void Map::ComputeLighting(LightMode mode) {
 		}
 	} else {
 		Details::DebugFillLightmap();
+	}
+
+	/* compute vertex lighting (for models) */
+
+	if (mode != LightMode::Bounce) {
+		ParallelFor(num_model_vertices, &mode, [](u32 begin, u32 end, void* data) {
+			LightMode mode = *(LightMode*)data;
+
+			TraceInfo trace;
+			MemSet(&trace);
+			trace.type = TraceInfo::Type::Lightmap;
+			// prevent the ray from squeezing between diagonally-adjacent brushes
+			// this fixes a sun light leak in the left hallway of DM1
+			trace.box_half_size = 1.f/32.f;
+
+			for (u32 i = begin; i < end; ++i) {
+				u32 index = Map::model_vertex_indices[i];
+				const vec3& pos = Map::positions[index];
+				const vec3& nor = Map::normals[index];
+				u32& color = Map::colors[index];
+
+				if (length_squared(nor) > 0.f) {
+					vec3 x_axis, y_axis;
+					ComputeTangentFrame(nor, x_axis, y_axis);
+			
+					vec3 accum = Lightmap::Ambient;
+					Details::SampleLighting(pos, nor, x_axis, y_axis, trace, accum, mode);
+					color = Details::ClampColor(accum);
+				} else {
+					color = 0;
+				}
+			}
+		});
 	}
 }
 

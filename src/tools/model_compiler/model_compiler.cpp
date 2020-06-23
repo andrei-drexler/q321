@@ -1,5 +1,6 @@
 #include "../common.h"
 #include "../../demo/resource_def.h"
+#include "../../demo/material.h"
 #include "q3model.h"
 
 ////////////////////////////////////////////////////////////////
@@ -469,6 +470,22 @@ int FindEdge(const u32* indices, u32 a, u32 b) {
 
 ////////////////////////////////////////////////////////////////
 
+u32 FindMaterial(string_view name) {
+	u32 fallback = 0;
+
+	for (u32 i = 0; i < std::size(Demo::Material::Paths); ++i) {
+		string_view current_path = Demo::Material::Paths[i];
+		if (name == current_path)
+			return i;
+		if (current_path == "*model")
+			fallback = i;
+	}
+
+	return fallback;
+}
+
+////////////////////////////////////////////////////////////////
+
 void CompileModel(const MD3::Header& model, const Options& options, const std::string& path, FILE* out) {
 	string_view clean_path = path;
 	auto name = ExtractFileName({path});
@@ -495,7 +512,7 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	};
 
 	struct Part {
-		u32 shader;
+		u32 material;
 		u32 num_vertices;
 		u32 num_indices;
 	};
@@ -555,7 +572,9 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 			std::rotate(idx, idx + min_pos, idx + 3);
 		}
 
-		output_parts.push_back({0, num_vertices, num_indices});
+		assert(surf->num_shaders > 0);
+		u32 material = FindMaterial(surf->GetShaders()[0].name);
+		output_parts.push_back({material, num_vertices, num_indices});
 
 		/* sort vertices */
 		sorted_vertices.clear();
@@ -702,7 +721,7 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 		u8 shader = 0;
 		print
 			<< "{"sv
-			<<		(i32)part.shader << ","sv
+			<<		(i32)part.material << ","sv
 			<<		(i32)part.num_vertices << ","sv
 			<<		(i32)part.num_indices << ","sv
 			<< "},"sv

@@ -104,6 +104,7 @@
 	x(lavaf,				MapVertexBits)\
 	x(bwprtbnr,				FSVertexBits)\
 	x(bwprtbnr_m,			MapVertexBits|Gfx::Shader::NoCull)\
+	x(statue,				MapVertexBits|Attrib::ColorBit)\
 	x(q3bnr,				FSVertexBits)\
 	x(q3bnr_m,				MapVertexBits)\
 	x(beam,					MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
@@ -265,6 +266,7 @@
 	x("gothic_door/skull_door_f",				Lmapped,		gskdr_f,		Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahell_750",					lava,			White,			Solid,		Opaque,					(500,16,5,2))\
 	x("base_wall/protobanner",					bwprtbnr_m,		bwprtbnr,		Solid,		Opaque|NeedsUV,			(0))\
+	x("*model",									statue,			White,			Solid,		Opaque,					(0))\
 	x("skies/blacksky",							blacksky,		White,			Solid,		Sky,					(0))\
 	x("skies/tim_hell",							timhel,			White,			Solid,		Sky,					(0))\
 	x("sfx/beam",								beam,			White,			NonSolid,	Translucent|NeedsUV,	(0))\

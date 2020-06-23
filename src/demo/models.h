@@ -151,6 +151,7 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			const PackedModel::Part& src_part = packed.parts[part_index];
 			Part& dst_part = Storage::parts[dst_ofs_part++];
 
+			dst_part.material = src_part.material;
 			dst_part.num_verts = src_part.num_verts;
 			dst_part.num_indices = src_part.num_indices;
 			dst_part.ofs_verts = dst_ofs_verts;

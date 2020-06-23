@@ -25,6 +25,7 @@ namespace Demo {
 namespace Map {
 	enum {
 		MAX_NUM_VERTS		= 96 * 1024,
+		MAX_NUM_MODEL_VERTS	= 32 * 1024,
 		MAX_NUM_TRIS		= 128 * 1024,
 		MAX_NUM_INDICES		= MAX_NUM_TRIS * 3,
 		MAX_NUM_MATERIALS	= 256,
@@ -172,10 +173,11 @@ namespace Map {
 	Array<u32,  MAX_NUM_MATERIALS>	mat_vertex_offset;
 	Array<u32,  MAX_NUM_MATERIALS>	num_mat_indices;
 	Array<u32,  MAX_NUM_MATERIALS>	mat_index_offset;
-	Array<u32,  MAX_NUM_MATERIALS>	mat_model_vertex_offset;
-	Array<u32,  MAX_NUM_MATERIALS>	mat_model_index_offset;
 	u32								num_total_vertices;
 	u32								num_total_indices;
+	
+	u32								num_model_vertices;
+	Array<u32, MAX_NUM_MODEL_VERTS>	model_vertex_indices;
 
 	struct {
 		u32							positions;
@@ -228,6 +230,8 @@ namespace Map {
 		void						InitLights();
 		void						PackLightmap();
 		void						DebugFillLightmap();
+		void						SampleLighting(const vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace, vec3& accum, LightMode mode = LightMode::Shadows);
+		u32							ClampColor(const vec3& accum);
 		void						GetUnoccludedPos(vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace);
 
 		static u16					MirrorPlaneIndex(u16 brush_plane, u8 axis);
@@ -349,8 +353,7 @@ FORCEINLINE void Map::Details::InitEntities() {
 FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 	using namespace Demo;
 
-	MemCopy(&Map::mat_model_vertex_offset, &Map::mat_vertex_offset);
-	MemCopy(&Map::mat_model_index_offset,  &Map::mat_index_offset);
+	Map::num_model_vertices = 0;
 
 	for (const Entity *entity = &entities[num_brush_entities], *entity_end = &entities[num_entities]; entity != entity_end; ++entity) {
 		if (entity->type != Entity::Type::misc_model)
@@ -381,12 +384,16 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 					pos = transform * Model::Storage::vertices[src_vtx_offset + i];
 					uv.xy = Model::Storage::uvs[src_vtx_offset + i];
 					uv.zw = 0.f;
+					Map::model_vertex_indices[Map::num_model_vertices++] = dst_vtx_offset + i;
 				}
 
 				u32 dst_idx_offset = Map::mat_index_offset[material] + Map::num_mat_indices[material];
 				u32 src_idx_offset = part.ofs_idx;
 				for (u32 i = 0; i < part.num_indices; ++i)
 					Map::indices[dst_idx_offset + i] = Model::Storage::indices[src_idx_offset + i] + first_vertex;
+			} else {
+				Map::num_model_vertices += part.num_verts;
+				assert(Map::num_model_vertices <= MAX_NUM_MODEL_VERTS);
 			}
 
 			Map::num_mat_verts[material] += part.num_verts;
@@ -737,9 +744,7 @@ void Map::Render() {
 	Gfx::Mesh mesh;
 	memset(&mesh, 0, sizeof(mesh));
 
-	// superfluous since we're using floating-point data,
-	// but it seems to help crinkler and it does no harm...
-	mesh.vertices[Attrib::Normal].normalized = true;
+	mesh.vertices[Attrib::Color].normalized = true;
 
 	auto num_materials = Demo::Material::Count;
 	for (u8 material = 0; material < num_materials; ++material) {

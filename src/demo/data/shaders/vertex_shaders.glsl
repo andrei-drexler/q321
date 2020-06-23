@@ -30,6 +30,7 @@ void Generic() {
 	 Nor = N;
 	 UV = T.xy;
 	 LUV = T.zw;
+	 Clr = C;
 	 Ref = normalize(reflect((P - Cam).xyz, N));
 }
 void icon() { FS(); }
@@ -122,6 +123,7 @@ void bwprtbnr_m() {
 	wave(30., 3., .2);
 	wave(100., 3., .7);
 }
+void statue() { Generic(); }
 void q3bnr() { FS(); }
 void q3bnr_m() { Generic(); }
 void beam() { Generic(); }

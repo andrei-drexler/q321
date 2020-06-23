@@ -922,3 +922,4 @@
 52685,draw all entities
 52967,appended misc_models to map geo
 53024,added map vertex color stream
+53278,misc_model gouraud shading

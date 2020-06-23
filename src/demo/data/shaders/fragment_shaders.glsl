@@ -2305,6 +2305,10 @@ TEXA(bwprtbnr_m) {
 	return c;
 }
 
+void statue() {
+	FCol = Clr;
+}
+
 TEXA(q3bnr) {
 	uv *= vec2(256, 64);
 	uv.y += 2.;
