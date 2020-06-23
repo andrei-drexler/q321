@@ -158,7 +158,7 @@ void AdaptiveQuantization(MD3::Header& model, float quality = 2.f) {
 
 ////////////////////////////////////////////////////////////////
 
-void WeldVertices(MD3::Header& header) {
+void WeldVertices(MD3::Surface& surf) {
 	struct VertexRefHasher {
 		MD3::Surface* surface;
 
@@ -188,34 +188,21 @@ void WeldVertices(MD3::Header& header) {
 	};
 
 	using VertexHashMap = std::unordered_map<u32, u32, VertexRefHasher, VertexRefHasher>;
+	
+	/* initializate hasher and key_eq with surface pointer */
+	VertexHashMap hash_map(surf.num_verts * 2, {&surf}, {&surf});
 
-	std::vector<u32> remap;
+	std::vector<u32> remap(surf.num_verts);
 
-	for (MD3::Surface& surf : MD3::GetSurfaces(header)) {
-		/* initializate hasher and key_eq with surface pointer */
-		VertexHashMap hash_map(surf.num_verts * 2, {&surf}, {&surf});
-
-		remap.clear();
-		remap.resize(surf.num_verts);
-
-		for (u32 i = 0; i < surf.num_verts; ++i) {
-			u32& index = hash_map[i];
-			if (index == 0)
-				index = i + 1;
-			remap[i] = index - 1;
-		}
-
-		for (u32& i : MD3::GetIndices(surf))
-			i = remap[i];
+	for (u32 i = 0; i < surf.num_verts; ++i) {
+		u32& index = hash_map[i];
+		if (index == 0)
+			index = i + 1;
+		remap[i] = index - 1;
 	}
-}
 
-////////////////////////////////////////////////////////////////
-
-void ClearUVs(MD3::Header& model) {
-	for (MD3::Surface& surf : MD3::GetSurfaces(model))
-		for (MD3::UV& uv : MD3::GetUVs(surf))
-			uv = 0.f;
+	for (u32& i : MD3::GetIndices(surf))
+		i = remap[i];
 }
 
 ////////////////////////////////////////////////////////////////
@@ -471,6 +458,9 @@ int FindEdge(const u32* indices, u32 a, u32 b) {
 ////////////////////////////////////////////////////////////////
 
 u32 FindMaterial(string_view name) {
+	RemovePrefix(name, "textures/");
+	RemoveSuffix(name, ".tga");
+
 	u32 fallback = 0;
 
 	for (u32 i = 0; i < std::size(Demo::Material::Paths); ++i) {
@@ -486,7 +476,7 @@ u32 FindMaterial(string_view name) {
 
 ////////////////////////////////////////////////////////////////
 
-void CompileModel(const MD3::Header& model, const Options& options, const std::string& path, FILE* out) {
+void CompileModel(MD3::Header& model, const Options& options, const std::string& path, FILE* out) {
 	string_view clean_path = path;
 	auto name = ExtractFileName({path});
 	while (RemovePrefix(clean_path, "../"sv))
@@ -529,13 +519,20 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 	std::vector<i32> old_to_new;
 	std::vector<Vertex> sorted_vertices;
 
-	const MD3::Surface* surf = model.GetFirstSurface();
+	MD3::Surface* surf = model.GetFirstSurface();
 	for (u32 surface_index = 0; surface_index < model.num_surfaces; ++surface_index, surf = surf->GetNext()) {
 		const MD3::Shader*		shaders	= surf->GetShaders();
 		const MD3::Vertex*		verts	= surf->GetVerts();
 		const MD3::UV*			uvs		= surf->GetUVs();
 
 		const u32* base_indices = surf->GetIndices();
+
+		assert(surf->num_shaders > 0);
+		u32 material = FindMaterial(surf->GetShaders()[0].name);
+		u32 props = Demo::Material::Properties[material];
+		if (!(props & Demo::Material::NeedsUV))
+			memset(surf->GetUVs(), 0, surf->num_verts * sizeof(uvs[0]));
+		WeldVertices(*surf);
 
 		flipped_indices.clear();
 		flipped_indices.resize(surf->num_tris * 3);
@@ -572,8 +569,6 @@ void CompileModel(const MD3::Header& model, const Options& options, const std::s
 			std::rotate(idx, idx + min_pos, idx + 3);
 		}
 
-		assert(surf->num_shaders > 0);
-		u32 material = FindMaterial(surf->GetShaders()[0].name);
 		output_parts.push_back({material, num_vertices, num_indices});
 
 		/* sort vertices */
@@ -783,8 +778,6 @@ int main() {
 			continue;
 		}
 
-		ClearUVs(model);
-		WeldVertices(model);
 		//AdaptiveQuantization(model);
 		//ExportObj(model, (std::string("d:\\temp\\") + std::string(ExtractFileName({path})) + ".obj").c_str());
 		CompileModel(model, options, path, out);

@@ -926,3 +926,4 @@
 53266,misc_model triplanar mapping
 53322,misc_model skylight/shadows
 53335,tweaked statue shader
+53332,keep some model uvs

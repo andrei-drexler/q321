@@ -177,6 +177,9 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 #endif // DEMO_MODELS_USE_DELTA_ENCODING
 				}
 
+				/* flip upside down */
+				unpack[4] = 1.f - unpack[4];
+
 				MemCopy(dst_ofs_verts + Storage::vertices, unpack, 3 * sizeof(float));
 				MemCopy(dst_ofs_verts + Storage::uvs, unpack + 3, 2 * sizeof(float));
 			}
