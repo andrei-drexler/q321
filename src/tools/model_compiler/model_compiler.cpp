@@ -498,7 +498,7 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 	};
 
 	auto quantize_uv = [](float value) {
-		return i16(std::floor(value * 128.f + 0.5f));
+		return i16(std::floor(value * 64.f + 0.5f));
 	};
 
 	struct Part {

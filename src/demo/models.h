@@ -169,7 +169,7 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 				for (u16 stream_index = 0; stream_index < 5; ++stream_index) {
 					u16 raw_value = ReadVarint(src_pos[stream_index]);
 #if DEMO_MODELS_USE_DELTA_ENCODING
-					float div = (stream_index > 2) ? 128.f : 4.f;
+					float div = (stream_index > 2) ? 64.f : 4.f;
 					accum[stream_index] += DecodeSignMagnitude(raw_value);
 					unpack[stream_index] = float(accum[stream_index]) / div;
 #else
