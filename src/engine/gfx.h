@@ -215,10 +215,16 @@ namespace Gfx {
 	void InitMemory(const u32 sizes[Arena::Count]);
 	void ResetArena(Arena::Type type);
 	u32 UploadGeometry(const void* data, u32 size, Arena::Type type = Arena::Type::Dynamic);
+	void UploadGeometry(const void* data, u32 size, Arena::Type type, u32 offset);
 
 	template <typename T>
 	u32 UploadGeometry(const T* data, u32 count, Arena::Type type = Arena::Type::Dynamic) {
 		return UploadGeometry((const void*)data, count * sizeof(T), type);
+	}
+
+	template <typename T>
+	void UploadGeometry(const T* data, u32 count, Arena::Type type, u32 offset) {
+		UploadGeometry((const void*)data, count * sizeof(T), type, offset);
 	}
 
 	void RegisterUniforms(const char* names, const Uniform::Type* types, const void* const* values, u16 count);

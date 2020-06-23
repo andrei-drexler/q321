@@ -571,6 +571,10 @@ NOINLINE u32 Gfx::UploadGeometry(const void* data, u32 size, Arena::Type type) {
 	return offset + Arena::BaseOffset;
 }
 
+FORCEINLINE void Gfx::UploadGeometry(const void* data, u32 size, Arena::Type type, u32 offset) {
+	offset -= Arena::BaseOffset;
+	glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+}
 
 ////////////////////////////////////////////////////////////////
 
