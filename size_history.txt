@@ -927,3 +927,4 @@
 53322,misc_model skylight/shadows
 53335,tweaked statue shader
 53332,keep some model uvs
+53316,added sfx/flame1side

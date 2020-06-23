@@ -272,6 +272,7 @@
 	x("sfx/beam",								beam,			White,			NonSolid,	Translucent|NeedsUV,	(0))\
 	x("sfx/flame1_hell",						flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
 	x("sfx/flame2",								flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(5500,8,6,1))\
+	x("sfx/flame1side",							flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("common/weapclip",						Generic,		White,			Solid,		Invisible,				(0))\
 	x("common/clip",							Generic,		White,			Solid,		Invisible,				(0))\
 	x("common/nodraw",							Generic,		White,			Solid,		Invisible,				(0))\
