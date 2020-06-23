@@ -2315,8 +2315,8 @@ void statue() {
 		p = Pos / float(textureSize(Texture0, 2).x);
 	FCol = vec4(0);
 	for (int i = 0; i < 3; ++i, p = p.yzx)
-		FCol += texture(Texture0, p.yz) * n[i] / sum(n);
-	FCol *= Clr * 2.;
+		FCol += texture(Texture0, p.yz) * n[i];
+	FCol *= (Clr + .5 * n.z * n.z * sign(Nor.z)) * 1.5 / sum(n);
 }
 
 TEXA(q3bnr) {

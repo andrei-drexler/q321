@@ -925,3 +925,4 @@
 53278,misc_model gouraud shading
 53266,misc_model triplanar mapping
 53322,misc_model skylight/shadows
+53335,tweaked statue shader
