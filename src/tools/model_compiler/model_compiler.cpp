@@ -14,24 +14,25 @@ struct Options {
 
 ////////////////////////////////////////////////////////////////
 
-bool ExportObj(const MD3::Header& model, const char* path, int frac_bits = 2) {
+bool ExportObj(const MD3::Header& model, const char* path, float scale = 1.f, int frac_bits = 2) {
 	FILE* out = fopen(path, "w");
 	if (!out)
 		return false;
 	auto close_output = scope_exit { fclose(out); out = NULL; };
-
-	std::vector<vec3> normals;
 
 	const i16
 		ChopBits = std::max(MD3::Vertex::FracBits - frac_bits, 0),
 		RoundBias = ChopBits > 0 ? 1 << (ChopBits - 1) : 0,
 		RoundMask = (1 << ChopBits) - 1
 	;
-	const float VertexScale = 1.f / float(1 << ChopBits);
+	const float VertexScale = scale / MD3::Vertex::Scale;
+
+	std::vector<vec3> normals;
 
 	const MD3::Surface* surf = model.GetFirstSurface();
 	for (u32 i = 0, base = 1; i < model.num_surfaces; ++i, base += surf->num_verts, surf = surf->GetNext()) {
-		fprintf(out, "g surface_%d\n", i);
+		//fprintf(out, "g surface_%d\n", i);
+		fprintf(out, "g %s\n", surf->GetShaders()[0].name);
 
 		auto verts = MD3::GetVertices(*surf);
 		auto tris = MD3::GetTriangles(*surf);
