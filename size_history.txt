@@ -932,3 +932,4 @@
 53314,viewmodel depth hack
 53300,tweaked flame shader
 53280,viewmodel idle anim
+53303,entity model lookup table

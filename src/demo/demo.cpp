@@ -108,6 +108,53 @@ namespace Demo {
 		}
 	}
 
+	static constexpr u8 GetEntityModel(Entity::Type type) {
+		using Type = Demo::Entity::Type;
+
+		switch (type) {
+			case Type::ammo_bullets:
+			case Type::ammo_rockets:
+			case Type::ammo_shells:
+			case Type::ammo_slugs:
+			case Type::ammo_cells:
+				return 1 + Demo::Model::rocketam;
+
+			case Type::item_health:
+			case Type::item_health_large:
+				return 1 + Demo::Model::large_cross;
+
+			case Type::item_health_mega:
+				return 1 + Demo::Model::mega_cross;
+
+			case Type::weapon_railgun:
+				return 1 + Demo::Model::railgun;
+
+			case Type::weapon_rocketlauncher:
+				return 1 + Demo::Model::rocketl;
+
+			case Type::weapon_shotgun:
+				return 1 + Demo::Model::shotgun;
+
+			case Type::weapon_plasmagun:
+				return 1 + Demo::Model::plasma;
+
+			case Type::item_armor_shard:
+				return 1 + Demo::Model::shard;
+
+			case Type::item_armor_body:
+			case Type::item_armor_combat:
+				return 1 + Demo::Model::armor_red;
+
+			case Type::item_quad:
+				return 1 + Demo::Model::quad;
+
+			default:
+				return 0;
+		}
+	}
+
+	static constexpr auto EntityModels = MakeLookupTable<Entity::Type, u8, Entity::Type{}, Entity::Type::Count>(GetEntityModel);
+
 	void DrawPointEntities() {
 		for (u16 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
 			auto& e = Map::entities[i];
@@ -144,69 +191,18 @@ namespace Demo {
 			transform.position[2] += 4.f + 4.f * sin(Math::TAU * (float(g_time) + phase));
 			transform.angles[0] = ent.angle + float(g_time) * 180.f;
 
-			float weapon_scale = 1.5f;
-			float weapon_offset = transform.position[2] + 8.f;
-			int model_id = -1;
+			const u32 WeaponTypeMask =
+				(1 << (u32)Type::weapon_railgun) |
+				(1 << (u32)Type::weapon_shotgun) |
+				(1 << (u32)Type::weapon_rocketlauncher) |
+				(1 << (u32)Type::weapon_plasmagun);
 
-			switch (ent.type) {
-				case Type::ammo_bullets:
-				case Type::ammo_rockets:
-				case Type::ammo_shells:
-				case Type::ammo_slugs:
-				case Type::ammo_cells:
-					model_id = Demo::Model::rocketam;
-					break;
-
-				case Type::item_health:
-				case Type::item_health_large:
-					model_id = Demo::Model::large_cross;
-					break;
-
-				case Type::item_health_mega:
-					model_id = Demo::Model::mega_cross;
-					break;
-
-				case Type::weapon_railgun:
-					model_id = Demo::Model::railgun;
-					transform.scale = weapon_scale;
-					transform.position[2] = weapon_offset;
-					break;
-
-				case Type::weapon_rocketlauncher:
-					model_id = Demo::Model::rocketl;
-					transform.scale = weapon_scale;
-					transform.position[2] = weapon_offset;
-					break;
-
-				case Type::weapon_shotgun:
-					model_id = Demo::Model::shotgun;
-					transform.scale = weapon_scale;
-					transform.position[2] = weapon_offset;
-					break;
-
-				case Type::weapon_plasmagun:
-					model_id = Demo::Model::plasma;
-					transform.scale = weapon_scale;
-					transform.position[2] = weapon_offset;
-					break;
-
-				case Type::item_armor_shard:
-					model_id = Demo::Model::shard;
-					break;
-
-				case Type::item_armor_body:
-				case Type::item_armor_combat:
-					model_id = Demo::Model::armor_red;
-					break;
-
-				case Type::item_quad:
-					model_id = Demo::Model::quad;
-					break;
-
-				default:
-					break;
+			if ((WeaponTypeMask >> u32(ent.type)) & 1) {
+				transform.scale = 1.5f;
+				transform.position[2] += 8.f;
 			}
 
+			int model_id = int(EntityModels[ent.type]) - 1;
 			if (model_id != -1)
 				Demo::Model::Draw(Demo::Model::ID(model_id), transform);
 		}
