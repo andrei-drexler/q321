@@ -2367,13 +2367,13 @@ void beam() {
 
 void flame() {
 	vec2 uv = fract(UV), p = uv;
-	p.y += p.y - Time.x;
-	uv.x += sin(p.y * 7.) * .2 * uv.y;
+	p.y += p.y - Time.x * 1.5;
+	uv.x += (N(p.y * 5.) - .5) * 1.5 * sqr(uv.y);
 	float
-		n = FBMT(p + sin(p.yx * PI * 9. + vec2(0, Time.x * 9.)) * .015 + NT(p, vec2(5)) * .1, vec2(13), .4, 3., 4),
-		b = box(uv - vec2(.5, .25), vec2(.05 * sqr(ls(.4, .2, uv.y)), .1)),
-		m = sqr(msk(b + n * .25, .35));
-	FCol = ls(.0, .4, m) * vec4(5, 2, .7, 0);
+		n = FBMT(wavy(p, 7., .02), vec2(9), .7, 2., 4),
+		h = ls(.9, .03, uv.y),
+		b = box(uv - vec2(.5, .15), vec2(0, .3));
+	FCol = sqr(msk(b + n * sqr(1.2 - h) - .13, .15)) * vec4(5, 2, .7, 0);
 }
 
 void Generic() {

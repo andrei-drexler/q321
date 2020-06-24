@@ -930,3 +930,4 @@
 53316,added sfx/flame1side
 53311,reduced uv resolution
 53314,viewmodel depth hack
+53300,tweaked flame shader
