@@ -2,6 +2,12 @@
 
 ////////////////////////////////////////////////////////////////
 
+#ifdef ENABLE_RADIOSITY
+	#define PP_RADIOSITY_CVAR(x)	x(r_bounce,			0)
+#else
+	#define PP_RADIOSITY_CVAR(x)
+#endif
+
 #define CVAR_LIST(x)			\
 	x(sensitivity,		1)		\
 	x(com_maxFps,		0)		\
@@ -9,7 +15,7 @@
 	x(cg_zoomfov,		45)		\
 	x(r_lightmap,		0)		\
 	x(r_fullbright,		0)		\
-	x(r_bounce,			0)		\
+	PP_RADIOSITY_CVAR(x)		\
 	x(g_gravity,		800)	\
 
 ////////////////////////////////////////////////////////////////

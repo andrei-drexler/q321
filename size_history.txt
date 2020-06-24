@@ -937,3 +937,4 @@
 53195,noinline vec3/vec4 operators
 53194,reduced flame sway
 53480,local misc_model texturing + teleporter shader stub
+53256,disabled radiosity code

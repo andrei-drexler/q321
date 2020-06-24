@@ -10,6 +10,7 @@
 //#define SAVE_LIGHTMAP
 //#define SHOW_LIGHTMAP
 //#define FULLBRIGHT
+//#define ENABLE_RADIOSITY
 //#define START_NOCLIP
 
 #define START_MAP					dm1
@@ -47,8 +48,10 @@ namespace Demo {
 	void GenerateLightmap(void*) {
 		g_updated_lightmap = false;
 		Map::ComputeLighting(Map::LightMode::Shadows);
+#ifdef ENABLE_RADIOSITY
 		if (r_bounce.integer)
 			Map::ComputeLighting(Map::LightMode::Bounce);
+#endif
 	}
 
 	void RenderSprite(const vec3& point, float size) {

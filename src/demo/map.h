@@ -194,7 +194,9 @@ namespace Map {
 
 	struct {
 		u32*						data;
+#ifdef ENABLE_RADIOSITY
 		u32*						bounce_data;
+#endif // ENABLE_RADIOSITY
 		vec3*						pos;
 		vec3*						nor;
 		RectPacker					packer;

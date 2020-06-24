@@ -70,7 +70,9 @@ FORCEINLINE void Map::AllocLightmap() {
 	using namespace Demo;
 
 	lightmap.data = Mem::Alloc<u32>(Lightmap::TexelCount);
+#ifdef ENABLE_RADIOSITY
 	lightmap.bounce_data = Mem::Alloc<u32>(Lightmap::TexelCount);
+#endif
 	lightmap.pos = Mem::Alloc<vec3>(Lightmap::TexelCount);
 	lightmap.nor = Mem::Alloc<vec3>(Lightmap::TexelCount);
 }
@@ -491,6 +493,7 @@ void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& 
 			if (mode == LightMode::Shadows) {
 				if (vis == Sky)
 					accum += skylight;
+#ifdef ENABLE_RADIOSITY
 			} else {
 				if (vis != Opaque)
 					continue;
@@ -511,6 +514,7 @@ void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& 
 				scale /= dist;
 
 				mad(accum, sample, min(scale, 0.25f));
+#endif
 			}
 		}
 	}
@@ -540,10 +544,12 @@ void Map::ComputeLighting(LightMode mode) {
 #endif
 
 	if constexpr (Lightmap::Debug == Lightmap::DebugMode::Off) {
+#ifdef ENABLE_RADIOSITY
 		if (mode == LightMode::Bounce) {
 			Swap(lightmap.data, lightmap.bounce_data);
 			MemSet(lightmap.data, Lightmap::TexelCount);
 		}
+#endif // ENABLE_RADIOSITY
 
 		struct Params {
 			LightMode mode;
@@ -573,12 +579,16 @@ void Map::ComputeLighting(LightMode mode) {
 					vec3 pos = *texel_pos;
 					const vec3& nor = *texel_nor;
 
+#ifdef ENABLE_RADIOSITY
 					vec3 accum;
 					if (params->mode == LightMode::Bounce) {
 						Lightmap::UnpackVec3(accum, lightmap.bounce_data[texel - lightmap.data]);
 					} else {
 						accum = Lightmap::Ambient;
 					}
+#else
+					vec3 accum = Lightmap::Ambient;
+#endif // ENABLE_RADIOSITY
 
 					if (length_squared(nor) > 0.f) {
 						vec3 x_axis, y_axis;
