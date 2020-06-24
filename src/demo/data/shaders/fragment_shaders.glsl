@@ -2368,7 +2368,7 @@ void beam() {
 void flame() {
 	vec2 uv = fract(UV), p = uv;
 	p.y += p.y - Time.x * 1.5;
-	uv.x += (N(p.y * 5.) - .5) * 1.5 * sqr(uv.y);
+	uv.x += (N(p.y * 5.) - .5) * sqr(uv.y);
 	float
 		n = FBMT(wavy(p, 7., .02), vec2(9), .7, 2., 4),
 		h = ls(.9, .03, uv.y),
