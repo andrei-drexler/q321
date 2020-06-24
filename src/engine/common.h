@@ -386,14 +386,14 @@ struct LookupTable {
 
 	static constexpr size_t		size()						{ return Size; }
 	constexpr Value&			operator[](Key key) {
-		size_t i = size_t(key - First);
+		size_t i = size_t(key) - size_t(First);
 		if (i >= Size - 1)
 			i = Size - 1;
 		return data[i];
 	}
 	
 	constexpr const Value&		operator[](Key key) const {
-		size_t i = size_t(key - First);
+		size_t i = size_t(key) - size_t(First);
 		if (i >= Size - 1)
 			i = Size - 1;
 		return data[i];
@@ -402,8 +402,8 @@ struct LookupTable {
 
 template <typename Key, typename Value, Key FirstKey, Key LastKey, typename MapFunction>
 constexpr auto MakeLookupTable(MapFunction map) {
-	LookupTable<size_t(LastKey - FirstKey + 2), Value, Key, FirstKey> result = {};
-	for (size_t i=0; i<result.size(); ++i)
+	LookupTable<size_t(LastKey) - size_t(FirstKey) + 2, Value, Key, FirstKey> result = {};
+	for (size_t i = 0; i < result.size(); ++i)
 		result.data[i] = map(static_cast<Key>(static_cast<size_t>(FirstKey) + i));
 	return result;
 }
