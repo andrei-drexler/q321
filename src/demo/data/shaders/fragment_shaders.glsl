@@ -2365,15 +2365,21 @@ void beam() {
 	FCol = vec4(2. * RGB(95, 85, 80) * f*f*f*f * mix(1., b, .5), 0.);
 }
 
-void flame() {
-	vec2 uv = fract(UV), p = uv;
-	p.y += p.y - Time.x * 1.5;
-	uv.x += (N(p.y * 5.) - .5) * sqr(uv.y);
+// Single-speed flame layer (s = speed)
+float simple_flame(vec2 uv, float s) {
+	vec2 p = uv;
+	p.y += p.y - Time.x * s;
+	uv.x += (N(p.y * 5.) - .5) * 1.5 * sqr(uv.y);
 	float
 		n = FBMT(wavy(p, 7., .02), vec2(9), .7, 2., 4),
 		h = ls(.9, .03, uv.y),
 		b = box(uv - vec2(.5, .15), vec2(0, .3));
-	FCol = sqr(msk(b + n * sqr(1.2 - h) - .13, .15)) * vec4(5, 2, .7, 0);
+	return sqr(msk(b + n * sqr(1.2 - h) - .13, .15));
+}
+
+void flame() {
+	vec2 uv = fract(UV);
+	FCol = (simple_flame(uv, .5) + simple_flame(uv * vec2(1, 1.2), 1.)) * vec4(2.5, 1, .35, 0);
 }
 
 void Generic() {

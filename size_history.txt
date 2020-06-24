@@ -938,3 +938,4 @@
 53194,reduced flame sway
 53480,local misc_model texturing + teleporter shader stub
 53256,disabled radiosity code
+53271,2nd flame layer
