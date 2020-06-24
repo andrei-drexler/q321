@@ -220,12 +220,14 @@ namespace Demo {
 		mix_into(transform.position, Demo::Uniform::Cam.xyz, 17.f/16.f);
 
 		const float WeaponScale = 0.5f;
+		const float WeaponSway = 0.125f;
 		float speed = length(g_player.velocity.xy) * (WeaponScale / 320.f);
-		mad(transform.position, rotation.GetAxis(1), speed * sin(g_player.walk_cycle * 10.f));
-		mad(transform.position, rotation.GetAxis(2), speed * sin(g_player.walk_cycle * 20.f) * 0.25f);
+		float idle = WeaponSway * (sin(g_time) * .5f + .5f);
 
-		vec3 offset = g_weapon_offset * WeaponScale;
-		transform.position += rotation * offset;
+		vec3 offset = g_weapon_offset;
+		offset.y += speed * sin(g_player.walk_cycle * 10.f) + idle;
+		offset.z += speed * sin(g_player.walk_cycle * 20.f) * 0.25f + (WeaponSway - idle);
+		transform.position += rotation * (offset * WeaponScale);
 		transform.scale = WeaponScale;
 
 		Demo::Uniform::Time.w = float(Demo::Entity::Type::weapon_rocketlauncher);

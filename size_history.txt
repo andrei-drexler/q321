@@ -931,3 +931,4 @@
 53311,reduced uv resolution
 53314,viewmodel depth hack
 53300,tweaked flame shader
+53280,viewmodel idle anim
