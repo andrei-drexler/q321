@@ -2445,3 +2445,25 @@ void Loading() {
 void UI() {
 	FCol = texture(Texture0, UV) * Clr;
 }
+
+float star(vec2 p, vec2 c, float s) {
+	p -= c;
+	float a = ls(.3, .5, abs(fract(nang(p /= s) * 8. + H(c)) - .5));
+	return ls(.9, .6, pow(lsq(p), .0625) - a * a * .006);
+}
+
+// models/mapobjects/teleporter/energy.tga
+void tlpnrg() {
+	vec2 uv = vec2(nang(Pos.xy), ls(8., 128., Pos.z));
+
+	uv.x = fract(uv.x * 3. - Time.x * 2.2);
+	uv.y *= 4.;
+	float f =
+		star(uv, vec2(0, .3), 1.) +
+		star(uv, vec2(1, .3), 1.) +
+		star(uv, vec2(.5, .4), 1.5) 
+		;
+	f *= f;
+
+	FCol = vec4(f, f, f, 0);
+}

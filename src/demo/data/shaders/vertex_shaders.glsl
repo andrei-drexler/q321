@@ -25,13 +25,21 @@ void wave(float div, float amp, float freq) {
 // $protect void[ \t]+([a-zGLU][_a-zA-Z0-9]*)\(\)
 
 void Generic() {
-	 gl_Position = MVP * P;
-	 Pos = P.xyz;
-	 Nor = N;
-	 UV = T.xy;
-	 LUV = T.zw;
-	 Clr = C;
-	 Ref = normalize(reflect((P - Cam).xyz, N));
+	gl_Position = MVP * P;
+	Pos = P.xyz;
+	Nor = N;
+	UV = T.xy;
+	LUV = T.zw;
+	Clr = C;
+	Ref = normalize(reflect((P - Cam).xyz, N));
+}
+void misc_model() {
+	Generic();
+	Pos = floor(N) / 4.;
+	Nor = fract(N) * 4. - 2.;
+	float a = T.z, c = cos(a), s = sin(a);
+	Nor.xy *= mat2(c, s, -s, c);
+	Ref = normalize(reflect((P - Cam).xyz, Nor));
 }
 void icon() { FS(); }
 void bglogo() { FS(); }
@@ -123,8 +131,9 @@ void bwprtbnr_m() {
 	wave(30., 3., .2);
 	wave(100., 3., .7);
 }
-void statue() { Generic(); }
+void statue() { misc_model(); }
 void q3bnr() { FS(); }
 void q3bnr_m() { Generic(); }
 void beam() { Generic(); }
 void flame() { Generic(); }
+void tlpnrg() { misc_model(); }

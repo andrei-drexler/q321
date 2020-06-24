@@ -644,7 +644,9 @@ void Map::ComputeLighting(LightMode mode) {
 			for (u32 i = begin; i < end; ++i) {
 				u32 index = Map::model_vertex_indices[i];
 				const vec3& pos = Map::positions[index];
-				const vec3& nor = Map::normals[index];
+				const vec3& packed_nor = Map::normals[index];
+				vec3 nor;
+				Demo::Model::UnpackNormal(packed_nor, nor);
 				u32& color = Map::colors[index];
 
 				if (length_squared(nor) > 0.f) {

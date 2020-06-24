@@ -109,6 +109,7 @@
 	x(q3bnr_m,				MapVertexBits)\
 	x(beam,					MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flame,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(tlpnrg,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 
 ////////////////////////////////////////////////////////////////
 
@@ -273,6 +274,7 @@
 	x("sfx/flame1_hell",						flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
 	x("sfx/flame2",								flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(5500,8,6,1))\
 	x("sfx/flame1side",							flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(0))\
+	x("models/mapobjects/teleporter/energy",	tlpnrg,			White,			NonSolid,	Translucent,			(0))\
 	x("common/weapclip",						Generic,		White,			Solid,		Invisible,				(0))\
 	x("common/clip",							Generic,		White,			Solid,		Invisible,				(0))\
 	x("common/nodraw",							Generic,		White,			Solid,		Invisible,				(0))\

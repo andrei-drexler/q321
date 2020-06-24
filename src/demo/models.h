@@ -82,6 +82,9 @@ namespace Demo {
 
 		void LoadAll(const PackedModel* models);
 		void Draw(Model::ID id, const Transform& transform = TransformIdentity);
+
+		void PackNormalOffset(vec3& normal, const vec3& offset);
+		void UnpackNormal(const vec3& posnor, vec3& nor);
 	};
 }
 
@@ -264,4 +267,17 @@ NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 	}
 
 	Demo::Uniform::MVP = old_mvp;
+}
+
+////////////////////////////////////////////////////////////////
+
+FORCEINLINE void Demo::Model::PackNormalOffset(vec3& normal, const vec3& offset) {
+	for (u8 i = 0; i < 3; ++i) {
+		normal[i] = floor(offset[i] * 4.f) + normal[i] * 0.25f + 0.5f;
+	}
+}
+
+FORCEINLINE void Demo::Model::UnpackNormal(const vec3& posnor, vec3& nor) {
+	for (u8 i = 0; i < 3; ++i)
+		nor[i] = (fract(posnor[i]) - 0.5f) * 4.f;
 }

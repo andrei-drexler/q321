@@ -1,7 +1,7 @@
 #pragma once
 
 // auto-generated, do not modify
-static_assert(0x2498e988U == Demo::Model::Version, "Model definition mismatch, please recompile the model compiler & models");
+static_assert(0x3b40802dU == Demo::Model::Version, "Model definition mismatch, please recompile the model compiler & models");
 
 // demo/data/models/mapobjects/kmlamp1.md3
 namespace kmlamp1 {
@@ -92,7 +92,7 @@ const u8 indices[] = {3,2,2,2,4,5,2,4,2,7,2,3,2,2,8,3,2,6,2,3,2,2,7,3,2,6,2,3,2,
 ,9,2,2,5,4,2,4,2,3,2,5,7,8,3,7,9,10,3,9,2,3,6,4,2,2,5,2,3,2,2,7,3,2,2,6,4,2,4,7,10,3,7,11,3,2,5,12,2,2,2,2,4,2,7,2,3,2,5,2,4,2,7
 ,4,11,3,8,7,3,2,9,5,3,1,2,5,5,2,5,2,6,2,6,5,5,2,4,5,5,2,4,2,4,2,6,4,7,3,10,6,3,2,11,5,2,1,2,5,5,2,2,8,8,2,5,6,5,2,5,4,5,2,2,5,4,
 2,4,6,7,3,6,10,3,2,5,11,};
-const Demo::PackedModel::Part parts[] = {{67,20,60,},{67,40,180,},{67,16,36,},{67,24,96,},{67,20,72,},{67,24,96,},};
+const Demo::PackedModel::Part parts[] = {{74,20,60,},{67,40,180,},{67,16,36,},{67,24,96,},{67,20,72,},{67,24,96,},};
 } // namespace teleporter
 
 // demo/data/models/mapobjects/spotlamp/spotlamp.md3

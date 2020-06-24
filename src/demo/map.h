@@ -25,7 +25,7 @@ namespace Demo {
 namespace Map {
 	enum {
 		MAX_NUM_VERTS		= 96 * 1024,
-		MAX_NUM_MODEL_VERTS	= 32 * 1024,
+		MAX_NUM_MODEL_VERTS	= 16 * 1024,
 		MAX_NUM_TRIS		= 128 * 1024,
 		MAX_NUM_INDICES		= MAX_NUM_TRIS * 3,
 		MAX_NUM_MATERIALS	= 256,
@@ -178,6 +178,7 @@ namespace Map {
 	
 	u32								num_model_vertices;
 	Array<u32, MAX_NUM_MODEL_VERTS>	model_vertex_indices;
+	Array<u32, MAX_NUM_MODEL_VERTS>	model_vertex_sources;
 
 	struct {
 		u32							positions;
@@ -366,7 +367,8 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 			part_end   = Model::Storage::first_model_part[entity->model]
 		;
 
-		mat4 transform = MakeRotation({(float)entity->angle * Math::DEG2RAD, 0.f, 0.f});
+		float angle = float(entity->angle) * Math::DEG2RAD;
+		mat4 transform = MakeRotation({angle, 0.f, 0.f});
 		for (u16 i = 0; i < 3; ++i)
 			transform.GetPosition()[i] = entity->origin[i];
 
@@ -378,13 +380,27 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 				u32 first_vertex   = Map::num_mat_verts[material];
 				u32 dst_vtx_offset = Map::mat_vertex_offset[material] + first_vertex;
 				u32 src_vtx_offset = part.ofs_verts;
+
 				for (u32 i = 0; i < part.num_verts; ++i) {
 					vec3& pos = Map::positions[dst_vtx_offset + i];
 					vec4& uv  = Map::texcoords[dst_vtx_offset + i];
+
+					// Transformed vertex position
 					pos = transform * Model::Storage::vertices[src_vtx_offset + i];
+
+					// Original UVs, if present
 					uv.xy = Model::Storage::uvs[src_vtx_offset + i];
-					uv.zw = 0.f;
-					Map::model_vertex_indices[Map::num_model_vertices++] = dst_vtx_offset + i;
+
+					// Since misc_models aren't lightmapped, we can store other data in the lightmap UVs.
+					// In order to be able to reconstruct the local-space normal inside the shader,
+					// we save the angle of the entity in first unused channel.
+					uv.z = angle;
+					uv.w = 0.f;
+
+					// Keep a list of all misc_model vertices (for vertex lighting computation)
+					Map::model_vertex_indices[Map::num_model_vertices] = dst_vtx_offset + i;
+					Map::model_vertex_sources[Map::num_model_vertices] = src_vtx_offset + i;
+					++Map::num_model_vertices;
 				}
 
 				u32 dst_idx_offset = Map::mat_index_offset[material] + Map::num_mat_indices[material];
@@ -707,6 +723,14 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 				}
 			}
 		}
+	}
+
+	/* HACK: pack misc_model original positions inside the normals (for local-space texturing) */
+	for (u32 i = 0; i < num_model_vertices; ++i) {
+		u32 index = model_vertex_indices[i];
+		u32 source = model_vertex_sources[i];
+		using namespace Demo;
+		Model::PackNormalOffset(Map::normals[index], Model::Storage::vertices[source]);
 	}
 
 	Details::InitLights();
