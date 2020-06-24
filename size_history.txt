@@ -929,3 +929,4 @@
 53332,keep some model uvs
 53316,added sfx/flame1side
 53311,reduced uv resolution
+53314,viewmodel depth hack

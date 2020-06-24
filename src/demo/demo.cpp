@@ -219,11 +219,14 @@ namespace Demo {
 		transform.position.z -= g_player.step;
 		mix_into(transform.position, Demo::Uniform::Cam.xyz, 17.f/16.f);
 
-		float speed = length(g_player.velocity.xy) / 320.f;
+		const float WeaponScale = 0.5f;
+		float speed = length(g_player.velocity.xy) * (WeaponScale / 320.f);
 		mad(transform.position, rotation.GetAxis(1), speed * sin(g_player.walk_cycle * 10.f));
 		mad(transform.position, rotation.GetAxis(2), speed * sin(g_player.walk_cycle * 20.f) * 0.25f);
 
-		transform.position += rotation * g_weapon_offset;
+		vec3 offset = g_weapon_offset * WeaponScale;
+		transform.position += rotation * offset;
+		transform.scale = WeaponScale;
 
 		Demo::Uniform::Time.w = float(Demo::Entity::Type::weapon_rocketlauncher);
 		Demo::Model::Draw(Demo::Model::ID::rocketl, transform);
