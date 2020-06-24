@@ -934,3 +934,4 @@
 53280,viewmodel idle anim
 53303,entity model lookup table
 53233,noinline mat4 * vec3/4
+53195,noinline vec3/vec4 operators

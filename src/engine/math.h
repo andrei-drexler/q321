@@ -311,25 +311,25 @@ struct vec3 {
 	constexpr float& operator[](size_t i) { return data[i]; }
 	constexpr const float& operator[](size_t i) const { return data[i]; }
 
-	constexpr vec3& operator+=(const vec3& rhs) { x+=rhs.x; y+=rhs.y; z+=rhs.z; return *this; }
-	constexpr vec3& operator-=(const vec3& rhs) { x-=rhs.x; y-=rhs.y; z-=rhs.z; return *this; }
-	constexpr vec3& operator*=(const vec3& rhs) { x*=rhs.x; y*=rhs.y; z*=rhs.z; return *this; }
-	constexpr vec3& operator/=(const vec3& rhs) { x/=rhs.x; y/=rhs.y; z/=rhs.z; return *this; }
+	NOINLINE constexpr vec3& operator+=(const vec3& rhs) { x+=rhs.x; y+=rhs.y; z+=rhs.z; return *this; }
+	NOINLINE constexpr vec3& operator-=(const vec3& rhs) { x-=rhs.x; y-=rhs.y; z-=rhs.z; return *this; }
+	NOINLINE constexpr vec3& operator*=(const vec3& rhs) { x*=rhs.x; y*=rhs.y; z*=rhs.z; return *this; }
+	NOINLINE constexpr vec3& operator/=(const vec3& rhs) { x/=rhs.x; y/=rhs.y; z/=rhs.z; return *this; }
 
-	constexpr vec3 operator-() const { return vec3(-x, -y, -z); }
+	NOINLINE constexpr vec3 operator-() const { return vec3(-x, -y, -z); }
 	constexpr vec3 operator+() const { return *this; }
 };
 
-constexpr vec3 operator+(const vec3& lhs, const vec3& rhs) { return vec3(lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z); }
-constexpr vec3 operator-(const vec3& lhs, const vec3& rhs) { return vec3(lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z); }
-constexpr vec3 operator*(const vec3& lhs, const vec3& rhs) { return vec3(lhs.x*rhs.x, lhs.y*rhs.y, lhs.z*rhs.z); }
-constexpr vec3 operator/(const vec3& lhs, const vec3& rhs) { return vec3(lhs.x/rhs.x, lhs.y/rhs.y, lhs.z/rhs.z); }
+NOINLINE constexpr vec3 operator+(const vec3& lhs, const vec3& rhs) { return vec3(lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z); }
+NOINLINE constexpr vec3 operator-(const vec3& lhs, const vec3& rhs) { return vec3(lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z); }
+NOINLINE constexpr vec3 operator*(const vec3& lhs, const vec3& rhs) { return vec3(lhs.x*rhs.x, lhs.y*rhs.y, lhs.z*rhs.z); }
+NOINLINE constexpr vec3 operator/(const vec3& lhs, const vec3& rhs) { return vec3(lhs.x/rhs.x, lhs.y/rhs.y, lhs.z/rhs.z); }
 
-constexpr bool operator==(const vec3& lhs, const vec3& rhs) { return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z; }
-constexpr bool operator!=(const vec3& lhs, const vec3& rhs) { return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z; }
+NOINLINE constexpr bool operator==(const vec3& lhs, const vec3& rhs) { return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z; }
+NOINLINE constexpr bool operator!=(const vec3& lhs, const vec3& rhs) { return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z; }
 
-vec3 floor(const vec3& v)	{ return vec3(Math::floor(v.x), Math::floor(v.y), Math::floor(v.z)); }
-vec3 ceil(const vec3& v)	{ return vec3(Math::ceil(v.x), Math::ceil(v.y), Math::ceil(v.z)); }
+NOINLINE vec3 floor(const vec3& v)	{ return vec3(Math::floor(v.x), Math::floor(v.y), Math::floor(v.z)); }
+NOINLINE vec3 ceil(const vec3& v)	{ return vec3(Math::ceil(v.x), Math::ceil(v.y), Math::ceil(v.z)); }
 
 ////////////////////////////////////////////////////////////////
 
@@ -352,25 +352,25 @@ struct vec4 {
 	constexpr float& operator[](size_t i) { return data[i]; }
 	constexpr const float& operator[](size_t i) const { return data[i]; }
 
-	constexpr vec4& operator+=(const vec4& rhs) { x+=rhs.x; y+=rhs.y; z+=rhs.z; w+=rhs.w; return *this; }
-	constexpr vec4& operator-=(const vec4& rhs) { x-=rhs.x; y-=rhs.y; z-=rhs.z; w+=rhs.w; return *this; }
-	constexpr vec4& operator*=(const vec4& rhs) { x*=rhs.x; y*=rhs.y; z*=rhs.z; w*=rhs.w; return *this; }
-	constexpr vec4& operator/=(const vec4& rhs) { x/=rhs.x; y/=rhs.y; z/=rhs.z; w/=rhs.w; return *this; }
+	NOINLINE constexpr vec4& operator+=(const vec4& rhs) { x+=rhs.x; y+=rhs.y; z+=rhs.z; w+=rhs.w; return *this; }
+	NOINLINE constexpr vec4& operator-=(const vec4& rhs) { x-=rhs.x; y-=rhs.y; z-=rhs.z; w+=rhs.w; return *this; }
+	NOINLINE constexpr vec4& operator*=(const vec4& rhs) { x*=rhs.x; y*=rhs.y; z*=rhs.z; w*=rhs.w; return *this; }
+	NOINLINE constexpr vec4& operator/=(const vec4& rhs) { x/=rhs.x; y/=rhs.y; z/=rhs.z; w/=rhs.w; return *this; }
 
-	constexpr vec4 operator-() const { return vec4(-x, -y, -z, -w); }
-	constexpr vec4 operator+() const { return *this; }
+	NOINLINE constexpr vec4 operator-() const { return vec4(-x, -y, -z, -w); }
+	NOINLINE constexpr vec4 operator+() const { return *this; }
 };
 
-constexpr vec4 operator+(const vec4& lhs, const vec4& rhs) { return vec4(lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z, lhs.w+rhs.w); }
-constexpr vec4 operator-(const vec4& lhs, const vec4& rhs) { return vec4(lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z, lhs.w-rhs.w); }
-constexpr vec4 operator*(const vec4& lhs, const vec4& rhs) { return vec4(lhs.x*rhs.x, lhs.y*rhs.y, lhs.z*rhs.z, lhs.w*rhs.w); }
-constexpr vec4 operator/(const vec4& lhs, const vec4& rhs) { return vec4(lhs.x/rhs.x, lhs.y/rhs.y, lhs.z/rhs.z, lhs.w/rhs.w); }
+NOINLINE constexpr vec4 operator+(const vec4& lhs, const vec4& rhs) { return vec4(lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z, lhs.w+rhs.w); }
+NOINLINE constexpr vec4 operator-(const vec4& lhs, const vec4& rhs) { return vec4(lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z, lhs.w-rhs.w); }
+NOINLINE constexpr vec4 operator*(const vec4& lhs, const vec4& rhs) { return vec4(lhs.x*rhs.x, lhs.y*rhs.y, lhs.z*rhs.z, lhs.w*rhs.w); }
+NOINLINE constexpr vec4 operator/(const vec4& lhs, const vec4& rhs) { return vec4(lhs.x/rhs.x, lhs.y/rhs.y, lhs.z/rhs.z, lhs.w/rhs.w); }
 
-constexpr bool operator==(const vec4& lhs, const vec4& rhs) { return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w; }
-constexpr bool operator!=(const vec4& lhs, const vec4& rhs) { return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z || lhs.w != rhs.w; }
+NOINLINE constexpr bool operator==(const vec4& lhs, const vec4& rhs) { return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w; }
+NOINLINE constexpr bool operator!=(const vec4& lhs, const vec4& rhs) { return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z || lhs.w != rhs.w; }
 
-vec4 floor(const vec4& v)	{ return vec4(Math::floor(v.x), Math::floor(v.y), Math::floor(v.z), Math::floor(v.w)); }
-vec4 ceil(const vec4& v)	{ return vec4(Math::ceil(v.x), Math::ceil(v.y), Math::ceil(v.z), Math::ceil(v.z)); }
+NOINLINE vec4 floor(const vec4& v)	{ return vec4(Math::floor(v.x), Math::floor(v.y), Math::floor(v.z), Math::floor(v.w)); }
+NOINLINE vec4 ceil(const vec4& v)	{ return vec4(Math::ceil(v.x), Math::ceil(v.y), Math::ceil(v.z), Math::ceil(v.z)); }
 
 ////////////////////////////////////////////////////////////////
 
