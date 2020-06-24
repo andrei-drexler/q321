@@ -933,3 +933,4 @@
 53300,tweaked flame shader
 53280,viewmodel idle anim
 53303,entity model lookup table
+53233,noinline mat4 * vec3/4
