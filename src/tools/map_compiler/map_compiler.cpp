@@ -24,7 +24,7 @@ struct Options {
 	struct Snap {
 		float	uv_offset			= 1.f;
 		float	uv_angle			= 1.f;
-		int		uv_scale_bits		= 16;
+		int		uv_scale_bits		= 14;
 		int		patch_uv_bits		= 12;
 		float	patch_vertex		= 1.f;
 	};
@@ -2212,7 +2212,7 @@ int main() {
 	options.out_path			= "../../demo/cooked/cooked_maps.h";
 	options.snap.uv_angle		= 1.f;
 	options.snap.uv_offset		= 2.f;
-	options.snap.uv_scale_bits	= 16;
+	options.snap.uv_scale_bits	= 14;
 	options.snap.patch_uv_bits	= 12;
 	options.snap.patch_vertex	= 1.f;
 	options.sort_uv				= Options::UVSort::ByMapOrder;
