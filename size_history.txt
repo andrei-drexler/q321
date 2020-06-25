@@ -942,3 +942,4 @@
 53405,models/mapobjects/storch/storch_tall shader
 53431,storch_tall antialiasing
 53636,added spotlight beam
+53650,models/mapobjects/spotlamp/spotlamp_l
