@@ -2123,6 +2123,7 @@ TEX(gsltrfc) {
 	return c;
 }
 
+// base_support/cable
 TEX(cable) {
 	float
 		b = FBMT(uv, vec2(5), .9, 3., 4),
@@ -2135,6 +2136,7 @@ TEX(cable) {
 	return c;
 }
 
+// base_trim/basemetalsupport
 TEX(bmtsprt) {
 	float
 		b = FBMT(uv, vec2(7, 3), .9, 3., 4),
@@ -2152,6 +2154,7 @@ TEX(bmtsprt) {
 	return c * l;
 }
 
+// base_trim/border11b
 TEX(brdr11b) {
 	float b = FBMT(uv, vec2(5, 3), .9, 3., 4);
 	vec3 c = mix(RGB(74, 66, 55), RGB(99, 90, 78), b*b);
@@ -2160,14 +2163,16 @@ TEX(brdr11b) {
 	float
 		d = length(p - uv),
 		m = ls(.22, .20, d),
-		l = 1. - .15 * m;
-	l = mix(l, .5, ls(.7, .9, uv.y) * m);
-	l = mix(l, 1. - grad(d).y * .5, tri(.22, .04, d));
-	l = mix(l, .6, sqr(tri(.19, .05, d)));
-	l = mix(l, .5, ls(.05, 0., uv.y));
-	l = mix(l, .5, tri(.26, .05, uv.y));
-	l = mix(l, 1.7, ls(.93, 1., uv.y));
-	l = mix(l, 1.7, tri(.23, .04, uv.y));
+		l = 1.
+		- .15 * m
+		- .5 * ls(.7, .9, uv.y) * m
+		- .3 * (grad(d).y - .5) * tri(.2, .03, d)
+		- .3 * sqr(tri(.17, .03, d))
+		- .5 * ls(.05, 0., uv.y)
+		- .3 * tri(.33, .05, uv.y)
+		+ .7 * ls(.93, 1., uv.y)
+		+ .7 * tri(.31, .04, uv.y)
+		;
 	return c * l;
 }
 
