@@ -138,5 +138,6 @@ void q3bnr() { FS(); }
 void q3bnr_m() { Generic(); }
 void beam() { Generic(); }
 void kmlampwt() { misc_model(); }
+void flare03() { misc_model(); }
 void flame() { Generic(); }
 void tlpnrg() { misc_model(); }

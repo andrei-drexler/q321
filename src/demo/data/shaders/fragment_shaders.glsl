@@ -2414,6 +2414,17 @@ void kmlampwt() {
 	FCol = vec4(vec3(env(Ref)), 0);
 }
 
+float star(vec2 p, vec2 c, float s) {
+	p -= c;
+	float a = ls(.3, .5, abs(fract(nang(p /= s) * 8. + H(c)) - .5));
+	return ls(.9, .6, pow(lsq(p), .0625) - a * a * .006);
+}
+
+// models/mapobjects/lamps/flare03
+void flare03() {
+	FCol = vec4(2, 2, 2, 0) * pow(star(fract(UV), vec2(.5), 1.), 2.);
+}
+
 // Single-speed flame layer (s = speed)
 float simple_flame(vec2 uv, float s) {
 	vec2 p = uv;
@@ -2499,12 +2510,6 @@ void Loading() {
 
 void UI() {
 	FCol = texture(Texture0, UV) * Clr;
-}
-
-float star(vec2 p, vec2 c, float s) {
-	p -= c;
-	float a = ls(.3, .5, abs(fract(nang(p /= s) * 8. + H(c)) - .5));
-	return ls(.9, .6, pow(lsq(p), .0625) - a * a * .006);
 }
 
 // models/mapobjects/teleporter/energy.tga
