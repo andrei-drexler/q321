@@ -18,6 +18,7 @@ namespace Demo {
 
 			NeedsUV			= 1 << 4,
 			BlocksLight		= 1 << 5, // for caulk
+			Sprite			= 1 << 6,
 		};
 
 		enum {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "material.h"
 #include "entity.h"
 #include "packed_map.h"
 
@@ -377,6 +376,7 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 		for (u16 part_index = part_begin; part_index < part_end; ++part_index) {
 			const Model::Part& part = Model::Storage::parts[part_index];
 			u16 material = part.material;
+			bool is_sprite = Demo::Material::Properties[material] & Demo::Material::Sprite;
 
 			if (pass != 0) {
 				u32 first_vertex   = Map::num_mat_verts[material];
@@ -385,6 +385,7 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 
 				for (u32 i = 0; i < part.num_verts; ++i) {
 					vec3& pos = Map::positions[dst_vtx_offset + i];
+					vec3& nor = Map::normals  [dst_vtx_offset + i];
 					vec4& uv  = Map::texcoords[dst_vtx_offset + i];
 
 					// Transformed vertex position
@@ -399,10 +400,14 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 					uv.z = angle;
 					uv.w = 0.f;
 
-					// Keep a list of all misc_model vertices (for vertex lighting computation)
-					Map::model_vertex_indices[Map::num_model_vertices] = dst_vtx_offset + i;
-					Map::model_vertex_sources[Map::num_model_vertices] = src_vtx_offset + i;
-					++Map::num_model_vertices;
+					if (!is_sprite) {
+						// Keep a list of all misc_model vertices (for vertex lighting computation)
+						Map::model_vertex_indices[Map::num_model_vertices] = dst_vtx_offset + i;
+						Map::model_vertex_sources[Map::num_model_vertices] = src_vtx_offset + i;
+						++Map::num_model_vertices;
+					} else {
+						nor = Model::Storage::normals[src_vtx_offset + i];
+					}
 				}
 
 				u32 dst_idx_offset = Map::mat_index_offset[material] + Map::num_mat_indices[material];
@@ -752,6 +757,9 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 
 FORCEINLINE void Map::Details::ComputeNormals() {
 	for (u8 material = 0; material < Demo::Material::Count; ++material) {
+		if (Demo::Material::Properties[material] & Demo::Material::Sprite)
+			continue;
+
 		vec3* pos = positions + mat_vertex_offset[material];
 		vec3* nor = normals + mat_vertex_offset[material];
 		u32* idx = indices + mat_index_offset[material];
@@ -780,6 +788,10 @@ void Map::Render() {
 		if (visibility == Material::Invisible)
 			continue;
 #endif
+
+		//if (!(Material::Properties[material] & Material::Sprite))
+		//	continue;
+
 		auto offset = mat_vertex_offset[material];
 		mesh.vertices[Attrib::Position].SetData<vec3>(gpu_addr.positions, offset);
 		mesh.vertices[Attrib::TexCoord].SetData<vec4>(gpu_addr.texcoords, offset);

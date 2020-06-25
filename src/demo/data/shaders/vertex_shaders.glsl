@@ -1,4 +1,4 @@
-uniform mat4 MVP;
+uniform mat4 MVP, View;
 uniform vec4 Time, Cam;
 
 layout(location=0) in vec4 P;
@@ -138,6 +138,10 @@ void q3bnr() { FS(); }
 void q3bnr_m() { Generic(); }
 void beam() { Generic(); }
 void kmlampwt() { misc_model(); }
-void flare03() { misc_model(); }
+void flare03() {
+	Generic();
+	// extract rotation from view matrix, transpose and multiply with sprite offset
+	gl_Position += MVP * vec4(Nor * mat3(View), 0);
+}
 void flame() { Generic(); }
 void tlpnrg() { misc_model(); }

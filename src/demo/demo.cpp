@@ -20,6 +20,7 @@
 #include "../engine/demo.h"
 #include "console.h"
 #include "resource_def.h"
+#include "material.h"
 #include "gfx_resources.h"
 #include "models.h"
 #include "map.h"
@@ -266,7 +267,8 @@ namespace Demo {
 		fov.y = ScaleFov(fov.x, res.y/res.x);
 
 		MakePerspective(fov, 2.f, 8192.f, projection);
-		Uniform::MVP = projection * ToYUp * rotation * translation;
+		Uniform::View = rotation * translation;
+		Uniform::MVP = projection * ToYUp * Uniform::View;
 		Uniform::Cam.xyz = frame.pos;
 		Uniform::Cam.w = frame.shadow_angle * RAD2DEG;
 

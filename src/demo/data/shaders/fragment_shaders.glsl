@@ -2422,7 +2422,7 @@ float star(vec2 p, vec2 c, float s) {
 
 // models/mapobjects/lamps/flare03
 void flare03() {
-	FCol = vec4(2, 2, 2, 0) * pow(star(fract(UV), vec2(.5), 1.), 2.);
+	FCol = vec4(2, 2, 2, 0) * pow(star(UV, vec2(.5), 1.), 2.);
 }
 
 // Single-speed flame layer (s = speed)

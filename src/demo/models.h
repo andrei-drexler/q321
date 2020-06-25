@@ -160,6 +160,9 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			dst_part.ofs_verts = dst_ofs_verts;
 			dst_part.ofs_idx = dst_ofs_idx;
 
+			bool is_sprite = Demo::Material::Properties[src_part.material] & Demo::Material::Sprite;
+			const char* path = Demo::Material::Paths[src_part.material];
+
 #if DEMO_MODELS_USE_DELTA_ENCODING
 			i16 accum[5];
 			MemSet(&accum);
@@ -213,7 +216,25 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			vec3* pos = Storage::vertices + dst_part.ofs_verts;
 			vec3* nor = Storage::normals + dst_part.ofs_verts;
 			u32* idx = Storage::indices + dst_part.ofs_idx;
-			Demo::ComputeNormals(pos, idx, dst_part.num_verts, dst_part.num_indices, nor);
+
+			if (!is_sprite) {
+				Demo::ComputeNormals(pos, idx, dst_part.num_verts, dst_part.num_indices, nor);
+			} else {
+				vec3 center = 0.f;
+				for (u32 i = 0; i < dst_part.num_verts; ++i)
+					center += pos[i];
+				center /= float(dst_part.num_verts);
+				for (u32 i = 0; i < dst_part.num_verts; ++i) {
+					nor[i] = pos[i] - center;
+					pos[i] = center;
+					// The sprite shader expects [0 W H] offsets.
+					// If our sprite is rotated 90 degrees, swap X and Y
+					if (abs(nor[i].y) < 1.f/256.f) {
+						nor[i].y = nor[i].x;
+						nor[i].x = 0.f;
+					}
+				}
+			}
 		}
 	}
 
