@@ -314,6 +314,9 @@ namespace Details {
 }
 
 void ParallelFor(u32 count, void* data, void (*work)(u32 begin, u32 end, void* data)) {
+	if (!count)
+		return;
+
 	const u32 MAX_NUM_THREADS = 256; // should be enough for TR5
 
 	u32 cpu_threads = Sys::GetNumCPUThreads();
