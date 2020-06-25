@@ -157,6 +157,12 @@ FORCEINLINE size_t StrLen(const char* text) {
 	return s - text;
 }
 
+FORCEINLINE int StrCmp(const char* lhs, const char* rhs) {
+	while (*lhs && *rhs && *lhs == *rhs)
+		++lhs, ++rhs;
+	return *lhs - *rhs;
+}
+
 ////////////////////////////////////////////////////////////////
 
 template <typename T>
