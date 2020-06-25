@@ -182,6 +182,7 @@ void WeldVertices(MD3::Surface& surf) {
 			size_t result = HashValue(v.pos[0]);
 			result = HashCombine(result, v.pos[1]);
 			result = HashCombine(result, v.pos[2]);
+			result = HashCombine(result, v.nor);
 			result = HashCombine(result, uv[0]);
 			result = HashCombine(result, uv[1]);
 			return result;
@@ -195,15 +196,24 @@ void WeldVertices(MD3::Surface& surf) {
 
 	std::vector<u32> remap(surf.num_verts);
 
+	u32 removed = 0;
 	for (u32 i = 0; i < surf.num_verts; ++i) {
 		u32& index = hash_map[i];
 		if (index == 0)
 			index = i + 1;
 		remap[i] = index - 1;
+		if (i != index - 1)
+			++removed;
 	}
 
 	for (u32& i : MD3::GetIndices(surf))
 		i = remap[i];
+
+	if (0) {
+		printf(INDENT"%s: %d/%d vertices removed after welding\n",
+			surf.GetShaders()[0].name, removed, surf.num_verts
+		);
+	}
 }
 
 ////////////////////////////////////////////////////////////////
