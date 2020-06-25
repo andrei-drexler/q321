@@ -132,6 +132,7 @@ void bwprtbnr_m() {
 	wave(100., 3., .7);
 }
 void statue() { misc_model(); }
+void storchtl() { misc_model(); }
 void q3bnr() { FS(); }
 void q3bnr_m() { Generic(); }
 void beam() { Generic(); }

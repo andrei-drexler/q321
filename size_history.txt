@@ -939,3 +939,4 @@
 53480,local misc_model texturing + teleporter shader stub
 53256,disabled radiosity code
 53271,2nd flame layer
+53405,models/mapobjects/storch/storch_tall shader

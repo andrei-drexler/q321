@@ -2309,14 +2309,45 @@ TEXA(bwprtbnr_m) {
 	return c;
 }
 
-void statue() {
+vec4 triplanar(float s) {
 	vec3
 		n = Nor * Nor,
-		p = Pos / float(textureSize(Texture0, 2).x);
-	FCol = vec4(0);
+		p = Pos * s / float(textureSize(Texture0, 0).x);
+	vec4 c = vec4(0);
 	for (int i = 0; i < 3; ++i, p = p.yzx)
-		FCol += texture(Texture0, p.yz) * n[i];
-	FCol *= (Clr + .5 * n.z * n.z * sign(Nor.z)) * 1.5 / sum(n);
+		c += texture(Texture0, p.yz) * n[i];
+	return c / sum(n);
+}
+
+void statue() {
+	vec3 n = Nor * Nor;
+	FCol = triplanar(4.) * (Clr + .5 * n.z * n.z * sign(Nor.z)) * 1.5;
+}
+
+// models/mapobjects/storch/storch_tall.tga
+void storchtl() {
+	statue();
+	vec3 p = Pos, q;
+	p.y = abs(p.y); // symmetry
+	q = p - vec3(7, 3.5, -21); // eye position
+	q.z *= 1.3; // squash vertically
+	float r = length(q);
+	FCol.xyz *=
+		1.
+		+ sat(p.z + 30.) * ls(4., 5., mx(p.xy)) // brighten up skull
+		+ .5 * sat(p.z + 15.) // brighten up top part even more
+		+ .3 * tri(3., .5, r) // eye socket edge highlight
+		+ .7 * tri(-15., .5, p.z) // skull top edge highlight
+		- tri(-14.5, .5, p.z) // darken skull top edge
+		- ls(3., 2.5, r) * (.6 + .4 * q.z / r) // darken eye socket interior
+	;
+	q = p - vec3(8, 0, -23); // nasal cavity position
+	q.z *= .7; // stretch vertically
+	r = length(q);
+	FCol.xyz *=
+		1.
+		- ls(2., 1., r) * (.6 + .4 * q.z / r) // darken nasal cavity interior
+		;
 }
 
 TEXA(q3bnr) {
