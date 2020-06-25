@@ -188,6 +188,8 @@
 	x(q3bnr,			Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
 	x(_128x256,			Gfx::InvalidID,			128,	256,	BGRA8,		Gfx::Texture::Flags::NoMips)\
+	/* HACK: dummy texture needed by the beam material to get proper UV mapping...*/\
+	x(_32x128,			Gfx::InvalidID,			32,		128,	BGRA8,		Gfx::Texture::Flags::NoMips)\
 
 ////////////////////////////////////////////////////////////////
 
@@ -272,7 +274,7 @@
 	x("models/mapobjects/storch/storch_tall",	storchtl,		gtprst3,		Solid,		Opaque,					(0))\
 	x("skies/blacksky",							blacksky,		White,			Solid,		Sky,					(0))\
 	x("skies/tim_hell",							timhel,			White,			Solid,		Sky,					(0))\
-	x("sfx/beam",								beam,			White,			NonSolid,	Translucent|NeedsUV,	(0))\
+	x("sfx/beam",								beam,			_32x128,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("sfx/flame1_hell",						flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
 	x("sfx/flame2",								flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(5500,8,6,1))\
 	x("sfx/flame1side",							flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(0))\
@@ -301,6 +303,7 @@
 	x("gothic_trim/pitted_rust2",				"gothic_trim/pitted_rust3")\
 	x("gothic_trim/pitted_rust2_trans",			"gothic_trim/pitted_rust3")\
 	x("gothic_trim/km_arena1tower4",			"gothic_wall/supportborder_blue_b")\
+	x("models/mapobjects/spotlamp/beam",		"sfx/beam")\
 
 ////////////////////////////////////////////////////////////////
 

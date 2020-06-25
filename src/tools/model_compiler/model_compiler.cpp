@@ -458,11 +458,24 @@ int FindEdge(const u32* indices, u32 a, u32 b) {
 
 ////////////////////////////////////////////////////////////////
 
+static constexpr string_view MaterialSubstitutions[][2] = {
+	#define PP_ADD_MATERIAL_SUBSTITUTION(src, dst) {src, dst},
+	DEMO_MATERIAL_SUBSTITUTIONS(PP_ADD_MATERIAL_SUBSTITUTION)
+	#undef PP_ADD_MATERIAL_SUBSTITUTION
+};
+
 u32 FindMaterial(string_view name) {
 	RemovePrefix(name, "textures/");
 	RemoveSuffix(name, ".tga");
 
 	u32 fallback = 0;
+
+	for (auto& sub : MaterialSubstitutions) {
+		if (name == sub[0]) {
+			name = sub[1];
+			break;
+		}
+	}
 
 	for (u32 i = 0; i < std::size(Demo::Material::Paths); ++i) {
 		string_view current_path = Demo::Material::Paths[i];

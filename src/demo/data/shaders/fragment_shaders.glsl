@@ -2356,6 +2356,7 @@ void storchtl() {
 		;
 }
 
+// base_wall/main_q3abanner (texture)
 TEXA(q3bnr) {
 	uv *= vec2(256, 64);
 	uv.y += 2.;
@@ -2389,16 +2390,18 @@ TEXA(q3bnr) {
 	return vec4(msk(d, .8), 0, 0, H(uv * 511.));
 }
 
+// base_wall/main_q3abanner (map shader)
 void q3bnr_m() {
 	vec3 c = texture(Texture0, UV * 2.).xyz * step(.5, fract(Time.x * .5));
 	c = mix(c * Light(), vec3(.5, 0, 0), tri(fract(Time.x * 2.), 1./64., fract(UV.y)));
 	FCol = vec4(c + env(Ref) * .25 + texture(Texture0, UV + H(Time.xx)).w * .1, 1);
 }
 
+// sfx/beam
 void beam() {
-	vec2 uv = fract(uvmap(Pos.xyz, dom(Nor)) / 128.);
-	uv.x += Time.x / 33.;
-	float b = FBMT(uv, vec2(7), .9, 2., 4), f = fract(Pos.z/128.-.375);
+	vec2 uv = fract(UV);
+	uv.x += Time.x / 13.;
+	float b = FBMT(uv, vec2(3, 7), .9, 2., 4), f = uv.y;
 	FCol = vec4(2. * RGB(95, 85, 80) * f*f*f*f * mix(1., b, .5), 0.);
 }
 

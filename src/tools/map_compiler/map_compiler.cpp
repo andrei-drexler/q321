@@ -90,7 +90,6 @@ static constexpr PredefinedShader predefined_shaders[] = {
 	{ "common/nodrop",				{ Content::DETAIL | Content::NODROP,							Surface::NODRAW }},
 	{ "common/trigger",				{ Content::TRIGGER,												Surface::NODRAW }},
 	{ "common/origin",				{ Content::ORIGIN,												Surface::NODRAW }},
-	{ "sfx/beam",					{ Content::DETAIL,												Surface::NODRAW }},
 	{ "skies/blacksky",				{ Content::SOLID | Content::STRUCTURAL,							Surface::SKY }},
 };
 
@@ -1329,7 +1328,7 @@ void WriteBrushUVs(ArrayPrinter& print, const Map& map, const Options& options, 
 		order[i] = i;
 
 	if (options.sort_uv != Options::UVSort::None) {
-		std::sort(order.begin(), order.end(), [&] (size_t a, size_t b) {
+		std::stable_sort(order.begin(), order.end(), [&] (size_t a, size_t b) {
 			return usage[a] > usage[b];
 		});
 	}
