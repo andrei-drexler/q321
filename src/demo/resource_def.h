@@ -105,10 +105,12 @@
 	x(bwprtbnr,				FSVertexBits)\
 	x(bwprtbnr_m,			MapVertexBits|Gfx::Shader::NoCull)\
 	x(statue,				MapVertexBits|Attrib::ColorBit)\
+	x(statue2s,				MapVertexBits|Attrib::ColorBit|Gfx::Shader::NoCull)\
 	x(storchtl,				MapVertexBits|Attrib::ColorBit)\
 	x(q3bnr,				FSVertexBits)\
 	x(q3bnr_m,				MapVertexBits)\
 	x(beam,					MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(kmlampwt,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::Premultiplied)\
 	x(flame,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(tlpnrg,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 
@@ -271,11 +273,13 @@
 	x("liquids/lavahell_750",					lava,			White,			Solid,		Opaque,					(500,16,5,2))\
 	x("base_wall/protobanner",					bwprtbnr_m,		bwprtbnr,		Solid,		Opaque|NeedsUV,			(0))\
 	x("*model",									statue,			gtprst3,		Solid,		Opaque,					(0))\
+	x("models/mapobjects/spotlamp/spotlamp",	statue2s,		gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/storch/storch_tall",	storchtl,		gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/spotlamp/spotlamp_l",	fixture,		lt2,			Solid,		Opaque|NeedsUV,			(0))\
 	x("skies/blacksky",							blacksky,		White,			Solid,		Sky,					(0))\
 	x("skies/tim_hell",							timhel,			White,			Solid,		Sky,					(0))\
 	x("sfx/beam",								beam,			_32x128,		NonSolid,	Translucent|NeedsUV,	(0))\
+	x("models/mapobjects/kmlamp_white",			kmlampwt,		White,			NonSolid,	Translucent,			(0))\
 	x("sfx/flame1_hell",						flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
 	x("sfx/flame2",								flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(5500,8,6,1))\
 	x("sfx/flame1side",							flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(0))\

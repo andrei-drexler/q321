@@ -943,3 +943,4 @@
 53431,storch_tall antialiasing
 53636,added spotlight beam
 53650,models/mapobjects/spotlamp/spotlamp_l
+53693,kmlamp_white + 2-sided spotlamp

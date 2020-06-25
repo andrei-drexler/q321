@@ -37,9 +37,9 @@ void misc_model() {
 	Generic();
 	Pos = floor(N) / 4.;
 	Nor = fract(N) * 4. - 2.;
+	Ref = normalize(reflect((P - Cam).xyz, Nor));
 	float a = T.z, c = cos(a), s = sin(a);
 	Nor.xy *= mat2(c, s, -s, c);
-	Ref = normalize(reflect((P - Cam).xyz, Nor));
 }
 void icon() { FS(); }
 void bglogo() { FS(); }
@@ -132,9 +132,11 @@ void bwprtbnr_m() {
 	wave(100., 3., .7);
 }
 void statue() { misc_model(); }
+void statue2s() { misc_model(); }
 void storchtl() { misc_model(); }
 void q3bnr() { FS(); }
 void q3bnr_m() { Generic(); }
 void beam() { Generic(); }
+void kmlampwt() { misc_model(); }
 void flame() { Generic(); }
 void tlpnrg() { misc_model(); }

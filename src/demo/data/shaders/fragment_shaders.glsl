@@ -2324,6 +2324,10 @@ void statue() {
 	FCol = triplanar(4.) * (Clr + .5 * n.z * n.z * sign(Nor.z)) * 1.5;
 }
 
+void statue2s() {
+	statue();
+}
+
 // antialiased tent funtion
 float triaa(float c, float s, float x) {
 	float a = max(fwidth(x) * 2. / s, 1.);
@@ -2403,6 +2407,11 @@ void beam() {
 	uv.x += Time.x / 13.;
 	float b = FBMT(uv, vec2(3, 7), .9, 2., 4), f = uv.y;
 	FCol = vec4(2. * RGB(95, 85, 80) * f*f*f*f * mix(1., b, .5), 0.);
+}
+
+// models/mapobjects/kmlamp_white
+void kmlampwt() {
+	FCol = vec4(vec3(env(Ref)), 0);
 }
 
 // Single-speed flame layer (s = speed)
