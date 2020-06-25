@@ -2324,6 +2324,12 @@ void statue() {
 	FCol = triplanar(4.) * (Clr + .5 * n.z * n.z * sign(Nor.z)) * 1.5;
 }
 
+// antialiased tent funtion
+float triaa(float c, float s, float x) {
+	float a = max(fwidth(x) * 2. / s, 1.);
+	return tri(c, s * a, x) / a;
+}
+
 // models/mapobjects/storch/storch_tall.tga
 void storchtl() {
 	statue();
@@ -2337,8 +2343,8 @@ void storchtl() {
 		+ sat(p.z + 30.) * ls(4., 5., mx(p.xy)) // brighten up skull
 		+ .5 * sat(p.z + 15.) // brighten up top part even more
 		+ .3 * tri(3., .5, r) // eye socket edge highlight
-		+ .7 * tri(-15., .5, p.z) // skull top edge highlight
-		- tri(-14.5, .5, p.z) // darken skull top edge
+		+ .7 * triaa(-15., .5, p.z) // skull top edge highlight
+		- triaa(-14.5, .5, p.z) // darken skull top edge
 		- ls(3., 2.5, r) * (.6 + .4 * q.z / r) // darken eye socket interior
 	;
 	q = p - vec3(8, 0, -23); // nasal cavity position
