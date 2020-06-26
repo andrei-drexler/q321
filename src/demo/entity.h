@@ -62,6 +62,25 @@ namespace Demo {
 			Count,
 		} type;
 
+		static constexpr u32 WeaponTypeMask =
+			(1 << (u32)Type::weapon_railgun) |
+			(1 << (u32)Type::weapon_shotgun) |
+			(1 << (u32)Type::weapon_rocketlauncher) |
+			(1 << (u32)Type::weapon_plasmagun)
+		;
+
+		static constexpr bool IsWeapon(Type type) {
+			static_assert(u32(Type::Count) <= 32, "Handle entity types >= 32");
+
+			return 0 != (WeaponTypeMask & (1 << u32(type)));
+		}
+
+		constexpr bool IsWeapon() const {
+			return IsWeapon(type);
+		}
+
+		////////////////////////////////////////////////////////////////
+
 		enum : u32 {
 			Version = Hash(
 				#define PP_DEMO_HASH_ENTITY_TYPE(name, ...)			#name "*"
@@ -75,6 +94,8 @@ namespace Demo {
 				#undef PP_DEMO_HASH_ENTITY_TYPE
 			)
 		};
+
+		////////////////////////////////////////////////////////////////
 
 		// since 'i16[3] origin;' is invalid, we use helper aliases
 		#define PP_DEMO_PROP_DECLARE(name, type)			using typeof_##name = type; typeof_##name name;

@@ -195,13 +195,7 @@ namespace Demo {
 			transform.position[2] += 4.f + 4.f * sin(Math::TAU * (float(g_time) + phase));
 			transform.angles[0] = ent.angle + float(g_time) * 180.f;
 
-			const u32 WeaponTypeMask =
-				(1 << (u32)Type::weapon_railgun) |
-				(1 << (u32)Type::weapon_shotgun) |
-				(1 << (u32)Type::weapon_rocketlauncher) |
-				(1 << (u32)Type::weapon_plasmagun);
-
-			if ((WeaponTypeMask >> u32(ent.type)) & 1) {
+			if (ent.IsWeapon()) {
 				transform.scale = 1.5f;
 				transform.position[2] += 8.f;
 			}
