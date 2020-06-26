@@ -955,3 +955,4 @@
 54055,world-space item lighting
 54106,proper loading screen map names
 54007,tweaked string functions
+53739,removed armor energy overlay surface

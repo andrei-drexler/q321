@@ -557,6 +557,11 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 		assert(surf->num_shaders > 0);
 		u32 material = FindMaterial(surf->GetShaders()[0].name);
 		u32 props = Demo::Material::Properties[material];
+		
+		/* skip invisible surfaces */
+		if ((props & Demo::Material::MaskVisibility) == Demo::Material::Invisible)
+			continue;
+
 		if (!(props & Demo::Material::NeedsUV))
 			memset(surf->GetUVs(), 0, surf->num_verts * sizeof(uvs[0]));
 		WeldVertices(*surf);

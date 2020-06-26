@@ -316,6 +316,7 @@
 	x("gothic_trim/km_arena1tower4",			"gothic_wall/supportborder_blue_b")\
 	x("models/mapobjects/spotlamp/beam",		"sfx/beam")\
 	x("models/mapobjects/lamps/bot_flare",		"models/mapobjects/lamps/flare03")\
+	x("models/powerups/armor/energy_red1",		"common/nodrawnonsolid")\
 
 ////////////////////////////////////////////////////////////////
 
