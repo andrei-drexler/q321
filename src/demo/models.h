@@ -19,6 +19,11 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	namespace Model {
+		static constexpr float
+			PositionScale = 4.f,
+			UVScale = 64.f
+		;
+
 		enum ID {
 			#define PP_ADD_MODEL_ID(path, name,...) name,
 			DEMO_MODELS(PP_ADD_MODEL_ID)
@@ -175,7 +180,7 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 				for (u16 stream_index = 0; stream_index < 5; ++stream_index) {
 					u16 raw_value = ReadVarint(src_pos[stream_index]);
 #if DEMO_MODELS_USE_DELTA_ENCODING
-					float div = (stream_index > 2) ? 64.f : 4.f;
+					float div = (stream_index > 2) ? UVScale : PositionScale;
 					accum[stream_index] += DecodeSignMagnitude(raw_value);
 					unpack[stream_index] = float(accum[stream_index]) / div;
 #else
@@ -299,7 +304,7 @@ NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 
 FORCEINLINE void Demo::Model::PackNormalOffset(vec3& normal, const vec3& offset) {
 	for (u8 i = 0; i < 3; ++i) {
-		normal[i] = floor(offset[i] * 4.f) + normal[i] * 0.25f + 0.5f;
+		normal[i] = floor(offset[i] * PositionScale) + normal[i] * 0.25f + 0.5f;
 	}
 }
 

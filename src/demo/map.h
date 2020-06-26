@@ -716,14 +716,6 @@ NOINLINE void Map::Load(const PackedMap& packed) {
 		}
 	}
 
-	/* HACK: pack misc_model original positions inside the normals (for local-space texturing) */
-	for (u32 i = 0; i < num_model_vertices; ++i) {
-		u32 index = model_vertex_indices[i];
-		u32 source = model_vertex_sources[i];
-		using namespace Demo;
-		Model::PackNormalOffset(Map::normals[index], Model::Storage::vertices[source]);
-	}
-
 	Details::InitLights();
 	Details::CreatePartition();
 	Details::PackLightmap();
@@ -749,6 +741,14 @@ FORCEINLINE void Map::Details::ComputeNormals() {
 		u32* idx = indices + mat_index_offset[material];
 
 		Demo::ComputeNormals(pos, idx, num_mat_verts[material], num_mat_indices[material], nor);
+	}
+
+	/* HACK: pack misc_model original positions inside the normals (for local-space texturing) */
+	for (u32 i = 0; i < num_model_vertices; ++i) {
+		u32 index = model_vertex_indices[i];
+		u32 source = model_vertex_sources[i];
+		using namespace Demo;
+		Model::PackNormalOffset(Map::normals[index], Model::Storage::vertices[source]);
 	}
 }
 

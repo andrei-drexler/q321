@@ -956,3 +956,4 @@
 54106,proper loading screen map names
 54007,tweaked string functions
 53739,removed armor energy overlay surface
+53739,moved misc_model normal packing to computenormals
