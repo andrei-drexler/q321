@@ -151,10 +151,10 @@ FORCEINLINE T* MemSet(T* dest, int c = 0, size_t count = 1) {
 }
 
 NOINLINE constexpr size_t StrLen(const char* text) {
-	const char* s = text;
-	while (*s)
-		++s;
-	return s - text;
+	size_t result = 0;
+	while (text[result])
+		++result;
+	return result;
 }
 
 FORCEINLINE constexpr int StrCmp(const char* lhs, const char* rhs) {
