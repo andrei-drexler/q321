@@ -523,17 +523,19 @@ void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& 
 	}
 }
 
+// Maintains hue instead of clamping to white
 NOINLINE u32 Map::Details::ClampColor(const vec3& accum) {
-	// maintain hue instead of clamping to white
-	float max_value = max_component(accum);
-	float scale = 1.f;
-	if (max_value > 255.f)
-		scale = 255.f / max_value;
+	float max_value = 255.f;
+	for (u8 i = 0; i < 3; ++i)
+		if (max_value < accum[i])
+			max_value = accum[i];
+	float scale = 255.f / max_value;
 
-	return
-		min(i32(accum.x * scale), 255) << 16 | 
-		min(i32(accum.y * scale), 255) <<  8 | 
-		min(i32(accum.z * scale), 255) <<  0 ;
+	u32 result = 0;
+	for (u8 i = 0; i < 3; ++i)
+		result |= i32(min(accum[i] * scale, 255.f)) << ((2 - i) << 3);
+
+	return result;
 }
 
 ////////////////////////////////////////////////////////////////

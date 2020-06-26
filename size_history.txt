@@ -959,3 +959,4 @@
 53739,moved misc_model normal packing to computenormals
 53730,tweaked entity type check
 53707,tweaked strlen
+53696,tweaked clampcolor
