@@ -953,3 +953,4 @@
 53910,tweaked base_trim/basemetalsupport
 53996,very basic item texturing
 54055,world-space item lighting
+54106,proper loading screen map names

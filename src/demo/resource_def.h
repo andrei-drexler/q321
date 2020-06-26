@@ -12,8 +12,8 @@
 
 #define DEMO_MAPS(x)\
 	/*Name,				Source*/\
-	x(dm17,				q3dm17sample.map)\
-	x(dm1,				q3dm1sample.map)\
+	x(q3dm17,			q3dm17sample.map)\
+	x(q3dm1,			q3dm1sample.map)\
 
 #define DEMO_VERTEX_ATTRIBS(x)\
 	/*Name,				Type*/\

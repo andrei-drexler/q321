@@ -163,6 +163,14 @@ FORCEINLINE int StrCmp(const char* lhs, const char* rhs) {
 	return *lhs - *rhs;
 }
 
+NOINLINE size_t CopyString(char* dst, const char* src) {
+	size_t i;
+	for (i = 0; src[i]; ++i)
+		dst[i] = src[i];
+	dst[i] = 0;
+	return i;
+}
+
 ////////////////////////////////////////////////////////////////
 
 template <typename T>

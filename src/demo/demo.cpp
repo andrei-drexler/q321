@@ -13,7 +13,7 @@
 //#define ENABLE_RADIOSITY
 //#define START_NOCLIP
 
-#define START_MAP					dm1
+#define START_MAP					q3dm1
 
 ////////////////////////////////////////////////////////////////
 
@@ -300,18 +300,27 @@ namespace Demo {
 
 	////////////////////////////////////////////////////////////////
 
-	static constexpr char LoadingText[] = 
-		"LOADING Q3DM17"				"\0"
-		"CONNECTING TO LOCALHOST"		"\0"
-		"PRESS ESC TO ABORT"			"\0"
-		" "								"\0"
-		"LOADING... MAPS/Q3DM17.BSP"	"\0"
-		" "								"\0"
-		" "/* MAP MESSAGE */			"\0"
-		"CHEATS ARE ENABLED"			"\0"
-		"FREE FOR ALL"					"\0"
-		"FRAGLIMIT 20"					"\0"
-	;
+	namespace LoadingScreen {
+		static constexpr char Text[] = 
+			"LOADING "						"\0"
+			"CONNECTING TO LOCALHOST"		"\0"
+			"PRESS ESC TO ABORT"			"\0"
+			" "								"\0"
+			"LOADING... MAPS/"				"\0"
+			" "								"\0"
+			" "/* MAP MESSAGE */			"\0"
+			"CHEATS ARE ENABLED"			"\0"
+			"FREE FOR ALL"					"\0"
+			"FRAGLIMIT 20"					"\0"
+		;
+		namespace Line {
+			enum {
+				MapName = 0,
+				MapBSP = 4,
+				MapMessage = 6,
+			};
+		}
+	}
 	static constexpr int LoadingScreenMessageLine = 6;
 
 	FORCEINLINE void RenderLoadingScreen() {
@@ -326,11 +335,26 @@ namespace Demo {
 		vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.125f};
 		vec2 ui_scale = UI::GetScale();
 		vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;
+
+		using namespace LoadingScreen;
+
 		int line_number = 0;
-		for (const char* line = LoadingText; *line; line = NextAfter(line), ++line_number) {
+		for (const char* line = LoadingScreen::Text; *line; line = NextAfter(line), ++line_number) {
 			const char* text = line;
-			if (line_number == LoadingScreenMessageLine)
+
+			char buffer[256], *p = buffer;
+			p += CopyString(p, line);
+			p += CopyString(p, Map::source->name);
+
+			if (line_number == Line::MapName) {
+				text = buffer;
+			} else if (line_number == Line::MapMessage) {
 				text = Map::source->message;
+			} else if (line_number == Line::MapBSP) {
+				p += CopyString(p, ".BSP");
+				text = buffer;
+			}
+
 			UI::PrintShadowed(text, pos, font_scale, -1, 0.5f, UI::LargeFont);
 			pos.y += ui_scale.y * 80.f;
 		}

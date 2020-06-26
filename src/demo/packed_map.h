@@ -42,6 +42,7 @@ struct PackedMap {
 		i16				position[3];
 		i16				angles[2];
 	}					levelshot;
+	const char*			name;
 	const char*			message;
 
 	template
@@ -55,6 +56,7 @@ struct PackedMap {
 	>
 	constexpr PackedMap
 	(
+		const char*						name,
 		const char*						message,
 		i8								symmetry_axis,
 		i16								symmetry_level,
@@ -80,6 +82,7 @@ struct PackedMap {
 		i16								levelshot_yaw,
 		i16								levelshot_pitch
 	) :
+		name					(name),
 		message					(message),
 		entity_brushes			(entity_brushes),
 		num_brush_entities		(NumBrushEntities),

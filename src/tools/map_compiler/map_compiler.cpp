@@ -2166,7 +2166,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 	fprintf(out,
 		"\n"
 		"static constexpr PackedMap map{\n"
-		"    \"%s\",\n"
+		"    \"%s\", \"%s\",\n"
 		"    %d, %d, // symmetry axis, level\n"
 		"    entity_brushes, entity_data,\n"
 		"    world_bounds, brush_bounds,\n"
@@ -2180,7 +2180,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 		"    %d, %d, %d, // levelshot position\n"
 		"    %d, %d // levelshot yaw, pitch\n"
 		"};\n",
-		description.c_str(),
+		name, description.c_str(),
 		symmetry.axis, symmetry.level,
 		ReadSkyLight(map),
 		levelshot.position[0], levelshot.position[1], levelshot.position[2],

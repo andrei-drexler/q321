@@ -9,7 +9,7 @@ static_assert(0xa59457f8U == Demo::Model::Version, "Model definition mismatch, p
 // The Longest Yard (q3dm17sample.map)
 ////////////////////////////////////////////////////////////////
 
-namespace dm17 {
+namespace q3dm17 {
 const u16 entity_brushes[] = {221,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,};
 
 const i16 entity_data[] = {1,5,5,5,5,5,5,5,5,5,5,5,5,5,2,2,2,3,3,4,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,8,
@@ -274,7 +274,7 @@ const i16 light_data[] = {0,0,1<<13,32,32767,-632,-1208,656,75,32767,-664,-1176,
 const u8 num_spotlights = 1;
 
 static constexpr PackedMap map{
-    "THE LONGEST YARD",
+    "q3dm17", "THE LONGEST YARD",
     1, 64, // symmetry axis, level
     entity_brushes, entity_data,
     world_bounds, brush_bounds,
@@ -288,13 +288,13 @@ static constexpr PackedMap map{
     -920, -424, 1104, // levelshot position
     26, -22 // levelshot yaw, pitch
 };
-} // namespace dm17
+} // namespace q3dm17
 
 ////////////////////////////////////////////////////////////////
 // Arena Gate (q3dm1sample.map)
 ////////////////////////////////////////////////////////////////
 
-namespace dm1 {
+namespace q3dm1 {
 const u16 entity_brushes[] = {476,};
 
 const i16 entity_data[] = {1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,6,6,6,6,6,6,6,6,6,6,6,8,8,24,8,24,8,24,24,24,24,8,8,20,20,20,20,9,11
@@ -755,7 +755,7 @@ const i16 light_data[] = {1981,-1981,7698,80,25375,634,394,-52,128,2224,529,221,
 const u8 num_spotlights = 5;
 
 static constexpr PackedMap map{
-    "ARENA GATE",
+    "q3dm1", "ARENA GATE",
     0, 672, // symmetry axis, level
     entity_brushes, entity_data,
     world_bounds, brush_bounds,
@@ -769,4 +769,4 @@ static constexpr PackedMap map{
     972, 836, -8, // levelshot position
     220, 20 // levelshot yaw, pitch
 };
-} // namespace dm1
+} // namespace q3dm1
