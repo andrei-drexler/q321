@@ -135,15 +135,23 @@ void ReplaceAll(std::string& dest, std::string_view old, std::string replacement
 	}
 }
 
+bool StartsWith(std::string_view str, std::string_view prefix) {
+	return str.size() >= prefix.size() && str.substr(0, prefix.size()) == prefix;
+}
+
+bool EndsWith(std::string_view str, std::string_view suffix) {
+	return str.size() >= suffix.size() && str.substr(str.size() - suffix.size(), suffix.size()) == suffix;
+}
+
 bool RemovePrefix(std::string_view& str, std::string_view prefix) {
-	if (str.size() < prefix.size() || str.substr(0, prefix.size()) != prefix)
+	if (!StartsWith(str, prefix))
 		return false;
 	str.remove_prefix(prefix.size());
 	return true;
 }
 
 bool RemoveSuffix(std::string_view& str, std::string_view suffix) {
-	if (str.size() < suffix.size() || str.substr(str.size() - suffix.size(), suffix.size()) != suffix)
+	if (!EndsWith(str, suffix))
 		return false;
 	str.remove_suffix(suffix.size());
 	return true;

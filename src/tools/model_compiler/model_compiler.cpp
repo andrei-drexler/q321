@@ -479,7 +479,7 @@ u32 FindMaterial(string_view name) {
 	RemoveSuffix(name, ".tga");
 
 	string_view fallback_path =
-		name.find("models/mapobjects/") == 0 ? "*map_model"sv : "*item_model"sv;
+		StartsWith(name, "models/mapobjects/"sv) ? "*map_model"sv : "*item_model"sv;
 
 	u32 fallback_material = 0;
 
