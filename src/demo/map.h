@@ -5,22 +5,6 @@
 
 ////////////////////////////////////////////////////////////////
 
-namespace Demo {
-	static constexpr u8 MaterialShaders[] = {
-		#define PP_DEMO_MATERIAL_SHADER(path, shader, texture, contents, draw, light)		Demo::Shader::shader,
-		DEMO_MATERIALS(PP_DEMO_MATERIAL_SHADER)
-		#undef PP_DEMO_MATERIAL_SHADER
-	};
-
-	static constexpr u8 MaterialTextures[] = {
-		#define PP_DEMO_MATERIAL_TEXTURE(path, shader, texture, contents, draw, light)		Demo::Texture::texture,
-		DEMO_MATERIALS(PP_DEMO_MATERIAL_TEXTURE)
-		#undef PP_DEMO_MATERIAL_TEXTURE
-	};
-}
-
-////////////////////////////////////////////////////////////////
-
 namespace Map {
 	enum {
 		MAX_NUM_VERTS		= 96 * 1024,

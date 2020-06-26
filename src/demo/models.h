@@ -272,6 +272,7 @@ NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 
 	for (u16 part_index = part_begin; part_index < part_end; ++part_index) {
 		const Model::Part& part = Storage::parts[part_index];
+		u16 material = part.material;
 
 		u32 offset = part.ofs_verts;
 		mesh.vertices[Attrib::Position	].SetData<vec3>(Storage::gpu_addr.vertices, offset);
@@ -282,7 +283,14 @@ NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 		mesh.num_vertices		= part.num_verts;
 		mesh.num_indices		= part.num_indices;
 
-		Gfx::SetShader(Demo::Shader::Generic);
+		Gfx::SetShader(Demo::MaterialShaders[material]);
+		if (r_lightmap.integer)
+			Uniform::Texture0 = Texture::Grey;
+
+		Uniform::Time.w = material;
+		Uniform::Texture0 = Demo::MaterialTextures[material];
+		Uniform::Texture1 = Texture::Lightmap;
+
 		Gfx::UpdateUniforms();
 		Gfx::Draw(mesh);
 	}

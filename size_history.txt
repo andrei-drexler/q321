@@ -951,3 +951,4 @@
 53914,tweaked brdr11b
 53916,tweaked base_support/cable
 53910,tweaked base_trim/basemetalsupport
+53996,very basic item texturing

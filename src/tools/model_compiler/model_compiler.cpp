@@ -478,7 +478,10 @@ u32 FindMaterial(string_view name) {
 	RemovePrefix(name, "textures/");
 	RemoveSuffix(name, ".tga");
 
-	u32 fallback = 0;
+	string_view fallback_path =
+		name.find("models/mapobjects/") == 0 ? "*map_model"sv : "*item_model"sv;
+
+	u32 fallback_material = 0;
 
 	for (auto& sub : MaterialSubstitutions) {
 		if (name == sub[0]) {
@@ -491,11 +494,11 @@ u32 FindMaterial(string_view name) {
 		string_view current_path = Demo::Material::Paths[i];
 		if (name == current_path)
 			return i;
-		if (current_path == "*model")
-			fallback = i;
+		if (current_path == fallback_path)
+			fallback_material = i;
 	}
 
-	return fallback;
+	return fallback_material;
 }
 
 ////////////////////////////////////////////////////////////////

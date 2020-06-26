@@ -2335,6 +2335,10 @@ void statue2s() {
 	statue();
 }
 
+void item() {
+	FCol = triplanar(16.) * (Nor.z * .5 + .5) * vec4(1, .95, .9, 1);
+}
+
 // antialiased tent funtion
 float triaa(float c, float s, float x) {
 	float a = max(fwidth(x) * 2. / s, 1.);
@@ -2533,4 +2537,20 @@ void tlpnrg() {
 	f *= f;
 
 	FCol = vec4(f, f, f, 0);
+}
+
+// models/weapons2/rocketl/rocketl.tga
+TEX(rocketl) {
+	uv = wavy(uv, 5., .02);
+	float
+		b = FBMT(uv, vec2(6), .8, 2., 4), // base FBM, tileable
+		m = FBMT(uv, vec2(2), .6, 2., 4),
+		t = .9 + .4 * b * b // texture intensity
+		;
+	vec3 c = mix(RGB(36, 33, 30), RGB(168, 177, 168), .3 + .7 * m) * t;
+	//c *= 1.
+		//+ .2 * ls(.4, .6, m)
+		//- .1 * ls(.3, .2, m)
+	//;
+	return c;
 }

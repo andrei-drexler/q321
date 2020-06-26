@@ -15,14 +15,19 @@ namespace Demo {
 		#undef PP_DEMO_VERTEX_ATTRIB_BIT
 	};
 
+	////////////////////////////////////////////////////////////////
+
 	namespace Shader {
 		enum {
 			MapVertexBits	= Attrib::PositionBit|Attrib::TexCoordBit|Attrib::NormalBit,
+			ModelVertexBits	= Attrib::PositionBit|Attrib::NormalBit,
 			FSVertexBits	= Attrib::PositionBit,
 			UIVertexBits	= Attrib::PositionBit|Attrib::TexCoordBit|Attrib::ColorBit,
 		};
 		GFX_DECLARE_SHADERS(DEMO_SHADERS);
 	}
+
+	////////////////////////////////////////////////////////////////
 
 	namespace Texture {
 		enum : Gfx::Texture::ID {
@@ -49,9 +54,27 @@ namespace Demo {
 		void GenerateProceduralTextures();
 	}
 
+	////////////////////////////////////////////////////////////////
+
 	namespace Uniform {
 		GFX_DECLARE_UNIFORMS(DEMO_UNIFORMS);
 	}
+
+	////////////////////////////////////////////////////////////////
+
+	static constexpr u8 MaterialShaders[] = {
+		#define PP_DEMO_MATERIAL_SHADER(path, shader, texture, contents, draw, light)		Demo::Shader::shader,
+		DEMO_MATERIALS(PP_DEMO_MATERIAL_SHADER)
+		#undef PP_DEMO_MATERIAL_SHADER
+	};
+
+	static constexpr u8 MaterialTextures[] = {
+		#define PP_DEMO_MATERIAL_TEXTURE(path, shader, texture, contents, draw, light)		Demo::Texture::texture,
+		DEMO_MATERIALS(PP_DEMO_MATERIAL_TEXTURE)
+		#undef PP_DEMO_MATERIAL_TEXTURE
+	};
+
+	////////////////////////////////////////////////////////////////
 
 	namespace UI {
 		/* Fonts */

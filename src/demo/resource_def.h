@@ -114,6 +114,8 @@
 	x(flare03,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flame,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(tlpnrg,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(rocketl,				FSVertexBits)\
+	x(item,					ModelVertexBits)\
 
 ////////////////////////////////////////////////////////////////
 
@@ -189,6 +191,7 @@
 	x(gpntgmlt1k,		Shader::gpntgmlt1k,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(light5,			Shader::light5,			16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(q3bnr,			Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(rocketl,			Shader::rocketl,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
 	x(_128x256,			Gfx::InvalidID,			128,	256,	BGRA8,		Gfx::Texture::Flags::NoMips)\
 	/* HACK: dummy texture needed by the beam material to get proper UV mapping...*/\
@@ -273,10 +276,11 @@
 	x("gothic_door/skull_door_f",				Lmapped,		gskdr_f,		Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahell_750",					lava,			White,			Solid,		Opaque,					(500,16,5,2))\
 	x("base_wall/protobanner",					bwprtbnr_m,		bwprtbnr,		Solid,		Opaque|NeedsUV,			(0))\
-	x("*model",									statue,			gtprst3,		Solid,		Opaque,					(0))\
+	x("*map_model",								statue,			gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/spotlamp/spotlamp",	statue2s,		gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/storch/storch_tall",	storchtl,		gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/spotlamp/spotlamp_l",	fixture,		lt2,			Solid,		Opaque|NeedsUV,			(0))\
+	x("*item_model",							item,			rocketl,		Solid,		Opaque,					(0))\
 	x("skies/blacksky",							blacksky,		White,			Solid,		Sky,					(0))\
 	x("skies/tim_hell",							timhel,			White,			Solid,		Sky,					(0))\
 	x("sfx/beam",								beam,			_32x128,		NonSolid,	Translucent|NeedsUV,	(0))\
