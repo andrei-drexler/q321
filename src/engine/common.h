@@ -150,25 +150,27 @@ FORCEINLINE T* MemSet(T* dest, int c = 0, size_t count = 1) {
 	return dest;
 }
 
-FORCEINLINE size_t StrLen(const char* text) {
+NOINLINE constexpr size_t StrLen(const char* text) {
 	const char* s = text;
 	while (*s)
 		++s;
 	return s - text;
 }
 
-FORCEINLINE int StrCmp(const char* lhs, const char* rhs) {
+FORCEINLINE constexpr int StrCmp(const char* lhs, const char* rhs) {
 	while (*lhs && *rhs && *lhs == *rhs)
 		++lhs, ++rhs;
 	return *lhs - *rhs;
 }
 
-NOINLINE size_t CopyString(char* dst, const char* src) {
-	size_t i;
-	for (i = 0; src[i]; ++i)
-		dst[i] = src[i];
-	dst[i] = 0;
-	return i;
+FORCEINLINE size_t CopyString(char* dst, const char* src) {
+	size_t result = StrLen(src);
+	MemCopy(dst, src, result + 1);
+	return result;
+}
+
+FORCEINLINE constexpr const char* NextAfter(const char* multistr) {
+	return multistr + StrLen(multistr) + 1;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -300,15 +302,6 @@ NOINLINE float StringToFloat(const char* text, iptr* consumed = 0) {
 }
 
 ////////////////////////////////////////////////////////////////
-
-NOINLINE constexpr const char* NextAfter(const char* multistr) {
-	if (*multistr) {
-		while (*multistr)
-			++multistr;
-		++multistr;
-	}
-	return multistr;
-}
 
 constexpr u32 HashAppend(u32 partial, char c) {
 	// Paul Larson's multiplicative hash
