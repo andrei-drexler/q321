@@ -358,6 +358,7 @@
 	x(Texture1,				Gfx::Texture::ID)\
 	x(MVP,					mat4)\
 	x(View,					mat4)\
+	x(World,				mat4)\
 	x(Cam,					vec4)\
 	x(Time,					vec4)\
 

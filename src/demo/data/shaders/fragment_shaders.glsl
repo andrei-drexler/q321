@@ -68,7 +68,7 @@
 uniform vec4 Time, Cam;
 uniform sampler2D Texture0, Texture1;
 
-in vec3 Pos, Nor, Ref;
+in vec3 Pos, Nor, WNor, Ref;
 in vec2 UV, LUV;
 in vec4 Clr;
 
@@ -2336,7 +2336,7 @@ void statue2s() {
 }
 
 void item() {
-	FCol = triplanar(16.) * (Nor.z * .5 + .5) * vec4(1, .95, .9, 1);
+	FCol = triplanar(16.) * (WNor.z * .5 + .5) * vec4(1, .95, .9, 1);
 }
 
 // antialiased tent funtion

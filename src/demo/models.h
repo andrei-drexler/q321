@@ -259,8 +259,7 @@ NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 		mul(model_matrix.GetAxis(i), transform.scale);
 	model_matrix.SetPosition(transform.position);
 
-	mat4 old_mvp = Demo::Uniform::MVP;
-	Demo::Uniform::MVP = old_mvp * model_matrix;
+	Demo::Uniform::SetModelMatrix(model_matrix);
 
 	const u16
 		part_begin = Model::Storage::first_model_part[id],
@@ -294,8 +293,6 @@ NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 		Gfx::UpdateUniforms();
 		Gfx::Draw(mesh);
 	}
-
-	Demo::Uniform::MVP = old_mvp;
 }
 
 ////////////////////////////////////////////////////////////////

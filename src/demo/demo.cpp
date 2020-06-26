@@ -267,8 +267,10 @@ namespace Demo {
 		fov.y = ScaleFov(fov.x, res.y/res.x);
 
 		MakePerspective(fov, 2.f, 8192.f, projection);
+		Uniform::World = i4x4;
 		Uniform::View = rotation * translation;
-		Uniform::MVP = projection * ToYUp * Uniform::View;
+		Uniform::Cache::ViewProj = projection * ToYUp * Uniform::View;
+		Uniform::MVP = Uniform::Cache::ViewProj;
 		Uniform::Cam.xyz = frame.pos;
 		Uniform::Cam.w = frame.shadow_angle * RAD2DEG;
 

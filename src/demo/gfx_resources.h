@@ -58,6 +58,15 @@ namespace Demo {
 
 	namespace Uniform {
 		GFX_DECLARE_UNIFORMS(DEMO_UNIFORMS);
+
+		namespace Cache {
+			mat4 ViewProj;
+		}
+
+		NOINLINE void SetModelMatrix(const mat4& mat) {
+			World = mat;
+			MVP = Cache::ViewProj * mat;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
