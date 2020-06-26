@@ -1378,7 +1378,7 @@ TEX(gkblkgmtrn) {
 	return c;
 }
 
-// (256 x 576) Combination of:
+// (384 x 384) Combination of:
 // - gothic_door/skull_door_a ( 64 x 256 - bottom right)
 // - gothic_door/skull_door_b (256 x 256 - bottom mid)
 // - gothic_door/skull_door_c ( 64 x 256 - bottom left)
