@@ -2141,18 +2141,19 @@ TEX(cable) {
 TEX(bmtsprt) {
 	float
 		b = FBMT(uv, vec2(7, 3), .9, 3., 4),
-		h = uv.y + b * .04,
-		l = 1. - .15;
-	vec3 c = mix(RGB(59, 48, 40), RGB(110, 108, 102), b*b);
-	l = mix(l, .5, tri(.34, .05, uv.y));
-	l = mix(l, .5, ls(.08, .05, abs(uv.y-.7)));
-	l = mix(l, .3, tri(.7, .03, uv.y));
-	l = mix(l, 1.5, tri(.01, .03, uv.y));
-	l = mix(l, 2.2, tri(.89, .1, h));
-	l = mix(l, 1.6, ls(.07, .04, abs(uv.y-.44)));
-	l = mix(l, 2.5, tri(.5, .04, h));
-	l = mix(l, 1.7, tri(.18, .04, h));
-	return c * l;
+		h = uv.y + b * .04;
+	vec3 c = mix(RGB(50, 40, 34), RGB(93, 92, 88), b * b);
+	c *= 1.
+		+ .9 * ls(.07, .04, abs(uv.y - .44))
+		- .4 * ls(.08, .05, abs(uv.y - .7))
+		- .5 * tri(.34, .05, uv.y)
+		- .3 * tri(.7, .04, uv.y)
+		+ .7 * tri(.01, .03, uv.y)
+		+ 1.5 * tri(.89, .1, h)
+		+ 1.3 * tri(.5, .04, h)
+		+ .9 * tri(.18, .04, h)
+		;
+	return c;
 }
 
 // base_trim/border11b
