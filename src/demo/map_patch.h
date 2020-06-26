@@ -13,7 +13,7 @@ NOINLINE void Map::Details::LoadPatches(const PackedMap& packed, u8 pass) {
 
 		assert(num_control_points <= MaxPatchVertices);
 		for (u16 i = 0; i < num_control_points; ++i) {
-			ctrl[i] = packed.GetPatchVertex(patch, current_patch_vertex++);
+			packed.GetPatchVertex(ctrl[i], patch, current_patch_vertex++);
 			if (mirror)
 				mirror = ctrl[i].pos[symmetry_axis] < symmetry_level + 1;
 		}

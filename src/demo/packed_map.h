@@ -139,15 +139,19 @@ struct PackedMap {
 		bool	asymmetric;
 
 		/* used for delta decoding */
-		struct {
-			i16	pos[3];
-			i16	uv[2];
-		} delta;
+		i16 delta[5];
 	};
 
-	struct PatchVertex {
-		vec3	pos;
-		vec2	uv;
+	union PatchVertex {
+		struct {
+			vec3	pos;
+			vec2	uv;
+		};
+		float data[5];
+
+		PatchVertex() { }
+		PatchVertex(const PatchVertex& copy) { MemCopy(&data, &copy.data); }
+		PatchVertex& operator=(const PatchVertex& copy) { MemCopy(&data, &copy.data); return *this; }
 	};
 
 	struct Light {
@@ -164,7 +168,7 @@ struct PackedMap {
 
 	UV							GetPlaneUV(u32 plane_index) const;
 	Patch						GetPatch(u32 patch_index) const;
-	PatchVertex					GetPatchVertex(Patch& patch, u32 vertex_index) const;
+	void						GetPatchVertex(PatchVertex& v, Patch& patch, u32 vertex_index) const;
 	void						GetLight(u32 light_index, Light& light) const;
 	void						GetPlane(const i32*& plane_data, const i16 brush_bounds[2][3], vec4& plane) const;
 };
@@ -202,24 +206,16 @@ NOINLINE PackedMap::Patch PackedMap::GetPatch(u32 patch_index) const {
 	return patch;
 }
 
-NOINLINE PackedMap::PatchVertex PackedMap::GetPatchVertex(Patch& patch, u32 vertex_index) const {
+NOINLINE void PackedMap::GetPatchVertex(PatchVertex& v, Patch& patch, u32 vertex_index) const {
 	const i16* data = patch_vertices + vertex_index;
 
-	PatchVertex v;
-	patch.delta.pos[0] += DecodeSignMagnitude(*data); data += num_patch_verts;
-	patch.delta.pos[1] += DecodeSignMagnitude(*data); data += num_patch_verts;
-	patch.delta.pos[2] += DecodeSignMagnitude(*data); data += num_patch_verts;
-	patch.delta.uv[0]  += DecodeSignMagnitude(*data); data += num_patch_verts;
-	patch.delta.uv[1]  += DecodeSignMagnitude(*data);
+	for (u8 i = 0; i < 5; ++i, data += num_patch_verts) {
+		patch.delta[i] += DecodeSignMagnitude(*data); // delta decoding
+		v.data[i] = patch.delta[i];
+	}
 
-	// delta decoding
-	v.pos[0] = patch.delta.pos[0];
-	v.pos[1] = patch.delta.pos[1];
-	v.pos[2] = patch.delta.pos[2];
-	v.uv[0] =  patch.delta.uv[0] / 256.f;
-	v.uv[1] = -patch.delta.uv[1] / 256.f; // flip upside-down
-
-	return v;
+	v.uv[0] /= 256.f;
+	v.uv[1] /= -256.f; // flip upside-down
 }
 
 FORCEINLINE void PackedMap::GetLight(u32 light_index, Light& light) const {

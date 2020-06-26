@@ -99,7 +99,7 @@ FORCEINLINE void Map::Details::PackLightmap() {
 
 		assert(num_control_points <= MaxPatchVertices);
 		for (u16 i = 0; i < num_control_points; ++i) {
-			ctrl[i] = source->GetPatchVertex(patch, i + patches.control_start[patch_index]);
+			source->GetPatchVertex(ctrl[i], patch, i + patches.control_start[patch_index]);
 			if (is_mirrored) {
 				ctrl[i].pos[symmetry_axis] = 2 * symmetry_level - ctrl[i].pos[symmetry_axis];
 			}
