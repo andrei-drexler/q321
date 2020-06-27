@@ -195,18 +195,19 @@ NOINLINE void Map::Details::LoadPatches(const PackedMap& packed, u8 pass) {
 			/* build index buffer */
 			u32 first_index = num_mat_indices[patch.material];
 			auto* idx = indices + mat_index_offset[patch.material] + num_mat_indices[patch.material];
-			u8 flip = mirror_side ? 3 : 0;
 
 			for (u16 j = 1; j < verts_y; ++j) {
 				for (u16 i = 1; i < verts_x; ++i) {
-					idx[0		] = first_vertex + (j - 1) * verts_x + (i - 1);
-					idx[1 ^ flip] = first_vertex + (j - 0) * verts_x + (i - 1);
-					idx[2 ^ flip] = first_vertex + (j - 0) * verts_x + (i - 0);
-					idx += 3;
-					idx[0		] = first_vertex + (j - 1) * verts_x + (i - 1);
-					idx[1 ^ flip] = first_vertex + (j - 0) * verts_x + (i - 0);
-					idx[2 ^ flip] = first_vertex + (j - 1) * verts_x + (i - 0);
-					idx += 3;
+					u32 quad_mask = 0b00'10'11'01'00'11'10'00'11'00'01'11;
+					if (mirror_side)
+						quad_mask >>= 12;
+
+					for (u16 k = 0; k < 6; ++k) {
+						u16 x = quad_mask & 1; quad_mask >>= 1;
+						u16 y = quad_mask & 1; quad_mask >>= 1;
+						*idx++ = first_vertex + (j - y) * verts_x + (i - x);
+					}
+
 					num_mat_indices[patch.material] += 6;
 				}
 			}
