@@ -68,53 +68,52 @@ namespace DeCasteljau {
 ////////////////////////////////////////////////////////////////
 
 NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const PackedMap::PatchVertex* ctrl, float s, float t, vec3& pos, vec3& nor, vec2& uv) {
-	u8 prim_x = patch.width >> 1;
-	u8 prim_y = patch.height >> 1;
+	/* determine cell index */
+	{
+		u8 prim_x = patch.width >> 1;
+		u8 prim_y = patch.height >> 1;
 
-	s *= prim_x;
-	t *= prim_y;
-	float is = floor(s);
-	float it = floor(t);
-	i16 i = (i16)is;
-	i16 j = (i16)it;
-	s -= is;
-	t -= it;
+		s *= prim_x;
+		t *= prim_y;
+		float ix = floor(s);
+		float iy = floor(t);
+		i16 x = (i16)ix;
+		i16 y = (i16)iy;
+		s -= ix;
+		t -= iy;
 
-	assert(i <= prim_x);
-	assert(j <= prim_y);
+		assert(x <= prim_x);
+		assert(y <= prim_y);
 
-	if (i == prim_x) {
-		--i;
-		++s;
+		if (x == prim_x) {
+			--x;
+			++s;
+		}
+		if (y == prim_y) {
+			--y;
+			++t;
+		}
+
+		ctrl += (patch.width * y + x) * 2;
 	}
-	if (j == prim_y) {
-		--j;
-		++t;
-	}
 
-	i *= 2;
-	j *= 2;
-
-	const PackedMap::PatchVertex* src = ctrl + patch.width * j + i;
+	/* copy initial control points */
 	PackedMap::PatchVertex c[9];
+	for (u8 y = 0; y < 3; ++y, ctrl+= patch.width)
+		MemCopy(c + y * 3, ctrl, 3);
 
-	for (u8 y = 0; y < 3; ++y, src += patch.width) {
-		PackedMap::PatchVertex* dst = c + y * 3;
-		MemCopy(dst, src, 3);
-	}
-
+	/* apply control point mixing steps */
 	float coeff[2] = {s, t};
-
 	for (u8 k = 0; k < size(DeCasteljau::MixSteps); k += 3) {
-		u8 dst = DeCasteljau::MixSteps[k];
-		u8 first = DeCasteljau::MixSteps[k + 1];
-		u8 delta = DeCasteljau::MixSteps[k + 2];
-		u8 axis = delta & 1;
+		u8 dst    = DeCasteljau::MixSteps[k    ];
+		u8 first  = DeCasteljau::MixSteps[k + 1];
+		u8 delta  = DeCasteljau::MixSteps[k + 2];
+		u8 axis   = delta & 1;
 		u8 second = (delta >> 1) + first;
-		c[dst] = c[first];
+
 		float f = coeff[axis];
-		mix_into(c[dst].pos, c[second].pos, f);
-		mix_into(c[dst].uv, c[second].uv, f);
+		for (u8 q = 0; q < size(c[dst].data); ++q)
+			c[dst].data[q] = mix(c[first].data[q], c[second].data[q], f);
 	}
 
 	safe_normalize(cross(
@@ -123,7 +122,7 @@ NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const P
 	), nor);
 
 	pos = c[8].pos;
-	uv = c[8].uv;
+	uv  = c[8].uv;
 }
 
 ////////////////////////////////////////////////////////////////
