@@ -962,3 +962,4 @@
 53696,tweaked clampcolor
 53609,tweaked getpatchvertex
 53605,tweaked getpatch
+53592,tweaked misc_model sprite init

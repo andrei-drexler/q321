@@ -225,18 +225,15 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			if (!is_sprite) {
 				Demo::ComputeNormals(pos, idx, dst_part.num_verts, dst_part.num_indices, nor);
 			} else {
-				vec3 center = 0.f;
+				vec3 center;
+				MemSet(&center);
 				for (u32 i = 0; i < dst_part.num_verts; ++i)
 					center += pos[i];
 				center /= float(dst_part.num_verts);
 				for (u32 i = 0; i < dst_part.num_verts; ++i) {
-					nor[i] = pos[i] - center;
-					pos[i] = center;
-					// The sprite shader expects [0 W H] offsets.
-					// If our sprite is rotated 90 degrees, swap X and Y
-					if (abs(nor[i].y) < 1.f/256.f) {
-						nor[i].y = nor[i].x;
-						nor[i].x = 0.f;
+					for (u8 j = 0; j < 3; ++j) {
+						nor[i][j] = pos[i][j] - center[j];
+						pos[i][j] = center[j];
 					}
 				}
 			}

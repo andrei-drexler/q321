@@ -619,6 +619,16 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 			dst.uv[1] = quantize_uv(uvs[src][1]);
 		}
 
+		/* enforce X axis sprite orientation */
+		if (props & Demo::Material::Sprite) {
+			for (Vertex& v : sorted_vertices) {
+				if (!v.pos[1]) {
+					v.pos[1] = v.pos[0];
+					v.pos[0] = 0;
+				}
+			}
+		}
+
 		/* write part vertices */
 		u16 accum[5];
 		memset(&accum, 0, sizeof(accum));
