@@ -179,14 +179,13 @@ NOINLINE void Map::Details::LoadPatches(const PackedMap& packed, u8 pass) {
 
 				for (u16 i = 0; i < verts_x; ++i) {
 					float s = i / float(verts_x - 1);
-					
+
 					auto index = mat_vertex_offset[patch.material] + num_mat_verts[patch.material]++;
 					vec3& pos = positions[index];
 					vec4& uv = texcoords[index];
 					vec3 nor;
 
-					EvaluatePatch(patch, ctrl, s, t, positions[index], nor, uv.xy);
-
+					EvaluatePatch(patch, ctrl, s, t, pos, nor, uv.xy);
 					uv.z = s;
 					uv.w = t;
 				}
