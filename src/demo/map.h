@@ -208,6 +208,7 @@ namespace Map {
 		void						SplitNode(u16 index, i16 bounds[2][3]);
 		void						DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid);
 		void						LoadPatches(const PackedMap& packed, u8 pass);
+		void						EvaluatePatch(const PackedMap::Patch& patch, const PackedMap::PatchVertex* ctrl, float s, float t, vec3& pos, vec3& nor, vec2& uv);
 		void						LoadModels(u8 pass);
 		void						ComputeNormals();
 		void						CreatePartition();

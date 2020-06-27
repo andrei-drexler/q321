@@ -145,51 +145,18 @@ FORCEINLINE void Map::Details::PackLightmap() {
 		u8 prim_y = patch.height >> 1;
 
 		for (u16 y = 0, height = rect.GetHeight(); y < height; ++y, texel_pos += Lightmap::Width, texel_nor += Lightmap::Width) {
-			float t = y * (prim_y / float(height - 1));
-			i16 j = min((i16)floor(t), prim_y - 1);
-			t -= j;
-			j <<= 1;
-			assert(j + 2 < patch.height);
-			float t_coeff[3] = {(1.f - t) * (1.f - t), 2.f * t * (1.f - t), t * t};
-			PackedMap::PatchVertex* row = ctrl + j * patch.width;
+			float t = y / float(height - 1);
 
 			for (u16 x = 0, width = rect.GetWidth(); x < width; ++x) {
-				float s = x * (prim_x / float(width - 1));
-				i16 i = min((i16)floor(s), prim_x - 1);
-				s -= i;
-				i <<= 1;
-				assert(i + 2 < patch.width);
-				float s_coeff[3] = {(1.f - s) * (1.f - s), 2.f * s * (1.f - s), s * s};
+				float s = x / float(width - 1);
 
-				vec3 v[3];
-				auto* c = row + i;
-				for (u16 k = 0; k < 3; ++k, c += patch.width) {
-					v[k].x = s_coeff[0]*c[0].pos.x + s_coeff[1]*c[1].pos.x + s_coeff[2]*c[2].pos.x;
-					v[k].y = s_coeff[0]*c[0].pos.y + s_coeff[1]*c[1].pos.y + s_coeff[2]*c[2].pos.y;
-					v[k].z = s_coeff[0]*c[0].pos.z + s_coeff[1]*c[1].pos.z + s_coeff[2]*c[2].pos.z;
-				}
-
-				texel_pos[x].x = t_coeff[0]*v[0].x + t_coeff[1]*v[1].x + t_coeff[2]*v[2].x;
-				texel_pos[x].y = t_coeff[0]*v[0].y + t_coeff[1]*v[1].y + t_coeff[2]*v[2].y;
-				texel_pos[x].z = t_coeff[0]*v[0].z + t_coeff[1]*v[1].z + t_coeff[2]*v[2].z;
-
-				vec3 dt = t_coeff[0] * (v[1] - v[0]) + t_coeff[2] * (v[2] - v[1]);
-
-				c = row + i;
-				for (u16 k = 0; k < 3; ++k, ++c) {
-					v[k].x = t_coeff[0]*c[0].pos.x + t_coeff[1]*c[patch.width].pos.x + t_coeff[2]*c[patch.width*2].pos.x;
-					v[k].y = t_coeff[0]*c[0].pos.y + t_coeff[1]*c[patch.width].pos.y + t_coeff[2]*c[patch.width*2].pos.y;
-					v[k].z = t_coeff[0]*c[0].pos.z + t_coeff[1]*c[patch.width].pos.z + t_coeff[2]*c[patch.width*2].pos.z;
-				}
-				vec3 ds = s_coeff[0] * (v[1] - v[0]) + s_coeff[2] * (v[2] - v[1]);
-
-				auto& nor = texel_nor[x];
-				safe_normalize(cross(dt, ds), nor);
+				vec2 uv;
+				EvaluatePatch(patch, ctrl, s, t, texel_pos[x], texel_nor[x], uv);
 				
 				u32 flip_sign = is_mirrored << 31;
-				*(u32*)&nor[0] ^= flip_sign;
-				*(u32*)&nor[1] ^= flip_sign;
-				*(u32*)&nor[2] ^= flip_sign;
+				*(u32*)&texel_nor[x][0] ^= flip_sign;
+				*(u32*)&texel_nor[x][1] ^= flip_sign;
+				*(u32*)&texel_nor[x][2] ^= flip_sign;
 			}
 		}
 	}
