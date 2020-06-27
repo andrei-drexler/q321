@@ -963,3 +963,4 @@
 53609,tweaked getpatchvertex
 53605,tweaked getpatch
 53592,tweaked misc_model sprite init
+53360,vec3/4 */ float overloads
