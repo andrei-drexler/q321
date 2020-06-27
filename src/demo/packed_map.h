@@ -167,7 +167,7 @@ struct PackedMap {
 	};
 
 	UV							GetPlaneUV(u32 plane_index) const;
-	Patch						GetPatch(u32 patch_index) const;
+	void						GetPatch(Patch& patch, u32 patch_index) const;
 	void						GetPatchVertex(PatchVertex& v, Patch& patch, u32 vertex_index) const;
 	void						GetLight(u32 light_index, Light& light) const;
 	void						GetPlane(const i32*& plane_data, const i16 brush_bounds[2][3], vec4& plane) const;
@@ -190,10 +190,9 @@ FORCEINLINE PackedMap::UV PackedMap::GetPlaneUV(u32 plane_index) const {
 	return uv;
 }
 
-NOINLINE PackedMap::Patch PackedMap::GetPatch(u32 patch_index) const {
+NOINLINE void PackedMap::GetPatch(Patch& patch, u32 patch_index) const {
 	u32 data = patches[patch_index];
 
-	Patch patch;
 	MemSet(&patch);
 
 	patch.width			= ((data & 7) << 1) + 3;
@@ -202,8 +201,6 @@ NOINLINE PackedMap::Patch PackedMap::GetPatch(u32 patch_index) const {
 	patch.divy			= 1 << ((data >> 9) & 7);
 	patch.material		= data >> 12;
 	patch.asymmetric	= (data >> 20) & 1;
-
-	return patch;
 }
 
 NOINLINE void PackedMap::GetPatchVertex(PatchVertex& v, Patch& patch, u32 vertex_index) const {

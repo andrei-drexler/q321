@@ -89,7 +89,8 @@ FORCEINLINE void Map::Details::PackLightmap() {
 
 	/* pack patches */
 	for (u16 patch_index = 0; patch_index < patches.count; ++patch_index) {
-		auto patch = source->GetPatch(patches.GetSourceIndex(patch_index));
+		PackedMap::Patch patch;
+		source->GetPatch(patch, patches.GetSourceIndex(patch_index));
 		bool is_mirrored = patches.IsMirrored(patch_index);
 
 		u16 num_control_points = patch.width * patch.height;
