@@ -38,29 +38,33 @@ NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const P
 	// Writing out these operations explicitly (instead of relying on vec3 operators)
 	// reduces code size quite significantly (almost 200 bytes)...
 
-	// TODO: DeCasteljau
+	// TODO: DeCasteljau?
 
 	{
 		vec3 v[3];
 		auto c = row;
 		for (u16 k = 0; k < 3; ++k, c += patch.width) {
-			v[k].x = s_coeff[0]*c[0].pos.x + s_coeff[1]*c[1].pos.x + s_coeff[2]*c[2].pos.x;
-			v[k].y = s_coeff[0]*c[0].pos.y + s_coeff[1]*c[1].pos.y + s_coeff[2]*c[2].pos.y;
-			v[k].z = s_coeff[0]*c[0].pos.z + s_coeff[1]*c[1].pos.z + s_coeff[2]*c[2].pos.z;
+			mul(v[k], c[0].pos, s_coeff[0]);
+			mad(v[k], c[1].pos, s_coeff[1]);
+			mad(v[k], c[2].pos, s_coeff[2]);
 		}
-		pos.x = t_coeff[0]*v[0].x + t_coeff[1]*v[1].x + t_coeff[2]*v[2].x;
-		pos.y = t_coeff[0]*v[0].y + t_coeff[1]*v[1].y + t_coeff[2]*v[2].y;
-		pos.z = t_coeff[0]*v[0].z + t_coeff[1]*v[1].z + t_coeff[2]*v[2].z;
+		mul(pos, v[0], t_coeff[0]);
+		mad(pos, v[1], t_coeff[1]);
+		mad(pos, v[2], t_coeff[2]);
 
-		vec3 dt = t_coeff[0] * (v[1] - v[0]) + t_coeff[2] * (v[2] - v[1]);
+		vec3 dt;
+		mul(dt, v[1] - v[0], t_coeff[0]);
+		mad(dt, v[2] - v[1], t_coeff[2]);
 
 		c = row;
 		for (u16 k = 0; k < 3; ++k, ++c) {
-			v[k].x = t_coeff[0]*c[0].pos.x + t_coeff[1]*c[patch.width].pos.x + t_coeff[2]*c[patch.width*2].pos.x;
-			v[k].y = t_coeff[0]*c[0].pos.y + t_coeff[1]*c[patch.width].pos.y + t_coeff[2]*c[patch.width*2].pos.y;
-			v[k].z = t_coeff[0]*c[0].pos.z + t_coeff[1]*c[patch.width].pos.z + t_coeff[2]*c[patch.width*2].pos.z;
+			mul(v[k], c[0            ].pos, t_coeff[0]);
+			mad(v[k], c[patch.width  ].pos, t_coeff[1]);
+			mad(v[k], c[patch.width*2].pos, t_coeff[2]);
 		}
-		vec3 ds = s_coeff[0] * (v[1] - v[0]) + s_coeff[2] * (v[2] - v[1]);
+		vec3 ds;
+		mul(ds, v[1] - v[0], s_coeff[0]);
+		mad(ds, v[2] - v[1], s_coeff[2]);
 		safe_normalize(cross(dt, ds), nor);
 	}
 
@@ -68,10 +72,13 @@ NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const P
 		vec2 v[3];
 		auto c = row;
 		for (u16 k = 0; k < 3; ++k, c += patch.width) {
-			v[k].x = s_coeff[0]*c[0].uv.x + s_coeff[1]*c[1].uv.x + s_coeff[2]*c[2].uv.x;
-			v[k].y = s_coeff[0]*c[0].uv.y + s_coeff[1]*c[1].uv.y + s_coeff[2]*c[2].uv.y;
+			v[k] =  c[0].uv * s_coeff[0];
+			v[k] += c[1].uv * s_coeff[1];
+			v[k] += c[2].uv * s_coeff[2];
 		}
-		uv = t_coeff[0]*v[0] + t_coeff[1]*v[1] + t_coeff[2]*v[2];
+		uv  = v[0] * t_coeff[0];
+		uv += v[1] * t_coeff[1];
+		uv += v[2] * t_coeff[2];
 	}
 }
 
