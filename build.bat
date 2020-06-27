@@ -4,11 +4,15 @@ pushd %~dp0
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+set crinkler_options=/COMPMODE:FAST
+::set crinkler_options=/COMPMODE:FAST /ORDERTRIES:3000 /HASHTRIES:300
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 set out_folder=output\crinkler\
 set exe_path=!out_folder!demo.exe
 set size_log=size_history.txt
 set crinkler=misc\crinkler22\win64\crinkler.exe
-set mode=FAST
 set libs=user32.lib kernel32.lib gdi32.lib opengl32.lib
 set range_libs=/RANGE:opengl32
 
@@ -61,7 +65,7 @@ for %%f in (src\demo\*.cpp) do (
 	set obj_files=!obj_files! !obj_folder!%%~nf.obj
 )
 
-%crinkler% /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /CRINKLER /TRUNCATEFLOATS /COMPMODE:%mode% /SATURATE /NOINITIALIZERS /TRANSFORM:CALLS %obj_files% %libs% %range_libs% /REPORT:!out_folder!report.html /NODEFAULTLIB /OUT:%exe_path%
+%crinkler% /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /CRINKLER /TRUNCATEFLOATS %crinkler_options% /SATURATE /NOINITIALIZERS /TRANSFORM:CALLS %obj_files% %libs% %range_libs% /REPORT:!out_folder!report.html /NODEFAULTLIB /OUT:%exe_path%
 
 set /p comment=Log comment: 
 ::for %%f in (%exe_path%) do @echo %isodate%,%%~zf,%comment%>>%size_log%
