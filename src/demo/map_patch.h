@@ -2,10 +2,70 @@
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void MixControlPoint(PackedMap::PatchVertex& a, const PackedMap::PatchVertex& b, float f) {
-	mix_into(a.pos, b.pos, f);
-	mix_into(a.uv, b.uv, f);
+namespace DeCasteljau {
+	static constexpr u8 MixSteps[] = {
+		#define PP_MIX(dst, first, second, axis)  dst, first, ((second - first) << 1) | axis
+
+		/*
+		3x3 -> 2x3 (horizontal mix)
+
+		O->-x--O->-x--O
+		|   .  |   .  |
+		|   .  |   .  |
+		O->-x--O->-x--O
+		|   .  |   .  |
+		|   .  |   .  |
+		O->-x--O->-x--O
+		*/
+		PP_MIX(0, 0, 1, 0),
+		PP_MIX(1, 1, 2, 0),
+		PP_MIX(2, 3, 4, 0),
+		PP_MIX(3, 4, 5, 0),
+		PP_MIX(4, 6, 7, 0),
+		PP_MIX(5, 7, 8, 0),
+
+		/*
+		2x3 -> 2x2 (vertical mix)
+
+		O-------O
+		|       |
+		v       v
+		x . . . x
+		|       |
+		O-------O
+		|       |
+		v       v
+		x . . . x
+		|       |
+		O-------O
+		*/
+		PP_MIX(0, 0, 2, 1),
+		PP_MIX(1, 1, 3, 1),
+		PP_MIX(2, 2, 4, 1),
+		PP_MIX(3, 3, 5, 1),
+
+		/*
+		edge points (horizontal & vertical)
+
+		O-->--x---O
+		|     .   |
+		v     .   v
+		x . . . . x
+		|     .   |
+		O-->--x---O
+		*/
+		PP_MIX(4, 0, 1, 0), // top edge
+		PP_MIX(5, 2, 3, 0), // bottom edge
+		PP_MIX(6, 0, 2, 1), // left edge
+		PP_MIX(7, 1, 3, 1), // right edge
+
+		PP_MIX(8, 4, 5, 1), // final position
+
+		#undef PP_MIX
+	};
 }
+
+////////////////////////////////////////////////////////////////
 
 NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const PackedMap::PatchVertex* ctrl, float s, float t, vec3& pos, vec3& nor, vec2& uv) {
 	u8 prim_x = patch.width >> 1;
@@ -36,31 +96,34 @@ NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const P
 	j *= 2;
 
 	const PackedMap::PatchVertex* src = ctrl + patch.width * j + i;
-	PackedMap::PatchVertex c[6];
+	PackedMap::PatchVertex c[9];
 
 	for (u8 y = 0; y < 3; ++y, src += patch.width) {
-		PackedMap::PatchVertex* dst = c + y * 2;
-		MemCopy(dst, src, 2);
-		MixControlPoint(dst[0], src[1], s);
-		MixControlPoint(dst[1], src[2], s);
+		PackedMap::PatchVertex* dst = c + y * 3;
+		MemCopy(dst, src, 3);
 	}
 
-	for (u8 y = 0; y < 4; ++y)
-		MixControlPoint(c[y], c[y + 2], t);
+	float coeff[2] = {s, t};
 
-	vec3 ds = c[1].pos - c[0].pos;
-	mix_into(ds, c[3].pos - c[2].pos, t);
-	
-	vec3 dt = c[2].pos - c[0].pos;
-	mix_into(dt, c[3].pos - c[1].pos, s);
-	safe_normalize(cross(dt, ds), nor);
+	for (u8 k = 0; k < size(DeCasteljau::MixSteps); k += 3) {
+		u8 dst = DeCasteljau::MixSteps[k];
+		u8 first = DeCasteljau::MixSteps[k + 1];
+		u8 delta = DeCasteljau::MixSteps[k + 2];
+		u8 axis = delta & 1;
+		u8 second = (delta >> 1) + first;
+		c[dst] = c[first];
+		float f = coeff[axis];
+		mix_into(c[dst].pos, c[second].pos, f);
+		mix_into(c[dst].uv, c[second].uv, f);
+	}
 
-	for (u8 y = 0; y < 2; ++y)
-		MixControlPoint(c[y * 2], c[y * 2 + 1], s);
-	MixControlPoint(c[0], c[2], t);
+	safe_normalize(cross(
+		c[5].pos - c[4].pos, // dt
+		c[7].pos - c[6].pos  // ds
+	), nor);
 
-	pos = c[0].pos;
-	uv = c[0].uv;
+	pos = c[8].pos;
+	uv = c[8].uv;
 }
 
 ////////////////////////////////////////////////////////////////
