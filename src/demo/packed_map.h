@@ -149,7 +149,7 @@ struct PackedMap {
 		};
 		float data[5];
 
-		PatchVertex() { }
+		PatchVertex() = default;
 		PatchVertex(const PatchVertex& copy) { MemCopy(&data, &copy.data); }
 		PatchVertex& operator=(const PatchVertex& copy) { MemCopy(&data, &copy.data); return *this; }
 	};

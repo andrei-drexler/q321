@@ -2,6 +2,11 @@
 
 ////////////////////////////////////////////////////////////////
 
+NOINLINE void MixControlPoint(PackedMap::PatchVertex& a, const PackedMap::PatchVertex& b, float f) {
+	mix_into(a.pos, b.pos, f);
+	mix_into(a.uv, b.uv, f);
+}
+
 NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const PackedMap::PatchVertex* ctrl, float s, float t, vec3& pos, vec3& nor, vec2& uv) {
 	u8 prim_x = patch.width >> 1;
 	u8 prim_y = patch.height >> 1;
@@ -30,56 +35,32 @@ NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const P
 	i *= 2;
 	j *= 2;
 
-	const PackedMap::PatchVertex* row = ctrl + patch.width * j + i;
+	const PackedMap::PatchVertex* src = ctrl + patch.width * j + i;
+	PackedMap::PatchVertex c[6];
 
-	float t_coeff[3] = {(1.f - t) * (1.f - t), 2.f * t * (1.f - t), t * t};
-	float s_coeff[3] = {(1.f - s) * (1.f - s), 2.f * s * (1.f - s), s * s};
-
-	// Writing out these operations explicitly (instead of relying on vec3 operators)
-	// reduces code size quite significantly (almost 200 bytes)...
-
-	// TODO: DeCasteljau?
-
-	{
-		vec3 v[3];
-		auto c = row;
-		for (u16 k = 0; k < 3; ++k, c += patch.width) {
-			mul(v[k], c[0].pos, s_coeff[0]);
-			mad(v[k], c[1].pos, s_coeff[1]);
-			mad(v[k], c[2].pos, s_coeff[2]);
-		}
-		mul(pos, v[0], t_coeff[0]);
-		mad(pos, v[1], t_coeff[1]);
-		mad(pos, v[2], t_coeff[2]);
-
-		vec3 dt;
-		mul(dt, v[1] - v[0], t_coeff[0]);
-		mad(dt, v[2] - v[1], t_coeff[2]);
-
-		c = row;
-		for (u16 k = 0; k < 3; ++k, ++c) {
-			mul(v[k], c[0            ].pos, t_coeff[0]);
-			mad(v[k], c[patch.width  ].pos, t_coeff[1]);
-			mad(v[k], c[patch.width*2].pos, t_coeff[2]);
-		}
-		vec3 ds;
-		mul(ds, v[1] - v[0], s_coeff[0]);
-		mad(ds, v[2] - v[1], s_coeff[2]);
-		safe_normalize(cross(dt, ds), nor);
+	for (u8 y = 0; y < 3; ++y, src += patch.width) {
+		PackedMap::PatchVertex* dst = c + y * 2;
+		MemCopy(dst, src, 2);
+		MixControlPoint(dst[0], src[1], s);
+		MixControlPoint(dst[1], src[2], s);
 	}
 
-	{
-		vec2 v[3];
-		auto c = row;
-		for (u16 k = 0; k < 3; ++k, c += patch.width) {
-			v[k] =  c[0].uv * s_coeff[0];
-			v[k] += c[1].uv * s_coeff[1];
-			v[k] += c[2].uv * s_coeff[2];
-		}
-		uv  = v[0] * t_coeff[0];
-		uv += v[1] * t_coeff[1];
-		uv += v[2] * t_coeff[2];
-	}
+	for (u8 y = 0; y < 4; ++y)
+		MixControlPoint(c[y], c[y + 2], t);
+
+	vec3 ds = c[1].pos - c[0].pos;
+	mix_into(ds, c[3].pos - c[2].pos, t);
+	
+	vec3 dt = c[2].pos - c[0].pos;
+	mix_into(dt, c[3].pos - c[1].pos, s);
+	safe_normalize(cross(dt, ds), nor);
+
+	for (u8 y = 0; y < 2; ++y)
+		MixControlPoint(c[y * 2], c[y * 2 + 1], s);
+	MixControlPoint(c[0], c[2], t);
+
+	pos = c[0].pos;
+	uv = c[0].uv;
 }
 
 ////////////////////////////////////////////////////////////////

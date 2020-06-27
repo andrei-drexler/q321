@@ -428,6 +428,11 @@ NOINLINE void mix_into(vec3& dst, const vec3& v, float f) {
 	dst.z += (v.z - dst.z) * f;
 }
 
+void mix_into(vec2& dst, const vec2& v, float f) {
+	dst.x += (v.x - dst.x) * f;
+	dst.y += (v.y - dst.y) * f;
+}
+
 // When all else fails, resort to old-school (Q3A-style) macros...
 
 #define V3MULS(vdst,va,b)\
