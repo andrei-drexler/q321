@@ -49,8 +49,8 @@ static constexpr string_view Keywords[] = {
 	"sampler3D","samplerCube","sampler2DShadow","samplerCubeShadow","sampler2DArray","uniform","const","in","out","inout","layout",
 	"location","main","if","else","for","while","do","switch","case","default","break","continue","return","discard",
 	"texture","textureLod","textureProj","texelFetch","textureGrad","textureSize","floor","round","fract","mod","sin","asin","cos",
-	"acos","tan","atan","radians","degrees","mix","smoothstep","step","abs","sign","max","min","clamp","reflect","normalize","length","sqrt", "inversesqrt",
-	"pow","exp","exp2","log","log2","dot","fwidth","dFdx","dFdy","transpose",
+	"acos","tan","atan","radians","degrees","mix","smoothstep","step","abs","sign","max","min","clamp","reflect","cross",
+	"normalize","length","sqrt","inversesqrt","pow","exp","exp2","log","log2","dot","fwidth","dFdx","dFdy","transpose",
 	"any","all","not","equal","notEqual","lessThan","lessThanEqual","greaterThan","greaterThanEqual",
 	"gl_Position","gl_FragCoord",
 };
