@@ -145,6 +145,8 @@ void flare03() {
 }
 void flame() { Generic(); }
 void tlpnrg() { misc_model(); }
+void tlptrns() { FS(); }
+void tlptrns_m() { misc_model(); }
 void rocketl() { FS(); }
 void item() {
 	Generic();

@@ -971,3 +971,4 @@
 53028,tweaked evaluatepatch
 53016,tweaked patch index buffer building
 52963,tweaked safe_normalize
+53051,basic teleporter transparency/widget shader

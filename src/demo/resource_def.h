@@ -114,6 +114,8 @@
 	x(flare03,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flame,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(tlpnrg,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(tlptrns,				FSVertexBits)\
+	x(tlptrns_m,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(rocketl,				FSVertexBits)\
 	x(item,					ModelVertexBits)\
 
@@ -191,6 +193,7 @@
 	x(gpntgmlt1k,		Shader::gpntgmlt1k,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(light5,			Shader::light5,			16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(q3bnr,			Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(tlptrns,			Shader::tlptrns,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(rocketl,			Shader::rocketl,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
 	x(_128x256,			Gfx::InvalidID,			128,	256,	BGRA8,		Gfx::Texture::Flags::NoMips)\
@@ -290,6 +293,7 @@
 	x("sfx/flame2",								flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(5500,8,6,1))\
 	x("sfx/flame1side",							flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("models/mapobjects/teleporter/energy",	tlpnrg,			White,			NonSolid,	Translucent,			(0))\
+	x("models/mapobjects/teleporter/widget",	tlptrns_m,		tlptrns,		NonSolid,	Translucent,			(0))\
 	x("common/weapclip",						Generic,		White,			Solid,		Invisible,				(0))\
 	x("common/clip",							Generic,		White,			Solid,		Invisible,				(0))\
 	x("common/nodraw",							Generic,		White,			Solid,		Invisible,				(0))\
@@ -298,25 +302,26 @@
 	x("common/nodrop",							Generic,		White,			NoDrop,		Invisible,				(0))\
 
 #define DEMO_MATERIAL_SUBSTITUTIONS(x)\
-	x("gothic_block/blocks18c_3",				"gothic_block/blocks18c")\
-	x("gothic_block/killblock",					"gothic_block/blocks15")\
-	x("gothic_block/blocks18b",					"gothic_block/blocks15")\
-	x("gothic_block/blocks11b",					"gothic_block/blocks15")\
-	x("gothic_block/blocks17",					"gothic_block/blocks15")\
-	x("gothic_block/blocks1",					"gothic_block/blocks15")\
-	x("gothic_block/demon_block15fx",			"gothic_block/blocks15")\
-	x("gothic_trim/metaldemonkillblock",		"gothic_block/blocks15")\
-	x("gothic_door/skullarch_a",				"gothic_door/km_arena1archfinalc_top")\
-	x("gothic_door/skullarch_b",				"gothic_door/km_arena1archfinald_mid")\
-	x("gothic_door/skullarch_c",				"gothic_door/km_arena1archfinald_bot")\
-	x("gothic_door/xian_tourneyarch_inside2",	"gothic_trim/pitted_rust3")\
-	x("gothic_trim/pitted_rust",				"gothic_trim/pitted_rust3")\
-	x("gothic_trim/pitted_rust2",				"gothic_trim/pitted_rust3")\
-	x("gothic_trim/pitted_rust2_trans",			"gothic_trim/pitted_rust3")\
-	x("gothic_trim/km_arena1tower4",			"gothic_wall/supportborder_blue_b")\
-	x("models/mapobjects/spotlamp/beam",		"sfx/beam")\
-	x("models/mapobjects/lamps/bot_flare",		"models/mapobjects/lamps/flare03")\
-	x("models/powerups/armor/energy_red1",		"common/nodrawnonsolid")\
+	x("gothic_block/blocks18c_3",					"gothic_block/blocks18c")\
+	x("gothic_block/killblock",						"gothic_block/blocks15")\
+	x("gothic_block/blocks18b",						"gothic_block/blocks15")\
+	x("gothic_block/blocks11b",						"gothic_block/blocks15")\
+	x("gothic_block/blocks17",						"gothic_block/blocks15")\
+	x("gothic_block/blocks1",						"gothic_block/blocks15")\
+	x("gothic_block/demon_block15fx",				"gothic_block/blocks15")\
+	x("gothic_trim/metaldemonkillblock",			"gothic_block/blocks15")\
+	x("gothic_door/skullarch_a",					"gothic_door/km_arena1archfinalc_top")\
+	x("gothic_door/skullarch_b",					"gothic_door/km_arena1archfinald_mid")\
+	x("gothic_door/skullarch_c",					"gothic_door/km_arena1archfinald_bot")\
+	x("gothic_door/xian_tourneyarch_inside2",		"gothic_trim/pitted_rust3")\
+	x("gothic_trim/pitted_rust",					"gothic_trim/pitted_rust3")\
+	x("gothic_trim/pitted_rust2",					"gothic_trim/pitted_rust3")\
+	x("gothic_trim/pitted_rust2_trans",				"gothic_trim/pitted_rust3")\
+	x("gothic_trim/km_arena1tower4",				"gothic_wall/supportborder_blue_b")\
+	x("models/mapobjects/teleporter/transparency",	"models/mapobjects/teleporter/widget")\
+	x("models/mapobjects/spotlamp/beam",			"sfx/beam")\
+	x("models/mapobjects/lamps/bot_flare",			"models/mapobjects/lamps/flare03")\
+	x("models/powerups/armor/energy_red1",			"common/nodrawnonsolid")\
 
 ////////////////////////////////////////////////////////////////
 

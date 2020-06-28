@@ -2316,14 +2316,17 @@ TEXA(bwprtbnr_m) {
 	return c;
 }
 
-vec4 triplanar(float s) {
-	vec3
-		n = Nor * Nor,
-		p = Pos * s / float(textureSize(Texture0, 0).x);
+vec4 triplanar(vec3 p, float s) {
+	p *= s / float(textureSize(Texture0, 0).x);
+	vec3 n = Nor * Nor;
 	vec4 c = vec4(0);
 	for (int i = 0; i < 3; ++i, p = p.yzx)
 		c += texture(Texture0, p.yz) * n[i];
 	return c / sum(n);
+}
+
+vec4 triplanar(float s) {
+	return triplanar(Pos, s);
 }
 
 void statue() {
@@ -2537,6 +2540,18 @@ void tlpnrg() {
 	f *= f;
 
 	FCol = vec4(f, f, f, 0);
+}
+
+// models/mapobjects/teleporter/transparency.tga (texture)
+TEXA(tlptrns) {
+	return FBMT(wavy(uv, 5., .03), vec2(7), .5, 2., 4) * vec4(1.2, .54, .06, 0);
+}
+
+// models/mapobjects/teleporter/transparency.tga (map shader)
+void tlptrns_m() {
+	vec3 p = Pos;
+	p -= Time.x * 3.2 * sign(p.z - 72.);
+	FCol = triplanar(p, 8.);
 }
 
 // models/weapons2/rocketl/rocketl.tga
