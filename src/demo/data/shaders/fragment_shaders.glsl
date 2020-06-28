@@ -2340,6 +2340,7 @@ void statue2s() {
 
 void item() {
 	FCol = triplanar(16.) * (WNor.z * .5 + .5) * vec4(1, .95, .9, 1);
+	FCol += 2. * pow(sat(Nor.z), mix(2., 8., FCol.y)) * sqr(FCol);
 }
 
 // antialiased tent funtion
@@ -2572,7 +2573,7 @@ TEX(rocketl) {
 	float
 		b = FBMT(uv, vec2(6), .8, 2., 4), // base FBM, tileable
 		m = FBMT(uv, vec2(2), .6, 2., 4),
-		t = .9 + .4 * b * b // texture intensity
+		t = .8 + .3 * b * b // texture intensity
 		;
 	vec3 c = mix(RGB(36, 33, 30), RGB(168, 177, 168), .3 + .7 * m) * t;
 	//c *= 1.
