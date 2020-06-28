@@ -457,16 +457,16 @@ namespace Demo {
 		g_delta_time = dt;
 
 		Sys::UpdateKeyboardState();
-		if (Sys::IsKeyReleased(Key::Escape))
+		if (Sys::IsKeyFirstDown(Key::Escape))
 			Sys::Exit();
-		if (Sys::IsKeyReleased(Key::PrintScreen))
+		if (Sys::IsKeyFirstDown(Key::PrintScreen))
 			TakeScreenshot();
-		if (Sys::IsKeyReleased(Key::Backspace))
+		if (Sys::IsKeyFirstDown(Key::Backspace))
 			g_player.Spawn();
 
-		if (Sys::IsKeyReleased(Key::L))
+		if (Sys::IsKeyFirstDown(Key::L))
 			r_lightmap.Toggle();
-		if (Sys::IsKeyReleased(Key::Backslash))
+		if (Sys::IsKeyFirstDown(Key::Backslash))
 			g_player.flags ^= Player::Flag::NoClip;
 
 		vec2 mouse;

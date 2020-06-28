@@ -983,3 +983,4 @@
 58433,noinline map::updatelightmaptexture
 58499,lightmap and noclip key toggles
 58484,single frame key history
+58449,check key firstdown instead of released
