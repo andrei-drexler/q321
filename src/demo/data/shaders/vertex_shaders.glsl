@@ -144,6 +144,7 @@ void flare03() {
 	gl_Position += MVP * vec4(Nor * mat3(View), 0);
 }
 void flame() { Generic(); }
+void flame_large() { Generic(); }
 void tlpnrg() { misc_model(); }
 void tlptrns() { FS(); }
 void tlptrns_m() { misc_model(); }

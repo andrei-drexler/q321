@@ -113,6 +113,7 @@
 	x(kmlampwt,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::Premultiplied)\
 	x(flare03,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flame,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(flame_large,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(tlpnrg,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(tlptrns,				FSVertexBits)\
 	x(tlptrns_m,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
@@ -289,7 +290,7 @@
 	x("sfx/beam",								beam,			_32x128,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("models/mapobjects/kmlamp_white",			kmlampwt,		White,			NonSolid,	Translucent,			(0))\
 	x("models/mapobjects/lamps/flare03",		flare03,		White,			NonSolid,	Translucent|NeedsUV|Sprite,	(200,6,5,4))\
-	x("sfx/flame1_hell",						flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
+	x("sfx/flame1_hell",						flame_large,	_128x256,		NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
 	x("sfx/flame2",								flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(5500,8,6,1))\
 	x("sfx/flame1side",							flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("models/mapobjects/teleporter/energy",	tlpnrg,			White,			NonSolid,	Translucent,			(0))\

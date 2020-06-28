@@ -2451,9 +2451,17 @@ float simple_flame(vec2 uv, float s) {
 	return sqr(msk(b + n * sqr(1.2 - h) - .13, .15));
 }
 
-void flame() {
+void complex_flame(float s) {
 	vec2 uv = fract(UV);
-	FCol = (simple_flame(uv, .5) + simple_flame(uv * vec2(1, 1.2), 1.)) * vec4(2.5, 1, .35, 0);
+	FCol = (simple_flame(uv, s * .6) + simple_flame(uv, s)) * vec4(2.5, 1, .35, 0);
+}
+
+void flame() {
+	complex_flame(2.5);
+}
+
+void flame_large() {
+	complex_flame(1.);
 }
 
 void Generic() {
