@@ -770,3 +770,11 @@ static constexpr PackedMap map{
     220, 20 // levelshot yaw, pitch
 };
 } // namespace q3dm1
+
+////////////////////////////////////////////////////////////////
+
+static constexpr const PackedMap* cooked_maps[] = {
+	#define PP_ADD_MAP_ENTRY(name,...) &name::map,
+	DEMO_MAPS(PP_ADD_MAP_ENTRY)
+	#undef PP_ADD_MAP_ENTRY
+};

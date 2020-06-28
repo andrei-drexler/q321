@@ -1,11 +1,17 @@
 #pragma once
 
-#include "entity.h"
-#include "packed_map.h"
-
 ////////////////////////////////////////////////////////////////
 
 namespace Map {
+	enum class ID : i8 {
+		#define PP_ADD_MAP_ID(name,...) name,
+		DEMO_MAPS(PP_ADD_MAP_ID)
+		#undef PP_ADD_MAP_ID
+
+		Count,
+		None = -1,
+	};
+
 	enum {
 		MAX_NUM_VERTS		= 96 * 1024,
 		MAX_NUM_MODEL_VERTS	= 16 * 1024,
@@ -32,7 +38,7 @@ namespace Map {
 		RecomputePlanes		= false,
 	};
 
-	void					Load(const PackedMap& packed);
+	void					Load(ID id);
 
 	i8						symmetry_axis;
 	i16						symmetry_level;
@@ -174,6 +180,7 @@ namespace Map {
 	void							Render();
 
 	const PackedMap*				source;
+	ID								current_id;
 
 	struct {
 		u32*						data;
@@ -412,8 +419,18 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Map::Load(const PackedMap& packed) {
+NOINLINE void Map::Load(ID id) {
+	u8 index = (u8)id;
+	if (index >= size(cooked_maps)) {
+		source = nullptr;
+		current_id = ID::None;
+		return;
+	}
+
+	const PackedMap& packed = *cooked_maps[index];
+
 	source = &packed;
+	current_id = id;
 	symmetry_axis = packed.symmetry_axis;
 	symmetry_level = packed.symmetry_level;
 

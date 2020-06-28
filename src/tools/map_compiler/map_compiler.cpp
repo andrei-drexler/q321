@@ -2255,6 +2255,18 @@ int main() {
 			return 1;
 	}
 
+	/* footer */
+	fprintf(out,
+		"\n"
+		"////////////////////////////////////////////////////////////////\n"
+		"\n"
+		"static constexpr const PackedMap* cooked_maps[] = {\n"
+		"	#define PP_ADD_MAP_ENTRY(name,...) &name::map,\n"
+		"	DEMO_MAPS(PP_ADD_MAP_ENTRY)\n"
+		"	#undef PP_ADD_MAP_ENTRY\n"
+		"};\n"
+	);
+
 	fflush(out);
 
 	return 0;

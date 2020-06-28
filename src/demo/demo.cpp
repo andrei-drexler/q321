@@ -21,11 +21,13 @@
 #include "console.h"
 #include "resource_def.h"
 #include "material.h"
+#include "entity.h"
+#include "packed_map.h"
 #include "gfx_resources.h"
 #include "models.h"
-#include "map.h"
-#include "cooked/cooked_maps.h"
 #include "cooked/cooked_models.h"
+#include "cooked/cooked_maps.h"
+#include "map.h"
 #include "player.h"
 
 ////////////////////////////////////////////////////////////////
@@ -506,7 +508,7 @@ namespace Demo {
 
 		auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
 
-		Map::Load(START_MAP::map);
+		Map::Load(Map::ID::START_MAP);
 		Map::UpdateLightmapTexture();
 		Demo::GenerateLevelShot();
 
