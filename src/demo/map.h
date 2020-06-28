@@ -419,7 +419,7 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Map::Load(ID id) {
+FORCEINLINE void Map::Load(ID id) {
 	u8 index = (u8)id;
 	if (index >= size(cooked_maps)) {
 		source = nullptr;

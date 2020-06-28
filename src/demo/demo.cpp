@@ -437,6 +437,18 @@ namespace Demo {
 	float g_delta_time;
 	u8 g_key_state[256];
 
+	NOINLINE void LoadMap(Map::ID id) {
+		Map::Load(id);
+		Map::UpdateLightmapTexture();
+		Demo::GenerateLevelShot();
+
+		Demo::g_updated_lightmap = false;
+		Demo::g_loading_thread.work = &Demo::GenerateLightmap;
+		Sys::SpawnThread(Demo::g_loading_thread);
+
+		Demo::g_player.Spawn();
+	}
+
 	FORCEINLINE void Tick(float dt) {
 		assign_min(dt, 0.25f);
 		if (g_delta_time == 0.f)
@@ -465,6 +477,11 @@ namespace Demo {
 			g_player.angles.y = clamp(g_player.angles.y, -85.f, 85.f);
 
 			g_player.Update(dt);
+
+			if (Sys::IsKeyReleased(Key::F3)) {
+				Map::ID next_map = Map::ID((u8(Map::current_id) + 1) % u8(Map::ID::Count));
+				LoadMap(next_map);
+			}
 		}
 	}
 
@@ -508,15 +525,7 @@ namespace Demo {
 
 		auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
 
-		Map::Load(Map::ID::START_MAP);
-		Map::UpdateLightmapTexture();
-		Demo::GenerateLevelShot();
-
-		Demo::g_updated_lightmap = false;
-		Demo::g_loading_thread.work = &Demo::GenerateLightmap;
-		Sys::SpawnThread(Demo::g_loading_thread);
-
-		Demo::g_player.Spawn();
+		LoadMap(Map::ID::START_MAP);
 
 		g_weapon_offset = {-9.f, -5.f, -9.f};
 	}
