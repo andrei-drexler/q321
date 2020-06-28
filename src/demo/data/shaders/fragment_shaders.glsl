@@ -2552,13 +2552,17 @@ void tlpnrg() {
 
 // models/mapobjects/teleporter/transparency.tga (texture)
 TEXA(tlptrns) {
-	return (FBMT(wavy(uv, 5., .03), vec2(7), .5, 3., 2) * 1.4 + .3) * vec4(1.2, .54, .06, 0);
+	float b = FBMT(wavy(uv, 5., .03), vec2(7), .5, 3., 2);
+	return
+		(b * 1.4 + .3) * vec4(1.2, .54, .06, 0)
+		+ .5 * tri(.7, .2, b) * vec4(1, 1, 1, 0)
+	;
 }
 
 // models/mapobjects/teleporter/transparency.tga (map shader)
 void tlptrns_m() {
 	vec3 p = Pos;
-	p -= Time.x * 3.2 * sign(p.z - 72.);
+	p -= Time.x * 6.4 * sign(p.z - 72.);
 	FCol = triplanar(p, 8.);
 }
 
