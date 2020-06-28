@@ -973,3 +973,4 @@
 52963,tweaked safe_normalize
 53051,basic teleporter transparency/widget shader
 53018,tweaked flame shader
+53022,tweaked teleporter transparency/widget shader

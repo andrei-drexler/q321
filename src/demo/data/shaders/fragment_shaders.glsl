@@ -2552,7 +2552,7 @@ void tlpnrg() {
 
 // models/mapobjects/teleporter/transparency.tga (texture)
 TEXA(tlptrns) {
-	return FBMT(wavy(uv, 5., .03), vec2(7), .5, 2., 4) * vec4(1.2, .54, .06, 0);
+	return (FBMT(wavy(uv, 5., .03), vec2(7), .5, 3., 2) * 1.4 + .3) * vec4(1.2, .54, .06, 0);
 }
 
 // models/mapobjects/teleporter/transparency.tga (map shader)
