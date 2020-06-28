@@ -980,3 +980,4 @@
 58413,clear brush data before map load
 58455,cycle map on f3
 58411,forceinline map::load
+58433,noinline map::updatelightmaptexture

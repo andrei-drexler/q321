@@ -735,7 +735,7 @@ FORCEINLINE void Map::Details::DebugFillLightmap() {
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Map::UpdateLightmapTexture() {
+NOINLINE void Map::UpdateLightmapTexture() {
 	Gfx::SetTextureContents(Demo::Texture::Lightmap, lightmap.data);
 	Gfx::UploadGeometry(&Map::colors[0], Map::num_total_vertices, Gfx::Arena::Level, Map::gpu_addr.colors);
 #ifdef SAVE_LIGHTMAP
