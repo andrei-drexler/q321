@@ -34,6 +34,10 @@ namespace Demo {
 			value = float(new_value);
 			integer = new_value;
 		}
+
+		FORCEINLINE void Toggle() {
+			Set(!integer);
+		}
 	};
 
 	////////////////////////////////////////////////////////////////

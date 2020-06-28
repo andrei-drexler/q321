@@ -464,6 +464,11 @@ namespace Demo {
 		if (Sys::IsKeyReleased(Key::Backspace))
 			g_player.Spawn();
 
+		if (Sys::IsKeyReleased(Key::L))
+			r_lightmap.Toggle();
+		if (Sys::IsKeyReleased(Key::Backslash))
+			g_player.flags ^= Player::Flag::NoClip;
+
 		vec2 mouse;
 		Sys::UpdateMouseState(mouse, dt);
 
