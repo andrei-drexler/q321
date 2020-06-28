@@ -984,3 +984,4 @@
 58499,lightmap and noclip key toggles
 58484,single frame key history
 58449,check key firstdown instead of released
+58448,fixed model r_lightmap handling

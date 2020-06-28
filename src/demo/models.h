@@ -285,12 +285,11 @@ NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 		mesh.num_indices		= part.num_indices;
 
 		Gfx::SetShader(Demo::MaterialShaders[material]);
-		if (r_lightmap.integer)
-			Uniform::Texture0 = Texture::Grey;
 
 		Uniform::Time.w = material;
 		Uniform::Texture0 = Demo::MaterialTextures[material];
-		Uniform::Texture1 = Texture::Lightmap;
+		if (r_lightmap.integer)
+			Uniform::Texture0 = Texture::Grey;
 
 		Gfx::UpdateUniforms();
 		Gfx::Draw(mesh);
