@@ -436,6 +436,7 @@ NOINLINE void Map::Load(ID id) {
 
 	MemSet(&num_mat_verts);
 	MemSet(&num_mat_indices);
+	MemSet(&brushes);
 
 	Details::InitEntities();
 

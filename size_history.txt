@@ -977,3 +977,4 @@
 53031,tweaked teleporter transparency/widget shader some more
 58407,map list and ids
 58423,tweaked item/rocket launcher shaders
+58413,clear brush data before map load
