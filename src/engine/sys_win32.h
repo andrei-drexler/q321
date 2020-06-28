@@ -735,7 +735,7 @@ FORCEINLINE void Sys::UpdateKeyboardState() {
 		MemSet(current_state, 0, 256);
 
 	for (u16 i = 0; i < 256; ++i)
-		g_key_state[i] = (g_key_state[i] << 1) | (current_state[i] >> 7);
+		g_key_state[i] = ((g_key_state[i] & 1) << 1) | (current_state[i] >> 7);
 }
 
 FORCEINLINE void Sys::UpdateMouseState(vec2& pt, float dt) {

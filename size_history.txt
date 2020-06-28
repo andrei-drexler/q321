@@ -982,3 +982,4 @@
 58411,forceinline map::load
 58433,noinline map::updatelightmaptexture
 58499,lightmap and noclip key toggles
+58484,single frame key history
