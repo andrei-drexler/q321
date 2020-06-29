@@ -179,8 +179,8 @@ namespace Demo {
 
 			case Type::item_armor_shard:	return MakeColor(80, 88, 86);
 
-			//case Type::item_armor_body:	return 0x808080;
-			//case Type::item_armor_combat:	return 0x808080;
+			case Type::item_armor_body:		return MakeColor(255, 0, 16);
+			case Type::item_armor_combat:	return MakeColor(255, 255, 0);
 
 			case Type::item_quad:			return MakeColor(8, 119, 234);
 

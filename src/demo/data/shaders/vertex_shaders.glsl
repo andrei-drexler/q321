@@ -154,6 +154,5 @@ void item() {
 	WNor = normalize(mat3(World) * N);
 	Ref = normalize(reflect((World * P - Cam).xyz, WNor));
 }
-void itemshiny() {
-	item();
-}
+void itemshiny() { item(); }
+void armor() { item(); }

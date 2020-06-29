@@ -120,6 +120,7 @@
 	x(rocketl,				FSVertexBits)\
 	x(item,					ModelVertexBits)\
 	x(itemshiny,			ModelVertexBits)\
+	x(armor,				ModelVertexBits)\
 
 
 ////////////////////////////////////////////////////////////////
@@ -289,6 +290,7 @@
 	x("models/mapobjects/spotlamp/spotlamp_l",	fixture,		lt2,			Solid,		Opaque|NeedsUV,			(0))\
 	x("*item_model",							item,			rocketl,		Solid,		Opaque,					(0))\
 	x("*item_shiny",							itemshiny,		rocketl,		Solid,		Opaque,					(0))\
+	x("models/powerups/armor/newred",			armor,			rocketl,		Solid,		Opaque,					(0))\
 	x("skies/blacksky",							blacksky,		White,			Solid,		Sky,					(0))\
 	x("skies/tim_hell",							timhel,			White,			Solid,		Sky,					(0))\
 	x("sfx/beam",								beam,			_32x128,		NonSolid,	Translucent|NeedsUV,	(0))\

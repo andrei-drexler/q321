@@ -311,11 +311,13 @@ float HT(float x, float p) {
 	return H(mod(x, p));
 }
 
+// FIXME: 1D noise should take a normalized value, like its 2D counterpart!
 float N(float x) {
 	float i;
 	return mix(H(i = floor(x)), H(i + 1.), smoothen(x - i));
 }
 
+// FIXME: 1D noise should take a normalized value, like its 2D counterpart!
 float NT(float x, float p) {
 	float i;
 	return mix(HT(i = floor(x), p), HT(i + 1., p), x - i);
@@ -486,6 +488,18 @@ float FBMT(vec2 p, vec2 scale, float gain, float lac, int lyrs) {
 		p = fract(p + PHI);
 		scale *= lac; ow *= gain;
 		acc += NT(p, scale) * ow;
+		tw += ow;
+	}
+	return acc / tw;
+}
+
+// FIXME: 1D noise should take a normalized value, like its 2D counterpart!
+float FBMT(float p, float scale, float gain, float lac, int lyrs) {
+	float acc = NT(p * scale, scale), ow = 1., tw = 1.;
+	for (int i=0; i<lyrs; ++i) {
+		p = fract(p + PHI);
+		scale *= lac; ow *= gain;
+		acc += NT(p * scale, scale) * ow;
 		tw += ow;
 	}
 	return acc / tw;
@@ -2345,12 +2359,19 @@ void miscmodel2s() {
 }
 
 void item() {
-	FCol = triplanar(16.) * (WNor.z * .5 + .5) * vec4(1, .95, .9, 1);
-	FCol += 2. * pow(sat(Nor.z), mix(2., 8., FCol.y)) * sqr(FCol);
+	FCol = triplanar(16.) * (normalize(WNor).z * .5 + .5) * vec4(1, .95, .9, 1);
+	FCol += 2. * pow(sat(normalize(Nor).z), mix(2., 8., FCol.y)) * sqr(FCol);
 }
 
 void itemshiny() {
 	FCol = vec4((env(Ref, 15.) * 1.4 + .3) * Time.yzw, 1);
+}
+
+void armor() {
+	vec3 n = normalize(Nor);
+	float l = tri(.5 + (FBMT(Pos.y / 48. + H(Time.x * 133.7), 13., .6, 2., 4) - .5) * .15, .03, fract(ls(-8., 32., Pos.z) - Time.x * 1.3));
+	FCol = vec4((triplanar(16.).xyz * (n.z * .5 + .5) + l * l) * Time.yzw * 2., 1);
+	//FCol = vec4(env(Ref, 7.) * vec3(2), 1);
 }
 
 // antialiased tent funtion

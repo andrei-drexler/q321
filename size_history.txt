@@ -988,3 +988,4 @@
 58503,teleporter pad material stub
 58650,shiny colored item models
 58614,tweaked kmlamp_white
+58678,armor shader
