@@ -2436,7 +2436,7 @@ void beam() {
 
 // models/mapobjects/kmlamp_white
 void kmlampwt() {
-	FCol = vec4(vec3(env(Ref)), 0);
+	FCol = vec4(env(Ref) * RGB(133, 111, 111), 0);
 }
 
 float star(vec2 p, vec2 c, float s) {
