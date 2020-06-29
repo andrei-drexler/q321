@@ -2368,10 +2368,18 @@ void itemshiny() {
 }
 
 void armor() {
-	vec3 n = normalize(Nor);
-	float l = tri(.5 + (FBMT(Pos.y / 48. + H(Time.x * 133.7), 13., .6, 2., 4) - .5) * .15, .03, fract(ls(-8., 32., Pos.z) - Time.x * 1.3));
-	FCol = vec4((triplanar(16.).xyz * (n.z * .5 + .5) + l * l) * Time.yzw * 2., 1);
-	//FCol = vec4(env(Ref, 7.) * vec3(2), 1);
+	vec3
+		n = normalize(Nor),
+		p = Pos;
+	p.z -= 24.;
+	float
+		e = tri(
+				(FBMT(Pos.y / 48. + Time.x * 7.4, 13., .6, 2., 4) - .5) * .15, // vertical noise
+				.03, // line thickness
+				fract(ls(-8., 32., Pos.z) - Time.x * 1.3) - .5 // looping line offset
+			);
+	FCol = vec4((triplanar(16.).xyz * (n.z * .5 + .5) * (.2 + .8 * ls(4.5, 6.5, length(p))) + e * e) * Time.yzw * 2., 1);
+	//FCol.xyz = mix(FCol.xyz, env(Ref, 3.) * vec3(1), ls(12., 10., d));
 }
 
 // antialiased tent funtion
