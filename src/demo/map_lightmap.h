@@ -520,7 +520,7 @@ void Map::ComputeLighting(LightMode mode) {
 #ifdef ENABLE_RADIOSITY
 		if (mode == LightMode::Bounce) {
 			Swap(lightmap.data, lightmap.bounce_data);
-			MemSet(lightmap.data, Lightmap::TexelCount);
+			MemSet(lightmap.data, 0, Lightmap::TexelCount);
 		}
 #endif // ENABLE_RADIOSITY
 
