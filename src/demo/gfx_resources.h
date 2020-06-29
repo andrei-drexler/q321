@@ -316,8 +316,8 @@ FORCEINLINE void Demo::Texture::GenerateProceduralTextures() {
 void Demo::Uniform::Pack::Acquire() {
 	namespace Meta = Uniform::Metadata;
 
-	for (u16 i = 0, offset = 0; i < Uniform::Count; ++i) {
-		u8 size = Gfx::Uniform::TypeSize[Meta::Types[i]];
+	for (u32 i = 0, offset = 0; i < Uniform::Count; ++i) {
+		u32 size = Meta::Sizes[i];
 		MemCopy(buffer + offset, Meta::Addresses[i], size);
 		offset += size;
 	}
@@ -326,8 +326,8 @@ void Demo::Uniform::Pack::Acquire() {
 void Demo::Uniform::Pack::Apply() const {
 	namespace Meta = Uniform::Metadata;
 
-	for (u16 i = 0, offset = 0; i < Uniform::Count; ++i) {
-		u8 size = Gfx::Uniform::TypeSize[Meta::Types[i]];
+	for (u32 i = 0, offset = 0; i < Uniform::Count; ++i) {
+		u32 size = Meta::Sizes[i];
 		MemCopy(Meta::Addresses[i], buffer + offset, size);
 		offset += size;
 	}
