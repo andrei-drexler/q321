@@ -167,22 +167,22 @@ namespace Demo {
 		using Type = Demo::Entity::Type;
 
 		switch (type) {
-			case Type::ammo_bullets:		return MakeColor(128, 112, 2);
-			case Type::ammo_rockets:		return MakeColor(128, 2, 2);
-			case Type::ammo_shells:			return MakeColor(128, 64, 2);
-			case Type::ammo_slugs:			return MakeColor(0, 80, 32);
-			case Type::ammo_cells:			return MakeColor(112, 0, 64);
+			case Type::ammo_bullets:		return MakeColor(128, 112, 2, 0);
+			case Type::ammo_rockets:		return MakeColor(128, 2, 2, 0);
+			case Type::ammo_shells:			return MakeColor(128, 64, 2, 0);
+			case Type::ammo_slugs:			return MakeColor(0, 80, 32, 0);
+			case Type::ammo_cells:			return MakeColor(112, 0, 64, 0);
 
-			case Type::item_health:			return MakeColor(160, 128, 48);
-			case Type::item_health_large:	return MakeColor(144, 88, 56);
-			case Type::item_health_mega:	return MakeColor(8, 119, 234);
+			case Type::item_health:			return MakeColor(160, 128, 48, 0);
+			case Type::item_health_large:	return MakeColor(144, 88, 56, 0);
+			case Type::item_health_mega:	return MakeColor(8, 119, 234, 0);
 
-			case Type::item_armor_shard:	return MakeColor(80, 88, 86);
+			case Type::item_armor_shard:	return MakeColor(80, 88, 86, 0);
 
-			case Type::item_armor_body:		return MakeColor(255, 0, 16);
-			case Type::item_armor_combat:	return MakeColor(255, 255, 0);
+			case Type::item_armor_body:		return MakeColor(255, 0, 16, 0);
+			case Type::item_armor_combat:	return MakeColor(255, 255, 0, 0);
 
-			case Type::item_quad:			return MakeColor(8, 119, 234);
+			case Type::item_quad:			return MakeColor(8, 119, 234, 0);
 
 			default:
 				return 0;
