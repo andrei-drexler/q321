@@ -5,7 +5,7 @@ pushd %~dp0
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set crinkler_options=/COMPMODE:FAST
-::set crinkler_options=/COMPMODE:FAST /ORDERTRIES:3000 /HASHTRIES:300
+::set crinkler_options=/COMPMODE:FAST /ORDERTRIES:4000 /HASHTRIES:300
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 

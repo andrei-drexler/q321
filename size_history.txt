@@ -991,3 +991,6 @@
 58678,armor shader
 58739,tweaked armor shader
 59115,drawcall sorting
+58770,release build
+58681,ordertries 4000
+59115,regular build
