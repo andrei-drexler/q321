@@ -255,7 +255,7 @@ FORCEINLINE void Map::Details::InitLights() {
 
 	// mirror all other lights (starting from 1)
 	if (UseSymmetry()) {
-		for (u16 light_index = 1; light_index < source->num_lights; ++light_index) {
+		for (u32 light_index = 1; light_index < source->num_lights; ++light_index) {
 			auto& light = lights[num_lights++];
 			source->GetLight(light_index, light);
 			if (light.position[symmetry_axis] < symmetry_level - 1) {
@@ -325,16 +325,16 @@ FORCEINLINE void Map::Details::InitEntities() {
 	num_brush_entities = source->num_brush_entities;
 	num_entities = source->num_entities;
 
-	u16 brush_offset = 0;
-	for (u8 entity_index = 0; entity_index < num_brush_entities; ++entity_index) {
+	u32 brush_offset = 0;
+	for (u32 entity_index = 0; entity_index < num_brush_entities; ++entity_index) {
 		entity_brush_start[entity_index] = brush_offset;
 		brush_offset += source->entity_brushes[entity_index];
 	}
 	entity_brush_start[num_brush_entities] = brush_offset;
 
-	const u16 NumRawFields = sizeof(Demo::Entity) / sizeof(i16);
+	const u32 NumRawFields = sizeof(Demo::Entity) / sizeof(i16);
 	const i16* src_data = source->entity_data;
-	for (u16 field = 0; field < NumRawFields; ++field, src_data += num_entities) {
+	for (u32 field = 0; field < NumRawFields; ++field, src_data += num_entities) {
 		i16* dst_data = (i16*)&entities[0] + field;
 		for (u16 entity_index = 0; entity_index < num_entities; ++entity_index, dst_data += NumRawFields) {
 			*dst_data = src_data[entity_index];
@@ -362,10 +362,10 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 
 		float angle = float(entity->angle) * Math::DEG2RAD;
 		mat4 transform = MakeRotation({angle, 0.f, 0.f});
-		for (u16 i = 0; i < 3; ++i)
+		for (u32 i = 0; i < 3; ++i)
 			transform.GetPosition()[i] = entity->origin[i];
 
-		for (u16 part_index = part_begin; part_index < part_end; ++part_index) {
+		for (u32 part_index = part_begin; part_index < part_end; ++part_index) {
 			const Model::Part& part = Model::Storage::parts[part_index];
 			u16 material = part.material;
 			bool is_sprite = Demo::Material::Properties[material] & Demo::Material::Sprite;
@@ -440,7 +440,7 @@ FORCEINLINE void Map::Load(ID id) {
 
 	Details::InitEntities();
 
-	for (u16 pass = 0; pass < 2; ++pass) {
+	for (u32 pass = 0; pass < 2; ++pass) {
 		auto* nonaxial_offset = packed.nonaxial_counts;
 		auto* plane_data = packed.plane_data;
 		auto* bounds_src = packed.brush_bounds;
@@ -448,7 +448,7 @@ FORCEINLINE void Map::Load(ID id) {
 		if (pass == 1) {
 			num_total_vertices = 0;
 			num_total_indices = 0;
-			for (u8 mat = 0; mat < Demo::Material::Count; ++mat) {
+			for (u32 mat = 0; mat < Demo::Material::Count; ++mat) {
 				mat_vertex_offset[mat] = num_total_vertices;
 				num_total_vertices += num_mat_verts[mat];
 				num_mat_verts[mat] = 0;
@@ -462,10 +462,10 @@ FORCEINLINE void Map::Load(ID id) {
 		brushes.count = 0;
 		brushes.plane_count = 0;
 
-		u16 src_plane_index = 0;
-		u16 entity_index = 0;
-		for (u16 brush_index = 0; brush_index < packed.num_brushes; ++brush_index) {
-			u16 num_brush_planes = 0;
+		u32 src_plane_index = 0;
+		u32 entity_index = 0;
+		for (u32 brush_index = 0; brush_index < packed.num_brushes; ++brush_index) {
+			u32 num_brush_planes = 0;
 			if (brush_index >= entity_brush_start[entity_index + 1])
 				++entity_index;
 
@@ -494,8 +494,8 @@ FORCEINLINE void Map::Load(ID id) {
 
 			/* first 6 planes - one for each bounding box side */
 			MemSet(brush_planes, 0, 6);
-			for (u16 i = 0; i < 6; ++i) {
-				u16 axis = i >> 1;
+			for (u32 i = 0; i < 6; ++i) {
+				u32 axis = i >> 1;
 				bool max_side = i & 1;
 				u32 sign = i << 31;	// (i & 1) << 31
 				float value = brush_bounds[max_side][axis];
@@ -537,21 +537,21 @@ FORCEINLINE void Map::Load(ID id) {
 				++brushes.count;
 			}
 
-			const u16 MAX_NUM_EDGES = 48;
+			const u32 MAX_NUM_EDGES = 48;
 			BrushEdge brush_edges[MAX_NUM_EDGES];
 		
-			u16 num_brush_edges = EnumerateBrushEdges(brush_planes, num_brush_planes, brush_edges, MAX_NUM_EDGES, 1.f/16.f);
+			u32 num_brush_edges = EnumerateBrushEdges(brush_planes, num_brush_planes, brush_edges, MAX_NUM_EDGES, 1.f/16.f);
 
 			assert(num_brush_edges <= MAX_NUM_EDGES);
 			assert(num_brush_planes <= 32);
 
 			u32 edge_mask[MAX_NUM_EDGES];
-			for (u16 i = 0; i < num_brush_edges; ++i) {
+			for (u32 i = 0; i < num_brush_edges; ++i) {
 				auto& e = brush_edges[i];
 				edge_mask[i] = (1 << e.first_plane) | (1 << e.second_plane);
 			
 				if (SnapVertices) {
-					for (u16 j = 0; j < 3; ++j) {
+					for (u32 j = 0; j < 3; ++j) {
 						e.first_point [j] = floor(0.5f + e.first_point [j]);
 						e.second_point[j] = floor(0.5f + e.second_point[j]);
 					}
@@ -586,7 +586,7 @@ FORCEINLINE void Map::Load(ID id) {
 				if (num_face_edges < 3)
 					continue;
 				
-				u8 uv_axis = material & 3;
+				u32 uv_axis = material & 3;
 				material >>= 2;
 
 				bool needs_uv = Demo::Material::Properties[material] & Demo::Material::NeedsUV;
@@ -632,7 +632,7 @@ FORCEINLINE void Map::Load(ID id) {
 				/* Set up UV mapping */
 
 				vec2 texture_size{256.f, 256.f};
-				u16 texture = Demo::MaterialTextures[material];
+				u32 texture = Demo::MaterialTextures[material];
 				if (texture < size(Demo::Texture::Descriptors)) {
 					auto& descriptor = Demo::Texture::Descriptors[texture];
 					texture_size.x = descriptor.width;
@@ -677,7 +677,7 @@ FORCEINLINE void Map::Load(ID id) {
 				}
 
 				if (mirrored) {
-					for (u16 j = 0; j < num_face_edges; ++j) {
+					for (u32 j = 0; j < num_face_edges; ++j) {
 						u32 dst_index = mat_vertex_offset[material] + j + num_mat_verts[material];
 						u32 src_index = mat_vertex_offset[material] + j + first_vertex;
 						vec3& dst_pos = positions[dst_index];

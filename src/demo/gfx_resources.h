@@ -354,21 +354,21 @@ NOINLINE void Demo::FlushDrawCalls() {
 		return;
 
 	/* transform counts to offsets */
-	for (u16 material = 0, base = 0; material < Material::Count; ++material) {
+	for (u32 material = 0, base = 0; material < Material::Count; ++material) {
 		auto& count = g_num_material_drawcalls[material];
-		u16 next = base + count;
+		u32 next = base + count;
 		count = base;
 		base = next;
 	}
 
 	/* fill order array */
-	for (u16 i = 0; i < g_num_drawcalls; ++i) {
+	for (u32 i = 0; i < g_num_drawcalls; ++i) {
 		const DrawCall& call = g_drawcalls[i];
 		g_drawcall_order[g_num_material_drawcalls[call.material]++] = i;
 	}
 
 	/* execute draw calls */
-	for (u16 i = 0; i < g_num_drawcalls; ++i) {
+	for (u32 i = 0; i < g_num_drawcalls; ++i) {
 		const DrawCall& call = g_drawcalls[g_drawcall_order[i]];
 		if (!call.mesh.num_vertices || !call.mesh.num_indices)
 			continue;

@@ -997,3 +997,4 @@
 59041,uniform size metadata
 59031,u16 sizes
 59021,u32 sizes
+58894,changed more u8/u16's to u32's

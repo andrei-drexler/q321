@@ -70,15 +70,15 @@ namespace DeCasteljau {
 NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const PackedMap::PatchVertex* ctrl, float s, float t, vec3& pos, vec3& nor, vec2& uv) {
 	/* determine cell index */
 	{
-		u8 prim_x = patch.width >> 1;
-		u8 prim_y = patch.height >> 1;
+		u32 prim_x = patch.width >> 1;
+		u32 prim_y = patch.height >> 1;
 
 		s *= prim_x;
 		t *= prim_y;
 		float ix = floor(s);
 		float iy = floor(t);
-		i16 x = (i16)ix;
-		i16 y = (i16)iy;
+		i32 x = (i32)ix;
+		i32 y = (i32)iy;
 		s -= ix;
 		t -= iy;
 
@@ -99,20 +99,20 @@ NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const P
 
 	/* copy initial control points */
 	PackedMap::PatchVertex c[9];
-	for (u8 y = 0; y < 3; ++y, ctrl+= patch.width)
+	for (u32 y = 0; y < 3; ++y, ctrl += patch.width)
 		MemCopy(c + y * 3, ctrl, 3);
 
 	/* apply control point mixing steps */
 	float coeff[2] = {s, t};
-	for (u8 k = 0; k < size(DeCasteljau::MixSteps); k += 3) {
-		u8 dst    = DeCasteljau::MixSteps[k    ];
-		u8 first  = DeCasteljau::MixSteps[k + 1];
-		u8 delta  = DeCasteljau::MixSteps[k + 2];
-		u8 axis   = delta & 1;
-		u8 second = (delta >> 1) + first;
+	for (u32 k = 0; k < size(DeCasteljau::MixSteps); k += 3) {
+		u32 dst    = DeCasteljau::MixSteps[k    ];
+		u32 first  = DeCasteljau::MixSteps[k + 1];
+		u32 delta  = DeCasteljau::MixSteps[k + 2];
+		u32 axis   = delta & 1;
+		u32 second = (delta >> 1) + first;
 
 		float f = coeff[axis];
-		for (u8 q = 0; q < size(c[dst].data); ++q)
+		for (u32 q = 0; q < size(c[dst].data); ++q)
 			c[dst].data[q] = mix(c[first].data[q], c[second].data[q], f);
 	}
 
