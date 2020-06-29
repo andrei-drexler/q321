@@ -73,6 +73,12 @@ namespace Gfx {
 			Count,
 		};
 
+		static constexpr u8 TypeSize[] = {
+			#define PP_GFX_UNIFORM_TYPE_SIZE(name, type) sizeof(type),
+			GFX_UNIFORM_TYPES(PP_GFX_UNIFORM_TYPE_SIZE)
+			#undef PP_GFX_UNIFORM_TYPE_SIZE
+		};
+
 		template <typename T> struct TypeToEnumImpl;
 		#define PP_GFX_MAP_UNIFORM_TYPE_TO_ENUM(name, type)\
 			template <> struct TypeToEnumImpl<type>	{ static constexpr Type value = Type::name; };
@@ -90,20 +96,19 @@ namespace Gfx {
 	#define PP_GFX_UNIFORM_ADDRESS(name, type)					&name,
 	#define PP_GFX_UNIFORM_TYPE(name, type)						Gfx::Uniform::TypeToEnum<decltype(name)>,
 
-	#define GFX_DECLARE_UNIFORMS(list)														\
-		inline namespace Variables {														\
-			list(PP_GFX_DECLARE_UNIFORM_VARIABLE)											\
-		}																					\
-		namespace Metadata {																\
-			static constexpr char Names[] =	list(PP_GFX_UNIFORM_NAME);						\
-			static constexpr Gfx::Uniform::Type Types[] = { list(PP_GFX_UNIFORM_TYPE) };	\
-			static constexpr void const* Addresses[] = { list(PP_GFX_UNIFORM_ADDRESS) };	\
-			enum { Count = size(Addresses) };												\
-		}																					\
-		FORCEINLINE void RegisterAll() {													\
-			using namespace Metadata;														\
-			Gfx::RegisterUniforms(Names, Types, Addresses, Count);							\
-		}																					\
+	#define GFX_DECLARE_UNIFORMS(list)																		\
+		inline namespace Variables {																		\
+			list(PP_GFX_DECLARE_UNIFORM_VARIABLE)															\
+		}																									\
+		namespace Metadata {																				\
+			static constexpr char Names[] =	list(PP_GFX_UNIFORM_NAME);										\
+			static constexpr Gfx::Uniform::Type Types[] = { list(PP_GFX_UNIFORM_TYPE) };					\
+			static constexpr void* Addresses[] = { list(PP_GFX_UNIFORM_ADDRESS) };							\
+			enum { Count = size(Addresses) };																\
+		}																									\
+		FORCEINLINE void RegisterAll() {																	\
+			Gfx::RegisterUniforms(Metadata::Names, Metadata::Types, Metadata::Addresses, Metadata::Count);	\
+		}																									\
 
 	////////////////////////////////////////////////////////////////
 

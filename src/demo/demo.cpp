@@ -213,7 +213,11 @@ namespace Demo {
 #ifdef DRAW_POINT_ENTITIES
 		DrawPointEntities();
 #endif
+	}
 
+	////////////////////////////////////////////////////////////////
+
+	void RenderEntities() {
 		Demo::Model::Transform transform;
 
 		for (u32 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
@@ -309,6 +313,8 @@ namespace Demo {
 		Gfx::SetRenderTarget(frame.render_target);
 		Gfx::Clear(Gfx::ClearBit::Depth);
 		Map::Render();
+		RenderEntities();
+		FlushDrawCalls();
 	}
 
 	FORCEINLINE void GenerateLevelShot() {

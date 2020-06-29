@@ -59,6 +59,8 @@ namespace Demo {
 	namespace Uniform {
 		GFX_DECLARE_UNIFORMS(DEMO_UNIFORMS);
 
+		using Metadata::Count;
+
 		namespace Cache {
 			mat4 ViewProj;
 		}
@@ -67,7 +69,40 @@ namespace Demo {
 			World = mat;
 			MVP = Cache::ViewProj * mat;
 		}
+
+		struct Pack {
+			enum {
+				#define PP_ADD_UNIFORM_SIZE(name, type, ...) +sizeof(type)
+				BufferSize = DEMO_UNIFORMS(PP_ADD_UNIFORM_SIZE),
+				#undef PP_ADD_UNIFORM_SIZE
+			};
+
+			u8		buffer[BufferSize];
+
+			void	Acquire();
+			void	Apply() const;
+		};
 	}
+
+	////////////////////////////////////////////////////////////////
+
+	enum {
+		MAX_NUM_DRAWCALLS				= 4096,
+	};
+
+	struct DrawCall {
+		u16								material;
+		Uniform::Pack					uniforms;
+		Gfx::Mesh						mesh;
+	};
+
+	u16									g_num_drawcalls;
+	Array<DrawCall, MAX_NUM_DRAWCALLS>	g_drawcalls;
+	Array<u16, MAX_NUM_DRAWCALLS>		g_drawcall_order;
+	Array<u16, Material::Count>			g_num_material_drawcalls;
+
+	void								AddDrawCall(Material::ID material, const Gfx::Mesh& mesh);
+	void								FlushDrawCalls();
 
 	////////////////////////////////////////////////////////////////
 
@@ -275,6 +310,81 @@ FORCEINLINE void Demo::Texture::GenerateProceduralTextures() {
 		Gfx::GenerateMipMaps(texture_id);
 	}
 }
+
+////////////////////////////////////////////////////////////////
+
+void Demo::Uniform::Pack::Acquire() {
+	namespace Meta = Uniform::Metadata;
+
+	for (u16 i = 0, offset = 0; i < Uniform::Count; ++i) {
+		u8 size = Gfx::Uniform::TypeSize[Meta::Types[i]];
+		MemCopy(buffer + offset, Meta::Addresses[i], size);
+		offset += size;
+	}
+}
+
+void Demo::Uniform::Pack::Apply() const {
+	namespace Meta = Uniform::Metadata;
+
+	for (u16 i = 0, offset = 0; i < Uniform::Count; ++i) {
+		u8 size = Gfx::Uniform::TypeSize[Meta::Types[i]];
+		MemCopy(Meta::Addresses[i], buffer + offset, size);
+		offset += size;
+	}
+}
+
+////////////////////////////////////////////////////////////////
+
+NOINLINE void Demo::AddDrawCall(Material::ID material, const Gfx::Mesh& mesh) {
+	assert(u32(material) < u32(Material::Count));
+
+	if (g_num_drawcalls >= MAX_NUM_DRAWCALLS)
+		FlushDrawCalls();
+
+	DrawCall& call = g_drawcalls[g_num_drawcalls++];
+	call.material = material;
+	call.uniforms.Acquire();
+	MemCopy(&call.mesh, &mesh);
+
+	++g_num_material_drawcalls[material];
+}
+
+NOINLINE void Demo::FlushDrawCalls() {
+	if (!g_num_drawcalls)
+		return;
+
+	/* transform counts to offsets */
+	for (u16 material = 0, base = 0; material < Material::Count; ++material) {
+		auto& count = g_num_material_drawcalls[material];
+		u16 next = base + count;
+		count = base;
+		base = next;
+	}
+
+	/* fill order array */
+	for (u16 i = 0; i < g_num_drawcalls; ++i) {
+		const DrawCall& call = g_drawcalls[i];
+		g_drawcall_order[g_num_material_drawcalls[call.material]++] = i;
+	}
+
+	/* execute draw calls */
+	for (u16 i = 0; i < g_num_drawcalls; ++i) {
+		const DrawCall& call = g_drawcalls[g_drawcall_order[i]];
+		if (!call.mesh.num_vertices || !call.mesh.num_indices)
+			continue;
+
+		call.uniforms.Apply();
+		
+		Gfx::SetShader(MaterialShaders[call.material]);
+		Gfx::UpdateUniforms();
+		Gfx::Draw(call.mesh);
+	}
+
+	/* reset state */
+	MemSet(&g_num_material_drawcalls[0], 0, size(g_num_material_drawcalls));
+	g_num_drawcalls = 0;
+}
+
 
 ////////////////////////////////////////////////////////////////
 

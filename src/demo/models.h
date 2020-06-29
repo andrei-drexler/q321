@@ -284,14 +284,11 @@ NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 		mesh.num_vertices		= part.num_verts;
 		mesh.num_indices		= part.num_indices;
 
-		Gfx::SetShader(Demo::MaterialShaders[material]);
-
 		Uniform::Texture0 = Demo::MaterialTextures[material];
 		if (r_lightmap.integer)
 			Uniform::Texture0 = Texture::Grey;
 
-		Gfx::UpdateUniforms();
-		Gfx::Draw(mesh);
+		Demo::AddDrawCall(Material::ID(material), mesh);
 	}
 }
 

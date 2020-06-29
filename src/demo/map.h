@@ -808,8 +808,6 @@ void Map::Render() {
 		if (!mesh.num_vertices || !mesh.num_indices)
 			continue;
 
-		Gfx::SetShader(MaterialShaders[material]);
-
 		Uniform::Time.w = material;
 		Uniform::Texture0 = MaterialTextures[material];
 		Uniform::Texture1 = Texture::Lightmap;
@@ -819,8 +817,7 @@ void Map::Render() {
 		if (r_fullbright.integer)
 			Uniform::Texture1 = Texture::Grey;
 
-		Gfx::UpdateUniforms();
-		Gfx::Draw(mesh);
+		Demo::AddDrawCall(Material::ID(material), mesh);
 	}
 
 #if 0

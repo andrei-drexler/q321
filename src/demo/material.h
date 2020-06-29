@@ -21,11 +21,13 @@ namespace Demo {
 			Sprite			= 1 << 6,
 		};
 
-		enum {
+		enum ID : u8 {
 			#define PP_DEMO_MATERIAL_COUNT(path, shader, texture, contents, draw, light)			+1
 			Count = DEMO_MATERIALS(PP_DEMO_MATERIAL_COUNT),
 			#undef PP_DEMO_MATERIAL_COUNT
 		};
+
+		static_assert(Count <= 256, "Material ID larger than 8 bits");
 
 		////////////////////////////////////////////////////////////////
 
