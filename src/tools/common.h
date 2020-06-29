@@ -110,6 +110,15 @@ bool ReadFile(const char* file_name, std::vector<char>& contents, ReadMode mode 
 
 ////////////////////////////////////////////////////////////////
 
+int CompareNoCase(std::string_view lhs, std::string_view rhs) {
+	size_t i = 0, common = std::min(lhs.size(), rhs.size());
+	while (i < common && std::tolower(lhs[i]) == std::tolower(rhs[i]))
+		++i;
+	char lhs_c = i < lhs.size() ? lhs[i] : 0;
+	char rhs_c = i < rhs.size() ? rhs[i] : 0;
+	return lhs_c - rhs_c;
+}
+
 std::string_view ExtractFileName(std::string_view path) {
 	auto i = path.rfind('/');
 	if (i != path.npos)

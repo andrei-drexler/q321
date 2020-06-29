@@ -286,7 +286,6 @@ NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 
 		Gfx::SetShader(Demo::MaterialShaders[material]);
 
-		Uniform::Time.w = material;
 		Uniform::Texture0 = Demo::MaterialTextures[material];
 		if (r_lightmap.integer)
 			Uniform::Texture0 = Texture::Grey;

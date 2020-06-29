@@ -986,3 +986,4 @@
 58449,check key firstdown instead of released
 58448,fixed model r_lightmap handling
 58503,teleporter pad material stub
+58650,shiny colored item models

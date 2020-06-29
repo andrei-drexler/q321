@@ -554,8 +554,12 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 
 		const u32* base_indices = surf->GetIndices();
 
+		auto& name = surf->GetShaders()[0].name;
+		for (size_t i = 0; name[i]; ++i)
+			name[i] = std::tolower(name[i]);
+
 		assert(surf->num_shaders > 0);
-		u32 material = FindMaterial(surf->GetShaders()[0].name);
+		u32 material = FindMaterial(name);
 		u32 props = Demo::Material::Properties[material];
 		
 		/* skip invisible surfaces */

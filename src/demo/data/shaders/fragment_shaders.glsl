@@ -672,10 +672,16 @@ vec3 pattern(vec2 p, float sc, float bv) {
 VORO_FUNC(voro1, sum(abs(r))) // L1 (Manhattan) norm
 VORO_FUNC(voro, length(r)) // L2 norm
 
-float env(vec3 p) {
+// s = detail scale (integral values only)
+// 45.0 is very shiny, 9.0 less so
+float env(vec3 p, float s) {
 	p = normalize(p);
-	vec3 a = mod(degrees(atan(p, p.yzx)), 360.);
-	return NT(a.x / 8., 45.) * ls(.9, .0, abs(p.z)) + NT(a.y / 8., 45.) * ls(.7, .0, abs(p.x));
+	vec3 a = fract(degrees(atan(p, p.yzx)) / 360.);
+	return NT(a.x * s, s) * ls(.9, .0, abs(p.z)) + NT(a.y * s, s) * ls(.7, .0, abs(p.x));
+}
+
+float env(vec3 p) {
+	return env(p, 45);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -2341,6 +2347,10 @@ void miscmodel2s() {
 void item() {
 	FCol = triplanar(16.) * (WNor.z * .5 + .5) * vec4(1, .95, .9, 1);
 	FCol += 2. * pow(sat(Nor.z), mix(2., 8., FCol.y)) * sqr(FCol);
+}
+
+void itemshiny() {
+	FCol = vec4((env(Ref, 15.) * 1.4 + .3) * Time.yzw, 1);
 }
 
 // antialiased tent funtion

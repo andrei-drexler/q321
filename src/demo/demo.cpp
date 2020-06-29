@@ -159,7 +159,38 @@ namespace Demo {
 		}
 	}
 
-	static constexpr auto EntityModels = MakeLookupTable<Entity::Type, u8, Entity::Type{}, Entity::Type::Count>(GetEntityModel);
+	constexpr u32 MakeColor(u8 r, u8 g, u8 b, u8 a = 255) {
+		return r | (g << 8) | (b << 16) | (a << 24);
+	}
+
+	constexpr u32 GetEntityModelColor(Entity::Type type) {
+		using Type = Demo::Entity::Type;
+
+		switch (type) {
+			case Type::ammo_bullets:		return MakeColor(128, 112, 2);
+			case Type::ammo_rockets:		return MakeColor(128, 2, 2);
+			case Type::ammo_shells:			return MakeColor(128, 64, 2);
+			case Type::ammo_slugs:			return MakeColor(0, 80, 32);
+			case Type::ammo_cells:			return MakeColor(112, 0, 64);
+
+			case Type::item_health:			return MakeColor(160, 128, 48);
+			case Type::item_health_large:	return MakeColor(144, 88, 56);
+			case Type::item_health_mega:	return MakeColor(8, 119, 234);
+
+			case Type::item_armor_shard:	return MakeColor(80, 88, 86);
+
+			//case Type::item_armor_body:	return 0x808080;
+			//case Type::item_armor_combat:	return 0x808080;
+
+			case Type::item_quad:			return MakeColor(8, 119, 234);
+
+			default:
+				return 0;
+		}
+	}
+
+	static constexpr auto EntityModels      = MakeLookupTable<Entity::Type, u8,  Entity::Type{}, Entity::Type::Count>(GetEntityModel);
+	static constexpr auto EntityModelColors = MakeLookupTable<Entity::Type, u32, Entity::Type{}, Entity::Type::Count>(GetEntityModelColor);
 
 	void DrawPointEntities() {
 		for (u16 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
@@ -203,8 +234,13 @@ namespace Demo {
 			}
 
 			int model_id = int(EntityModels[ent.type]) - 1;
-			if (model_id != -1)
+			u32 model_color = EntityModelColors[ent.type];
+			if (model_id != -1) {
+				Demo::Uniform::Time[1] = ((model_color      ) & 255) / 255.f;
+				Demo::Uniform::Time[2] = ((model_color >>  8) & 255) / 255.f;
+				Demo::Uniform::Time[3] = ((model_color >> 16) & 255) / 255.f;
 				Demo::Model::Draw(Demo::Model::ID(model_id), transform);
+			}
 		}
 
 		MemCopy(&transform, &Demo::Model::TransformIdentity);

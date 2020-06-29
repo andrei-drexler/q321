@@ -152,4 +152,8 @@ void rocketl() { FS(); }
 void item() {
 	Generic();
 	WNor = normalize(mat3(World) * N);
+	Ref = normalize(reflect((World * P - Cam).xyz, WNor));
+}
+void itemshiny() {
+	item();
 }
