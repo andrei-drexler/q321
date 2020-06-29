@@ -316,7 +316,7 @@ void ParallelFor(u32 count, void* data, void (*work)(u32 begin, u32 end, void* d
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void ComputeTangentFrame(const vec3& z, vec3& x, vec3& y) {
+NOINLINE void ComputeTangentFrame(const vec3& z, vec3& x, vec3& y) {
 	// find normal component with smallest magnitude
 	vec3 abs_z = abs(z);
 	int next_axis = 0;
