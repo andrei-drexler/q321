@@ -131,8 +131,8 @@ void bwprtbnr_m() {
 	wave(30., 3., .2);
 	wave(100., 3., .7);
 }
-void statue() { misc_model(); }
-void statue2s() { misc_model(); }
+void miscmodel() { misc_model(); }
+void miscmodel2s() { misc_model(); }
 void storchtl() { misc_model(); }
 void q3bnr() { FS(); }
 void q3bnr_m() { Generic(); }

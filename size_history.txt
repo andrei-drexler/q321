@@ -985,3 +985,4 @@
 58484,single frame key history
 58449,check key firstdown instead of released
 58448,fixed model r_lightmap handling
+58503,teleporter pad material stub

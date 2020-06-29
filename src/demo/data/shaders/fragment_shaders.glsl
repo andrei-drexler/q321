@@ -2329,13 +2329,13 @@ vec4 triplanar(float s) {
 	return triplanar(Pos, s);
 }
 
-void statue() {
+void miscmodel() {
 	vec3 n = Nor * Nor;
 	FCol = triplanar(4.) * (Clr + .5 * n.z * n.z * sign(Nor.z)) * 1.5;
 }
 
-void statue2s() {
-	statue();
+void miscmodel2s() {
+	miscmodel();
 }
 
 void item() {
@@ -2351,7 +2351,7 @@ float triaa(float c, float s, float x) {
 
 // models/mapobjects/storch/storch_tall.tga
 void storchtl() {
-	statue();
+	miscmodel();
 	vec3 p = Pos, q;
 	p.y = abs(p.y); // symmetry
 	q = p - vec3(7, 3.5, -21); // eye position

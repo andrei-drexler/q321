@@ -104,8 +104,8 @@
 	x(lavaf,				MapVertexBits)\
 	x(bwprtbnr,				FSVertexBits)\
 	x(bwprtbnr_m,			MapVertexBits|Gfx::Shader::NoCull)\
-	x(statue,				MapVertexBits|Attrib::ColorBit)\
-	x(statue2s,				MapVertexBits|Attrib::ColorBit|Gfx::Shader::NoCull)\
+	x(miscmodel,			MapVertexBits|Attrib::ColorBit)\
+	x(miscmodel2s,			MapVertexBits|Attrib::ColorBit|Gfx::Shader::NoCull)\
 	x(storchtl,				MapVertexBits|Attrib::ColorBit)\
 	x(q3bnr,				FSVertexBits)\
 	x(q3bnr_m,				MapVertexBits)\
@@ -280,8 +280,9 @@
 	x("gothic_door/skull_door_f",				Lmapped,		gskdr_f,		Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahell_750",					lava,			White,			Solid,		Opaque,					(500,16,5,2))\
 	x("base_wall/protobanner",					bwprtbnr_m,		bwprtbnr,		Solid,		Opaque|NeedsUV,			(0))\
-	x("*map_model",								statue,			gtprst3,		Solid,		Opaque,					(0))\
-	x("models/mapobjects/spotlamp/spotlamp",	statue2s,		gtprst3,		Solid,		Opaque,					(0))\
+	x("*map_model",								miscmodel,		gtprst3,		Solid,		Opaque,					(0))\
+	x("models/mapobjects/teleporter/pad",		miscmodel,		ptrshn,			Solid,		Opaque,					(0))\
+	x("models/mapobjects/spotlamp/spotlamp",	miscmodel2s,	gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/storch/storch_tall",	storchtl,		gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/spotlamp/spotlamp_l",	fixture,		lt2,			Solid,		Opaque|NeedsUV,			(0))\
 	x("*item_model",							item,			rocketl,		Solid,		Opaque,					(0))\
