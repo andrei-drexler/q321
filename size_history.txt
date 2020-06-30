@@ -1000,3 +1000,4 @@
 58894,changed more u8/u16's to u32's
 58860,noinline computetangentframe
 58856,zero modelcolor alpha
+58871,more robust entity initialization

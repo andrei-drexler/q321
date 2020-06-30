@@ -332,12 +332,11 @@ FORCEINLINE void Map::Details::InitEntities() {
 	}
 	entity_brush_start[num_brush_entities] = brush_offset;
 
-	const u32 NumRawFields = sizeof(Demo::Entity) / sizeof(i16);
 	const i16* src_data = source->entity_data;
-	for (u32 field = 0; field < NumRawFields; ++field, src_data += num_entities) {
-		i16* dst_data = (i16*)&entities[0] + field;
-		for (u16 entity_index = 0; entity_index < num_entities; ++entity_index, dst_data += NumRawFields) {
-			*dst_data = src_data[entity_index];
+	for (u32 field = 0; field < Demo::Entity::NumRawFields; ++field, src_data += num_entities) {
+		u8* dst_data = (u8*)&entities[0] + field * sizeof(i16);
+		for (u16 entity_index = 0; entity_index < num_entities; ++entity_index, dst_data += sizeof(Demo::Entity)) {
+			*(i16*)dst_data = src_data[entity_index];
 		}
 	}
 }

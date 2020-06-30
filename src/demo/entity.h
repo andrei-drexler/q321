@@ -51,8 +51,8 @@
 ////////////////////////////////////////////////////////////////
 
 namespace Demo {
-	struct Entity {
-		enum class Type {
+	struct BaseEntity { // Only contains properties read from the map file
+		enum class Type : i16 {
 			None,
 
 			#define PP_DEMO_ENTITY_TYPE_DECLARE(name,...)	name,
@@ -61,6 +61,24 @@ namespace Demo {
 
 			Count,
 		} type;
+
+		enum {
+			#define PP_DEMO_PROP_COUNT(name, type)			+sizeof(type)
+			NumRawFields = (DEMO_ENTITY_PROPERTIES(PP_DEMO_PROP_COUNT)) / sizeof(i16) + 1, // +1 for entity type
+			#undef PP_DEMO_PROP_COUNT
+		};
+
+		////////////////////////////////////////////////////////////////
+
+		// since 'i16[3] origin;' is invalid, we use a helper alias
+		template <typename T>
+		using Field = T;
+
+		#define PP_DEMO_PROP_DECLARE(name, type)			Field<type> name;
+		DEMO_ENTITY_PROPERTIES(PP_DEMO_PROP_DECLARE)
+		#undef PP_DEMO_PROP_DECLARE
+
+		////////////////////////////////////////////////////////////////
 
 		static constexpr u32 WeaponTypeMask =
 			(1 << (u32)Type::weapon_railgun) |
@@ -78,9 +96,11 @@ namespace Demo {
 		constexpr bool IsWeapon() const {
 			return IsWeapon(type);
 		}
+	};
 
-		////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
 
+	struct alignas(16) Entity : BaseEntity { // Adds data needed at runtime
 		enum : u32 {
 			Version = Hash(
 				#define PP_DEMO_HASH_ENTITY_TYPE(name, ...)			#name "*"
@@ -94,16 +114,6 @@ namespace Demo {
 				#undef PP_DEMO_HASH_ENTITY_TYPE
 			)
 		};
-
-		////////////////////////////////////////////////////////////////
-
-		// since 'i16[3] origin;' is invalid, we use a helper alias
-		template <typename T>
-		using Field = T;
-
-		#define PP_DEMO_PROP_DECLARE(name, type)			Field<type> name;
-		DEMO_ENTITY_PROPERTIES(PP_DEMO_PROP_DECLARE)
-		#undef PP_DEMO_PROP_DECLARE
 	};
 }
 

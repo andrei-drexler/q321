@@ -881,7 +881,7 @@ struct FieldDescriptor {
 };
 
 static constexpr FieldDescriptor EntityFields[] = {
-	#define PP_DEMO_FIELD_DESC(name, type)	{ #name, offsetof(Demo::Entity, name), &SetField<type> },
+	#define PP_DEMO_FIELD_DESC(name, type)	{ #name, offsetof(Demo::BaseEntity, name), &SetField<type> },
 	DEMO_ENTITY_PROPERTIES(PP_DEMO_FIELD_DESC)
 	#undef PP_DEMO_FIELD_DESC
 };
@@ -923,10 +923,10 @@ void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, 
 	std::unordered_map<string_view, i32> model_usage; // negative for missing models
 
 	/* gather entity properties */
-	std::vector<Demo::Entity> compiled_entities;
+	std::vector<Demo::BaseEntity> compiled_entities;
 	compiled_entities.reserve(map.entities.size());
 	for (auto& src_ent : map.entities) {
-		Demo::Entity dst_ent = {};
+		Demo::BaseEntity dst_ent = {};
 		dst_ent.type = classname_to_type[src_ent.GetProperty("classname"sv)];
 		if (dst_ent.type == Demo::Entity::Type::None)
 			continue;
@@ -951,7 +951,7 @@ void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, 
 
 	/* write entity properties (for all entities) */
 	print << "\nconst i16 "sv << entity_data_name << "[] = {"sv;
-	const size_t NumRawFields = sizeof(Demo::Entity) / sizeof(i16);
+	const size_t NumRawFields = Demo::Entity::NumRawFields;
 	i16* raw_data = (i16*)compiled_entities.data();
 	for (size_t field = 0; field < NumRawFields; ++field) {
 		for (size_t entity_index = 0; entity_index < compiled_entities.size(); ++entity_index) {

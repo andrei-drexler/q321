@@ -87,7 +87,7 @@ struct PackedMap {
 		entity_brushes			(entity_brushes),
 		num_brush_entities		(NumBrushEntities),
 		entity_data				(entity_data),
-		num_entities			(NumEntityDataEntries / (sizeof(Demo::Entity) / sizeof(i16))),
+		num_entities			(NumEntityDataEntries / Demo::Entity::NumRawFields),
 		world_bounds			(world_bounds),
 		brush_bounds			(brush_bounds),
 		num_brushes				(NumBrushBoundEntries / 6),
