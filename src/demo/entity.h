@@ -97,8 +97,11 @@ namespace Demo {
 
 		////////////////////////////////////////////////////////////////
 
-		// since 'i16[3] origin;' is invalid, we use helper aliases
-		#define PP_DEMO_PROP_DECLARE(name, type)			using typeof_##name = type; typeof_##name name;
+		// since 'i16[3] origin;' is invalid, we use a helper alias
+		template <typename T>
+		using Field = T;
+
+		#define PP_DEMO_PROP_DECLARE(name, type)			Field<type> name;
 		DEMO_ENTITY_PROPERTIES(PP_DEMO_PROP_DECLARE)
 		#undef PP_DEMO_PROP_DECLARE
 	};
