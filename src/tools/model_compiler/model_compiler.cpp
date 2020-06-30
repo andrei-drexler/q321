@@ -8,8 +8,8 @@
 #define INDENT "    "
 
 struct Options {
-	std::vector<std::string>		md3_paths;
-	std::string						out_path;
+	std::string				src_path;
+	std::string				out_path;
 };
 
 ////////////////////////////////////////////////////////////////
@@ -780,14 +780,16 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 
 ////////////////////////////////////////////////////////////////
 
+static constexpr std::string_view ModelPaths[] = {
+	#define PP_DEMO_MODEL_PATH(path,name)		#path "/" #name ".md3",
+	DEMO_MODELS(PP_DEMO_MODEL_PATH)
+	#undef PP_DEMO_MODEL_PATH
+};
+
 int main() {
 	Options options;
 
-	options.md3_paths = {
-		#define PP_DEMO_MODEL_PATH(path,name)		"../../demo/data/" #path "/" #name ".md3",
-		DEMO_MODELS(PP_DEMO_MODEL_PATH)
-		#undef PP_DEMO_MODEL_PATH
-	};
+	options.src_path = "../../demo/data/";
 	options.out_path = "../../demo/cooked/cooked_models.h";
 
 	FILE* out = fopen(options.out_path.c_str(), "w");
@@ -810,10 +812,11 @@ int main() {
 	std::vector<std::string> model_names;
 	model_names.reserve(256);
 
-	for (auto& path : options.md3_paths) {
-		printf("Compiling %s\n", path.c_str());
+	for (auto path : ModelPaths) {
+		printf("Compiling %.*s\n", int(path.length()), path.data());
 
-		if (!ReadFile(path.c_str(), contents)) {
+		std::string full_path = options.src_path + std::string{path};
+		if (!ReadFile(full_path.c_str(), contents)) {
 			++num_errors;
 			continue;
 		}
@@ -826,7 +829,7 @@ int main() {
 
 		//AdaptiveQuantization(model);
 		//ExportObj(model, (std::string("d:\\temp\\") + std::string(ExtractFileName({path})) + ".obj").c_str());
-		CompileModel(model, options, path, out);
+		CompileModel(model, options, full_path, out);
 
 		model_names.emplace_back(ExtractFileName({path}));
 	}
