@@ -1002,3 +1002,4 @@
 58856,zero modelcolor alpha
 58871,more robust entity initialization
 58910,viewmodel aspect ratio pitch adjustment
+58905,removed unused g_key_state array

@@ -488,7 +488,6 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	float g_delta_time;
-	u8 g_key_state[256];
 
 	NOINLINE void LoadMap(Map::ID id) {
 		Map::Load(id);
