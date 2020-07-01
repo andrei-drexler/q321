@@ -17,6 +17,31 @@
 	/*x(ambient,		i16[3])*/	\
 	x(dmg,				i16)		\
 
+////////////////////////////////////////////////////////////////
+
+#define DEMO_ENTITY_TYPES_WEAPONS(x)\
+	x(weapon_rocketlauncher,		"Rocket launcher")\
+	x(weapon_shotgun,				"Shotgun")\
+	x(weapon_railgun,				"Railgun")\
+	x(weapon_plasmagun,				"Plasma Gun")\
+
+#define DEMO_ENTITY_TYPES_AMMO(x)\
+	x(ammo_bullets,					"Bullets")\
+	x(ammo_rockets,					"Rockets")\
+	x(ammo_shells,					"Shells")\
+	x(ammo_slugs,					"Slugs")\
+	x(ammo_cells,					"Cells")\
+
+#define DEMO_ENTITY_TYPES_HEALTH(x)\
+	x(item_health,					"25 Health")\
+	x(item_health_large,			"50 Health")\
+	x(item_health_mega,				"Mega Health")\
+
+#define DEMO_ENTITY_TYPES_ARMOR(x)\
+	x(item_armor_combat,			"Armor")\
+	x(item_armor_shard,				"Armor Shard")\
+	x(item_armor_body,				"Heavy Armor")\
+
 #define DEMO_ENTITY_TYPES(x)		\
 	x(worldspawn,					"")\
 	x(trigger_teleport,				"")\
@@ -30,21 +55,10 @@
 	x(info_player_deathmatch,		"")\
 	x(info_player_intermission,		"")\
 	x(misc_teleporter_dest,			"")\
-	x(ammo_bullets,					"Bullets")\
-	x(ammo_rockets,					"Rockets")\
-	x(ammo_shells,					"Shells")\
-	x(ammo_slugs,					"Slugs")\
-	x(ammo_cells,					"Cells")\
-	x(weapon_rocketlauncher,		"Rocket launcher")\
-	x(weapon_shotgun,				"Shotgun")\
-	x(weapon_railgun,				"Railgun")\
-	x(weapon_plasmagun,				"Plasma Gun")\
-	x(item_health,					"25 Health")\
-	x(item_health_large,			"50 Health")\
-	x(item_health_mega,				"Mega Health")\
-	x(item_armor_combat,			"Armor")\
-	x(item_armor_shard,				"Armor Shard")\
-	x(item_armor_body,				"Heavy Armor")\
+	DEMO_ENTITY_TYPES_AMMO(x)\
+	DEMO_ENTITY_TYPES_WEAPONS(x)\
+	DEMO_ENTITY_TYPES_HEALTH(x)\
+	DEMO_ENTITY_TYPES_ARMOR(x)\
 	x(item_quad,					"Quad Damage")\
 	x(target_remove_powerups,		"")\
 
@@ -80,12 +94,18 @@ namespace Demo {
 
 		////////////////////////////////////////////////////////////////
 
-		static constexpr u32 WeaponTypeMask =
-			(1 << (u32)Type::weapon_railgun) |
-			(1 << (u32)Type::weapon_shotgun) |
-			(1 << (u32)Type::weapon_rocketlauncher) |
-			(1 << (u32)Type::weapon_plasmagun)
+		#define PP_ADD_ENTITY_TYPE_BIT(name, desc, ...)		+ (1 << (u32)Type::name)
+		#define PP_ENTITY_TYPE_MASK(list)					list(PP_ADD_ENTITY_TYPE_BIT)
+
+		static constexpr u32
+			AmmoTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_AMMO),
+			WeaponTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_WEAPONS),
+			HealthTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_HEALTH),
+			ArmorTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_ARMOR)
 		;
+
+		#undef PP_ADD_ENTITY_TYPE_BIT
+		#undef PP_ENTITY_TYPE_MASK
 
 		static constexpr bool IsWeapon(Type type) {
 			static_assert(u32(Type::Count) <= 32, "Handle entity types >= 32");
