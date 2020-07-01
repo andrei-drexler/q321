@@ -157,15 +157,14 @@ namespace Demo {
 
 	FORCEINLINE void RenderEntities() {
 		Demo::Model::Transform transform;
+		MemCopy(&transform, &Demo::Model::TransformIdentity);
 
-		for (u32 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
+		for (u32 entity_index = Map::num_brush_entities; entity_index < Map::num_entities; ++entity_index) {
 			using Type = Demo::Entity::Type;
-			Demo::Entity& ent = Map::entities[i];
-			Demo::Uniform::Time.w = float(ent.type);
+			const Demo::Entity& ent = Map::entities[entity_index];
 
-			MemCopy(&transform, &Demo::Model::TransformIdentity);
-			for (u16 j = 0; j < 3; ++j)
-				transform.position[j] = ent.origin[j];
+			for (u32 i = 0; i < 3; ++i)
+				transform.position[i] = ent.origin[i];
 			float phase = (transform.position[0] + transform.position[1]) / 1024.f;
 			transform.position[2] += 4.f + 4.f * sin(Math::TAU * (float(g_time) + phase));
 			transform.angles[0] = ent.angle + float(g_time) * 180.f;
@@ -178,9 +177,8 @@ namespace Demo {
 			int model_id = int(EntityModels[(u32)ent.type]) - 1;
 			u32 model_color = EntityModelColors[(u32)ent.type];
 			if (model_id != -1) {
-				Demo::Uniform::Time[1] = ((model_color      ) & 255) / 255.f;
-				Demo::Uniform::Time[2] = ((model_color >>  8) & 255) / 255.f;
-				Demo::Uniform::Time[3] = ((model_color >> 16) & 255) / 255.f;
+				for (u32 i = 0; i < 3; ++i, model_color >>= 8)
+					Demo::Uniform::Time[i + 1] = (model_color & 255) / 255.f;
 				Demo::Model::Draw(Demo::Model::ID(model_id), transform);
 
 				if (ent.IsHealth()) {
