@@ -324,6 +324,7 @@ Demo::Entity* Map::PickTarget(i16 target) {
 FORCEINLINE void Map::Details::InitEntities() {
 	num_brush_entities = source->num_brush_entities;
 	num_entities = source->num_entities;
+	MemSet(&entities);
 
 	u32 brush_offset = 0;
 	for (u32 entity_index = 0; entity_index < num_brush_entities; ++entity_index) {

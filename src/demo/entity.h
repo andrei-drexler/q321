@@ -46,6 +46,10 @@
 	x(item_armor_shard,				"Armor Shard",			1 + Demo::Model::shard,				 80,  88,  86)\
 	x(item_armor_body,				"Heavy Armor",			1 + Demo::Model::armor_red,			255,   0,  16)\
 
+#define DEMO_ENTITY_TYPES_POWERUPS(x)\
+	/*Name							Description				Model								  R,   G,   B*/\
+	x(item_quad,					"Quad Damage",			1 + Demo::Model::quad,				  8, 119, 234)\
+
 #define DEMO_ENTITY_TYPES(x)		\
 	/*Name							Description				Model								  R,   G,   B*/\
 	x(worldspawn,					"",						0,									  0,   0,   0)\
@@ -64,7 +68,7 @@
 	DEMO_ENTITY_TYPES_WEAPONS(x)\
 	DEMO_ENTITY_TYPES_HEALTH(x)\
 	DEMO_ENTITY_TYPES_ARMOR(x)\
-	x(item_quad,					"Quad Damage",			1 + Demo::Model::quad,				  8, 119, 234)\
+	DEMO_ENTITY_TYPES_POWERUPS(x)\
 	x(target_remove_powerups,		"",						0,									  0,   0,   0)\
 
 ////////////////////////////////////////////////////////////////
@@ -105,7 +109,10 @@ namespace Demo {
 			AmmoTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_AMMO),
 			WeaponTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_WEAPONS),
 			HealthTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_HEALTH),
-			ArmorTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_ARMOR)
+			ArmorTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_ARMOR),
+			PowerupTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_POWERUPS),
+
+			PickupTypeMask		= AmmoTypeMask | WeaponTypeMask | HealthTypeMask | ArmorTypeMask | PowerupTypeMask
 		;
 
 		#undef PP_ADD_ENTITY_TYPE_BIT
@@ -116,11 +123,20 @@ namespace Demo {
 
 		static constexpr bool	IsHealth(Type type)		{ return 0 != (HealthTypeMask & (1 << u32(type))); }
 		constexpr bool			IsHealth() const		{ return IsHealth(type); }
+
+		static constexpr bool	IsPickup(Type type)		{ return 0 != (PickupTypeMask & (1 << u32(type))); }
+		constexpr bool			IsPickup() const		{ return IsPickup(type); }
 	};
 
 	////////////////////////////////////////////////////////////////
 
 	struct alignas(16) Entity : BaseEntity { // Adds data needed at runtime
+		static constexpr float
+			Radius				= 15.f,
+			RespawnAnimTime		= 0.5f,
+			RespawnTime			= 5.f
+		;
+
 		enum : u32 {
 			Version = Hash(
 				#define PP_DEMO_HASH_ENTITY_TYPE(name, ...)			#name "*"
@@ -134,6 +150,8 @@ namespace Demo {
 				#undef PP_DEMO_HASH_ENTITY_TYPE
 			)
 		};
+
+		float respawn;
 	};
 }
 

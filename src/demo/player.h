@@ -320,8 +320,11 @@ void Demo::Player::Update(float dt) {
 				break;
 			}
 
-			default:
+			default: {
+				if (entity.IsPickup() && entity.respawn <= entity.RespawnAnimTime)
+					entity.respawn = Entity::RespawnTime;
 				break;
+			}
 		}
 	}
 		

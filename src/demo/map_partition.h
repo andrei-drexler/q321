@@ -308,5 +308,20 @@ NOINLINE bool Map::TraceRay(TraceInfo& trace) {
 	if (u16(trace.plane) < brushes.plane_count)
 		trace.hit_normal = brushes.planes[trace.plane].xyz;
 
+	// Add point entities to touch list.
+	// Note: point entities are not partitioned,
+	// so we simply iterate thorough all of them...
+
+	for (u32 entity_index = Map::num_brush_entities; trace.num_touch_ents < trace.max_touch_ents && entity_index < Map::num_entities; ++entity_index) {
+		const Demo::Entity& entity = Map::entities[entity_index];
+
+		float dist = 0.f;
+		for (u32 i = 0; i < 3; ++i)
+			assign_max(dist, abs(trace.hit_point[i] - entity.origin[i]) - trace.box_half_size[i]);
+
+		if (dist < Demo::Entity::Radius)
+			trace.touch_ents[trace.num_touch_ents++] = entity_index;
+	}
+
 	return result;
 }

@@ -157,12 +157,16 @@ namespace Demo {
 
 	FORCEINLINE void RenderEntities() {
 		Demo::Model::Transform transform;
-		MemCopy(&transform, &Demo::Model::TransformIdentity);
 
 		for (u32 entity_index = Map::num_brush_entities; entity_index < Map::num_entities; ++entity_index) {
 			using Type = Demo::Entity::Type;
 			const Demo::Entity& ent = Map::entities[entity_index];
 
+			float spawn = 1.f - ent.respawn / Demo::Entity::RespawnAnimTime;
+			if (spawn <= 0.f)
+				continue;
+
+			MemCopy(&transform, &Demo::Model::TransformIdentity);
 			for (u32 i = 0; i < 3; ++i)
 				transform.position[i] = ent.origin[i];
 			float phase = (transform.position[0] + transform.position[1]) / 1024.f;
@@ -173,6 +177,7 @@ namespace Demo {
 				transform.scale = 1.5f;
 				transform.position[2] += 8.f;
 			}
+			transform.scale *= spawn;
 
 			int model_id = int(EntityModels[(u32)ent.type]) - 1;
 			u32 model_color = EntityModelColors[(u32)ent.type];
@@ -472,6 +477,13 @@ namespace Demo {
 		Sys::UpdateMouseState(mouse, dt);
 
 		if (!IsLoading()) {
+			for (u32 entity_index = Map::num_brush_entities; entity_index < Map::num_entities; ++entity_index) {
+				Demo::Entity& entity = Map::entities[entity_index];
+				entity.respawn -= dt;
+				if (entity.respawn < 0.f)
+					entity.respawn = 0.f;
+			}
+
 			float fov = mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
 			float zoom_scale = tan(fov * (0.5f * Math::DEG2RAD)) / tan(cg_fov.value * (0.5f * Math::DEG2RAD));
 			float mouse_scale = zoom_scale * sensitivity.value * -90.f / sqrt(Sys::g_window.width * Sys::g_window.height);
