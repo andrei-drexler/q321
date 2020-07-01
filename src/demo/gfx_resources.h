@@ -56,6 +56,8 @@ namespace Demo {
 
 	////////////////////////////////////////////////////////////////
 
+	vec2 g_fov; // in radians
+
 	namespace Uniform {
 		GFX_DECLARE_UNIFORMS(DEMO_UNIFORMS);
 

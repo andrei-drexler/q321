@@ -217,7 +217,7 @@ namespace Demo {
 
 	////////////////////////////////////////////////////////////////
 
-	void RenderEntities() {
+	FORCEINLINE void RenderEntities() {
 		Demo::Model::Transform transform;
 
 		for (u32 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
@@ -246,11 +246,19 @@ namespace Demo {
 				Demo::Model::Draw(Demo::Model::ID(model_id), transform);
 			}
 		}
+	}
 
+	FORCEINLINE void RenderViewModel() {
+		Demo::Model::Transform transform;
 		MemCopy(&transform, &Demo::Model::TransformIdentity);
 		transform.angles = g_player.angles;
 
-		mat4 rotation = MakeRotation(g_player.angles * Math::DEG2RAD);
+		const float DefaultVerticalFov = 58.75f; // approximation
+		float fov_delta = (g_fov.y / Math::DEG2RAD - DefaultVerticalFov) * 0.5f;
+		if (fov_delta > 0.f)
+			transform.angles[1] -= fov_delta;
+
+		mat4 rotation = MakeRotation(transform.angles * Math::DEG2RAD);
 		transform.position = g_player.position;
 		transform.position.z -= g_player.step;
 		mix_into(transform.position, Demo::Uniform::Cam.xyz, 17.f/16.f);
@@ -263,6 +271,7 @@ namespace Demo {
 		vec3 offset = g_weapon_offset;
 		offset.y += speed * sin(g_player.walk_cycle * 10.f) + idle;
 		offset.z += speed * sin(g_player.walk_cycle * 20.f) * 0.25f + (WeaponSway - idle);
+
 		transform.position += rotation * (offset * WeaponScale);
 		transform.scale = WeaponScale;
 
@@ -299,10 +308,10 @@ namespace Demo {
 		translation.SetPosition(-frame.pos);
 
 		vec2 res = Gfx::GetResolution();
-		vec2 fov(frame.fov * DEG2RAD);
-		fov.y = ScaleFov(fov.x, res.y/res.x);
+		g_fov.x = frame.fov * DEG2RAD;
+		g_fov.y = ScaleFov(g_fov.x, res.y/res.x);
 
-		MakePerspective(fov, 2.f, 8192.f, projection);
+		MakePerspective(g_fov, 2.f, 8192.f, projection);
 		Uniform::World = i4x4;
 		Uniform::View = rotation * translation;
 		Uniform::Cache::ViewProj = projection * ToYUp * Uniform::View;
@@ -314,6 +323,8 @@ namespace Demo {
 		Gfx::Clear(Gfx::ClearBit::Depth);
 		Map::Render();
 		RenderEntities();
+		if (frame.render_target == Gfx::Backbuffer)
+			RenderViewModel();
 		FlushDrawCalls();
 	}
 

@@ -1001,3 +1001,4 @@
 58860,noinline computetangentframe
 58856,zero modelcolor alpha
 58871,more robust entity initialization
+58910,viewmodel aspect ratio pitch adjustment
