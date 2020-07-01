@@ -114,84 +114,6 @@ namespace Demo {
 		}
 	}
 
-	static constexpr u8 GetEntityModel(Entity::Type type) {
-		using Type = Demo::Entity::Type;
-
-		switch (type) {
-			case Type::ammo_bullets:
-			case Type::ammo_rockets:
-			case Type::ammo_shells:
-			case Type::ammo_slugs:
-			case Type::ammo_cells:
-				return 1 + Demo::Model::rocketam;
-
-			case Type::item_health:
-			case Type::item_health_large:
-				return 1 + Demo::Model::large_cross;
-
-			case Type::item_health_mega:
-				return 1 + Demo::Model::mega_cross;
-
-			case Type::weapon_railgun:
-				return 1 + Demo::Model::railgun;
-
-			case Type::weapon_rocketlauncher:
-				return 1 + Demo::Model::rocketl;
-
-			case Type::weapon_shotgun:
-				return 1 + Demo::Model::shotgun;
-
-			case Type::weapon_plasmagun:
-				return 1 + Demo::Model::plasma;
-
-			case Type::item_armor_shard:
-				return 1 + Demo::Model::shard;
-
-			case Type::item_armor_body:
-			case Type::item_armor_combat:
-				return 1 + Demo::Model::armor_red;
-
-			case Type::item_quad:
-				return 1 + Demo::Model::quad;
-
-			default:
-				return 0;
-		}
-	}
-
-	constexpr u32 MakeColor(u8 r, u8 g, u8 b, u8 a = 255) {
-		return r | (g << 8) | (b << 16) | (a << 24);
-	}
-
-	constexpr u32 GetEntityModelColor(Entity::Type type) {
-		using Type = Demo::Entity::Type;
-
-		switch (type) {
-			case Type::ammo_bullets:		return MakeColor(128, 112, 2, 0);
-			case Type::ammo_rockets:		return MakeColor(128, 2, 2, 0);
-			case Type::ammo_shells:			return MakeColor(128, 64, 2, 0);
-			case Type::ammo_slugs:			return MakeColor(0, 80, 32, 0);
-			case Type::ammo_cells:			return MakeColor(112, 0, 64, 0);
-
-			case Type::item_health:			return MakeColor(160, 128, 48, 0);
-			case Type::item_health_large:	return MakeColor(144, 88, 56, 0);
-			case Type::item_health_mega:	return MakeColor(8, 119, 234, 0);
-
-			case Type::item_armor_shard:	return MakeColor(80, 88, 86, 0);
-
-			case Type::item_armor_body:		return MakeColor(255, 0, 16, 0);
-			case Type::item_armor_combat:	return MakeColor(255, 255, 0, 0);
-
-			case Type::item_quad:			return MakeColor(8, 119, 234, 0);
-
-			default:
-				return 0;
-		}
-	}
-
-	static constexpr auto EntityModels      = MakeLookupTable<Entity::Type, u8,  Entity::Type{}, Entity::Type::Count>(GetEntityModel);
-	static constexpr auto EntityModelColors = MakeLookupTable<Entity::Type, u32, Entity::Type{}, Entity::Type::Count>(GetEntityModelColor);
-
 	void DrawPointEntities() {
 		for (u16 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
 			auto& e = Map::entities[i];
@@ -203,8 +125,6 @@ namespace Demo {
 		}
 	}
 
-	vec3 g_weapon_offset;
-
 	void RenderDebug() {
 #ifdef DRAW_LIGHTS
 		DrawLights();
@@ -214,6 +134,24 @@ namespace Demo {
 		DrawPointEntities();
 #endif
 	}
+
+	////////////////////////////////////////////////////////////////
+
+	constexpr u32 MakeColor(u8 r, u8 g, u8 b, u8 a = 255) {
+		return r | (g << 8) | (b << 16) | (a << 24);
+	}
+
+	static constexpr u8 EntityModels[] = {
+		#define PP_ADD_ENTITY_TYPE_MODEL(name, desc, model, ...) model,
+		DEMO_ENTITY_TYPES(PP_ADD_ENTITY_TYPE_MODEL)
+		#undef PP_ADD_ENTITY_TYPE_MODEL
+	};
+
+	static constexpr u32 EntityModelColors[] = {
+		#define PP_ADD_ENTITY_TYPE_COLOR(name, desc, model, r, g, b, ...) MakeColor(r, g, b, 0),
+		DEMO_ENTITY_TYPES(PP_ADD_ENTITY_TYPE_COLOR)
+		#undef PP_ADD_ENTITY_TYPE_COLOR
+	};
 
 	////////////////////////////////////////////////////////////////
 
@@ -237,8 +175,8 @@ namespace Demo {
 				transform.position[2] += 8.f;
 			}
 
-			int model_id = int(EntityModels[ent.type]) - 1;
-			u32 model_color = EntityModelColors[ent.type];
+			int model_id = int(EntityModels[(u32)ent.type]) - 1;
+			u32 model_color = EntityModelColors[(u32)ent.type];
 			if (model_id != -1) {
 				Demo::Uniform::Time[1] = ((model_color      ) & 255) / 255.f;
 				Demo::Uniform::Time[2] = ((model_color >>  8) & 255) / 255.f;
@@ -247,6 +185,8 @@ namespace Demo {
 			}
 		}
 	}
+
+	vec3 g_weapon_offset;
 
 	FORCEINLINE void RenderViewModel() {
 		Demo::Model::Transform transform;

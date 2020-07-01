@@ -20,55 +20,58 @@
 ////////////////////////////////////////////////////////////////
 
 #define DEMO_ENTITY_TYPES_WEAPONS(x)\
-	x(weapon_rocketlauncher,		"Rocket launcher")\
-	x(weapon_shotgun,				"Shotgun")\
-	x(weapon_railgun,				"Railgun")\
-	x(weapon_plasmagun,				"Plasma Gun")\
+	/*Name							Description				Model								  R,   G,   B*/\
+	x(weapon_rocketlauncher,		"Rocket launcher",		1 + Demo::Model::rocketl,			  0,   0,   0)\
+	x(weapon_shotgun,				"Shotgun",				1 + Demo::Model::shotgun,			  0,   0,   0)\
+	x(weapon_railgun,				"Railgun",				1 + Demo::Model::railgun,			  0,   0,   0)\
+	x(weapon_plasmagun,				"Plasma Gun",			1 + Demo::Model::plasma,			  0,   0,   0)\
 
 #define DEMO_ENTITY_TYPES_AMMO(x)\
-	x(ammo_bullets,					"Bullets")\
-	x(ammo_rockets,					"Rockets")\
-	x(ammo_shells,					"Shells")\
-	x(ammo_slugs,					"Slugs")\
-	x(ammo_cells,					"Cells")\
+	/*Name							Description				Model								  R,   G,   B*/\
+	x(ammo_bullets,					"Bullets",				1 + Demo::Model::rocketam,			128, 112,   2)\
+	x(ammo_rockets,					"Rockets",				1 + Demo::Model::rocketam,			128,   2,   2)\
+	x(ammo_shells,					"Shells",				1 + Demo::Model::rocketam,			128,  64,   2)\
+	x(ammo_slugs,					"Slugs",				1 + Demo::Model::rocketam,			  0,  80,  32)\
+	x(ammo_cells,					"Cells",				1 + Demo::Model::rocketam,			112,   0,  64)\
 
 #define DEMO_ENTITY_TYPES_HEALTH(x)\
-	x(item_health,					"25 Health")\
-	x(item_health_large,			"50 Health")\
-	x(item_health_mega,				"Mega Health")\
+	/*Name							Description				Model								  R,   G,   B*/\
+	x(item_health,					"25 Health",			1 + Demo::Model::large_cross,		160, 128,  48)\
+	x(item_health_large,			"50 Health",			1 + Demo::Model::large_cross,		144,  88,  56)\
+	x(item_health_mega,				"Mega Health",			1 + Demo::Model::mega_cross,		  8, 119, 234)\
 
 #define DEMO_ENTITY_TYPES_ARMOR(x)\
-	x(item_armor_combat,			"Armor")\
-	x(item_armor_shard,				"Armor Shard")\
-	x(item_armor_body,				"Heavy Armor")\
+	/*Name							Description				Model								  R,   G,   B*/\
+	x(item_armor_combat,			"Armor",				1 + Demo::Model::armor_red,			255, 255,   0)\
+	x(item_armor_shard,				"Armor Shard",			1 + Demo::Model::shard,				 80,  88,  86)\
+	x(item_armor_body,				"Heavy Armor",			1 + Demo::Model::armor_red,			255,   0,  16)\
 
 #define DEMO_ENTITY_TYPES(x)		\
-	x(worldspawn,					"")\
-	x(trigger_teleport,				"")\
-	x(trigger_multiple,				"")\
-	x(trigger_hurt,					"")\
-	x(trigger_push,					"")\
-	/*x(light,						"")*/\
-	x(target_position,				"")\
-	/*x(target_speaker,				"")*/\
-	x(misc_model,					"")\
-	x(info_player_deathmatch,		"")\
-	x(info_player_intermission,		"")\
-	x(misc_teleporter_dest,			"")\
+	/*Name							Description				Model								  R,   G,   B*/\
+	x(worldspawn,					"",						0,									  0,   0,   0)\
+	x(trigger_teleport,				"",						0,									  0,   0,   0)\
+	x(trigger_multiple,				"",						0,									  0,   0,   0)\
+	x(trigger_hurt,					"",						0,									  0,   0,   0)\
+	x(trigger_push,					"",						0,									  0,   0,   0)\
+	/*x(light,						"",						0,									  0,   0,   0)*/\
+	x(target_position,				"",						0,									  0,   0,   0)\
+	/*x(target_speaker,				"",						0,									  0,   0,   0)*/\
+	x(misc_model,					"",						0,									  0,   0,   0)\
+	x(info_player_deathmatch,		"",						0,									  0,   0,   0)\
+	x(info_player_intermission,		"",						0,									  0,   0,   0)\
+	x(misc_teleporter_dest,			"",						0,									  0,   0,   0)\
 	DEMO_ENTITY_TYPES_AMMO(x)\
 	DEMO_ENTITY_TYPES_WEAPONS(x)\
 	DEMO_ENTITY_TYPES_HEALTH(x)\
 	DEMO_ENTITY_TYPES_ARMOR(x)\
-	x(item_quad,					"Quad Damage")\
-	x(target_remove_powerups,		"")\
+	x(item_quad,					"Quad Damage",			1 + Demo::Model::quad,				  8, 119, 234)\
+	x(target_remove_powerups,		"",						0,									  0,   0,   0)\
 
 ////////////////////////////////////////////////////////////////
 
 namespace Demo {
 	struct BaseEntity { // Only contains properties read from the map file
 		enum class Type : i16 {
-			None,
-
 			#define PP_DEMO_ENTITY_TYPE_DECLARE(name,...)	name,
 			DEMO_ENTITY_TYPES(PP_DEMO_ENTITY_TYPE_DECLARE)
 			#undef PP_DEMO_ENTITY_TYPE_DECLARE

@@ -927,9 +927,11 @@ void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, 
 	compiled_entities.reserve(map.entities.size());
 	for (auto& src_ent : map.entities) {
 		Demo::BaseEntity dst_ent = {};
-		dst_ent.type = classname_to_type[src_ent.GetProperty("classname"sv)];
-		if (dst_ent.type == Demo::Entity::Type::None)
+
+		auto type_iter = classname_to_type.find(src_ent.GetProperty("classname"sv));
+		if (type_iter == classname_to_type.end())
 			continue;
+		dst_ent.type = type_iter->second;
 
 		for (auto& field : EntityFields) {
 			auto value = src_ent.GetProperty(field.name);
@@ -945,8 +947,7 @@ void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, 
 		if (dst_ent.type == Demo::Entity::Type::misc_model && !dst_ent.model)
 			continue;
 
-		if (dst_ent.type != Demo::Entity::Type::None)
-			compiled_entities.push_back(dst_ent);
+		compiled_entities.push_back(dst_ent);
 	}
 
 	/* write entity properties (for all entities) */
