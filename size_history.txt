@@ -1004,3 +1004,4 @@
 58910,viewmodel aspect ratio pitch adjustment
 58905,removed unused g_key_state array
 58885,moved entity model/color to x-macros + removed type::none
+59074,health bubbles

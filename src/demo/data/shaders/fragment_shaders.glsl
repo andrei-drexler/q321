@@ -2367,6 +2367,19 @@ void itemshiny() {
 	FCol = vec4((env(Ref, 15.) * 1.4 + .3) * Time.yzw, 1);
 }
 
+void healthsphere() {
+	vec3 r = Ref;
+	float s = 17.;
+	// HACK: medium health bubble has sharper, stationary reflection
+	if (Time.y < 1.) {
+		s = 9.;
+		mat2 a = rot(Time.x * 90.);
+		r.xy *= a;
+		r.yz *= a;
+	}
+	FCol = vec4(sqr(ls(.1, .9, env(r, s))) * 1.5 * fract(Time.yzw), 0);
+}
+
 void armor() {
 	vec3
 		n = normalize(Nor),

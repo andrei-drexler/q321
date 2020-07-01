@@ -100,6 +100,7 @@ namespace Demo {
 		#define PP_ADD_ENTITY_TYPE_BIT(name, desc, ...)		+ (1 << (u32)Type::name)
 		#define PP_ENTITY_TYPE_MASK(list)					list(PP_ADD_ENTITY_TYPE_BIT)
 
+		static_assert(u32(Type::Count) <= 32, "Handle entity types >= 32");
 		static constexpr u32
 			AmmoTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_AMMO),
 			WeaponTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_WEAPONS),
@@ -110,15 +111,11 @@ namespace Demo {
 		#undef PP_ADD_ENTITY_TYPE_BIT
 		#undef PP_ENTITY_TYPE_MASK
 
-		static constexpr bool IsWeapon(Type type) {
-			static_assert(u32(Type::Count) <= 32, "Handle entity types >= 32");
+		static constexpr bool	IsWeapon(Type type)		{ return 0 != (WeaponTypeMask & (1 << u32(type))); }
+		constexpr bool			IsWeapon() const		{ return IsWeapon(type); }
 
-			return 0 != (WeaponTypeMask & (1 << u32(type)));
-		}
-
-		constexpr bool IsWeapon() const {
-			return IsWeapon(type);
-		}
+		static constexpr bool	IsHealth(Type type)		{ return 0 != (HealthTypeMask & (1 << u32(type))); }
+		constexpr bool			IsHealth() const		{ return IsHealth(type); }
 	};
 
 	////////////////////////////////////////////////////////////////

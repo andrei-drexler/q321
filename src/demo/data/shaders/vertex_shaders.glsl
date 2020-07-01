@@ -155,4 +155,5 @@ void item() {
 	Ref = normalize(reflect((World * P - Cam).xyz, WNor));
 }
 void itemshiny() { item(); }
+void healthsphere() { item(); }
 void armor() { item(); }

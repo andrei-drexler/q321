@@ -182,6 +182,15 @@ namespace Demo {
 				Demo::Uniform::Time[2] = ((model_color >>  8) & 255) / 255.f;
 				Demo::Uniform::Time[3] = ((model_color >> 16) & 255) / 255.f;
 				Demo::Model::Draw(Demo::Model::ID(model_id), transform);
+
+				if (ent.IsHealth()) {
+					MemSet(&transform.angles);
+					if (ent.type == Type::item_health) {
+						// HACK: color >1.0 = sharper, stationary reflection
+						MemCopy(&Uniform::Time[1], vec3{1.25f, 1.25f, 1.25f}.data, 3);
+					}
+					Demo::Model::Draw(Demo::Model::ID::large_sphere, transform);
+				}
 			}
 		}
 	}
