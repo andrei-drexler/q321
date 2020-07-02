@@ -105,26 +105,26 @@ namespace Demo {
 		#define PP_ENTITY_TYPE_MASK(list)					list(PP_ADD_ENTITY_TYPE_BIT)
 
 		static_assert(u32(Type::Count) <= 32, "Handle entity types >= 32");
-		static constexpr u32
-			AmmoTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_AMMO),
-			WeaponTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_WEAPONS),
-			HealthTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_HEALTH),
-			ArmorTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_ARMOR),
-			PowerupTypeMask		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_POWERUPS),
+		enum TypeMask : u32 {
+			Ammo		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_AMMO),
+			Weapon		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_WEAPONS),
+			Health		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_HEALTH),
+			Armor		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_ARMOR),
+			Powerup		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_POWERUPS),
 
-			PickupTypeMask		= AmmoTypeMask | WeaponTypeMask | HealthTypeMask | ArmorTypeMask | PowerupTypeMask
-		;
+			Pickup		= Ammo | Weapon | Health | Armor | Powerup,
+		};
 
 		#undef PP_ADD_ENTITY_TYPE_BIT
 		#undef PP_ENTITY_TYPE_MASK
 
-		static constexpr bool	IsWeapon(Type type)		{ return 0 != (WeaponTypeMask & (1 << u32(type))); }
+		static constexpr bool	IsWeapon(Type type)		{ return 0 != (TypeMask::Weapon & (1 << u32(type))); }
 		constexpr bool			IsWeapon() const		{ return IsWeapon(type); }
 
-		static constexpr bool	IsHealth(Type type)		{ return 0 != (HealthTypeMask & (1 << u32(type))); }
+		static constexpr bool	IsHealth(Type type)		{ return 0 != (TypeMask::Health & (1 << u32(type))); }
 		constexpr bool			IsHealth() const		{ return IsHealth(type); }
 
-		static constexpr bool	IsPickup(Type type)		{ return 0 != (PickupTypeMask & (1 << u32(type))); }
+		static constexpr bool	IsPickup(Type type)		{ return 0 != (TypeMask::Pickup & (1 << u32(type))); }
 		constexpr bool			IsPickup() const		{ return IsPickup(type); }
 
 		////////////////////////////////////////////////////////////////
@@ -140,11 +140,11 @@ namespace Demo {
 		static constexpr float GetRespawnTime(Type type) {
 			u32 bit = 1 << u32(type);
 
-			if (bit & AmmoTypeMask)		return RespawnTimeAmmo;
-			if (bit & WeaponTypeMask)	return RespawnTimeWeapon;
-			if (bit & HealthTypeMask)	return RespawnTimeHealth;
-			if (bit & ArmorTypeMask)	return RespawnTimeArmor;
-			if (bit & PowerupTypeMask)	return RespawnTimePowerup;
+			if (bit & TypeMask::Ammo)		return RespawnTimeAmmo;
+			if (bit & TypeMask::Weapon)		return RespawnTimeWeapon;
+			if (bit & TypeMask::Health)		return RespawnTimeHealth;
+			if (bit & TypeMask::Armor)		return RespawnTimeArmor;
+			if (bit & TypeMask::Powerup)	return RespawnTimePowerup;
 
 			return 5.f;
 		}
