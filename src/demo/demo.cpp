@@ -292,11 +292,11 @@ namespace Demo {
 		frame.angles[0] = levelshot.angles[0];
 		frame.angles[1] = levelshot.angles[1];
 		frame.fov = 90.f;
-		frame.render_target = Demo::Texture::Levelshot;
+		frame.render_target = levelshot.texture;
 
 		RenderWorld(frame);
 
-		Gfx::GenerateMipMaps(Demo::Texture::Levelshot);
+		Gfx::GenerateMipMaps(levelshot.texture);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -327,7 +327,7 @@ namespace Demo {
 	FORCEINLINE void RenderLoadingScreen() {
 		Gfx::SetRenderTarget(Gfx::Backbuffer);
 		Gfx::SetShader(Demo::Shader::Loading);
-		Demo::Uniform::Texture0 = Demo::Texture::Levelshot;
+		Demo::Uniform::Texture0 = Map::source->levelshot.texture;
 		Demo::Uniform::Time.x = g_time;
 		Gfx::UpdateUniforms();
 		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);

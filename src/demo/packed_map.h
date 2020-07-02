@@ -41,6 +41,7 @@ struct PackedMap {
 	struct {
 		i16				position[3];
 		i16				angles[2];
+		i16				texture;
 	}					levelshot;
 	const char*			name;
 	const char*			message;
@@ -80,7 +81,8 @@ struct PackedMap {
 		i16								levelshot_y,
 		i16								levelshot_z,
 		i16								levelshot_yaw,
-		i16								levelshot_pitch
+		i16								levelshot_pitch,
+		i16								levelshot_texture
 	) :
 		name					(name),
 		message					(message),
@@ -122,6 +124,7 @@ struct PackedMap {
 		levelshot.position[2] = levelshot_z;
 		levelshot.angles[0] = levelshot_yaw;
 		levelshot.angles[1] = levelshot_pitch;
+		levelshot.texture = levelshot_texture;
 	}
 
 	struct UV {

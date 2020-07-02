@@ -133,7 +133,8 @@
 	x(icon,				Shader::icon,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(Lightmap,			Gfx::InvalidID,			1024,	256,	BGRA8,		Gfx::Texture::Flags::Default|Gfx::Texture::Flags::NoMips)\
 	x(LevelshotZ,		Gfx::InvalidID,			512,	512,	Z32F,		Gfx::Texture::Flags::ZBuffer)\
-	x(Levelshot,		Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
+	x(Levelshot_q3dm1,	Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
+	x(Levelshot_q3dm17,	Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
 	x(Font,				Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2c,			Shader::dmnd2c,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2cow,			Shader::dmnd2cow,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\

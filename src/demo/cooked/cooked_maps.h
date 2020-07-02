@@ -283,7 +283,8 @@ static constexpr PackedMap map{
     light_data, num_spotlights,
     0x242424, // skylight
     -920, -424, 1104, // levelshot position
-    26, -22 // levelshot yaw, pitch
+    26, -22, // levelshot yaw, pitch
+    Demo::Texture::Levelshot_q3dm17
 };
 } // namespace q3dm17
 
@@ -762,7 +763,8 @@ static constexpr PackedMap map{
     light_data, num_spotlights,
     0xa08cf0, // skylight
     972, 836, -8, // levelshot position
-    220, 20 // levelshot yaw, pitch
+    220, 20, // levelshot yaw, pitch
+    Demo::Texture::Levelshot_q3dm1
 };
 } // namespace q3dm1
 

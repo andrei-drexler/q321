@@ -1008,3 +1008,4 @@
 59067,tweaked renderentities
 59260,simulated entity pickup/respawn
 59291,type-based entity respawn time
+59308,per-map levelshots
