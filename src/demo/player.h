@@ -132,6 +132,9 @@ namespace Demo {
 
 	constexpr auto KeyBindings =
 		MakeLookupTable<int, Player::Input, 0, 255>(GetKeyBinding);
+
+	constexpr auto EntityRespawnTime =
+		MakeLookupTable<Entity::Type, u8, Entity::Type{}, Entity::Type::Count>(Entity::GetRespawnTime);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -321,8 +324,11 @@ void Demo::Player::Update(float dt) {
 			}
 
 			default: {
-				if (entity.IsPickup() && entity.respawn <= entity.RespawnAnimTime)
-					entity.respawn = Entity::RespawnTime;
+				if (entity.IsPickup()) {
+					if (entity.IsSpawned()) {
+						entity.respawn = float(EntityRespawnTime[entity.type]);
+					}
+				}
 				break;
 			}
 		}

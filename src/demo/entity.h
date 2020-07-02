@@ -126,6 +126,28 @@ namespace Demo {
 
 		static constexpr bool	IsPickup(Type type)		{ return 0 != (PickupTypeMask & (1 << u32(type))); }
 		constexpr bool			IsPickup() const		{ return IsPickup(type); }
+
+		////////////////////////////////////////////////////////////////
+
+		static constexpr float
+			RespawnTimeAmmo		= 40.f,
+			RespawnTimeWeapon	= 5.f,
+			RespawnTimeHealth	= 35.f,
+			RespawnTimeArmor	= 25.f,
+			RespawnTimePowerup	= 120.f
+		;
+
+		static constexpr float GetRespawnTime(Type type) {
+			u32 bit = 1 << u32(type);
+
+			if (bit & AmmoTypeMask)		return RespawnTimeAmmo;
+			if (bit & WeaponTypeMask)	return RespawnTimeWeapon;
+			if (bit & HealthTypeMask)	return RespawnTimeHealth;
+			if (bit & ArmorTypeMask)	return RespawnTimeArmor;
+			if (bit & PowerupTypeMask)	return RespawnTimePowerup;
+
+			return 5.f;
+		}
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -133,8 +155,7 @@ namespace Demo {
 	struct alignas(16) Entity : BaseEntity { // Adds data needed at runtime
 		static constexpr float
 			Radius				= 15.f,
-			RespawnAnimTime		= 0.5f,
-			RespawnTime			= 5.f
+			RespawnAnimTime		= 0.5f
 		;
 
 		enum : u32 {
@@ -152,6 +173,7 @@ namespace Demo {
 		};
 
 		float respawn;
+		bool IsSpawned() const { return respawn < RespawnAnimTime; }
 	};
 }
 
