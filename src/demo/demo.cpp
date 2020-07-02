@@ -500,7 +500,7 @@ namespace Demo {
 
 			g_player.Update(dt);
 
-			if (Sys::IsKeyReleased(Key::F3)) {
+			if (Sys::IsKeyFirstDown(Key::F3)) {
 				Map::ID next_map = Map::ID((u8(Map::current_id) + 1) % u8(Map::ID::Count));
 				LoadMap(next_map);
 			}

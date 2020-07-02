@@ -1010,3 +1010,4 @@
 59291,type-based entity respawn time
 59308,per-map levelshots
 59281,generate levelshots at startup
+59263,more responsive map change on f3
