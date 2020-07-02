@@ -156,4 +156,8 @@ void item() {
 }
 void itemshiny() { item(); }
 void healthsphere() { item(); }
+void energy_grn1() {
+	item();
+	gl_Position += MVP * vec4(N + N, 0);
+}
 void armor() { item(); }

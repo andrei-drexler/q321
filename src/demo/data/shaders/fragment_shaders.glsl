@@ -2380,6 +2380,22 @@ void healthsphere() {
 	FCol = vec4(sqr(ls(.1, .9, env(r, s))) * 1.5 * fract(Time.yzw), 0);
 }
 
+// b = base
+// a = amplitude
+// f = frequency
+// p = phase
+float triwave(float b, float a, float f, float p) {
+	return (abs(fract(Time.x * f + p - .25) - .5) * 4. - 1.) * a + b;
+}
+
+void energy_grn1() {
+	vec3 r = Ref;
+	mat2 a = rot(Time.x * 90.);
+	r.xy *= a;
+	r.yz *= a;
+	FCol = env(r, 22.) * sat(triwave(-.3, 1.3, .3, 0.)) * vec4(.3, .55, .25, 0);
+}
+
 void armor() {
 	vec3
 		n = normalize(Nor),

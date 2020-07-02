@@ -121,6 +121,7 @@
 	x(item,					ModelVertexBits)\
 	x(itemshiny,			ModelVertexBits)\
 	x(healthsphere,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(energy_grn1,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::Premultiplied)\
 	x(armor,				ModelVertexBits)\
 
 
@@ -296,6 +297,7 @@
 	x("skies/blacksky",							blacksky,		White,			Solid,		Sky,					(0))\
 	x("skies/tim_hell",							timhel,			White,			Solid,		Sky,					(0))\
 	x("sfx/beam",								beam,			_32x128,		NonSolid,	Translucent|NeedsUV,	(0))\
+	x("models/powerups/armor/energy_grn1",		energy_grn1,	White,			NonSolid,	Translucent,			(0))\
 	x("models/mapobjects/kmlamp_white",			kmlampwt,		White,			NonSolid,	Translucent,			(0))\
 	x("models/powerups/health/red_sphere",		healthsphere,	White,			NonSolid,	Translucent,			(0))\
 	x("models/mapobjects/lamps/flare03",		flare03,		White,			NonSolid,	Translucent|NeedsUV|Sprite,	(200,6,5,4))\
@@ -336,7 +338,6 @@
 	x("models/powerups/health/red",					"*item_shiny")\
 	x("models/powerups/health/mega2",				"*item_shiny")\
 	x("models/powerups/armor/shard2",				"*item_shiny")\
-	x("models/powerups/armor/energy_grn1",			"*item_shiny")\
 	x("models/powerups/ammo/rockammo",				"*item_shiny")\
 
 ////////////////////////////////////////////////////////////////
