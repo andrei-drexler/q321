@@ -280,23 +280,30 @@ namespace Demo {
 		FlushDrawCalls();
 	}
 
-	FORCEINLINE void GenerateLevelShot() {
-		const auto& levelshot = Map::source->levelshot;
+	FORCEINLINE void GenerateLevelShots() {
+		for (u32 map_index = 0; map_index < (u32)Map::ID::Count; ++map_index) {
+			Map::Load(Map::ID(map_index));
+			Map::UpdateLightmapTexture();
 
-		Frame frame;
-		MemSet(&frame);
+			const auto& levelshot = Map::source->levelshot;
 
-		frame.pos[0] = levelshot.position[0];
-		frame.pos[1] = levelshot.position[1];
-		frame.pos[2] = levelshot.position[2];
-		frame.angles[0] = levelshot.angles[0];
-		frame.angles[1] = levelshot.angles[1];
-		frame.fov = 90.f;
-		frame.render_target = levelshot.texture;
+			Frame frame;
+			MemSet(&frame);
 
-		RenderWorld(frame);
+			frame.pos[0] = levelshot.position[0];
+			frame.pos[1] = levelshot.position[1];
+			frame.pos[2] = levelshot.position[2];
+			frame.angles[0] = levelshot.angles[0];
+			frame.angles[1] = levelshot.angles[1];
+			frame.fov = 90.f;
+			frame.render_target = levelshot.texture;
 
-		Gfx::GenerateMipMaps(levelshot.texture);
+			RenderWorld(frame);
+
+			Gfx::GenerateMipMaps(levelshot.texture);
+		}
+
+		Map::Load(Map::ID::None);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -444,7 +451,6 @@ namespace Demo {
 	NOINLINE void LoadMap(Map::ID id) {
 		Map::Load(id);
 		Map::UpdateLightmapTexture();
-		Demo::GenerateLevelShot();
 
 		Demo::g_updated_lightmap = false;
 		Demo::g_loading_thread.work = &Demo::GenerateLightmap;
@@ -530,6 +536,7 @@ namespace Demo {
 		Map::AllocLightmap();
 		Demo::UpdateWindowIcon();
 		Demo::Model::LoadAll(cooked_models);
+		Demo::GenerateLevelShots();
 
 #ifdef SHOW_LIGHTMAP
 		Demo::r_lightmap.Set(1);
