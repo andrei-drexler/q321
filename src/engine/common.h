@@ -56,8 +56,11 @@
 	#error Unsupported platform
 #endif
 
-#define PP_STRINGIZE_(x)	#x
-#define PP_STRINGIZE(x)		PP_STRINGIZE_(x)
+#define PP_STRINGIZE_(x)		#x
+#define PP_STRINGIZE(x)			PP_STRINGIZE_(x)
+#define PP_EXPAND(x)			x
+#define PP_FIRST_ARG2(x,...)	x
+#define PP_FIRST_ARG(x,...)		PP_EXPAND(PP_FIRST_ARG2(x))
 
 ////////////////////////////////////////////////////////////////
 

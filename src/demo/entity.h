@@ -50,6 +50,13 @@
 	/*Name							Description				Model								  R,   G,   B*/\
 	x(item_quad,					"Quad Damage",			1 + Demo::Model::quad,				  8, 119, 234)\
 
+#define DEMO_ENTITY_TYPES_PICKUPS(x)\
+	DEMO_ENTITY_TYPES_AMMO(x)\
+	DEMO_ENTITY_TYPES_WEAPONS(x)\
+	DEMO_ENTITY_TYPES_HEALTH(x)\
+	DEMO_ENTITY_TYPES_ARMOR(x)\
+	DEMO_ENTITY_TYPES_POWERUPS(x)\
+
 #define DEMO_ENTITY_TYPES(x)		\
 	/*Name							Description				Model								  R,   G,   B*/\
 	x(worldspawn,					"",						0,									  0,   0,   0)\
@@ -64,11 +71,7 @@
 	x(info_player_deathmatch,		"",						0,									  0,   0,   0)\
 	x(info_player_intermission,		"",						0,									  0,   0,   0)\
 	x(misc_teleporter_dest,			"",						0,									  0,   0,   0)\
-	DEMO_ENTITY_TYPES_AMMO(x)\
-	DEMO_ENTITY_TYPES_WEAPONS(x)\
-	DEMO_ENTITY_TYPES_HEALTH(x)\
-	DEMO_ENTITY_TYPES_ARMOR(x)\
-	DEMO_ENTITY_TYPES_POWERUPS(x)\
+	DEMO_ENTITY_TYPES_PICKUPS(x)\
 	x(target_remove_powerups,		"",						0,									  0,   0,   0)\
 
 ////////////////////////////////////////////////////////////////
@@ -77,10 +80,26 @@ namespace Demo {
 	struct BaseEntity { // Only contains properties read from the map file
 		enum class Type : i16 {
 			#define PP_DEMO_ENTITY_TYPE_DECLARE(name,...)	name,
+
 			DEMO_ENTITY_TYPES(PP_DEMO_ENTITY_TYPE_DECLARE)
-			#undef PP_DEMO_ENTITY_TYPE_DECLARE
 
 			Count,
+
+			#define PP_DEMO_ENTITY_TYPE_COUNT(name,...)		+1
+			#define PP_DEMO_ENTITY_TYPE_LIST_RANGE(name,list)					\
+				name##Start = PP_FIRST_ARG(list(PP_DEMO_ENTITY_TYPE_DECLARE)),	\
+				name##Count = list(PP_DEMO_ENTITY_TYPE_COUNT)					\
+
+			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Ammo,    DEMO_ENTITY_TYPES_AMMO),
+			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Weapon,  DEMO_ENTITY_TYPES_WEAPONS),
+			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Health,  DEMO_ENTITY_TYPES_HEALTH),
+			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Armor,   DEMO_ENTITY_TYPES_ARMOR),
+			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Powerup, DEMO_ENTITY_TYPES_POWERUPS),
+			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Pickup,  DEMO_ENTITY_TYPES_PICKUPS),
+
+			#undef PP_DEMO_ENTITY_TYPE_DECLARE
+			#undef PP_DEMO_ENTITY_TYPE_COUNT
+			#undef PP_DEMO_ENTITY_TYPE_LIST_FIRST
 		} type;
 
 		enum {
@@ -101,52 +120,29 @@ namespace Demo {
 
 		////////////////////////////////////////////////////////////////
 
-		#define PP_ADD_ENTITY_TYPE_BIT(name, desc, ...)		+ (1 << (u32)Type::name)
-		#define PP_ENTITY_TYPE_MASK(list)					list(PP_ADD_ENTITY_TYPE_BIT)
+		#define PP_ADD_ENTITY_TYPE_CHECK(name)																								\
+			static constexpr bool	Is##name(Type type)		{ return u8(u32(type) - u32(Type::name##Start)) < u8(Type::name##Count); }		\
+			constexpr bool			Is##name() const		{ return Is##name(type); }														\
 
-		static_assert(u32(Type::Count) <= 32, "Handle entity types >= 32");
-		enum TypeMask : u32 {
-			Ammo		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_AMMO),
-			Weapon		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_WEAPONS),
-			Health		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_HEALTH),
-			Armor		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_ARMOR),
-			Powerup		= PP_ENTITY_TYPE_MASK(DEMO_ENTITY_TYPES_POWERUPS),
+		PP_ADD_ENTITY_TYPE_CHECK(Ammo)
+		PP_ADD_ENTITY_TYPE_CHECK(Weapon)
+		PP_ADD_ENTITY_TYPE_CHECK(Health)
+		PP_ADD_ENTITY_TYPE_CHECK(Armor)
+		PP_ADD_ENTITY_TYPE_CHECK(Powerup)
+		PP_ADD_ENTITY_TYPE_CHECK(Pickup)
 
-			Pickup		= Ammo | Weapon | Health | Armor | Powerup,
-		};
-
-		#undef PP_ADD_ENTITY_TYPE_BIT
-		#undef PP_ENTITY_TYPE_MASK
-
-		static constexpr bool	IsWeapon(Type type)		{ return 0 != (TypeMask::Weapon & (1 << u32(type))); }
-		constexpr bool			IsWeapon() const		{ return IsWeapon(type); }
-
-		static constexpr bool	IsHealth(Type type)		{ return 0 != (TypeMask::Health & (1 << u32(type))); }
-		constexpr bool			IsHealth() const		{ return IsHealth(type); }
-
-		static constexpr bool	IsPickup(Type type)		{ return 0 != (TypeMask::Pickup & (1 << u32(type))); }
-		constexpr bool			IsPickup() const		{ return IsPickup(type); }
+		#undef PP_ADD_ENTITY_TYPE_CHECK
 
 		////////////////////////////////////////////////////////////////
 
-		static constexpr float
-			RespawnTimeAmmo		= 40.f,
-			RespawnTimeWeapon	= 5.f,
-			RespawnTimeHealth	= 35.f,
-			RespawnTimeArmor	= 25.f,
-			RespawnTimePowerup	= 120.f
-		;
+		static constexpr u8 GetRespawnTime(Type type) {
+			if (IsAmmo(type))		return 40;
+			if (IsWeapon(type))		return 5;
+			if (IsHealth(type))		return 35;
+			if (IsArmor(type))		return 25;
+			if (IsPowerup(type))	return 120;
 
-		static constexpr float GetRespawnTime(Type type) {
-			u32 bit = 1 << u32(type);
-
-			if (bit & TypeMask::Ammo)		return RespawnTimeAmmo;
-			if (bit & TypeMask::Weapon)		return RespawnTimeWeapon;
-			if (bit & TypeMask::Health)		return RespawnTimeHealth;
-			if (bit & TypeMask::Armor)		return RespawnTimeArmor;
-			if (bit & TypeMask::Powerup)	return RespawnTimePowerup;
-
-			return 5.f;
+			return 5;
 		}
 	};
 
