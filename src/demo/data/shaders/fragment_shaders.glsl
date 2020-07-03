@@ -2377,7 +2377,8 @@ void healthsphere() {
 		r.xy *= a;
 		r.yz *= a;
 	}
-	FCol = vec4(sqr(ls(.1, .9, env(r, s))) * 1.5 * fract(Time.yzw), 0);
+	s = env(r, s);
+	FCol = vec4(sqr(ls(.1, .9, s)) * 1.5 * fract(Time.yzw) + .5 * sqr(ls(.9, 1., s)), 0);
 }
 
 // b = base

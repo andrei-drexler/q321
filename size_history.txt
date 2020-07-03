@@ -1013,3 +1013,4 @@
 59263,more responsive map change on f3
 59328,green armor shard overlay
 59327,range-based entity type check
+59331,health bubble highlights
