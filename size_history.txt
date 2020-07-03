@@ -1014,3 +1014,4 @@
 59328,green armor shard overlay
 59327,range-based entity type check
 59331,health bubble highlights
+59337,draft mode lighting for levelshots only

@@ -738,7 +738,6 @@ NOINLINE void Map::Load(ID id) {
 	Details::InitLights();
 	Details::CreatePartition();
 	Details::PackLightmap();
-	ComputeLighting(LightMode::Draft);
 
 	Gfx::ResetArena(Gfx::Arena::Level);
 	gpu_addr.positions = Gfx::UploadGeometry(&positions[0], num_total_vertices, Gfx::Arena::Level);

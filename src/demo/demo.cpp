@@ -283,6 +283,7 @@ namespace Demo {
 	FORCEINLINE void GenerateLevelShots() {
 		for (u32 map_index = 0; map_index < (u32)Map::ID::Count; ++map_index) {
 			Map::Load(Map::ID(map_index));
+			Map::ComputeLighting(Map::LightMode::Draft);
 			Map::UpdateLightmapTexture();
 
 			const auto& levelshot = Map::source->levelshot;
