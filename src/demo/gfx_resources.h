@@ -138,7 +138,7 @@ namespace Demo {
 		const Sys::Font::Glyph&		GetGlyph(char c, UI::Font font = UI::SmallFont);
 
 		i32							Measure(const char* text, Font font = LargeFont);
-		void						Print(const char* text, const vec2& pos, const vec2& scale = 1.f, u32 color = -1, float align = 0.f, Font font = SmallFont);
+		void						Print(const char* text, const vec2& pos, vec2 scale = 1.f, u32 color = -1, float align = 0.f, Font font = SmallFont);
 		void						PrintShadowed(const char* text, const vec2& pos, const vec2& scale = 1.f, u32 color = -1, float align = 0.f, Font font = SmallFont);
 
 		constexpr char FontDescriptors[] =
@@ -404,9 +404,10 @@ i32 Demo::UI::Measure(const char* text, Font font) {
 	return total;
 }
 
-void Demo::UI::Print(const char* text, const vec2& pos, const vec2& scale, u32 color, float align, Font font) {
+void Demo::UI::Print(const char* text, const vec2& pos, vec2 scale, u32 color, float align, Font font) {
 	vec2 cursor = pos;
 	cursor.x -= align * Measure(text, font) * scale.x;
+	scale.y = -scale.y;
 
 	u32 num_chars = StrLen(text);
 
@@ -420,13 +421,14 @@ void Demo::UI::Print(const char* text, const vec2& pos, const vec2& scale, u32 c
 			auto& glyph = GetGlyph(*text++, font);
 			--batch_chars;
 
-			for (u16 i = 0; i < 4; ++i, ++v) {
-				u16 dx = (6 >> i) & 1;	// 0 1 1 0
-				u16 dy = i >> 1;		// 0 0 1 1
-				v[0].pos[0] = cursor[0] + glyph.anchor[0] * scale[0] + (glyph.box_size[0] * dx) * scale[0];
-				v[0].pos[1] = cursor[1] - glyph.anchor[1] * scale[1] - (glyph.box_size[1] * dy) * scale[1];
-				v[0].uv[0] = (glyph.box_min[0] + (glyph.box_size[0] * dx)) / float(TexDescriptor.width);
-				v[0].uv[1] = (glyph.box_min[1] + (glyph.box_size[1] * dy)) / float(TexDescriptor.height);
+			for (u32 i = 0; i < 4; ++i, ++v) {
+				u32 d[2];
+				d[0] = (6 >> i) & 1;	// 0 1 1 0
+				d[1] = i >> 1;		// 0 0 1 1
+				for (u16 j = 0; j < 2; ++j) {
+					v[0].pos[j] = cursor[j] + glyph.anchor[j] * scale[j] + (glyph.box_size[j] * d[j]) * scale[j];
+					v[0].uv[j] = (glyph.box_min[j] + (glyph.box_size[j] * d[j])) / float(TexDescriptor.size[j]);
+				}
 				v[0].color = color;
 			}
 

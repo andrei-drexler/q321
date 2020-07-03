@@ -37,8 +37,13 @@ namespace Gfx {
 		};
 
 		struct Descriptor {
-			u16				width;
-			u16				height;
+			union {
+				struct {
+					u16		width;
+					u16		height;
+				};
+				u16			size[2];
+			};
 			Format			format;
 			Flags			flags;
 		};
