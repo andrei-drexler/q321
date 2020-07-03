@@ -1017,3 +1017,4 @@
 59337,draft mode lighting for levelshots only
 59330,simplified clampcolor
 59320,tweaked computetangentframe
+59297,tweaked partition node split

@@ -30,8 +30,8 @@ FORCEINLINE void Map::Details::DoSplit(u16 node, const i16 bounds[2][3], u8 axis
 	u16 left_cursor = parent.data[0];
 	u16 right_cursor = parent.data[1];
 
-	i16 clip_left = bounds[0][axis];
-	i16 clip_right = bounds[1][axis];
+	i32 clip_left = bounds[0][axis];
+	i32 clip_right = bounds[1][axis];
 
 	// avoid precision issues during traversal
 	const i16 ClipBias = 1;
