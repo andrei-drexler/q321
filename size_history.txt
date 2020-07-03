@@ -1015,3 +1015,4 @@
 59327,range-based entity type check
 59331,health bubble highlights
 59337,draft mode lighting for levelshots only
+59330,simplified clampcolor

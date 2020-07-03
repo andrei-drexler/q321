@@ -501,7 +501,7 @@ NOINLINE u32 Map::Details::ClampColor(const vec3& accum) {
 
 	u32 result = 0;
 	for (u8 i = 0; i < 3; ++i)
-		result |= i32(min(accum[i] * scale, 255.f)) << ((2 - i) << 3);
+		result = (result << 8) | i32(accum[i] * scale);
 
 	return result;
 }
