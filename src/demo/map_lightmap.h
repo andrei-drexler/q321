@@ -318,12 +318,10 @@ void ParallelFor(u32 count, void* data, void (*work)(u32 begin, u32 end, void* d
 
 NOINLINE void ComputeTangentFrame(const vec3& z, vec3& x, vec3& y) {
 	// find normal component with smallest magnitude
-	vec3 abs_z = abs(z);
-	int next_axis = 0;
-	if (abs_z[1] < abs_z[0])
-		next_axis = 1;
-	if (abs_z[2] < abs_z[next_axis])
-		next_axis = 2;
+	u32 next_axis = 0;
+	for (u32 i = 1; i < 2; ++i)
+		if (abs(z[i]) < abs(z[next_axis]))
+			next_axis = i;
 
 	// setup tangent frame
 	MemSet(&x);
