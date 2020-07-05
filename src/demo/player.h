@@ -279,7 +279,7 @@ void Demo::Player::Update(float dt) {
 	for (u16 i = 0; i < num_touch_ents; ++i) {
 		u16 entity_index = touch_ents[i];
 		Entity& entity = Map::entities[entity_index];
-		Entity* target = Map::PickTarget(entity.target);
+		Entity* target = Map::GetTargetEntity(entity.target);
 
 		switch (entity.type) {
 			case Entity::Type::trigger_teleport: {

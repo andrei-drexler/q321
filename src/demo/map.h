@@ -149,7 +149,7 @@ namespace Map {
 	EntityBrushOffsets				entity_brush_start;
 
 	bool							IsWorldspawnBrush(u16 index) { return index < entity_brush_start[1]; }
-	Demo::Entity*					PickTarget(i16 target);
+	Demo::Entity*					GetTargetEntity(i16 target);
 
 	/* Renderable geometry */
 
@@ -301,23 +301,13 @@ FORCEINLINE void Map::Details::InitLights() {
 
 ////////////////////////////////////////////////////////////////
 
-Demo::Entity* Map::PickTarget(i16 target) {
-	const u16 MaxChoices = 32;
-	u16 choices[MaxChoices];
-	u16 num_choices = 0;
-
+Demo::Entity* Map::GetTargetEntity(i16 target) {
 	if (target) {
-		for (auto *entity = &entities[num_brush_entities], *end = &entities[num_entities]; entity != end; ++entity) {
-			if (entity->targetname == target) {
-				choices[num_choices++] = entity - &entities[0];
-				if (num_choices == MaxChoices)
-					break;
-			}
-		}
+		for (auto *entity = &entities[num_brush_entities], *end = &entities[num_entities]; entity != end; ++entity)
+			if (entity->targetname == target)
+				return entity;
 	}
 
-	if (num_choices > 0)
-		return &entities[choices[Random() % num_choices]];
 	return nullptr;
 }
 
