@@ -49,16 +49,16 @@ namespace Demo {
 		}
 
 		enum class Input : u8 {
-			MoveForward,
-			MoveBack,
-			MoveLeft,
-			MoveRight,
-			MoveUp,
-			MoveDown,
-			LookLeft,
-			LookRight,
-			LookUp,
-			LookDown,
+			MoveForward,	// +X
+			MoveBack,		// -X
+			MoveRight,		// +Y
+			MoveLeft,		// -Y
+			MoveUp,			// +Z
+			MoveDown,		// -Z
+			LookLeft,		// +Yaw
+			LookRight,		// -Yaw
+			LookUp,			// +Pitch
+			LookDown,		// -Pitch
 			LookCenter,
 			Run,
 			Zoom,
@@ -67,9 +67,8 @@ namespace Demo {
 			Invalid = Count,
 		};
 
-		static constexpr u32 InputMask(Input i)	{
-			bool valid = u8(i) < u8(Input::Invalid);
-			return valid << (u8)i;
+		static constexpr bool IsValid(Input i) {
+			return u32(i) < u32(Input::Invalid);
 		}
 
 		vec3				position;
@@ -82,7 +81,6 @@ namespace Demo {
 		float				zoom;
 		const vec4*			ground;
 		vec3				angles;
-		u32					inputs;
 		u32					flags;
 		i16					health;
 
@@ -91,10 +89,6 @@ namespace Demo {
 		};
 		u16					touch_ents[MaxTouchEnts];
 		u16					num_touch_ents;
-
-		bool				Has(Input input) const		{ return inputs & InputMask(input); }
-		void				Set(Input input)			{ inputs |= InputMask(input); }
-		void				Clear(Input input)			{ inputs &= ~InputMask(input); }
 
 		void				Update(float dt);
 		void				Spawn();
@@ -142,20 +136,22 @@ namespace Demo {
 #include "player_move.h"
 
 void Demo::Player::Update(float dt) {
-	inputs = 0;
-	for (u16 i = 0; i < 256; ++i)
-		if (Sys::IsKeyDown(i))
-			Set(KeyBindings[i]);
-
-	const u32 MaskJump = InputMask(Input::MoveUp);
-	const u32 MaskCrouch = InputMask(Input::MoveDown);
+	/* read inputs */
+	i32 input_list[(u32)Input::Count];
+	MemSet(&input_list);
+	for (u32 key = 0; key < 256; ++key) {
+		Input command = KeyBindings[key];
+		if (IsValid(command) && Sys::IsKeyDown(key))
+			input_list[(u16)command] = 1;
+	}
 
 	bool noclip = NoClipping();
 	if (!noclip) {
-		if (inputs & MaskJump) {
+		if (input_list[(u32)Input::MoveUp]) {
 			if (flags & NoJump) {
 				// prevent speed loss
-				inputs &= ~(MaskJump | MaskCrouch);
+				input_list[(u32)Input::MoveUp] = 0;
+				input_list[(u32)Input::MoveDown] = 0;
 			} else if (ground) {
 				ground = nullptr;
 				velocity.z = JumpSpeed;
@@ -166,15 +162,20 @@ void Demo::Player::Update(float dt) {
 		}
 	}
 
-	float run = 1.f - 0.5f * Has(Input::Run);
+	vec3 cmd;
+	for (u32 i = 0; i < 6; i += 2)
+		cmd[i >> 1] = float(input_list[i] - input_list[i + 1]);
+
+	vec2 wishturn;
+	for (u32 i = 0; i < 6; i += 2)
+		wishturn[i >> 1] = float(input_list[(u32)Input::LookLeft + i] - input_list[(u32)Input::LookLeft + 1 + i]);
+
+	float run = 1.f - 0.5f * input_list[(u32)Input::Run];
 
 	/* turn with keyboard */
-	vec2 wishturn;
-	wishturn.x = float(Has(Input::LookLeft) - Has(Input::LookRight));
-	wishturn.y = float(Has(Input::LookUp) - Has(Input::LookDown));
 	wishturn *= TurnSpeed * dt * run;
 	angles.xy += wishturn;
-	if (Has(Player::Input::LookCenter))
+	if (input_list[(u32)Player::Input::LookCenter])
 		angles.y = 0.f;
 	angles.x = mod(angles.x, 360.f);
 	angles.y = clamp(angles.y, -85.f, 85.f);
@@ -193,11 +194,6 @@ void Demo::Player::Update(float dt) {
 	forward.y = right.x * cos_pitch;
 	forward.z = sin_pitch;
 
-	vec3 cmd;
-	cmd.y = float(Has(Input::MoveForward) - Has(Input::MoveBack));
-	cmd.x = float(Has(Input::MoveRight) - Has(Input::MoveLeft));
-	cmd.z = float(Has(Input::MoveUp) - Has(Input::MoveDown));
-
 	/* apply friction */
 	if (ground) {
 		ClipVelocity(right, ground->xyz);
@@ -215,9 +211,8 @@ void Demo::Player::Update(float dt) {
 	}
 
 	vec3 wishdir;
-	wishdir.x = cmd.x * right.x + cmd.y * forward.x;
-	wishdir.y = cmd.x * right.y + cmd.y * forward.y;
-	wishdir.z = cmd.x * right.z + cmd.y * forward.z;
+	mul(wishdir, forward, cmd.x);
+	mad(wishdir, right, cmd.y);
 
 	/* accelerate */
 	if (noclip) {
@@ -275,7 +270,7 @@ void Demo::Player::Update(float dt) {
 
 	/* zoom in/out */
 	float zoom_delta = dt / ZoomTime;
-	if (Has(Input::Zoom))
+	if (input_list[(u32)Input::Zoom])
 		zoom = min(1.f, zoom + zoom_delta);
 	else
 		zoom = max(0.f, zoom - zoom_delta);
