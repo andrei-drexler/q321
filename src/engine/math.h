@@ -921,9 +921,9 @@ FORCEINLINE void ClipSegmentByPlane(const vec3& origin, const vec3& dir, const v
 	}
 	t /= -align;
 	if (align > 0.f)
-		tmax = Math::min(tmax, t);
+		Math::assign_min(tmax, t);
 	else
-		tmin = Math::max(tmin, t);
+		Math::assign_max(tmin, t);
 }
 
 struct BrushEdge {

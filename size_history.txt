@@ -1024,3 +1024,4 @@
 59027,noinline clipvelocity
 59014,removed randomness from picktarget
 58997,more player update tweaks
+58994,tweaked clipsegmentbyplane
