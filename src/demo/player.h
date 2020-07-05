@@ -162,13 +162,17 @@ void Demo::Player::Update(float dt) {
 		}
 	}
 
-	vec3 cmd;
-	for (u32 i = 0; i < 6; i += 2)
-		cmd[i >> 1] = float(input_list[i] - input_list[i + 1]);
+	/* initialize movement/look axes */
+	union {
+		struct {
+			vec3 cmd;
+			vec2 wishturn;
+		};
+		float input_axis[5];
+	};
 
-	vec2 wishturn;
-	for (u32 i = 0; i < 6; i += 2)
-		wishturn[i >> 1] = float(input_list[(u32)Input::LookLeft + i] - input_list[(u32)Input::LookLeft + 1 + i]);
+	for (u32 i = 0; i < 10; i += 2)
+		input_axis[i >> 1] = float(input_list[i] - input_list[i + 1]);
 
 	float run = 1.f - 0.5f * input_list[(u32)Input::Run];
 
@@ -230,9 +234,7 @@ void Demo::Player::Update(float dt) {
 		if (add_speed > 0.f) {
 			float accel = ground ? GroundAccel : AirAccel;
 			float accel_speed = min(add_speed, accel * dt * wish_speed);
-			velocity.x += wishdir.x * accel_speed;
-			velocity.y += wishdir.y * accel_speed;
-			velocity.z += wishdir.z * accel_speed;
+			mad(velocity, wishdir, accel_speed);
 		}
 	}
 
@@ -248,9 +250,7 @@ void Demo::Player::Update(float dt) {
 		shadow_angle = atan2(velocity.y, velocity.x);
 
 	if (noclip) {
-		position.x += velocity.x * dt;
-		position.y += velocity.y * dt;
-		position.z += velocity.z * dt;
+		mad(position, velocity, dt);
 		ground = nullptr;
 		num_touch_ents = 0;
 	} else {
