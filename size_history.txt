@@ -1021,3 +1021,4 @@
 59287,tweaked ui::print
 59287,tweaked brushwork to eliminate texture seam
 59191,tweaked player update
+59027,noinline clipvelocity
