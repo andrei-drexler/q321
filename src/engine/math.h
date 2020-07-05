@@ -889,7 +889,8 @@ FORCEINLINE void IntersectPlanes(const vec4& p0, const vec4& p1, vec3& origin, v
 	mat3 coeff(p0.xyz, p1.xyz, direction), tmp;
 	transpose(coeff, tmp);
 	invert(tmp, coeff);
-	origin = coeff * vec3(-p0.w, -p1.w, 0.f);
+	mul(origin, coeff[0], -p0.w);
+	mad(origin, coeff[1], -p1.w);
 }
 
 FORCEINLINE void IntersectPlanes(const vec4& p0, const vec4& p1, const vec4& p2, vec3& origin) {

@@ -1025,3 +1025,4 @@
 59014,removed randomness from picktarget
 58997,more player update tweaks
 58994,tweaked clipsegmentbyplane
+58969,tweaked intersectplanes
