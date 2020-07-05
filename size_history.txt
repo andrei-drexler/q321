@@ -1019,3 +1019,4 @@
 59320,tweaked computetangentframe
 59297,tweaked partition node split
 59287,tweaked ui::print
+59287,tweaked brushwork to eliminate texture seam
