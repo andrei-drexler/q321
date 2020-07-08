@@ -229,7 +229,7 @@ namespace Forsyth {
 
 	static constexpr float
 		FindVertexScore_CacheDecayPower = 1.5f,
-		FindVertexScore_LastTriScore = 1.5f, // changed from 0.75f to improve compression
+		FindVertexScore_LastTriScore = 2.5f, // changed from 0.75f to improve compression
 		FindVertexScore_ValenceBoostScale = 2.0f,
 		FindVertexScore_ValenceBoostPower = 0.5f;
 

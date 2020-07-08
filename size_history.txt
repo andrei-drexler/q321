@@ -1026,3 +1026,4 @@
 58997,more player update tweaks
 58994,tweaked clipsegmentbyplane
 58969,tweaked intersectplanes
+58916,tweaked vertex cache opt coeff
