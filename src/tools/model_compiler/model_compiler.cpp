@@ -71,7 +71,7 @@ bool ExportObj(const MD3::Header& model, const char* path, float scale = 1.f, in
 				 ((verts[j].pos[2] + RoundBias) >> ChopBits << ChopBits) * VertexScale,
 				-((verts[j].pos[1] + RoundBias) >> ChopBits << ChopBits) * VertexScale,
 				uvs[j][0],
-				uvs[j][1],
+				1.f - uvs[j][1],
 				-normals[j][0],
 				-normals[j][2],
 				 normals[j][1]
