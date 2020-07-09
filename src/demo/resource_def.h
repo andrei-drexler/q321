@@ -114,6 +114,8 @@
 	x(flare03,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flame,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flame_large,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(gr8torch2b,			FSVertexBits)\
+	x(gr8torch2b_m,			MapVertexBits|Attrib::ColorBit|Gfx::Shader::NoCull)\
 	x(tlpnrg,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(tlptrns,				FSVertexBits)\
 	x(tlptrns_m,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
@@ -200,6 +202,7 @@
 	x(gpntgmlt1k,		Shader::gpntgmlt1k,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(light5,			Shader::light5,			16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(q3bnr,			Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gr8torch2b,		Shader::gr8torch2b,		32,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(tlptrns,			Shader::tlptrns,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(rocketl,			Shader::rocketl,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
@@ -291,6 +294,7 @@
 	x("models/mapobjects/spotlamp/spotlamp",	miscmodel2s,	gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/storch/storch_tall",	storchtl,		gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/spotlamp/spotlamp_l",	fixture,		lt2,			Solid,		Opaque|NeedsUV,			(0))\
+	x("models/mapobjects/gratelamp/gratetorch2b",	gr8torch2b_m,	gr8torch2b,	Solid,		Opaque|NeedsUV,			(0))\
 	x("*item_model",							item,			rocketl,		Solid,		Opaque,					(0))\
 	x("*item_shiny",							itemshiny,		rocketl,		Solid,		Opaque,					(0))\
 	x("models/powerups/armor/newred",			armor,			rocketl,		Solid,		Opaque,					(0))\

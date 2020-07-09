@@ -1027,3 +1027,4 @@
 58994,tweaked clipsegmentbyplane
 58969,tweaked intersectplanes
 58916,tweaked vertex cache opt coeff
+59171,models/mapobjects/gratelamp/gratetorch2b

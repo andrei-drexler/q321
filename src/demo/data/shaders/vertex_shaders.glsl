@@ -145,6 +145,8 @@ void flare03() {
 }
 void flame() { Generic(); }
 void flame_large() { Generic(); }
+void gr8torch2b() { FS(); }
+void gr8torch2b_m() { miscmodel(); }
 void tlpnrg() { misc_model(); }
 void tlptrns() { FS(); }
 void tlptrns_m() { misc_model(); }

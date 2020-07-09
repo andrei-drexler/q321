@@ -2604,6 +2604,54 @@ void UI() {
 	FCol = texture(Texture0, UV) * Clr;
 }
 
+// models/mapobjects/gratelamp/gratetorch2b.tga (texture)
+TEXA(gr8torch2b) {
+	uv.y *= 2.;
+	float
+		b = FBMT(uv, vec2(3), .9, 2., 3),
+		t = .8 + b * .4,
+		d = uv.y - 1.05;
+	vec3 c = RGB(55, 44, 37) * t;
+	vec2 p = uv;
+
+	d = smin(d, box((uv - vec2(.5, 1.5)) * rot(45.), vec2(.2)) - .1, .3);
+	d = max(d, .03 - p.y); // bilinear hack: cut off bottom
+
+	c = mix(c, add_rivet(c, uv - vec2(.5, 1.5), .1), 8. * b);
+
+	p.x = min(p.x, 1. - p.x);
+	if (p.y > .5)
+		p.y -= .5;
+	c = mix(c, add_rivet(c, p - vec2(.22, .31), .04), 2. * t);
+
+	c *= 1.
+		+ grad(d).y * tri(.0, .05, d) * (1. + 11. * ls(1.5, 2., uv.y)) * b
+		+ tri(.93, .05, uv.y)
+		+ tri(.4, .05, uv.y)
+		+ .5 * tri(.1, .05, uv.y)
+		- .5 * tri(.97, .05, uv.y)
+		- .5 * sqr(tri(.7, .05, uv.y))
+		- .5 * sqr(tri(.2, .05, uv.y))
+		- .5 * tri(.66, .1, uv.y)
+		- .5 * tri(.45, .03, uv.y)
+		- .5 * tri(.15, .1, uv.y)
+		- tri(.01, .03, uv.y)
+		;
+	return vec4(c, msk(d, .03));
+}
+
+// models/mapobjects/gratelamp/gratetorch2b.tga (map shader)
+void gr8torch2b_m() {
+	//vec3 p = Pos;
+	//--p.x;
+	//vec2 uv = vec2(nang(p.xy) * 4., ls(-2., 29., p.z));
+	//FCol = textureGrad(Texture0, uv, dFdx(uv.yy), dFdx(uv.yy));
+	FCol = texture(Texture0, UV);
+	if (FCol.w < 0.5)
+		discard;
+	FCol *= Clr * 1.5 + .3;
+}
+
 // models/mapobjects/teleporter/energy.tga
 void tlpnrg() {
 	vec2 uv = vec2(nang(Pos.xy), ls(8., 128., Pos.z));
