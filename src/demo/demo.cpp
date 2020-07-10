@@ -142,7 +142,7 @@ namespace Demo {
 	}
 
 	static constexpr u8 EntityModels[] = {
-		#define PP_ADD_ENTITY_TYPE_MODEL(name, desc, model, ...) model,
+		#define PP_ADD_ENTITY_TYPE_MODEL(name, desc, model, ...) 1 + model,
 		DEMO_ENTITY_TYPES(PP_ADD_ENTITY_TYPE_MODEL)
 		#undef PP_ADD_ENTITY_TYPE_MODEL
 	};
