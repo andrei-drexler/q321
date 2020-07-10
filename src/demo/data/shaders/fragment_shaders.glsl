@@ -2780,3 +2780,11 @@ void icon_plasma() {
 	d = min(d, box(uv - vec2(0, h * sign(r)), vec2(.14, h)));
 	FCol = vec4(.77, 0, 1, 1) * msk(d + .01, .01);
 }
+
+// 
+void icon_quad() {
+	vec2 uv = UV - .5;
+	float d = icon_sdf(uv + vec2(0, .05), 0.) - .01;
+	d = min(d, box(pmod(uv * rot(45.), 4.) - vec2(.45 , .0), vec2(.11, .02)));
+	FCol = vec4(0, .88, .95, 1) * msk(d, .01);
+}

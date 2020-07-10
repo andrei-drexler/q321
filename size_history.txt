@@ -1031,3 +1031,4 @@
 59156,tweaked gratetorch2b
 59459,item icons
 59406,tweaked storch_tall
+59443,quad icon

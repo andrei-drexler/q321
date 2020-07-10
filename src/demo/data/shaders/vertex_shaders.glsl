@@ -170,3 +170,4 @@ void icon_shotgun() { FS(); }
 void icon_rocketl() { FS(); }
 void icon_railgun() { FS(); }
 void icon_plasma() { FS(); }
+void icon_quad() { FS(); }

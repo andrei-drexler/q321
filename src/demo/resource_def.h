@@ -132,6 +132,7 @@
 	x(icon_rocketl,			FSVertexBits)\
 	x(icon_railgun,			FSVertexBits)\
 	x(icon_plasma,			FSVertexBits)\
+	x(icon_quad,			FSVertexBits)\
 
 
 ////////////////////////////////////////////////////////////////
