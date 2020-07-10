@@ -2432,7 +2432,7 @@ void storchtl() {
 	float r = length(q);
 	FCol.xyz *=
 		1.
-		+ sat(p.z + 30.) * ls(4., 5., mx(p.xy)) // brighten up skull
+		+ sat(p.z + 30.) * ls(4., 5., length(p.xy)) // brighten up skull
 		+ .5 * sat(p.z + 15.) // brighten up top part even more
 		+ .3 * tri(3., .5, r) // eye socket edge highlight
 		+ .7 * triaa(-15., .5, p.z) // skull top edge highlight
