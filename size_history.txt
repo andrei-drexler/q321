@@ -1032,3 +1032,4 @@
 59459,item icons
 59406,tweaked storch_tall
 59443,quad icon
+59523,armor icon

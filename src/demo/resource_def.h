@@ -127,6 +127,7 @@
 	x(armor,				ModelVertexBits)\
 	x(icon_health,			FSVertexBits)\
 	x(icon_shard,			FSVertexBits)\
+	x(icon_armor,			FSVertexBits)\
 	x(icon_machinegun,		FSVertexBits)\
 	x(icon_shotgun,			FSVertexBits)\
 	x(icon_rocketl,			FSVertexBits)\

@@ -165,6 +165,7 @@ void energy_grn1() {
 void armor() { item(); }
 void icon_health() { FS(); }
 void icon_shard() { FS(); }
+void icon_armor() { FS(); }
 void icon_machinegun() { FS(); }
 void icon_shotgun() { FS(); }
 void icon_rocketl() { FS(); }
