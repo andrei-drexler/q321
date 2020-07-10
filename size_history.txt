@@ -1033,3 +1033,5 @@
 59406,tweaked storch_tall
 59443,quad icon
 59523,armor icon
+59489,no uppercase in shader identifiers
+59501,skip protected identifiers

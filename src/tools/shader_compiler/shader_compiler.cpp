@@ -86,12 +86,10 @@ struct NameGenerator {
 	std::vector<char> name;
 
 	static constexpr char NextChar(char c, bool allow_digit) {
-		if (c == '9')
-			return 'A';
-		if (c == 'Z')
-			return 0;
-		if (c == 'z')
-			return allow_digit ? '0' : 'A';
+		const bool AllowUppercase = false;
+		if (c == '9') return AllowUppercase ? 'A' : 0;
+		if (c == 'Z') return 0;
+		if (c == 'z') return allow_digit ? '0' : AllowUppercase ? 'A' : 0;
 		return c + 1;
 	}
 
@@ -100,7 +98,7 @@ struct NameGenerator {
 		name.assign({'b', '\0'});
 	}
 
-	string_view Next() {
+	string_view Next(Function<bool(string_view)> accept = [](string_view){return true;}) {
 		string_view result;
 
 		do {
@@ -117,7 +115,7 @@ struct NameGenerator {
 			if (carry)
 				name.insert(name.begin(), 'a');
 			result = {name.data(), name.size() - 1};
-		} while (IsMaybeSwizzle(result));
+		} while (IsMaybeSwizzle(result) || !accept(result));
 
 		return result;
 	}
@@ -261,6 +259,12 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 	std::vector<string_view> new_macros;
 	new_macros.reserve(identifiers.size());
 
+	auto next_name = [&] {
+		return name_generator.Next([&] (string_view name) {
+			return untouchable.find(name) == untouchable.end();
+		});
+	};
+
 	for (auto& id : identifiers) {
 		string_view name = id.name;
 		auto& new_name = rename[name];
@@ -278,7 +282,7 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 			if (savings > 4) {
 				if (!is_already_macro)
 					new_macros.push_back(name);
-				new_name = atoms.Intern(name_generator.Next());
+				new_name = atoms.Intern(next_name());
 			}
 		} else {
 			auto entry_iter = entry_points.find(name);
@@ -287,7 +291,7 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 				sprintf(buf, "_%d", entry_iter->second);
 				new_name = atoms.Intern(buf);
 			} else {
-				new_name = atoms.Intern(name_generator.Next());
+				new_name = atoms.Intern(next_name());
 			}
 		}
 	}
