@@ -551,7 +551,10 @@ namespace Demo {
 
 		LoadMap(Map::ID::START_MAP);
 
-		g_weapon_offset = {-9.f, -5.f, -9.f};
+		g_weapon_offset = {-9.f, -5.f, -9.f}; // rocket launcher
+		//g_weapon_offset = {-1.f, -2.5f, -8.f}; // shotgun
+		//g_weapon_offset = {1.5f, -5.f, -10.5f}; // railgun
+		//g_weapon_offset = {-1.f, -5.f, -10.f}; // plasma
 	}
 }
 
