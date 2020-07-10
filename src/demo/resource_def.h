@@ -125,6 +125,13 @@
 	x(healthsphere,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(energy_grn1,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::Premultiplied)\
 	x(armor,				ModelVertexBits)\
+	x(icon_health,			FSVertexBits)\
+	x(icon_shard,			FSVertexBits)\
+	x(icon_machinegun,		FSVertexBits)\
+	x(icon_shotgun,			FSVertexBits)\
+	x(icon_rocketl,			FSVertexBits)\
+	x(icon_railgun,			FSVertexBits)\
+	x(icon_plasma,			FSVertexBits)\
 
 
 ////////////////////////////////////////////////////////////////

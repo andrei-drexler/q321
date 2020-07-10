@@ -541,6 +541,10 @@ float circ(vec2 p, float r) {
 	return length(p) - r;
 }
 
+float seg(vec2 p, vec2 a, vec2 b, float r) {
+	return circ(p - seg(p, a, b), r);
+}
+
 float elips(vec2 p, vec2 r) {
 	return circ(p/r, 1.) / min(r.x, r.y);
 }
@@ -2700,4 +2704,79 @@ TEX(rocketl) {
 		//- .1 * ls(.3, .2, m)
 	//;
 	return c;
+}
+
+////////////////////////////////////////////////////////////////
+// Item icons
+////////////////////////////////////////////////////////////////
+
+// 
+void icon_health() {
+	vec2 uv = pmod(UV - .5, 4.);
+	FCol = vec4(1, 1, 0, 1) * msk(min(onion(length(uv) - .4, .04), box(uv, vec2(.25, .06))), .01);
+}
+
+// 
+void icon_shard() {
+	FCol = vec4(.4, .7, .3, 1) * msk(dot(abs(UV - .5), vec2(4, 3) / 5.) - .2, .01);
+}
+
+// 
+void icon_machinegun() {
+	vec2 uv = UV;
+	float d = box(uv - vec2(.35, .5), vec2(.1, .4));
+	uv.y = mod(uv.y - .06, .28) - .16;
+	d = min(d, box(uv - vec2(.51, 0), vec2(.34, .04 * ls(.85, .7, uv.x))));
+	d = exclude(d, box(uv - vec2(.65, 0), vec2(.02, 1)));
+	FCol = vec4(1, 1, 0, 1) * msk(d, .01);
+}
+
+// 
+void icon_shotgun() {
+	vec2 uv = UV;
+	uv.x = mod(uv.x, .33) - .16;
+	float d = box(uv - vec2(0, .52), vec2(.1, .4));
+	d = exclude(d, box(uv - vec2(0, .65), vec2(.05, .23)));
+	d = exclude(d, abs(uv.y - .2) - .02);
+	FCol = vec4(1, .5, 0, 1) * msk(d, .01);
+}
+
+// 
+void icon_rocketl() {
+	vec2
+		uv = (UV - vec2(.55, .45)) * rot(-45.);
+	float
+		d = seg(uv, vec2(-.4, 0), vec2(.2, 0), .1);
+	d = max(d, -.3 - uv.x);
+	uv.y = abs(uv.y);
+	d = min(d, box(uv + vec2(.37, 0), vec2(.05, .005)));
+	d = min(d, box(uv + vec2(uv.y + .1, -.18), vec2(.1, .05)));
+	FCol = vec4(1, 0, 0, 1) * msk(d, .01);
+}
+
+// 
+void icon_railgun() {
+	vec2 uv = (UV - .5) * rot(45.);
+	float
+		d = box(uv, vec2(.6, .03)),
+		p = uv.x * 12.6 + 1.55,
+		h = sin(p) * .15,
+		q = ridged(fract(h))
+		;
+	d = min(d, max(onion(uv.y - h, .05 - .1 * q) * (1. + q + q), abs(uv.x) - .6));
+	FCol = vec4(0, 1, 0, 1) * msk(d, .01);
+}
+
+// 
+void icon_plasma() {
+	vec2 uv = pmod(UV - .5, 5.);
+	float
+		d = length(uv) - .18,
+		r = uv.x - .33,
+		h = .04 * tri(.0, .3, r);
+	uv.x -= .33;
+	uv *= rot(-15.);
+	d = min(d, box(uv, vec2(.04, 2. * h)));
+	d = min(d, box(uv - vec2(0, h * sign(r)), vec2(.14, h)));
+	FCol = vec4(.77, 0, 1, 1) * msk(d + .01, .01);
 }

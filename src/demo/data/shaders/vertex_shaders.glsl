@@ -163,3 +163,10 @@ void energy_grn1() {
 	gl_Position += MVP * vec4(N + N, 0);
 }
 void armor() { item(); }
+void icon_health() { FS(); }
+void icon_shard() { FS(); }
+void icon_machinegun() { FS(); }
+void icon_shotgun() { FS(); }
+void icon_rocketl() { FS(); }
+void icon_railgun() { FS(); }
+void icon_plasma() { FS(); }

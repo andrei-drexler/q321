@@ -1029,3 +1029,4 @@
 58916,tweaked vertex cache opt coeff
 59171,models/mapobjects/gratelamp/gratetorch2b
 59156,tweaked gratetorch2b
+59459,item icons
