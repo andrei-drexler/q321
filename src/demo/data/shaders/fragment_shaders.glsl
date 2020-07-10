@@ -2608,27 +2608,29 @@ void UI() {
 TEXA(gr8torch2b) {
 	uv.y *= 2.;
 	float
-		b = FBMT(uv, vec2(3), .9, 2., 3),
-		t = .8 + b * .4,
-		d = uv.y - 1.05;
-	vec3 c = RGB(55, 44, 37) * t;
+		b = FBMT(uv, vec2(5), .9, 2., 4), // base FBM, tileable
+		k = .5 + b, // remapped b with 1.0 mean
+		t = .8 + b * .4, // texture intensity
+		d = uv.y - 1.05; // distance field
+	vec3 c = RGB(55, 44, 37) * t; // base color
 	vec2 p = uv;
 
-	d = smin(d, box((uv - vec2(.5, 1.5)) * rot(45.), vec2(.2)) - .1, .3);
+	d = smin(d, box((uv - vec2(.5, 1.5)) * rot(45.), vec2(.2)) - .1, .3); // smin with rotated rounded square
 	d = max(d, .03 - p.y); // bilinear hack: cut off bottom
 
-	c = mix(c, add_rivet(c, uv - vec2(.5, 1.5), .1), 8. * b);
+	c = mix(c, add_rivet(c, uv - vec2(.5, 1.5), .1), 8. * b); // large top knob
 
-	p.x = min(p.x, 1. - p.x);
+	p.x = min(p.x, 1. - p.x); // mirror around center
 	if (p.y > .5)
-		p.y -= .5;
-	c = mix(c, add_rivet(c, p - vec2(.22, .31), .04), 2. * t);
+		p.y -= .5; // repeat once vertically
+	c = mix(c, add_rivet(c, p - vec2(.22, .31), .04), 2. * t); // smaller knobs
 
 	c *= 1.
-		+ grad(d).y * tri(.0, .05, d) * (1. + 11. * ls(1.5, 2., uv.y)) * b
-		+ tri(.93, .05, uv.y)
-		+ tri(.4, .05, uv.y)
-		+ .5 * tri(.1, .05, uv.y)
+		+ sqr(ls(.5, 1., b)) // ligher dirt
+		+ grad(d).y * tri(.0, .05, d) * (1. + 11. * ls(1.5, 2., uv.y)) * b // edge lighting
+		+ k * tri(.93, .05, uv.y)
+		+ k * tri(.4, .05, uv.y)
+		+ k * tri(.1, .05, uv.y)
 		- .5 * tri(.97, .05, uv.y)
 		- .5 * sqr(tri(.7, .05, uv.y))
 		- .5 * sqr(tri(.2, .05, uv.y))
