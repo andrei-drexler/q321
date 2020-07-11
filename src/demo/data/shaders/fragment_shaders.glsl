@@ -2727,10 +2727,10 @@ void icon_armor() {
 	uv.x = abs(uv.x);
 	float
 		w = .15 * sqrt(ls(-.32, -.29, uv.y))
-			+ .05 * ls(-.3, -.1, uv.y)
-			+ .12 * sqrt(ls(-.1, .1, uv.y))
-			+ .12 * step(.1, uv.y)
-			- .12 * sqr(ls(.1, .31, uv.y)),
+			+ .05 * ls(-.3, -.12, uv.y)
+			+ .1 * sqrt(ls(-.12, .07, uv.y))
+			+ .14 * step(.07, uv.y)
+			- .1 * sqr(ls(.07, .31, uv.y)),
 		d = exclude(box(uv, vec2(w, .3)), elips(uv - vec2(0, .33), vec2(.2, .05)) / 300.)
 	;
 	FCol = vec4(1, 1, 0, 1) * msk(d - .01, .01);
