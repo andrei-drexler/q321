@@ -510,8 +510,8 @@ void Map::ComputeLighting(LightMode mode) {
 	using namespace Demo;
 
 #ifdef DEV
-	if (mode != LightMode::Draft)
-		return;
+	if (mode == LightMode::Shadows)
+		mode = LightMode::Draft;
 #endif
 
 	if constexpr (Lightmap::Debug == Lightmap::DebugMode::Off) {
