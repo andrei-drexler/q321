@@ -162,11 +162,11 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			const PackedModel::Part& src_part = packed.parts[part_index];
 			Part& dst_part = Storage::parts[dst_ofs_part++];
 
-			dst_part.material = src_part.material;
-			dst_part.num_verts = src_part.num_verts;
+			dst_part.material    = src_part.material;
+			dst_part.num_verts   = src_part.num_verts;
 			dst_part.num_indices = src_part.num_indices;
-			dst_part.ofs_verts = dst_ofs_verts;
-			dst_part.ofs_idx = dst_ofs_idx;
+			dst_part.ofs_verts   = dst_ofs_verts;
+			dst_part.ofs_idx     = dst_ofs_idx;
 
 			bool is_sprite = Demo::Material::Properties[src_part.material] & Demo::Material::Sprite;
 			const char* path = Demo::Material::Paths[src_part.material];
@@ -222,8 +222,8 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 
 			/* compute normals */
 			vec3* pos = Storage::vertices + dst_part.ofs_verts;
-			vec3* nor = Storage::normals + dst_part.ofs_verts;
-			u32* idx = Storage::indices + dst_part.ofs_idx;
+			vec3* nor = Storage::normals  + dst_part.ofs_verts;
+			u32*  idx = Storage::indices  + dst_part.ofs_idx;
 
 			if (!is_sprite) {
 				Demo::ComputeNormals(pos, idx, dst_part.num_verts, dst_part.num_indices, nor);
