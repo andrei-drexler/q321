@@ -2731,7 +2731,7 @@ void icon_armor() {
 			+ .1 * sqrt(ls(-.12, .07, uv.y))
 			+ .14 * step(.07, uv.y)
 			- .1 * sqr(ls(.07, .31, uv.y)),
-		d = exclude(box(uv, vec2(w, .3)), elips(uv - vec2(0, .33), vec2(.2, .05)) / 300.)
+		d = exclude(box(uv, vec2(w, .3)), circ(uv - vec2(0, .777), .5))
 	;
 	FCol = vec4(1, 1, 0, 1) * msk(d - .01, .01);
 }

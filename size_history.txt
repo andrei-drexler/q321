@@ -1037,3 +1037,4 @@
 59501,skip protected identifiers
 59504,tweaked armor icon
 59443,subtracted vertex count from stream lengths
+59446,tweaked icon_armor
