@@ -142,13 +142,16 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 
 	for (u16 model_index = 0; model_index < Model::Count; ++model_index) {
 		const PackedModel& packed = models[model_index];
+		u32 num_vertices = 0;
+		for (u16 part_index = 0; part_index < packed.num_parts; ++part_index)
+			num_vertices += packed.parts[part_index].num_verts;
 
 		const u8* src_idx = packed.indices;
 		const u8* src_pos[5];
 		const u8 *stream = packed.verts;
 		for (u32 i = 0; i < 5; ++i) {
 			src_pos[i] = stream;
-			stream += packed.stream_lengths[i];
+			stream += packed.stream_lengths[i] + num_vertices;
 		}
 
 		/* model -> part association */

@@ -745,12 +745,6 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 	print << "};"sv;
 	print.Flush();
 
-	print << "const u16 stream_lengths[] = {"sv;
-	for (auto v : vertex_stream_lengths)
-		print << i32(v) << ","sv;
-	print << "};"sv;
-	print.Flush();
-
 	print << "const u8 indices[] = {"sv;
 	for (auto v : output_indices)
 		WriteVarint(print, v);
@@ -772,6 +766,12 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 		num_vertices += part.num_vertices;
 		num_tris += part.num_indices / 3;
 	}
+	print << "};"sv;
+	print.Flush();
+
+	print << "const u16 stream_lengths[] = {"sv;
+	for (auto v : vertex_stream_lengths)
+		print << i32(v - num_vertices) << ","sv;
 	print << "};"sv;
 	print.Flush();
 
