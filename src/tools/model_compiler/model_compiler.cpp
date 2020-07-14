@@ -534,9 +534,12 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 		u32 num_indices;
 	};
 
-	struct Vertex {
-		i16 pos[3];
-		i16 uv[2];
+	union Vertex {
+		struct {
+			i16 pos[3];
+			i16 uv[2];
+		};
+		i16 data[5];
 	};
 
 	std::vector<u32> flipped_indices;
@@ -634,22 +637,21 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 		}
 
 		/* write part vertices */
-		u16 accum[5];
-		memset(&accum, 0, sizeof(accum));
-
-		auto delta_encode = [] (u16 current, u16& prev) {
-			i16 delta = current - prev;
-			prev = current;
-			return EncodeSignMagnitude(delta);
-		};
-
 		for (u16 i = 0; i < num_vertices; ++i) {
 			if (DEMO_MODELS_USE_DELTA_ENCODING) {
-				output_vertices.push_back(delta_encode(sorted_vertices[i].pos[0], accum[0]));
-				output_vertices.push_back(delta_encode(sorted_vertices[i].pos[1], accum[1]));
-				output_vertices.push_back(delta_encode(sorted_vertices[i].pos[2], accum[2]));
-				output_vertices.push_back(delta_encode(sorted_vertices[i].uv[0], accum[3]));
-				output_vertices.push_back(delta_encode(sorted_vertices[i].uv[1], accum[4]));
+				Vertex prediction = {};
+				if (i > 0)
+					prediction = sorted_vertices[i - 1];
+
+				Vertex residual;
+				for (u32 field = 0; field < std::size(prediction.data); ++field)
+					residual.data[field] = sorted_vertices[i].data[field] - prediction.data[field];
+
+				output_vertices.push_back(EncodeSignMagnitude(residual.pos[0]));
+				output_vertices.push_back(EncodeSignMagnitude(residual.pos[1]));
+				output_vertices.push_back(EncodeSignMagnitude(residual.pos[2]));
+				output_vertices.push_back(EncodeSignMagnitude(residual.uv[0]));
+				output_vertices.push_back(EncodeSignMagnitude(residual.uv[1]));
 			} else {
 				output_vertices.push_back(EncodeSignMagnitude(sorted_vertices[i].pos[0]));
 				output_vertices.push_back(EncodeSignMagnitude(sorted_vertices[i].pos[1]));
