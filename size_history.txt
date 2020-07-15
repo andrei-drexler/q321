@@ -1040,3 +1040,4 @@
 59446,tweaked icon_armor
 59410,tweaked renderworld
 59406,tweaked rasterizefont
+59404,tweaked compileshaders

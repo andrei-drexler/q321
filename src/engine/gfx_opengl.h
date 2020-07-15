@@ -225,6 +225,9 @@ namespace GL {
 			Fragment,
 			Count,
 		};
+
+		static constexpr const char*		Names[Type::Count] = {"Vertex", "Fragment"};
+		static constexpr GLenum				Enums[Type::Count] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 	}
 
 	struct State {
@@ -346,18 +349,11 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 		if (!program)
 			Sys::Fatal(Error::Shader);
 
-#ifdef DEV
-		const char* const	gl_stage_names	[] = {"Vertex", "Fragment"};
-#endif
-		const GLenum		gl_stage_enums	[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-		int					shaders			[] = {0, 0};
+		int shaders[ShaderStage::Count];
 
-		const u32			NumStages		= size(gl_stage_enums);
-
-		for (u32 i=0; i<NumStages; ++i) {
-			int stage_enum = gl_stage_enums[i];
+		for (u32 i = 0; i < ShaderStage::Count; ++i) {
 			auto& shader = shaders[i];
-			shader = glCreateShader(stage_enum);
+			shader = glCreateShader(ShaderStage::Enums[i]);
 			if (!shader)
 				Sys::Fatal(Error::Shader);
 
@@ -395,7 +391,7 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &max_length);
 				char* buf = Mem::Alloc<char>(max_length);
 				glGetShaderInfoLog(shader, max_length, &max_length, buf);
-				auto stage_name = gl_stage_names[i];
+				auto stage_name = ShaderStage::Names[i];
 				Sys::Printf("%s shader compilation failed (shader #%d):\n%s\n", stage_name, shader_index, buf);
 				TrimLog(buf, 8);
 				MessageBoxA(0, buf, "Shader compilation failed", MB_OK);
@@ -420,7 +416,7 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 		glLinkProgram(program);
 
 #ifdef DEV
-		for (u32 i=0; i<NumStages; ++i) {
+		for (u32 i = 0; i < ShaderStage::Count; ++i) {
 			glDetachShader(program, shaders[i]);
 			glDeleteShader(shaders[i]);
 		}
