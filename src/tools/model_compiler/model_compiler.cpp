@@ -755,7 +755,6 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 	size_t num_tris = 0;
 	print << "const Demo::PackedModel::Part parts[] = {"sv;
 	for (auto& part : output_parts) {
-		u8 shader = 0;
 		print
 			<< "{"sv
 			<<		(i32)part.material << ","sv
