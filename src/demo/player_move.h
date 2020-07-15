@@ -75,7 +75,7 @@ namespace Demo {
 			trace.SetCollision(player.position, advance, Player::CollisionBounds);
 			trace.z_offset = Player::EyeCenterOffset;
 
-			bool hit = Map::TraceRay(trace);
+			Map::TraceRay(trace);
 
 			if (trace.fraction > 0.f) {
 				// actually covered some distance

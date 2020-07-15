@@ -169,7 +169,10 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			dst_part.ofs_idx     = dst_ofs_idx;
 
 			bool is_sprite = Demo::Material::Properties[src_part.material] & Demo::Material::Sprite;
+
+#ifdef DEV
 			const char* path = Demo::Material::Paths[src_part.material];
+#endif
 
 #if DEMO_MODELS_USE_DELTA_ENCODING
 			i16 accum[5];

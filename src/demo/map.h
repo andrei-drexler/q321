@@ -678,7 +678,6 @@ NOINLINE void Map::Load(ID id) {
 							texcoords[dst_index] = texcoords[src_index];
 						else
 							texcoords[dst_index].xy = uv_map(dst_pos);
-						auto& dst_nor = normals[dst_index];
 					}
 					num_mat_verts[material] += num_face_edges;
 					first_vertex += num_face_edges;

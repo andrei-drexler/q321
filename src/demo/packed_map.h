@@ -39,9 +39,9 @@ struct PackedMap {
 #endif
 
 	struct {
-		i16				position[3];
-		i16				angles[2];
-		i16				texture;
+		i16				position[3] = {};
+		i16				angles[2] = {};
+		i16				texture = {};
 	}					levelshot;
 	const char*			name;
 	const char*			message;
@@ -84,37 +84,37 @@ struct PackedMap {
 		i16								levelshot_pitch,
 		i16								levelshot_texture
 	) :
-		name					(name),
-		message					(message),
-		entity_brushes			(entity_brushes),
-		num_brush_entities		(NumBrushEntities),
-		entity_data				(entity_data),
-		num_entities			(NumEntityDataEntries / Demo::Entity::NumRawFields),
-		world_bounds			(world_bounds),
-		brush_bounds			(brush_bounds),
 		num_brushes				(NumBrushBoundEntries / 6),
-		plane_data				(plane_data),
 		num_unaligned_planes	(num_unaligned_planes),
-#ifdef DEV
-		num_plane_entries		(NumPlaneEntries),
-#endif
-		nonaxial_counts			(nonaxial_counts),
-		uv_data					(uv_data),
-		num_uvs					(NumUVEntries / 5),
-		plane_uvs				(plane_uvs),
-		plane_materials			(plane_materials),
 		num_planes				(NumMaterialEntries),
 		num_patches				(NumPatches),
-		patches					(patches),
-		patch_vertices			(patch_verts),
 		num_patch_verts			(NumPatchVertEntries / 5),
-		light_data				(light_data),
+		num_entities			(NumEntityDataEntries / Demo::Entity::NumRawFields),
+		num_brush_entities		(NumBrushEntities),
+		num_uvs					(NumUVEntries / 5),
 		num_lights				((NumLightEntries - num_spotlights * 3) / 5),
 		num_spotlights			(num_spotlights),
 		skylight				(skylight),
+		entity_brushes			(entity_brushes),
+		entity_data				(entity_data),
+		world_bounds			(world_bounds),
+		brush_bounds			(brush_bounds),
+		plane_data				(plane_data),
+		nonaxial_counts			(nonaxial_counts),
+		plane_materials			(plane_materials),
+		uv_data					(uv_data),
+		plane_uvs				(plane_uvs),
+		patches					(patches),
+		patch_vertices			(patch_verts),
+		light_data				(light_data),
+		brush_asymmetry			(brush_asymmetry),
 		symmetry_axis			(symmetry_axis),
 		symmetry_level			(symmetry_level),
-		brush_asymmetry			(brush_asymmetry)
+#ifdef DEV
+		num_plane_entries		(NumPlaneEntries),
+#endif
+		name					(name),
+		message					(message)
 	{
 		static_assert(NumPlaneUVEntries == NumMaterialEntries);
 		static_assert(NumBrushBoundEntries / 6 == NumNonaxialEntries);

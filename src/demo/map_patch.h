@@ -192,7 +192,6 @@ NOINLINE void Map::Details::LoadPatches(const PackedMap& packed, u8 pass) {
 			}
 
 			/* build index buffer */
-			u32 first_index = num_mat_indices[patch.material];
 			auto* idx = indices + mat_index_offset[patch.material] + num_mat_indices[patch.material];
 
 			for (u16 j = 1; j < verts_y; ++j) {

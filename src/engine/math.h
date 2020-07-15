@@ -572,7 +572,6 @@ NOINLINE void transpose(const mat3& m, mat3& out) {
 		(1<< 8) | (4<<12) | (7<<16) |
 		(2<<20) | (5<<24) | (8<<28) ;
 
-	out;
 	out.data[0] = m.data[0];
 	for (u32 i=0; i<8; ++i)
 		out.data[i + 1] = m.data[(ORDER >> (i<<2)) & 15];

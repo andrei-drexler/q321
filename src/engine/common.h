@@ -101,7 +101,11 @@ using uptr = uint_sized<sizeof(void*)>;
 
 ////////////////////////////////////////////////////////////////
 
-#define OFFSET_OF(type, member) ((size_t)(&((type*)1)->member) - 1)
+#if !defined(_MSC_VER) || defined(__clang__)
+	#define OFFSET_OF(type, member) __builtin_offsetof(type, member)
+#else
+	#define OFFSET_OF(type, member) ((size_t)(&((type*)1)->member) - 1)
+#endif
 
 ////////////////////////////////////////////////////////////////
 
@@ -369,16 +373,38 @@ struct StaticArray {
 
 	constexpr explicit operator T*			()														{ return data; }
 	constexpr explicit operator const T*	() const												{ return data; }
-
-	// Note: we allow pointers to one past last item. Bad idea?
-	friend static constexpr T*				operator+(StaticArray& array, size_t offset)			{ assert(offset <= Size); return array.data + offset; }
-	friend static constexpr T*				operator+(size_t offset, StaticArray& array)			{ assert(offset <= Size); return array.data + offset; }
-	friend static constexpr const T*		operator+(const StaticArray& array, size_t offset)		{ assert(offset <= Size); return array.data + offset; }
-	friend static constexpr const T*		operator+(size_t offset, const StaticArray& array)		{ assert(offset <= Size); return array.data + offset; }
-
-	// Note: non-member size() to allow the same code to work with both built-in arrays and our custom type
-	friend static constexpr size_t			size(const StaticArray&)								{ return Size; }
 };
+
+// Note: we allow pointers to one past last item. Bad idea?
+template <typename T, size_t Size>
+static constexpr T* operator+(StaticArray<T, Size>& array, size_t offset) {
+	assert(offset <= Size);
+	return array.data + offset;
+}
+
+template <typename T, size_t Size>
+static constexpr T* operator+(size_t offset, StaticArray<T, Size>& array) {
+	assert(offset <= Size);
+	return array.data + offset;
+}
+
+template <typename T, size_t Size>
+static constexpr const T* operator+(const StaticArray<T, Size>& array, size_t offset) {
+	assert(offset <= Size);
+	return array.data + offset;
+}
+
+template <typename T, size_t Size>
+static constexpr const T* operator+(size_t offset, const StaticArray<T, Size>& array) {
+	assert(offset <= Size);
+	return array.data + offset;
+}
+
+// Note: non-member size() to allow the same code to work with both built-in arrays and our custom type
+template <typename T, size_t Size>
+static constexpr size_t size(const StaticArray<T, Size>&) {
+	return Size;
+}
 
 #ifdef DEV
 	template <typename T, size_t Size>

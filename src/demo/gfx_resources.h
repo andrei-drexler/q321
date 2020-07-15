@@ -38,7 +38,7 @@ namespace Demo {
 		};
 
 		static constexpr Gfx::Texture::Descriptor Descriptors[] = {
-			#define PP_DEMO_TEXTURE_DESCRIPTOR(name, shader, width, height, format, flags)			{width, height, Gfx::Texture::Format::format, Gfx::Texture::Flags(flags)},
+			#define PP_DEMO_TEXTURE_DESCRIPTOR(name, shader, width, height, format, flags)			{{{width, height}}, Gfx::Texture::Format::format, Gfx::Texture::Flags(flags)},
 			DEMO_TEXTURES(PP_DEMO_TEXTURE_DESCRIPTOR)
 			#undef PP_DEMO_TEXTURE_DESCRIPTOR
 		};

@@ -411,7 +411,7 @@ namespace Win32 {
 		0x000000FF,					// DWORD        bV4BlueMask;
 		0xFF000000,					// DWORD        bV4AlphaMask;
 		0,							// DWORD        bV4CSType;
-		0,							// CIEXYZTRIPLE bV4Endpoints;
+		{},							// CIEXYZTRIPLE bV4Endpoints;
 		0,							// DWORD        bV4GammaRed;
 		0,							// DWORD        bV4GammaGreen;
 		0,							// DWORD        bV4GammaBlue;
@@ -499,7 +499,7 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 
 	for (u16 c = Font::Glyph::Begin; c < Font::Glyph::End; ++c) {
 		GLYPHMETRICS metrics;
-		constexpr MAT2 identity = { 0, 1, 0, 0, 0, 0, 0, 1 };
+		constexpr MAT2 identity = { {0, 1}, {0, 0}, {0, 0}, {0, 1} };
 		DWORD required = GetGlyphOutlineA(hMemDC, c, GGO_GRAY8_BITMAP, &metrics, 0, NULL, &identity);
 		assert(required <= size(buffer));
 		if (required > size(buffer))
@@ -806,21 +806,25 @@ namespace Win32 {
 	const char* (WINAPI *wglGetExtensionsStringARB)(HDC hdc);
 	HGLRC (WINAPI* wglCreateContextAttribsARB)(HDC hDC, HGLRC hShareContext, const int *attribList);
 
+	template <typename Function>
+	FORCEINLINE void InitGLFunction(Function*& function, const char* name) {
+		function = (Function*)wglGetProcAddress(name);
+	}
+
 	void InitWGLExtensions(HDC dc) {
-		*(void**)&wglGetExtensionsStringARB = wglGetProcAddress("wglGetExtensionsStringARB");
+		InitGLFunction(wglGetExtensionsStringARB, "wglGetExtensionsStringARB");
 		if (!wglGetExtensionsStringARB)
 			return;
 
 		const char* str = wglGetExtensionsStringARB(dc);
 		while (*str) {
 			u32 hash = 0;
-			const char* ext = str;
 			while (*str && *str != ' ')
 				hash = HashAppend(hash, *str++);
 			if (*str == ' ')
 				++str;
 			if (hash == Hash("WGL_ARB_create_context")) {
-				*(void**)&wglCreateContextAttribsARB = wglGetProcAddress("wglCreateContextAttribsARB");
+				InitGLFunction(wglCreateContextAttribsARB, "wglCreateContextAttribsARB");
 			}
 		}
 	}

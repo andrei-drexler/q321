@@ -330,7 +330,6 @@ namespace Demo {
 			};
 		}
 	}
-	static constexpr int LoadingScreenMessageLine = 6;
 
 	FORCEINLINE void RenderLoadingScreen() {
 		Gfx::SetRenderTarget(Gfx::Backbuffer);
@@ -400,7 +399,6 @@ namespace Demo {
 
 		float speed = length(g_player.velocity.xy);
 		float bob = speed / 640.f * sin(g_player.walk_cycle * 10.f);
-		float bob_pitch = bob;
 
 		frame.angles		= g_player.angles;
 		frame.angles.y		-= abs(bob);

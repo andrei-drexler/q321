@@ -141,9 +141,6 @@ FORCEINLINE void Map::Details::PackLightmap() {
 		vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width + rect.min[0];
 		vec3* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width + rect.min[0];
 
-		u8 prim_x = patch.width >> 1;
-		u8 prim_y = patch.height >> 1;
-
 		for (u16 y = 0, height = rect.GetHeight(); y < height; ++y, texel_pos += Lightmap::Width, texel_nor += Lightmap::Width) {
 			float t = y / float(height - 1);
 

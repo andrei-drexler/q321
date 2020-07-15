@@ -117,7 +117,7 @@ static union {
 	struct {
 		GL_FUNCTIONS(PP_ADD_GL_FUNC)
 	};
-	void* GLFunctions[GL::NumFunctions];
+	PROC GLFunctions[GL::NumFunctions];
 };
 
 #undef PP_APPEND_FUNC_NAME
@@ -346,8 +346,10 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 		if (!program)
 			Sys::Fatal(Error::Shader);
 
-		const GLenum		gl_stage_enums	[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+#ifdef DEV
 		const char* const	gl_stage_names	[] = {"Vertex", "Fragment"};
+#endif
+		const GLenum		gl_stage_enums	[] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 		int					shaders			[] = {0, 0};
 
 		const u32			NumStages		= size(gl_stage_enums);
@@ -820,7 +822,6 @@ NOINLINE void Gfx::Draw(const Mesh& mesh) {
 
 	auto shader = g_state.GetShader();
 
-	u32 bits = (shader << GL::State::ShiftShaderID) | g_state.shader_flags[shader];
 	GL::ChangeState(g_state.shader_flags[shader], GL::State::MaskShaderState);
 
 	auto flags = g_state.shader_flags[shader];
