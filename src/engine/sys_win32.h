@@ -416,6 +416,8 @@ namespace Win32 {
 		0,							// DWORD        bV4GammaGreen;
 		0,							// DWORD        bV4GammaBlue;
 	};
+
+	static constexpr MAT2 IdentityMAT2 = {{0, 1}, {0, 0}, {0, 0}, {0, 1}};
 }
 
 FORCEINLINE void Sys::SetWindowIcon(Window* window, const u32* pixels, u16 size) {
@@ -499,12 +501,11 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 
 	for (u16 c = Font::Glyph::Begin; c < Font::Glyph::End; ++c) {
 		GLYPHMETRICS metrics;
-		constexpr MAT2 identity = { {0, 1}, {0, 0}, {0, 0}, {0, 1} };
-		DWORD required = GetGlyphOutlineA(hMemDC, c, GGO_GRAY8_BITMAP, &metrics, 0, NULL, &identity);
+		DWORD required = GetGlyphOutlineA(hMemDC, c, GGO_GRAY8_BITMAP, &metrics, 0, NULL, &Win32::IdentityMAT2);
 		assert(required <= size(buffer));
 		if (required > size(buffer))
 			continue;
-		if (GDI_ERROR == GetGlyphOutlineA(hMemDC, c, GGO_GRAY8_BITMAP, &metrics, required, buffer, &identity))
+		if (GDI_ERROR == GetGlyphOutlineA(hMemDC, c, GGO_GRAY8_BITMAP, &metrics, required, buffer, &Win32::IdentityMAT2))
 			Sys::Fatal(Error::Font);
 
 		auto& g = glyphs[c - Font::Glyph::Begin];
