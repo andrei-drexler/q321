@@ -257,7 +257,7 @@ namespace Demo {
 		mat4 rotation, translation, projection;
 		transpose(MakeRotation(frame.angles * DEG2RAD), rotation);
 		translation = i4x4;
-		translation.SetPosition(-frame.pos);
+		translation.GetPosition() -= frame.pos;
 
 		vec2 res = Gfx::GetResolution();
 		g_fov.x = frame.fov * DEG2RAD;
