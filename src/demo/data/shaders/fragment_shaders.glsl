@@ -2405,6 +2405,11 @@ void healthsphere() {
 	FCol = vec4(sqr(ls(.1, .9, s)) * 1.5 * fract(Time.yzw) + .5 * sqr(ls(.9, 1., s)), 0);
 }
 
+void shotgun_lzr() {
+	vec2 uv = vec2(Pos.x / 24. + .5, .5 * length(Pos.yz));
+	FCol = NT(uv, vec2(7)) * vec4(.25, 0, 0, 0);
+}
+
 // b = base
 // a = amplitude
 // f = frequency

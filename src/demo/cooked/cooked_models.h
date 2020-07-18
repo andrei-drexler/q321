@@ -1,7 +1,7 @@
 #pragma once
 
 // auto-generated, do not modify
-static_assert(0x93472511U == Demo::Model::Version, "Model definition mismatch, please recompile the model compiler & models");
+static_assert(0x7c0d512aU == Demo::Model::Version, "Model definition mismatch, please recompile the model compiler & models");
 
 // demo/data/models/mapobjects/kmlamp1.md3
 namespace kmlamp1 {
@@ -764,7 +764,7 @@ const u8 indices[] = {3,2,2,2,5,2,5,4,3,2,6,5,8,3,5,6,3,2,2,2,4,5,3,6,2,4,5,5,2,
 ,17,4,3,9,59,3,61,17,3,2,62,106,106,2,4,108,62,3,108,4,63,4,62,62,109,62,108,108,62,109,108,10,6,11,2,11,2,4,11,4,2,9,4,4,2,4,2,
 14,3,6,2,13,3,15,2,3,14,13,3,2,5,14,6,3,7,5,8,3,14,7,2,2,2,2,4,3,6,2,4,2,2,5,3,8,6,4,2,4,6,6,2,4,9,9,2,4,11,11,2,4,7,7,2,4,7,4,2
 ,6,4,6,2,2,5,4,5,3,9,3,2,9,11,3,2,11,5,3,4,7,8,3,7,12,};
-const Demo::PackedModel::Part parts[] = {{73,6,24,},{73,280,1650,},};
+const Demo::PackedModel::Part parts[] = {{88,6,24,},{73,280,1650,},};
 const u16 stream_lengths[] = {6,0,0,0,0,};
 } // namespace shotgun
 

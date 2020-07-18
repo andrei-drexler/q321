@@ -124,6 +124,7 @@
 	x(item,					ModelVertexBits)\
 	x(itemshiny,			ModelVertexBits)\
 	x(healthsphere,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(shotgun_lzr,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(energy_grn1,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::Premultiplied)\
 	x(armor,				ModelVertexBits)\
 	x(icon_health,			FSVertexBits)\
@@ -320,6 +321,7 @@
 	x("sfx/flame1side",							flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("models/mapobjects/teleporter/energy",	tlpnrg,			White,			NonSolid,	Translucent,			(0))\
 	x("models/mapobjects/teleporter/widget",	tlptrns_m,		tlptrns,		NonSolid,	Translucent,			(0))\
+	x("models/weapons2/shotgun/shotgun_laser",	shotgun_lzr,	White,			NonSolid,	Translucent,			(0))\
 	x("common/weapclip",						Generic,		White,			Solid,		Invisible,				(0))\
 	x("common/clip",							Generic,		White,			Solid,		Invisible,				(0))\
 	x("common/nodraw",							Generic,		White,			Solid,		Invisible,				(0))\
