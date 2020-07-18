@@ -56,6 +56,7 @@ void cmet52() { FS(); }
 void ptrshn() { FS(); }
 void dmnd2c() { FS(); }
 void dmnd2cow() { FS(); }
+void dmnd2cow_m() { Generic(); }
 void dmnd2pnt() { FS(); }
 void dmnd2pnt_m() { Generic(); }
 void mtlfw10() { FS(); }

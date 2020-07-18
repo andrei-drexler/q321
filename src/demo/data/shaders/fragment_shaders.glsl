@@ -757,13 +757,29 @@ TEX(dmnd2c) {
 	return vec3((f + 1.) * mix(.21, .29, b * b) * l);
 }
 
-TEX(dmnd2cow) {
-	float
-	b = FBMT(uv, vec2(7), .9, 3., 4),
-		r = length(uv - .5);
+// base_floor/diamond2c_ow (texture)
+TEXA(dmnd2cow) {
 	vec3 c = dmnd2c(uv);
-	c = mix(c, c * RGB(70, 61, 53), ls(.5, .2, r + b*b*b));
-	return c;
+	float
+		b = FBMT(uv = wavy(uv, 7., .01), vec2(5), .7, 3., 4),
+		n = FBMT(uv, vec2(7), .5, 2., 4),
+		r = length(uv -= .5),
+		a = nang(uv),
+		d = r + NT(a * 48., 48.) * .02 + n * .7 - .33
+	;
+	c = mix(c, mix(RGB(21, 17, 14), RGB(70, 59, 51), b), ls(.5, .2, r + b*b*b));
+	c *=
+		ls(.1, .11, d)
+		+ pow(tri(.3, .12, .1, d), 4.) * (1. + sin(a * 24. * TAU) * b)
+		;
+	return vec4(c, 1. - sqrt(ls(.11, .0, d)));
+}
+
+// base_floor/diamond2c_ow (map shader)
+void dmnd2cow_m() {
+	float b = FBMT(UV * 2. + Time.x * vec2(9, 5), vec2(7), .5, 2., 4);
+	vec4 c = texture(Texture0, UV);
+	FCol = vec4(mix(RGB(66, 111, 155) * (2. * b + .3), c.xyz, c.w) * Light(), 1);
 }
 
 // uv in [-0.5..0.5]
@@ -776,18 +792,7 @@ float pentagram(vec2 uv, float s) {
 	return d;
 }
 
-TEXA(dmnd2pnt) {
-	vec3 c = dmnd2cow(uv);
-	uv = fract(uv) - .5;
-	float b = FBMT(uv, vec2(3), .9, 3., 4), d = min(abs(length(uv) - .4), pentagram(uv, .35));
-	return vec4(c, msk(d - .02 + b * .02, .01));
-}
-
-void dmnd2pnt_m() {
-	vec4 c = texture(Texture0, UV);
-	FCol = vec4(c.xyz * Light() + RGB(111, 55, 0) * c.w * (sin(Time.x * PI) * .5 + .5), 1);
-}
-
+// sfx/diamond2cjumppad (texture)
 TEX(dmnd2cjp) {
 	float b = FBMT(uv, vec2(7), .9, 3., 4);
 	vec3 c = dmnd2c(uv);
@@ -807,6 +812,20 @@ TEX(dmnd2cjp) {
 	c *= 1.-sqr(tri(.46, .03, r));
 	c *= 1.-tri(.41, .03, r) * .7;
 	return c;
+}
+
+// textures/sfx/pentfloor_diamond2c (texture)
+TEXA(dmnd2pnt) {
+	vec3 c = dmnd2cjp(uv);
+	uv = fract(uv) - .5;
+	float b = FBMT(uv, vec2(3), .9, 3., 4), d = min(abs(length(uv) - .4), pentagram(uv, .35));
+	return vec4(c, msk(d - .02 + b * .02, .01));
+}
+
+// textures/sfx/pentfloor_diamond2c (map shader)
+void dmnd2pnt_m() {
+	vec4 c = texture(Texture0, UV);
+	FCol = vec4(c.xyz * Light() + RGB(111, 55, 0) * c.w * (sin(Time.x * PI) * .5 + .5), 1);
 }
 
 vec2 knob(vec2 uv, float s) {
@@ -2552,6 +2571,7 @@ void fixture() {
 	FCol = vec4(c.xyz * mix(Light(), vec3(1), c.w), 1);
 }
 
+// sfx/diamond2cjumppad (map shader)
 void dmnd2cjp_m() {
 	vec4 c = texture(Texture0, UV);
 	float r = length(fract(UV) - .5);
