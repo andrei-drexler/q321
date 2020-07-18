@@ -37,10 +37,19 @@
 	#pragma warning(error: 4002)			// too many actual parameters for macro 'identifier'
 	#pragma warning(error: 4003)			// not enough actual parameters for macro 'identifier'
 
-	#pragma intrinsic(__movsb)
-	#pragma intrinsic(__stosb)
-	#pragma intrinsic(__stosd)
+	#ifndef __clang__
+		#pragma intrinsic(__movsb)
+		#pragma intrinsic(__stosb)
+		#pragma intrinsic(__stosd)
+	#else
+		static FORCEINLINE void __movsb(unsigned char* dst, unsigned char const* src, size_t n) {
+			__asm__ __volatile__("rep movsb" : "+D"(dst), "+S"(src), "+c"(n) : : "memory");
+		}
 
+		static FORCEINLINE void __stosd(unsigned long *dst, unsigned long x, size_t n) {
+			__asm__ __volatile__("rep stosl" : "+D"(dst), "+c"(n) : "a"(x) : "memory");
+		}
+	#endif
 #else
 	#define PP_CPP_VERSION					__cplusplus
 	#define PP_USE_INLINE_ASM				0

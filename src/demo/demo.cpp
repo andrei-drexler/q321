@@ -545,7 +545,7 @@ namespace Demo {
 		Demo::r_fullbright.Set(1);
 #endif
 
-		auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
+		[[maybe_unused]] auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
 
 		LoadMap(Map::ID::START_MAP);
 

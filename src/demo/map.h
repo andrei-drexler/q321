@@ -764,8 +764,6 @@ FORCEINLINE void Map::Details::ComputeNormals() {
 void Map::Render() {
 	using namespace Demo;
 
-	const bool ShowClipping = false;
-
 	Gfx::Mesh mesh;
 	memset(&mesh, 0, sizeof(mesh));
 
