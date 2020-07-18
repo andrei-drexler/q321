@@ -704,17 +704,12 @@ constexpr mat3::mat3(const mat4& m) :
 { }
 
 NOINLINE void transpose(const mat4& m, mat4& out) {
-	__m128 r0 = _mm_loadu_ps(m.data +  0);
-	__m128 r1 = _mm_loadu_ps(m.data +  4);
-	__m128 r2 = _mm_loadu_ps(m.data +  8);
-	__m128 r3 = _mm_loadu_ps(m.data + 12);
-
-	_MM_TRANSPOSE4_PS(r0, r1, r2, r3);
-
-	_mm_storeu_ps(out.data +  0, r0);
-	_mm_storeu_ps(out.data +  4, r1);
-	_mm_storeu_ps(out.data +  8, r2);
-	_mm_storeu_ps(out.data + 12, r3);
+	// Note: for loop would have been inlined.
+	// We don't want that, hence the wacky do/while.
+	u16 i = 0;
+	do {
+		out[i & 3][i >> 2] = m.data[i];
+	} while (++i < 16);
 }
 
 FORCEINLINE mat4 transpose(const mat4& m) {

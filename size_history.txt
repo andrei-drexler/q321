@@ -1041,3 +1041,4 @@
 59410,tweaked renderworld
 59406,tweaked rasterizefont
 59404,tweaked compileshaders
+59319,tweaked mat4 transpose
