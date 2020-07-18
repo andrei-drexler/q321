@@ -110,11 +110,14 @@ namespace Q3 {
 		};
 
 		struct Patch {
-			struct Vertex {
-				vec3 pos;
-				vec2 uv;
+			union Vertex {
+				struct {
+					vec3 pos;
+					vec2 uv;
+				};
+				float data[5];
 			};
-			
+
 			std::vector<Vertex>		vertices;
 			uint32_t				width = 0;
 			uint32_t				height = 0;
