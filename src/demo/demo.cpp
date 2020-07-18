@@ -68,16 +68,16 @@ namespace Demo {
 		memset(&mesh, 0, sizeof(mesh));
 
 		mat4 rotation = MakeRotation(g_player.angles * Math::DEG2RAD);
-		vec3 x = rotation.x.xyz * size;
+		vec3 x = rotation.y.xyz * size;
 		vec3 y = rotation.z.xyz * size;
-		vec3 z = rotation.y.xyz;
+		vec3 z = rotation.x.xyz;
 
 		nor[0] = nor[1] = nor[2] = nor[3] = -z;
 
-		pos[0] = point - x - y;
-		pos[1] = point + x - y;
-		pos[2] = point + x + y;
-		pos[3] = point - x + y;
+		pos[0] = point + x - y;
+		pos[1] = point - x - y;
+		pos[2] = point - x + y;
+		pos[3] = point + x + y;
 
 		uv[0] = vec2{0.f, 0.f};
 		uv[1] = vec2{1.f, 0.f};
