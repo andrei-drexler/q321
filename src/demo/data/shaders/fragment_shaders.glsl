@@ -765,21 +765,22 @@ TEXA(dmnd2cow) {
 		n = FBMT(uv, vec2(7), .5, 2., 4),
 		r = length(uv -= .5),
 		a = nang(uv),
-		d = r + NT(a * 48., 48.) * .02 + n * .7 - .33
+		d = r + n * .8 - .33
 	;
 	c = mix(c, mix(RGB(21, 17, 14), RGB(70, 59, 51), b), ls(.5, .2, r + b*b*b));
 	c *=
 		ls(.1, .11, d)
-		+ pow(tri(.3, .12, .1, d), 4.) * (1. + sin(a * 24. * TAU) * b)
+		+ 2. * pow(tri(.4, .12, .1, d), 8.)
 		;
-	return vec4(c, 1. - sqrt(ls(.11, .0, d)));
+	return vec4(c, 1. - sqrt(ls(.11, .06, d)));
 }
 
 // base_floor/diamond2c_ow (map shader)
 void dmnd2cow_m() {
-	float b = FBMT(UV * 2. + Time.x * vec2(9, 5), vec2(7), .5, 2., 4);
+	float b = FBMT(UV * .5 + Time.x * vec2(9, 5), vec2(7), .6, 2., 4);
+	b *= 1. + .5 * tri(.5, .05, b);
 	vec4 c = texture(Texture0, UV);
-	FCol = vec4(mix(RGB(66, 111, 155) * (2. * b + .3), c.xyz, c.w) * Light(), 1);
+	FCol = vec4(mix(RGB(66, 111, 155) * (.8 + 2. * b * b), c.xyz * Light(), c.w), 1);
 }
 
 // uv in [-0.5..0.5]
