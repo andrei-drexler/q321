@@ -159,6 +159,7 @@ void item() {
 }
 void itemshiny() { item(); }
 void healthsphere() { item(); }
+void plasma_gls() { item(); }
 void shotgun_lzr() { item(); }
 void energy_grn1() {
 	item();

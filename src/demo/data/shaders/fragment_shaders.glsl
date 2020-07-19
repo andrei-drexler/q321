@@ -2405,6 +2405,14 @@ void healthsphere() {
 	FCol = vec4(sqr(ls(.1, .9, s)) * 1.5 * fract(Time.yzw) + .5 * sqr(ls(.9, 1., s)), 0);
 }
 
+// models/weapons2/plasma/plasma_glass
+void plasma_gls() {
+	vec3 r = Ref;
+	r.xz *= rot(Time.x * 9.);
+	FCol = vec4(env(r));
+}
+
+// models/weapons2/shotgun/shotgun_laser
 void shotgun_lzr() {
 	vec2 uv = vec2(Pos.x / 24. + .5, .5 * length(Pos.yz));
 	FCol = NT(uv, vec2(7)) * vec4(.25, 0, 0, 0);

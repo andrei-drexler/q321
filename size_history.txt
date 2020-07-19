@@ -1046,3 +1046,4 @@
 59427,tweaked base_floor/diamond2c_ow
 59528,added shotgun laser
 59527,no uvs for base_floor/diamond2c_ow
+59562,added plasma_glass
