@@ -2418,8 +2418,8 @@ void plasma_gls() {
 
 // models/weapons2/shotgun/shotgun_laser
 void shotgun_lzr() {
-	vec2 uv = vec2(Pos.x / 24. + .5, .5 * length(Pos.yz));
-	FCol = NT(uv, vec2(7)) * vec4(.25, 0, 0, 0);
+	vec2 uv = vec2(Pos.x / 24. - .5, length(Pos.yz));
+	FCol = NT(uv, vec2(3)) * ls(1., .9, uv.x) * vec4(.25, 0, 0, 0);
 }
 
 // b = base
