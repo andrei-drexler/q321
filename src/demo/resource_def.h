@@ -238,7 +238,7 @@
 	x("base_wall/c_met5_2",						Lmapped,		cmet52,			Solid,		Opaque,					(0))\
 	x("base_trim/pewter_shiney",				shiny,			ptrshn,			Solid,		Opaque,					(0))\
 	x("base_floor/diamond2c",					Lmapped,		dmnd2c,			Solid,		Opaque,					(0))\
-	x("base_floor/diamond2c_ow",				dmnd2cow_m,		dmnd2cow,		Solid,		Opaque|NeedsUV,			(0))\
+	x("base_floor/diamond2c_ow",				dmnd2cow_m,		dmnd2cow,		Solid,		Opaque,					(0))\
 	x("sfx/pentfloor_diamond2c",				dmnd2pnt_m,		dmnd2pnt,		Solid,		Opaque|NeedsUV,			(0))\
 	x("base_wall/metalfloor_wall_10",			Lmapped,		mtlfw10,		Solid,		Opaque,					(0))\
 	x("base_wall/metalfloor_wall_15",			Lmapped,		mtlfw15,		Solid,		Opaque|NeedsUV,			(0))\
