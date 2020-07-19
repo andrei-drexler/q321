@@ -2360,13 +2360,17 @@ TEXA(bwprtbnr_m) {
 	return c;
 }
 
-vec4 triplanar(vec3 p, float s) {
+vec4 triplanar(vec3 p, vec3 n, float s) {
 	p *= s / float(textureSize(Texture0, 0).x);
-	vec3 n = Nor * Nor;
+	n *= n;
 	vec4 c = vec4(0);
 	for (int i = 0; i < 3; ++i, p = p.yzx)
 		c += texture(Texture0, p.yz) * n[i];
 	return c / sum(n);
+}
+
+vec4 triplanar(vec3 p, float s) {
+	return triplanar(p, Nor, s);
 }
 
 vec4 triplanar(float s) {
@@ -2426,12 +2430,39 @@ float triwave(float b, float a, float f, float p) {
 	return (abs(fract(Time.x * f + p - .25) - .5) * 4. - 1.) * a + b;
 }
 
+// models/powerups/armor/energy_grn1
 void energy_grn1() {
 	vec3 r = Ref;
 	mat2 a = rot(Time.x * 90.);
 	r.xy *= a;
 	r.yz *= a;
 	FCol = env(r, 22.) * sat(triwave(-.3, 1.3, .3, 0.)) * vec4(.3, .55, .25, 0);
+}
+
+// models/weapons2/plasma/plasma_glo.tga (texture)
+TEX(plasma_glo) {
+	float
+		b = FBMT(uv, vec2(7), .5, 2., 4),
+		t = .8 + .8 * b * b,
+		n = NT(uv, vec2(2))
+	;
+	return
+		mix(RGB(5, 77, 55), RGB(8, 122, 188), ls(.5, .1, n))
+		* sqr(1. - n) * t * 2. *
+		(1. + tri(.2, .05, b * b));
+}
+
+// models/weapons2/plasma/plasma_glo (model shader)
+void plasma_glo_m() {
+	vec3
+		p = Pos - vec3(4.5, 0, 2),
+		r = Ref,
+		n = Nor
+	;
+	r.xz *= rot(Time.x * 9.);
+	p.xy *= rot(Time.x * 33.);
+	n.xy *= rot(Time.x * 33.);
+	FCol = triplanar(p - Time.x * 16., n, 16.) + env(r);
 }
 
 void armor() {

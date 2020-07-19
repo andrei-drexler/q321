@@ -127,6 +127,8 @@
 	x(plasma_gls,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::Premultiplied)\
 	x(shotgun_lzr,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(energy_grn1,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::Premultiplied)\
+	x(plasma_glo,			FSVertexBits)\
+	x(plasma_glo_m,			ModelVertexBits)\
 	x(armor,				ModelVertexBits)\
 	x(icon_health,			FSVertexBits)\
 	x(icon_shard,			FSVertexBits)\
@@ -212,6 +214,7 @@
 	x(blt414k,			Shader::blt414k,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(lt2,				Shader::lt2,			64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gpntgmlt1k,		Shader::gpntgmlt1k,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(plasma_glo,		Shader::plasma_glo,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(light5,			Shader::light5,			16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(q3bnr,			Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gr8torch2b,		Shader::gr8torch2b,		32,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -310,6 +313,7 @@
 	x("*item_model",							item,			rocketl,		Solid,		Opaque,					(0))\
 	x("*item_shiny",							itemshiny,		rocketl,		Solid,		Opaque,					(0))\
 	x("models/powerups/armor/newred",			armor,			rocketl,		Solid,		Opaque,					(0))\
+	x("models/weapons2/plasma/plasma_glo",		plasma_glo_m,	plasma_glo,		Solid,		Opaque,					(0))\
 	x("skies/blacksky",							blacksky,		White,			Solid,		Sky,					(0))\
 	x("skies/tim_hell",							timhel,			White,			Solid,		Sky,					(0))\
 	x("sfx/beam",								beam,			_32x128,		NonSolid,	Translucent|NeedsUV,	(0))\

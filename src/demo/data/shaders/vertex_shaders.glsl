@@ -165,6 +165,8 @@ void energy_grn1() {
 	item();
 	gl_Position += MVP * vec4(N + N, 0);
 }
+void plasma_glo() { FS(); }
+void plasma_glo_m() { item(); }
 void armor() { item(); }
 void icon_health() { FS(); }
 void icon_shard() { FS(); }
