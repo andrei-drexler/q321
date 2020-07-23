@@ -384,6 +384,7 @@
 	x(models/powerups/health,					large_sphere)\
 	x(models/powerups/health,					mega_cross)\
 	x(models/powerups/instant,					quad)\
+	x(models/powerups/instant,					quad_ring)\
 	x(models/powerups/weapons2/gauntlet,		gauntlet)\
 	x(models/powerups/weapons2/gauntlet,		gauntlet_barrel)\
 	x(models/powerups/weapons2/machinegun,		machinegun)\

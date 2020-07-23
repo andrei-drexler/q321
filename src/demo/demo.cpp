@@ -194,6 +194,12 @@ namespace Demo {
 					}
 					Demo::Model::Draw(Demo::Model::ID::large_sphere, transform);
 				}
+
+				if (ent.type == Entity::Type::item_quad) {
+					transform.angles[0] *= -2.f;
+					transform.position[2] += 12.f;
+					Demo::Model::Draw(Demo::Model::ID::quad_ring, transform);
+				}
 			}
 		}
 	}
