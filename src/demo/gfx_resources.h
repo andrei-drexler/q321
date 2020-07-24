@@ -390,21 +390,21 @@ NOINLINE void Demo::FlushDrawCalls() {
 
 ////////////////////////////////////////////////////////////////
 
-const Sys::Font::Glyph& Demo::UI::GetGlyph(char c, Font font) {
+NOINLINE const Sys::Font::Glyph& Demo::UI::GetGlyph(char c, Font font) {
 	u8 index = u8(c - Sys::Font::Glyph::Begin);
 	if (index >= Sys::Font::Glyph::Count)
 		index = 0;
 	return glyphs[font][index];
 }
 
-i32 Demo::UI::Measure(const char* text, Font font) {
+NOINLINE i32 Demo::UI::Measure(const char* text, Font font) {
 	i32 total = 0;
 	while (*text)
 		total += GetGlyph(*text++, font).advance;
 	return total;
 }
 
-void Demo::UI::Print(const char* text, const vec2& pos, vec2 scale, u32 color, float align, Font font) {
+NOINLINE void Demo::UI::Print(const char* text, const vec2& pos, vec2 scale, u32 color, float align, Font font) {
 	vec2 cursor = pos;
 	cursor.x -= align * Measure(text, font) * scale.x;
 	scale.y = -scale.y;
@@ -437,7 +437,7 @@ void Demo::UI::Print(const char* text, const vec2& pos, vec2 scale, u32 color, f
 	}
 }
 
-void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const vec2& scale, u32 color, float align, Font font) {
+NOINLINE void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const vec2& scale, u32 color, float align, Font font) {
 	for (u16 pass = 0; pass < 2; ++pass) {
 		u32 pass_color = color;
 		vec2 cursor = pos;

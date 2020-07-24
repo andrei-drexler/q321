@@ -1051,3 +1051,4 @@
 59608,tweaked shotgun_laser
 59889,quad ring model
 59901,draw quad ring
+59792,noinline ui text functions
