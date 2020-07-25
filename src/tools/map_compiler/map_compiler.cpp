@@ -60,37 +60,16 @@ void Reorder(std::vector<T>& items, const size_t* order) {
 ////////////////////////////////////////////////////////////////
 
 struct ShaderProperties {
-	Content::Flags		content_flags;
-	Surface::Flags		surface_flags;
-	int16_t				map_material = -1;
+	static const int16_t FallbackMaterial = 0;
+
+	int16_t				map_material = FallbackMaterial;
 	int16_t				map_material_base = -1;
 	int16_t				width = 0;
 	int16_t				height = 0;
 
-	// ugh
-	constexpr ShaderProperties(uint32_t contents = 0, uint32_t surface = 0, int16_t map_material = -1, int16_t map_material_base = -1) :
-		content_flags		(static_cast<Content::Flags>(contents)),
-		surface_flags		(static_cast<Surface::Flags>(surface)),
-		map_material		(map_material),
-		map_material_base	(map_material_base)
-	{ }
-};
-
-struct PredefinedShader {
-	string_view	name;
-	ShaderProperties	props;
-};
-
-static constexpr PredefinedShader predefined_shaders[] = {
-	{ "common/caulk",				{ Content::SOLID,												Surface::NODRAW }},
-	{ "common/weapclip",			{ Content::SOLID,												Surface::NODRAW }},
-	{ "common/clip",				{ Content::SOLID | Content::DETAIL,								Surface::NODRAW }},
-	{ "common/nodraw",				{ Content::DETAIL | Content::TRANSLUCENT | Content::SOLID,		Surface::NODRAW }},
-	{ "common/nodrawnonsolid",		{ Content::DETAIL | Content::TRANSLUCENT,						Surface::NODRAW | Surface::NONSOLID }},
-	{ "common/nodrop",				{ Content::DETAIL | Content::NODROP,							Surface::NODRAW }},
-	{ "common/trigger",				{ Content::TRIGGER,												Surface::NODRAW }},
-	{ "common/origin",				{ Content::ORIGIN,												Surface::NODRAW }},
-	{ "skies/blacksky",				{ Content::SOLID | Content::STRUCTURAL,							Surface::SKY }},
+	bool IsVisible() const {
+		return Demo::Material::GetVisibility(map_material) != Demo::Material::Invisible;
+	}
 };
 
 static const char* const DemoMaterialNames[] = {
@@ -141,13 +120,6 @@ std::vector<ShaderProperties> GetShaderProperties(Map& map, const Options& optio
 	for (size_t mat_index = 0; mat_index < map.materials.size(); ++mat_index) {
 		auto& material = map.materials[mat_index];
 		auto& props = prop_list[mat_index];
-
-		for (auto& predefined : predefined_shaders) {
-			if (material.name == predefined.name) {
-				props = predefined.props;
-				break;
-			}
-		}
 
 		for (u16 i = 0; i < std::size(DemoMaterialNames); ++i) {
 			if (0 == strcmp(DemoMaterialNames[i], material.name.c_str())) {
@@ -215,39 +187,6 @@ void ExploitSymmetry(Map& map, const Options& options, Symmetry& symmetry) {
 		num_erased_brushes, world.brushes.size() + num_erased_brushes,
 		num_erased_patches, world.patches.size() + num_erased_patches
 	);
-}
-
-////////////////////////////////////////////////////////////////
-
-void RemoveSkyNodropBrushes(Map& map, const ShaderProperties* props) {
-	printf("Removing sky/nodrop brushes\n");
-
-	size_t sky_count = 0, nodrop_count = 0;
-
-	for (auto& ent : map.entities) {
-		if (ent.brushes.empty())
-			continue;
-		
-		for (auto i = ent.brushes.begin(), endi=ent.brushes.end(); i!=endi; /**/) {
-			bool is_sky = false;
-			bool is_nodrop = false;
-			for (auto& plane : i->planes) {
-				auto& plane_props = props[plane.material];
-				is_sky |= (plane_props.surface_flags & Surface::SKY) != 0;
-				is_nodrop |= (plane_props.surface_flags & Surface::NODRAW) != 0 && (plane_props.content_flags & Content::NODROP) != 0;
-			}
-			sky_count += is_sky;
-			nodrop_count += is_nodrop;
-			if (is_sky || is_nodrop) {
-				i = ent.brushes.erase(i);
-				endi = ent.brushes.end();
-			} else {
-				++i;
-			}
-		}
-	}
-
-	printf(INDENT "%zd sky/%zd nodrop brushes removed\n", sky_count, nodrop_count);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -818,8 +757,6 @@ void RemoveUnneededUVs(Map& map, const Options& options, const ShaderProperties*
 			++total;
 			auto& props = shader_props[plane.material];
 			i32 index = props.map_material;
-			if (index < 0)
-				index = 0;
 
 			auto mat_props = Demo::Material::Properties[index];
 			auto vis = mat_props & Demo::Material::MaskVisibility;
@@ -1240,7 +1177,7 @@ void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options,
 
 	size_t mapped = 0;
 	for (size_t i = 0; i < map.materials.size(); ++i)
-		if (shader_props[i].map_material >= 0)
+		if (shader_props[i].map_material_base >= 0)
 			++mapped;
 
 	/* report unmapped shaders */
@@ -1250,7 +1187,7 @@ void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options,
 		
 		for (auto mat_index : order) {
 			auto& material = map.materials[mat_index];
-			auto& value = shader_props[mat_index].map_material;
+			auto& value = shader_props[mat_index].map_material_base;
 			if (value < 0) {
 				printf(INDENT "defaulting %s (%zdx)\n", material.name.c_str(), usage[mat_index]);
 				DebugPrint("%s (%zdx)\n", material.name.c_str(), usage[mat_index]);
@@ -1264,8 +1201,6 @@ void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options,
 	for (auto& brush : world.brushes) {
 		for (auto& plane : brush.planes) {
 			i32 index = shader_props[plane.material].map_material;
-			if (index < 0)
-				index = 0;
 			index <<= 2;
 			// Note: we store the dominant axis in the lowest 2 bits.
 			// For the first 6 planes of a brush, however, the axis
@@ -1290,7 +1225,7 @@ void WriteBrushUVs(ArrayPrinter& print, const Map& map, const Options& options, 
 
 	for (auto& brush : world.brushes) {
 		for (auto& plane : brush.planes) {
-			if (!(shader_props[plane.material].surface_flags & Surface::NODRAW)) {
+			if (shader_props[plane.material].IsVisible()) {
 				plane_uvs.Add(plane);
 			}
 		}
@@ -1302,7 +1237,7 @@ void WriteBrushUVs(ArrayPrinter& print, const Map& map, const Options& options, 
 	if (options.sort_uv == Options::UVSort::ByUsage) {
 		for (auto& brush : world.brushes) {
 			for (auto& plane : brush.planes)
-				if (!(shader_props[plane.material].surface_flags & Surface::NODRAW))
+				if (shader_props[plane.material].IsVisible())
 					++usage[plane_uvs.FindIndex(plane)];
 		}
 	} else if (options.sort_uv == Options::UVSort::ByMapOrder) {
@@ -1312,7 +1247,7 @@ void WriteBrushUVs(ArrayPrinter& print, const Map& map, const Options& options, 
 		i32 cursor = 0;
 		for (auto& brush : world.brushes) {
 			for (auto& plane : brush.planes) {
-				if (!(shader_props[plane.material].surface_flags & Surface::NODRAW)) {
+				if (shader_props[plane.material].IsVisible()) {
 					auto index = plane_uvs.FindIndex(plane);
 					if (usage[index] == -1) {
 						usage[index] = cursor++;
@@ -1365,7 +1300,7 @@ void WriteBrushUVs(ArrayPrinter& print, const Map& map, const Options& options, 
 	for (auto& brush : world.brushes) {
 		for (auto& plane : brush.planes) {
 			i32 index = plane_uvs.FindIndex(plane);
-			if (index == -1 || shader_props[plane.material].surface_flags & Surface::NODRAW) {
+			if (index == -1 || !shader_props[plane.material].IsVisible()) {
 				index = last_index;
 			} else {
 				last_index = index;
@@ -1472,7 +1407,7 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 			return std::max((int)(log2f(std::max(dist, 1.f)) - 1.5f), 0);
 		};
 
-		i16 material	= std::max<i16>(props[patch.material].map_material, 0);
+		i16 material	= props[patch.material].map_material;
 		u32 width		= (patch.width - 3) >> 1;
 		u32 height		= (patch.height - 3) >> 1;
 		i32 divx		= lod_level(max_dist.x);
@@ -1940,8 +1875,6 @@ void WriteLightmap(ArrayPrinter& print, const Map& map, const Options& options, 
 
 	auto needs_lightmap = [&] (i32 material) {
 		material = shader_props[material].map_material;
-		if (material < 0)
-			material = 0;
 		auto props = Demo::Material::Properties[material];
 		return (props & Demo::Material::MaskVisibility) == Demo::Material::Opaque;
 	};
@@ -2108,7 +2041,6 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 		SortMaterialsByUsage(map, options);
 
 	auto shader_props = GetShaderProperties(map, options);
-	//RemoveSkyNodropBrushes(map, shader_props.data());
 	map.ComputeBounds();
 
 	InsertMissingAxialPlanes(map);
