@@ -1608,10 +1608,11 @@ TEX(gklblki4) {
 	return mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, s.y);
 }
 
-// gothic_floor/largerblock3b
+// gothic_floor/largerblock3b 
 TEX(glrgbk3b) {
+	uv.y -= 1./32.; // hack to avoid storing UV offsets for this texture in the map...
 	vec2
-		p = brick(uv, vec2(8)), // brick layout
+		p = brick(uv.yx, vec2(8)), // brick layout
 		q = fract(p), // position inside brick [0..1]
 		v = wavy(uv, 31., .002), // wavy uv, for bumps
 		id = p - q; // brick id
@@ -1642,6 +1643,38 @@ TEX(glrgbk3b) {
 	c *= .9 + .2 * h * (1. - e); // vary intensity per brick
 	c *= .9 + .4 * pow(FBMT_ridged(uv - H(id / 8.), vec2(5), .6, 2., 4), 4.); // some ridge-like intensity variation
 	return c;
+}
+
+// gothic_floor/largerblock3b_ow (texture)
+TEXA(glrgbk3bow) {
+	vec3 c = glrgbk3b(uv); // differs from the shadertoy - don't overwrite!
+	uv = fract(uv * 2. + vec2(8, 3) / 32.); // HACK - manual uv offset
+	vec2
+		p = wavy(uv - .5, 33., .004),
+		q = vec2(nang(p), length(p)),
+		g = vec2(19)
+	;
+	vec3 v = voro(q, g);
+	vec2 w = q * g + v.xy;
+	float
+		n = NT(p, vec2(19)),
+		m = tri(.9, 2., 6., w.y)
+	;
+	c *= 1.
+		- tri(.05, .2, v.z) * m * n
+		+ tri(.4, .3, v.z) * m * sat(dot(normalize(p), v.xy))
+		;
+	c *= 1. - ls(2., 1.9, mix(q.y * g.y, w.y, n));
+	return ls(.2, 2.2, q.y * g.y) * vec4(c, 1);
+}
+
+// gothic_floor/largerblock3b_ow (map shader)
+void glrgbk3bow_m() {
+	vec2 p = UV - vec2(0, Time.x);
+	float b = FBMT(p / 4., vec2(53), .7, 2., 4);
+	vec4 c = texture(Texture0, UV);
+	FCol = 1. - sqrt(b) * vec4(0, .5, 1, 0);
+	FCol.xyz = mix(FCol.xyz, c.xyz, c.w) * Light();
 }
 
 // gothic_floor/center2trn (texture)
