@@ -101,6 +101,8 @@ void gmtlbg6() { FS(); }
 void glrgbk3b() { FS(); }
 void glrgbk3bow() { FS(); }
 void glrgbk3bow_m() { Generic(); }
+void glrgbk3bbld() { FS(); }
+void glrgbk3bbld_m() { Generic(); }
 void gblks15() { FS(); }
 void gblks18c() { FS(); }
 void gklblki() { FS(); }

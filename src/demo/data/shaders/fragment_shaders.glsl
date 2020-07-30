@@ -1677,6 +1677,26 @@ void glrgbk3bow_m() {
 	FCol = vec4(mix(b * b * vec3(3, .4, 0), c.xyz, c.w) * Light(), 1);
 }
 
+// gothic_block/largerblock3blood (texture)
+TEXA(glrgbk3bbld) {
+	vec3 c = glrgbk3b(uv); // differs from the shadertoy - don't overwrite!
+	uv = fract(uv * 2. + 7. / 32.); // HACK - manual uv offset
+	float
+		b = FBMT(uv, vec2(5), .6, 3., 4),
+		r = length(uv - .5) + b * b,
+		m = ls(.2, .6, r)
+	;
+	return vec4(mix(b * vec3(.5, .2, .0), c, m), m);
+}
+
+// gothic_block/largerblock3blood (map shader)
+void glrgbk3bbld_m() {
+	vec4 c = texture(Texture0, UV);
+	float b = FBMT(wavy(UV - Time.x * vec2(1, 3) / 2e2, Time.x * .05, 4., .05), vec2(7), .6, 3., 4);
+	c.xyz = mix(b * b * RGB(199, 19, 9) + ls(.78, 1.5, b), c.xyz, c.w);
+	FCol = vec4((c.xyz + (1. - c.w) * env(Ref) * .2) * Light() , 1);
+}
+
 // gothic_floor/center2trn (texture)
 TEXA(gcntr2trn) {
 	float

@@ -81,6 +81,8 @@
 	x(glrgbk3b,				FSVertexBits)\
 	x(glrgbk3bow,			FSVertexBits)\
 	x(glrgbk3bow_m,			MapVertexBits)\
+	x(glrgbk3bbld,			FSVertexBits)\
+	x(glrgbk3bbld_m,		MapVertexBits)\
 	x(gblks15,				FSVertexBits)\
 	x(gblks18c,				FSVertexBits)\
 	x(gklblki,				FSVertexBits)\
@@ -187,8 +189,10 @@
 	x(gsltrfc,			Shader::gsltrfc,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlbg6,			Shader::gmtlbg6,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* Note: original gothic_floor/largerblock3b_ow texture was 256x256, with just a section of the source*/\
+	/* Note: original gothic_block/largerblock3blood texture was 256x256, with just a section of the source*/\
 	x(glrgbk3b,			Shader::glrgbk3b,		512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(glrgbk3bow,		Shader::glrgbk3bow,		512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(glrgbk3bbld,		Shader::glrgbk3bbld,	512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gblks15,			Shader::gblks15,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gblks18c,			Shader::gblks18c,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gklblki,			Shader::gklblki,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -268,6 +272,7 @@
 	x("gothic_floor/metalbridge06",				Lmapped,		gmtlbg6,		Solid,		Opaque,					(0))\
 	x("gothic_floor/largerblock3b",				Lmapped,		glrgbk3b,		Solid,		Opaque,					(0))\
 	x("gothic_floor/largerblock3b_ow",			glrgbk3bow_m,	glrgbk3bow,		Solid,		Opaque,					(0))\
+	x("gothic_block/largerblock3blood",			glrgbk3bbld_m,	glrgbk3bbld,	Solid,		Opaque,					(0))\
 	x("gothic_block/blocks15",					Lmapped,		gblks15,		Solid,		Opaque,					(0))\
 	x("gothic_block/blocks18c",					Lmapped,		gblks18c,		Solid,		Opaque,					(0))\
 	x("gothic_trim/pitted_rust3",				Lmapped,		gtprst3,		Solid,		Opaque,					(0))\
