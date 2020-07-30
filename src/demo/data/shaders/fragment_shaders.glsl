@@ -1650,7 +1650,7 @@ TEXA(glrgbk3bow) {
 	vec3 c = glrgbk3b(uv); // differs from the shadertoy - don't overwrite!
 	uv = fract(uv * 2. + vec2(8, 3) / 32.); // HACK - manual uv offset
 	vec2
-		p = wavy(uv - .5, 33., .004),
+		p = uv - .5,
 		q = vec2(nang(p), length(p)),
 		g = vec2(19)
 	;
@@ -1658,23 +1658,23 @@ TEXA(glrgbk3bow) {
 	vec2 w = q * g + v.xy;
 	float
 		n = NT(p, vec2(19)),
-		m = tri(.9, 2., 6., w.y)
+		m = tri(.9, 2., 5.5, w.y),
+		l = v.y * 2.
 	;
 	c *= 1.
-		- tri(.05, .2, v.z) * m * n
-		+ tri(.4, .3, v.z) * m * sat(dot(normalize(p), v.xy))
+		- m * tri(.05, .2, v.z) * n // darken cell borders
+		+ m * tri(.4, .3, v.z) * sat(l) // cell bevel lighting
 		;
-	c *= 1. - ls(2., 1.9, mix(q.y * g.y, w.y, n));
-	return ls(.2, 2.2, q.y * g.y) * vec4(c, 1);
+	c *= 1. - ls(2., 1.5, mix(q.y * g.y, w.y, n));
+	return sqr(ls(.2, 2., q.y * g.y)) * vec4(c, 1);
 }
 
 // gothic_floor/largerblock3b_ow (map shader)
 void glrgbk3bow_m() {
-	vec2 p = UV - vec2(0, Time.x);
-	float b = FBMT(p / 4., vec2(53), .7, 2., 4);
+	vec2 p = UV - H2(Time.x * vec2(3, 5));
+	float b = FBMT(p, vec2(13), .6, 2., 4);
 	vec4 c = texture(Texture0, UV);
-	FCol = 1. - sqrt(b) * vec4(0, .5, 1, 0);
-	FCol.xyz = mix(FCol.xyz, c.xyz, c.w) * Light();
+	FCol = vec4(mix(b * b * vec3(3, .4, 0), c.xyz, c.w) * Light(), 1);
 }
 
 // gothic_floor/center2trn (texture)
