@@ -273,13 +273,24 @@ FORCEINLINE void Sys::Free(void* alloc) {
 	ExitProcess(code);
 }
 
-[[noreturn]] FORCEINLINE void Sys::Fatal(int code) {
-	const char* message = "Fatal error: insufficient cowbell.";
+namespace Win32::FatalError {
+	static constexpr char
+		Prefix[] = "Error code: ",
+		Title[] = "Fatal error"
+	;
+	char g_buffer[256];
+}
+
+[[noreturn]] NOINLINE void Sys::Fatal(int code) {
 #ifdef DEV
 	DebugBreak();
 #endif
-	MessageBoxA(0, message, "Error", MB_OK | MB_ICONERROR | MB_APPLMODAL);
-	ExitProcess(code);
+	char *p = Win32::FatalError::g_buffer;
+	p += CopyStaticString(p, Win32::FatalError::Prefix);
+	IntToString(code, p);
+
+	MessageBoxA(0, Win32::FatalError::g_buffer, Win32::FatalError::Title, MB_OK | MB_ICONERROR | MB_APPLMODAL);
+	Sys::Exit(code);
 }
 
 FORCEINLINE void Sys::Log(const char* text) {

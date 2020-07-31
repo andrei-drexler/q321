@@ -179,6 +179,12 @@ FORCEINLINE constexpr int StrCmp(const char* lhs, const char* rhs) {
 	return *lhs - *rhs;
 }
 
+template <size_t Size>
+FORCEINLINE size_t CopyStaticString(char* dst, const char (&src)[Size]) {
+	MemCopy(dst, src, Size);
+	return Size - 1; // exclude the NUL terminator
+}
+
 FORCEINLINE size_t CopyString(char* dst, const char* src) {
 	size_t result = StrLen(src);
 	MemCopy(dst, src, result + 1);
