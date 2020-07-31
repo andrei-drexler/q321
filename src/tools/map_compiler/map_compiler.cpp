@@ -109,7 +109,7 @@ static DemoShader const DemoMaterialShaders[] = {
 static constexpr struct TextureSize {
 	int width, height;
 } DemoTextureSizes[] = {
-	#define PP_DEMO_TEXTURE_SIZE(name, procgen, width, height, format, flags)			{ width, height },
+	#define PP_DEMO_TEXTURE_SIZE(name, base, procgen, width, height, format, flags)			{ width, height },
 	DEMO_TEXTURES(PP_DEMO_TEXTURE_SIZE)
 	#undef PP_DEMO_TEXTURE_SIZE
 };

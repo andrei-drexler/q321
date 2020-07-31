@@ -148,90 +148,90 @@
 ////////////////////////////////////////////////////////////////
 
 #define DEMO_TEXTURES(x)\
-	/*Name,				ProcGenShader,			Width,	Height,	Format,		Flags*/\
-	x(White,			Gfx::InvalidID,			16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
-	x(Grey,				Gfx::InvalidID,			16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
-	x(icon,				Shader::icon,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(Lightmap,			Gfx::InvalidID,			1024,	256,	BGRA8,		Gfx::Texture::Flags::Default|Gfx::Texture::Flags::NoMips)\
-	x(LevelshotZ,		Gfx::InvalidID,			512,	512,	Z32F,		Gfx::Texture::Flags::ZBuffer)\
-	x(Levelshot_q3dm1,	Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
-	x(Levelshot_q3dm17,	Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
-	x(Font,				Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(dmnd2c,			Shader::dmnd2c,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(dmnd2cow,			Shader::dmnd2cow,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(dmnd2pnt,			Shader::dmnd2pnt,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(cmet52,			Shader::cmet52,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(ptrshn,			Shader::ptrshn,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(dmnd2cjp,			Shader::dmnd2cjp,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(lpdmnd,			Shader::lpdmnd,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlfw10,			Shader::mtlfw10,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlfw15,			Shader::mtlfw15,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlfw15ow,		Shader::mtlfw15ow,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlfb3,			Shader::mtlfb3,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlt12f,			Shader::mtlt12f,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlt6f,			Shader::mtlt6f,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(mtlbk03,			Shader::mtlbk03,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(skcpthrt,			Shader::skcpthrt,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(skcpthrt2,		Shader::skcpthrt2,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(sktongue,			Shader::sktongue,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(sksurf8,			Shader::sksurf8,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskull4,			Shader::gskull4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gcntr2trn,		Shader::gcntr2trn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(scmpblk17,		Shader::scmpblk17,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_a,			Shader::gskdr_a,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_b,			Shader::gskdr_b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_c,			Shader::gskdr_c,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_d,			Shader::gskdr_d,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_e,			Shader::gskdr_e,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_f,			Shader::gskdr_f,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gwdclg1a,			Shader::gwdclg1a,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gwdclg1bd,		Shader::gwdclg1bd,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gsltrfc,			Shader::gsltrfc,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gmtlbg6,			Shader::gmtlbg6,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	/*Name,				Base,				ProcGenShader,			Width,	Height,	Format,		Flags*/\
+	x(White,			Gfx::InvalidID,		Gfx::InvalidID,			16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
+	x(Grey,				Texture::White,		Gfx::InvalidID,			16,		16,		BGRA8,		Gfx::Texture::Flags::Default)\
+	x(icon,				Texture::White,		Shader::icon,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(Lightmap,			Texture::White,		Gfx::InvalidID,			1024,	256,	BGRA8,		Gfx::Texture::Flags::Default|Gfx::Texture::Flags::NoMips)\
+	x(LevelshotZ,		Texture::White,		Gfx::InvalidID,			512,	512,	Z32F,		Gfx::Texture::Flags::ZBuffer)\
+	x(Levelshot_q3dm1,	Texture::White,		Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
+	x(Levelshot_q3dm17,	Texture::White,		Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
+	x(Font,				Texture::White,		Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(cmet52,			Texture::White,		Shader::cmet52,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(dmnd2c,			Texture::White,		Shader::dmnd2c,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(dmnd2cow,			Texture::dmnd2c,	Shader::dmnd2cow,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(dmnd2pnt,			Texture::dmnd2c,	Shader::dmnd2pnt,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(dmnd2cjp,			Texture::dmnd2c,	Shader::dmnd2cjp,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(lpdmnd,			Texture::dmnd2c,	Shader::lpdmnd,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(ptrshn,			Texture::White,		Shader::ptrshn,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlfw10,			Texture::White,		Shader::mtlfw10,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlfw15,			Texture::White,		Shader::mtlfw15,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlfw15ow,		Texture::mtlfw15,	Shader::mtlfw15ow,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlfb3,			Texture::White,		Shader::mtlfb3,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlt12f,			Texture::White,		Shader::mtlt12f,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlt6f,			Texture::White,		Shader::mtlt6f,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(mtlbk03,			Texture::White,		Shader::mtlbk03,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(skcpthrt,			Texture::White,		Shader::skcpthrt,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(skcpthrt2,		Texture::skcpthrt,	Shader::skcpthrt2,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(sktongue,			Texture::White,		Shader::sktongue,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(sksurf8,			Texture::White,		Shader::sksurf8,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskull4,			Texture::White,		Shader::gskull4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gcntr2trn,		Texture::White,		Shader::gcntr2trn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gblks15,			Texture::White,		Shader::gblks15,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gblks18c,			Texture::gblks15,	Shader::gblks18c,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gklblki,			Texture::gblks15,	Shader::gklblki,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gklblki4,			Texture::gblks15,	Shader::gklblki4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkblkgmtrn,		Texture::gblks15,	Shader::gkblkgmtrn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(scmpblk17,		Texture::gblks15,	Shader::scmpblk17,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_a,			Texture::gblks15,	Shader::gskdr_a,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_b,			Texture::gblks15,	Shader::gskdr_b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_c,			Texture::gblks15,	Shader::gskdr_c,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_d,			Texture::gblks15,	Shader::gskdr_d,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_e,			Texture::gblks15,	Shader::gskdr_e,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_f,			Texture::gblks15,	Shader::gskdr_f,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gwdclg1a,			Texture::White,		Shader::gwdclg1a,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gwdclg1bd,		Texture::White,		Shader::gwdclg1bd,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gsltrfc,			Texture::White,		Shader::gsltrfc,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gmtlbg6,			Texture::White,		Shader::gmtlbg6,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* Note: original gothic_floor/largerblock3b_ow texture was 256x256, with just a section of the source*/\
 	/* Note: original gothic_block/largerblock3blood texture was 256x256, with just a section of the source*/\
-	x(glrgbk3b,			Shader::glrgbk3b,		512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(glrgbk3bow,		Shader::glrgbk3bow,		512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(glrgbk3bbld,		Shader::glrgbk3bbld,	512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gblks15,			Shader::gblks15,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gblks18c,			Shader::gblks18c,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gklblki,			Shader::gklblki,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gklblki4,			Shader::gklblki4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gtprst3,			Shader::gtprst3,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gblks17f2,		Shader::gblks17f2,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gmtlspsld,		Shader::gmtlspsld,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gmtlsp4b,			Shader::gmtlsp4b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gsklvtg02b,		Shader::gsklvtg02b,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gspbdrbb,			Shader::gspbdrbb,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gkarntwr4a,		Shader::gkarntwr4a,		256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gkarntwrst,		Shader::gkarntwrst,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(glrgbk3b,			Texture::White,		Shader::glrgbk3b,		512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(glrgbk3bow,		Texture::glrgbk3b,	Shader::glrgbk3bow,		512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(glrgbk3bbld,		Texture::glrgbk3b,	Shader::glrgbk3bbld,	512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gtprst3,			Texture::White,		Shader::gtprst3,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gblks17f2,		Texture::White,		Shader::gblks17f2,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gmtlspsld,		Texture::White,		Shader::gmtlspsld,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gmtlsp4b,			Texture::White,		Shader::gmtlsp4b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gsklvtg02b,		Texture::White,		Shader::gsklvtg02b,		128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gspbdrbb,			Texture::White,		Shader::gspbdrbb,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarntwr4a,		Texture::White,		Shader::gkarntwr4a,		256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarntwrst,		Texture::White,		Shader::gkarntwrst,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* Note: original km_arena1columna2R texture was 66x640, but since it's only used here on a patch*/\
 	/* (which already has normalized UVs), the exact dimensions of the texture are not important.    */\
-	x(gkarnclma2r,		Shader::gkarnclma2r,	64,		512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gkarnarcfnltp,	Shader::gkarnarcfnltp,	256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gkarnarcfnlmd,	Shader::gkarnarcfnlmd,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gkarnarcfnlbt,	Shader::gkarnarcfnlbt,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gkblkgmtrn,		Shader::gkblkgmtrn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(giron01e,			Shader::giron01e,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(giron01nt3,		Shader::giron01nt3,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(bwprtbnr,			Shader::bwprtbnr,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gxstrtop4,		Shader::gxstrtop4,		256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(bmtsprt,			Shader::bmtsprt,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(cable,			Shader::cable,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(brdr11b,			Shader::brdr11b,		64,		32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(blt414k,			Shader::blt414k,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(lt2,				Shader::lt2,			64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gpntgmlt1k,		Shader::gpntgmlt1k,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(plasma_glo,		Shader::plasma_glo,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(light5,			Shader::light5,			16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(q3bnr,			Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gr8torch2b,		Shader::gr8torch2b,		32,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(tlptrns,			Shader::tlptrns,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(rocketl,			Shader::rocketl,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarnclma2r,		Texture::White,		Shader::gkarnclma2r,	64,		512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarnarcfnltp,	Texture::White,		Shader::gkarnarcfnltp,	256,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarnarcfnlmd,	Texture::White,		Shader::gkarnarcfnlmd,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gkarnarcfnlbt,	Texture::White,		Shader::gkarnarcfnlbt,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(giron01e,			Texture::White,		Shader::giron01e,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(giron01nt3,		Texture::White,		Shader::giron01nt3,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(bwprtbnr,			Texture::White,		Shader::bwprtbnr,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gxstrtop4,		Texture::White,		Shader::gxstrtop4,		256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(bmtsprt,			Texture::White,		Shader::bmtsprt,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(cable,			Texture::White,		Shader::cable,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(brdr11b,			Texture::White,		Shader::brdr11b,		64,		32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(blt414k,			Texture::White,		Shader::blt414k,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(lt2,				Texture::White,		Shader::lt2,			64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gpntgmlt1k,		Texture::White,		Shader::gpntgmlt1k,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(plasma_glo,		Texture::White,		Shader::plasma_glo,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(light5,			Texture::White,		Shader::light5,			16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(q3bnr,			Texture::White,		Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gr8torch2b,		Texture::White,		Shader::gr8torch2b,		32,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(tlptrns,			Texture::White,		Shader::tlptrns,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(rocketl,			Texture::White,		Shader::rocketl,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
-	x(_128x256,			Gfx::InvalidID,			128,	256,	BGRA8,		Gfx::Texture::Flags::NoMips)\
+	x(_128x256,			Texture::White,		Gfx::InvalidID,			128,	256,	BGRA8,		Gfx::Texture::Flags::NoMips)\
 	/* HACK: dummy texture needed by the beam material to get proper UV mapping...*/\
-	x(_32x128,			Gfx::InvalidID,			32,		128,	BGRA8,		Gfx::Texture::Flags::NoMips)\
+	x(_32x128,			Texture::White,		Gfx::InvalidID,			32,		128,	BGRA8,		Gfx::Texture::Flags::NoMips)\
 
 ////////////////////////////////////////////////////////////////
 

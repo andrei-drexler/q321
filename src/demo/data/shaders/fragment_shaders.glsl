@@ -11,6 +11,8 @@
 #define TEX(name)	vec3 name(vec2); void name() { FCol = vec4(name(UV), 1); } vec3 name(vec2 uv)
 #define TEXA(name)	vec4 name(vec2); void name() { FCol = name(UV); } vec4 name(vec2 uv)
 
+#define T0(x)		texture(Texture0, x)
+
 ////////////////////////////////////////////////////////////////
 
 // Hardware derivates are computed at half resolution (pixel quads).
@@ -759,7 +761,7 @@ TEX(dmnd2c) {
 
 // base_floor/diamond2c_ow (texture)
 TEXA(dmnd2cow) {
-	vec3 c = dmnd2c(uv);
+	vec3 c = T0(uv).xyz;
 	float
 		b = FBMT(uv = wavy(uv, 7., .01), vec2(5), .7, 3., 4),
 		n = FBMT(uv, vec2(7), .5, 2., 4),
@@ -779,7 +781,7 @@ TEXA(dmnd2cow) {
 void dmnd2cow_m() {
 	float b = FBMT(UV * .5 + Time.x * vec2(9, 5), vec2(7), .6, 2., 4);
 	b *= 1. + .5 * tri(.5, .05, b);
-	vec4 c = texture(Texture0, UV);
+	vec4 c = T0(UV);
 	FCol = vec4(mix(RGB(66, 111, 155) * (.8 + 2. * b * b), c.xyz * Light(), c.w), 1);
 }
 
@@ -796,7 +798,7 @@ float pentagram(vec2 uv, float s) {
 // sfx/diamond2cjumppad (texture)
 TEX(dmnd2cjp) {
 	float b = FBMT(uv, vec2(7), .9, 3., 4);
-	vec3 c = dmnd2c(uv);
+	vec3 c = T0(uv).xyz;
 	float r = length(uv - .5);
 	float m = ls(.46, .45, r);
 	float l = 1.5 - 1.5 * ls(.0, .3, r * r);
@@ -825,7 +827,7 @@ TEXA(dmnd2pnt) {
 
 // textures/sfx/pentfloor_diamond2c (map shader)
 void dmnd2pnt_m() {
-	vec4 c = texture(Texture0, UV);
+	vec4 c = T0(UV);
 	FCol = vec4(c.xyz * Light() + RGB(111, 55, 0) * c.w * (sin(Time.x * PI) * .5 + .5), 1);
 }
 
@@ -835,7 +837,7 @@ vec2 knob(vec2 uv, float s) {
 
 TEXA(lpdmnd) {
 	float b = FBMT(uv, vec2(5), .9, 3., 4), t, o, k, r;
-	vec3 c = dmnd2c(uv);
+	vec3 c = T0(uv).xyz;
 	vec2 u, v;
 	u.x = abs(uv.x - .5);
 	u.y = min(uv.y, .4);
@@ -867,7 +869,7 @@ TEXA(lpdmnd) {
 }
 
 void lpdmnd_m() {
-	vec4 c = texture(Texture0, UV);
+	vec4 c = T0(UV);
 	vec2 uv = fract(UV);
 	uv.x = abs(.5 - uv.x);
 	float
@@ -915,7 +917,7 @@ TEXA(mtlfw15ow) {
 }
 
 void mtlfw15ow_m() {
-	vec4 c = texture(Texture0, UV);
+	vec4 c = T0(UV);
 	FCol = vec4(c.xyz * Light() + tri(.5, .125, fract(UV.y * .5 + Time.x * .5)) * c.w * .3, 1);
 }
 
@@ -1416,7 +1418,7 @@ TEX(gblks15) {
 
 // gothic_block/killblockgeomtrn
 TEX(gkblkgmtrn) {
-	vec3 c = gblks15(uv);
+	vec3 c = T0(uv).xyz;
 	uv -= .5;
 	c = gkarnarcfnl_inner_gear(c, uv * .9, .02);
 	return c;
@@ -1439,7 +1441,7 @@ vec3 gskdr(vec2 uv) {
 		a, // angle
 		s, // segment fraction [0..1]
 		d; // SDF
-	vec3 c = gblks15(uv);
+	vec3 c = T0(uv).xyz;
 	vec2 p;
 
 	p.x = abs(uv.x - .75);
@@ -1498,7 +1500,7 @@ TEX(gskdr_f) {
 // gothic_block/blocks18c
 TEX(gblks18c) {
 	float b = FBMT(uv, vec2(13, 1), .7, 2., 3); // mostly vertical noise
-	vec3 c = gblks15(uv) * .7; // base texture, slightly darkened
+	vec3 c = T0(uv).xyz * .7; // base texture, slightly darkened
 	c *= 1. - sqr(ls(.4, 1., b)); // dark drip stains
 	return c;
 }
@@ -1512,7 +1514,7 @@ vec3 gklblki_base(vec2 uv, vec2 s) {
 		t = .75 + b * b; // base texture intensity (remapped FBM)
 
 	vec2 p = uv;
-	vec3 c = gblks15(uv);
+	vec3 c = T0(uv).xyz;
 
 	if (uv.y < .38)
 		c = mix(RGB(92, 43, 15), RGB(66, 44, 33), ls(.1, .05, uv.y)) // base color
@@ -1647,7 +1649,7 @@ TEX(glrgbk3b) {
 
 // gothic_floor/largerblock3b_ow (texture)
 TEXA(glrgbk3bow) {
-	vec3 c = glrgbk3b(uv); // differs from the shadertoy - don't overwrite!
+	vec3 c = T0(uv).xyz; // differs from the shadertoy - don't overwrite!
 	uv = fract(uv * 2. + vec2(8, 3) / 32.); // HACK - manual uv offset
 	vec2
 		p = uv - .5,
@@ -1673,13 +1675,13 @@ TEXA(glrgbk3bow) {
 void glrgbk3bow_m() {
 	vec2 p = UV - H2(Time.x * vec2(3, 5));
 	float b = FBMT(p, vec2(13), .6, 2., 4);
-	vec4 c = texture(Texture0, UV);
+	vec4 c = T0(UV);
 	FCol = vec4(mix(b * b * vec3(3, .4, 0), c.xyz, c.w) * Light(), 1);
 }
 
 // gothic_block/largerblock3blood (texture)
 TEXA(glrgbk3bbld) {
-	vec3 c = glrgbk3b(uv); // differs from the shadertoy - don't overwrite!
+	vec3 c = T0(uv).xyz; // differs from the shadertoy - don't overwrite!
 	uv = fract(uv * 2. + 7. / 32.); // HACK - manual uv offset
 	float
 		b = FBMT(uv, vec2(5), .6, 3., 4),
@@ -1691,7 +1693,7 @@ TEXA(glrgbk3bbld) {
 
 // gothic_block/largerblock3blood (map shader)
 void glrgbk3bbld_m() {
-	vec4 c = texture(Texture0, UV);
+	vec4 c = T0(UV);
 	float b = FBMT(wavy(UV - Time.x * vec2(1, 3) / 2e2, Time.x * .05, 4., .05), vec2(7), .6, 3., 4);
 	c.xyz = mix(b * b * RGB(199, 19, 9) + ls(.78, 1.5, b), c.xyz, c.w);
 	FCol = vec4((c.xyz + (1. - c.w) * env(Ref) * .2) * Light() , 1);
@@ -1798,9 +1800,9 @@ TEXA(gcntr2trn_m) {
 	float b = FBMT(rot(Time.x * 333.) * p / (.8 + .2 * sin(Time.x * 61.)), vec2(53), .7, 2., 4); // 61 ~= TAU * 9.7
 	vec4
 		c = vec4(1. - b * vec3(0, .3, 1), 1),
-		c2 = texture(Texture0, (rot(Time.x * 30.) * p / (.8 + .2 * sin(Time.x * 1.26))) + .5); // 1.26 ~= TAU * .2
+		c2 = T0((rot(Time.x * 30.) * p / (.8 + .2 * sin(Time.x * 1.26))) + .5); // 1.26 ~= TAU * .2
 	c.xyz = mix(c.xyz, c2.xyz, c2.w);
-	c2 = texture(Texture0, UV);
+	c2 = T0(UV);
 	c.xyz = mix(c.xyz, c2.xyz, c2.w) * Light();
 	return c;
 }
@@ -1828,7 +1830,7 @@ TEX(scmpblk17) {
 		a = nang(p), // normalized angle
 		e, n, x, z;
 	vec3
-		c = gblks15(uv), // base color (stone blocks)
+		c = T0(uv).xyz, // base color (stone blocks)
 		k = RGB(155, 135, 115) * t; // metallic color
 	c *= 1.
 		- (.5 * -l + .5) * ls(.03, .0, d) // outer shadow
@@ -1896,7 +1898,7 @@ TEX(scmpblk17) {
 
 // sfx/computer_blocks17 (map shader)
 void scmpblk17_m() {
-	vec3 c = texture(Texture0, UV).xyz * Light();
+	vec3 c = T0(UV).xyz * Light();
 
 	vec2
 		uv = fract(UV) - .5,
@@ -1987,7 +1989,7 @@ TEXA(skcpthrt) {
 
 // skin/chapthroatooz
 void skcpthrtooz() {
-	vec4 c = texture(Texture0, UV);
+	vec4 c = T0(UV);
 	vec2 uv = fract(UV);
 	uv.y -= .2 * Time.x;
 	float b = FBMT(wavy(uv, 7., .02), vec2(5), .9, 2., 4);
@@ -2406,7 +2408,7 @@ TEXA(bwprtbnr) {
 
 // base_wall/protobanner (map shader)
 TEXA(bwprtbnr_m) {
-	vec4 c = texture(Texture0, uv);
+	vec4 c = T0(uv);
 	if (c.a < .5)
 		discard;
 	c.xyz *= sqr(Light() * .5);
@@ -2418,7 +2420,7 @@ vec4 triplanar(vec3 p, vec3 n, float s) {
 	n *= n;
 	vec4 c = vec4(0);
 	for (int i = 0; i < 3; ++i, p = p.yzx)
-		c += texture(Texture0, p.yz) * n[i];
+		c += T0(p.yz) * n[i];
 	return c / sum(n);
 }
 
@@ -2601,9 +2603,9 @@ TEXA(q3bnr) {
 
 // base_wall/main_q3abanner (map shader)
 void q3bnr_m() {
-	vec3 c = texture(Texture0, UV * 2.).xyz * step(.5, fract(Time.x * .5));
+	vec3 c = T0(UV * 2.).xyz * step(.5, fract(Time.x * .5));
 	c = mix(c * Light(), vec3(.5, 0, 0), tri(fract(Time.x * 2.), 1./64., fract(UV.y)));
-	FCol = vec4(c + env(Ref) * .25 + texture(Texture0, UV + H(Time.xx)).w * .1, 1);
+	FCol = vec4(c + env(Ref) * .25 + T0(UV + H(Time.xx)).w * .1, 1);
 }
 
 // sfx/beam
@@ -2665,25 +2667,25 @@ void Generic() {
 }
 
 void fixture() {
-	vec4 c = texture(Texture0, UV);
+	vec4 c = T0(UV);
 	FCol = vec4(c.xyz * mix(Light(), vec3(1), c.w), 1);
 }
 
 // sfx/diamond2cjumppad (map shader)
 void dmnd2cjp_m() {
-	vec4 c = texture(Texture0, UV);
+	vec4 c = T0(UV);
 	float r = length(fract(UV) - .5);
 	float s = mix(.4, 8., fract(Time.x * 1.5));
 	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.37, .32, r), 1);
 }
 
 void Lmapped() {
-	vec3 c = texture(Texture0, UV).xyz;
+	vec3 c = T0(UV).xyz;
 	FCol = vec4(c * Light(), 1);
 }
 
 void shiny() {
-	vec4 c = texture(Texture0, UV);
+	vec4 c = T0(UV);
 	c.xyz *= 1. + c.w * env(Ref);
 	FCol = vec4(c.xyz * Light(), 1);
 }
@@ -2723,7 +2725,7 @@ void Loading() {
 }
 
 void UI() {
-	FCol = texture(Texture0, UV) * Clr;
+	FCol = T0(UV) * Clr;
 }
 
 // models/mapobjects/gratelamp/gratetorch2b.tga (texture)
@@ -2770,7 +2772,7 @@ void gr8torch2b_m() {
 	//--p.x;
 	//vec2 uv = vec2(nang(p.xy) * 4., ls(-2., 29., p.z));
 	//FCol = textureGrad(Texture0, uv, dFdx(uv.yy), dFdx(uv.yy));
-	FCol = texture(Texture0, UV);
+	FCol = T0(UV);
 	if (FCol.w < 0.5)
 		discard;
 	FCol *= Clr * 1.5 + .3;

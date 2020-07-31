@@ -31,23 +31,35 @@ namespace Demo {
 
 	namespace Texture {
 		enum : Gfx::Texture::ID {
-			#define PP_DEMO_TEXTURE_ID(name, shader, width, height, format, flags)					name,
+			#define PP_DEMO_TEXTURE_ID(name, base, shader, width, height, format, flags)					name,
 			DEMO_TEXTURES(PP_DEMO_TEXTURE_ID)
 			#undef PP_DEMO_TEXTURE_ID
 			Count,
 		};
 
 		static constexpr Gfx::Texture::Descriptor Descriptors[] = {
-			#define PP_DEMO_TEXTURE_DESCRIPTOR(name, shader, width, height, format, flags)			{{{width, height}}, Gfx::Texture::Format::format, Gfx::Texture::Flags(flags)},
+			#define PP_DEMO_TEXTURE_DESCRIPTOR(name, base, shader, width, height, format, flags)			{{{width, height}}, Gfx::Texture::Format::format, Gfx::Texture::Flags(flags)},
 			DEMO_TEXTURES(PP_DEMO_TEXTURE_DESCRIPTOR)
 			#undef PP_DEMO_TEXTURE_DESCRIPTOR
 		};
 		
 		static constexpr Gfx::Shader::ID ProcGen[] = {
-			#define PP_DEMO_TEXTURE_PROCGEN_DESCRIPTOR(name, shader, width, height, format, flags)	shader,
+			#define PP_DEMO_TEXTURE_PROCGEN_DESCRIPTOR(name, base, shader, width, height, format, flags)	shader,
 			DEMO_TEXTURES(PP_DEMO_TEXTURE_PROCGEN_DESCRIPTOR)
 			#undef PP_DEMO_TEXTURE_PROCGEN_DESCRIPTOR
 		};
+
+		static constexpr Gfx::Texture::ID Base[] = {
+			#define PP_DEMO_TEXTURE_BASE(name, base, shader, width, height, format, flags)	base,
+			DEMO_TEXTURES(PP_DEMO_TEXTURE_BASE)
+			#undef PP_DEMO_TEXTURE_BASE
+		};
+
+		/* Make sure base textures are initialized before their variations */
+		#define PP_DEMO_TEXTURE_CHECK_ORDER(name, base, shader, width, height, format, flags)\
+			static_assert(base == Gfx::InvalidID || base < name, "Invalid texture order: " #base " should be defined before " #name);
+		DEMO_TEXTURES(PP_DEMO_TEXTURE_CHECK_ORDER)
+		#undef PP_DEMO_TEXTURE_CHECK_ORDER
 
 		void GenerateSolidTextures();
 		void GenerateFont();
@@ -308,6 +320,8 @@ FORCEINLINE void Demo::Texture::GenerateProceduralTextures() {
 
 		Gfx::SetRenderTarget(texture_id);
 		Gfx::SetShader(shader);
+		Uniform::Texture0 = Base[texture_id];
+		Gfx::UpdateUniforms();
 		Gfx::DrawFullScreen();
 		Gfx::GenerateMipMaps(texture_id);
 	}
