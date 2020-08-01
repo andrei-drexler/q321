@@ -3,7 +3,7 @@
 // auto-generated, do not modify
 static_assert(0xe6b55f00U == Demo::Shader::Version, "Shader definition mismatch, please recompile the shader compiler & shaders");
 
-// src/demo/data/shaders/fragment_shaders.glsl: 84244 => 35680 (42.4%)
+// src/demo/data/shaders/fragment_shaders.glsl: 84344 => 35680 (42.3%)
 static constexpr char g_fragment_shaders[] =
 "#define d vec2\n"
 "#define h float\n"

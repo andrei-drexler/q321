@@ -2291,6 +2291,7 @@ TEX(brdr11b) {
 	return c * l;
 }
 
+// base_light/baslt4_1_4k
 TEXA(blt414k) {
 	float b = FBMT(uv, vec2(1, 5), .4, 3., 4);
 	vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
@@ -2305,6 +2306,7 @@ TEXA(blt414k) {
 	return vec4(c * mix(l, 2.7, a), a);
 }
 
+// base_light/light5_5k
 TEXA(light5) {
 	float b = FBMT(uv, vec2(1, 5), .4, 3., 4);
 	vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
@@ -2318,6 +2320,8 @@ TEXA(light5) {
 	return vec4(c * mix(l, 2.7, a), a);
 }
 
+// base_light/lt2_2000
+// base_light/lt2_8000
 TEXA(lt2) {
 	vec2 p = abs(uv - .5);
 	float
