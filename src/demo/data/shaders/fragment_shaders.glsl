@@ -733,18 +733,21 @@ vec3 Light() {
 	return texture(Texture1, LUV).xyz * 2. * l;
 }
 
+// base_wall/c_met5_2
 TEX(cmet52) {
 	float b = FBMT(uv, vec2(5), .9, 3., 4);
 	vec3 c = mix(RGB(48, 41, 33), RGB(103, 101, 104), b);
 	return c;
 }
 
+// base_trim/pewter_shiney
 TEX(ptrshn) {
 	float b = FBMT(uv, vec2(3), .9, 3., 4);
 	vec3 c = mix(RGB(49, 45, 43), RGB(81, 75, 78), b * b);
 	return c;
 }
 
+// base_floor/diamond2c
 TEX(dmnd2c) {
 	float b = FBMT(uv, vec2(7), .9, 3., 4);
 	uv.x *= -1.5;
@@ -835,6 +838,7 @@ vec2 knob(vec2 uv, float s) {
 	return vec2(1. - length(uv) / s, msk(length(uv) - s));
 }
 
+// sfx/launchpad_diamond (texture)
 TEXA(lpdmnd) {
 	float b = FBMT(uv, vec2(5), .9, 3., 4), t, o, k, r;
 	vec3 c = T0(uv).xyz;
@@ -868,6 +872,7 @@ TEXA(lpdmnd) {
 	return vec4(c, msk(t - .03, .02));
 }
 
+// sfx/launchpad_diamond (map shader)
 void lpdmnd_m() {
 	vec4 c = T0(UV);
 	vec2 uv = fract(UV);
@@ -881,6 +886,7 @@ void lpdmnd_m() {
 	FCol = vec4(c.xyz * Light() + RGB(180, 150, 5) * l, 1);
 }
 
+// base_wall/metalfloor_wall_10
 TEX(mtlfw10) {
 	float b = FBMT(uv, vec2(5), .9, 3., 4);
 	vec3 c = mix(RGB(44, 14, 16), RGB(93, 63, 63), b * b);
@@ -896,6 +902,7 @@ vec3 mtlfw15_d(vec2 uv) {
 	return vec3(uv + r.xy / g, a);
 }
 
+// base_wall/metalfloor_wall_15
 TEX(mtlfw15) {
 	float b = FBMT(uv, vec2(3), .9, 3., 4);
 	vec3 c = mix(RGB(80, 70, 72), RGB(128, 120, 120), b * b);
@@ -905,6 +912,7 @@ TEX(mtlfw15) {
 	return c;
 }
 
+// base_wall/metalfloor_wall_15ow (texture)
 TEXA(mtlfw15ow) {
 	float b = FBMT(uv, vec2(3), .9, 3., 4);
 	vec3 c = mix(RGB(80, 70, 72), RGB(128, 120, 120), b * b);
@@ -916,11 +924,13 @@ TEXA(mtlfw15ow) {
 	return vec4(c, m * r);
 }
 
+// base_wall/metalfloor_wall_15ow (map shader)
 void mtlfw15ow_m() {
 	vec4 c = T0(UV);
 	FCol = vec4(c.xyz * Light() + tri(.5, .125, fract(UV.y * .5 + Time.x * .5)) * c.w * .3, 1);
 }
 
+// base_wall/metfloor_block_3
 TEX(mtlfb3) {
 	float b = FBMT(uv, vec2(5), .9, 3., 4);
 	vec3 pt = pattern(uv, 8., .31);
@@ -949,6 +959,7 @@ vec3 mtltech_d(vec2 uv) {
 	return vec3(normalize(s.xy - s.z), s.z);
 }
 
+// base_wall/metaltech12final
 TEX(mtlt12f) {
 	float b = FBMT(uv, vec2(5), .9, 3., 4), l;
 	vec3 c = mix(RGB(51, 46, 43), RGB(165, 147, 143), b * b), d = mtltech_d(uv);
@@ -956,6 +967,7 @@ TEX(mtlt12f) {
 	return c * l * .8;
 }
 
+// base_wall/metaltech06final
 TEX(mtlt6f) {
 	float b = FBMT(uv, vec2(3), 1.1, 3., 4), l;
 	vec3 c = mix(RGB(51, 46, 43), RGB(165, 147, 143), b * b), d = mtltech_d(uv);
@@ -2099,6 +2111,7 @@ TEX(gmtlspsld) {
 	return c;
 }
 
+// gothic_trim/metalsupport4b
 TEX(gmtlsp4b) {
 	float
 		b = FBMT(uv, vec2(13), .9, 3., 4),
@@ -2153,6 +2166,7 @@ TEX(gkarntwrst) {
 	return gspbdrbb_v(uv, 1.);
 }
 
+// gothic_floor/xstairtop4
 TEX(gxstrtop4) {
 	float b = FBMT(uv, vec2(40, 5), .9, 3., 4);
 	vec3 c = RGB(110, 110, 98) * (.8 + .8 * b * b);
