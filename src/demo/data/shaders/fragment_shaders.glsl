@@ -1706,7 +1706,7 @@ TEXA(glrgbk3bbld) {
 // gothic_block/largerblock3blood (map shader)
 void glrgbk3bbld_m() {
 	vec4 c = T0(UV);
-	float b = FBMT(wavy(UV - Time.x * vec2(1, 3) / 2e2, Time.x * .05, 4., .05), vec2(7), .6, 3., 4);
+	float b = FBMT(wavy(UV - Time.x * vec2(1, 3) / 2e2, Time.x * .2, 4., .04), vec2(7), .6, 3., 4);
 	c.xyz = mix(b * b * RGB(199, 19, 9) + ls(.78, 1.5, b), c.xyz, c.w);
 	FCol = vec4((c.xyz + (1. - c.w) * env(Ref) * .2) * Light() , 1);
 }
