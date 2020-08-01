@@ -1663,24 +1663,25 @@ TEX(glrgbk3b) {
 TEXA(glrgbk3bow) {
 	vec3 c = T0(uv).xyz; // differs from the shadertoy - don't overwrite!
 	uv = fract(uv * 2. + vec2(8, 3) / 32.); // HACK - manual uv offset
+	float
+		n = NT(uv, vec2(19)),
+		m, r
+	;
 	vec2
 		p = uv - .5,
-		q = vec2(nang(p), length(p)),
-		g = vec2(19)
+		q = vec2(3, 17) * vec2(nang(p), length(p) + (n - .5) * .03),
+		e
 	;
-	vec3 v = voro(q, g);
-	vec2 w = q * g + v.xy;
-	float
-		n = NT(p, vec2(19)),
-		m = tri(.9, 2., 5.5, w.y),
-		l = v.y * 2.
-	;
+	q.x += floor(q.y) * PHI;
+	q.x *= floor(q.y);
+	r = length(e = fract(q) - .5);
+	m = tri(.5, 1., 4.5, q.y) * n;
 	c *= 1.
-		- m * tri(.05, .2, v.z) * n // darken cell borders
-		+ m * tri(.4, .3, v.z) * sat(l) // cell bevel lighting
+		- m * sqr(tri(.3, .2, r)) * 5. * e.y // cell bevel
+		- m * ls(.4, .5, r) // dark edge borders
 		;
-	c *= 1. - ls(2., 1.5, mix(q.y * g.y, w.y, n));
-	return sqr(ls(.2, 2., q.y * g.y)) * vec4(c, 1);
+	c *= ls(.9, 1.2, q.y);
+	return ls(.5, 1.1, q.y) * vec4(c, 1);
 }
 
 // gothic_floor/largerblock3b_ow (map shader)
