@@ -2202,7 +2202,7 @@ TEX(gwdclg1bd) {
 	float
 		b = FBMT(uv, vec2(13), .9, 3., 4),
 		x = uv.x * 16./3.;
-	vec3 c = gwdclg1a(uv) * ls(.15, .21, uv.x);
+	vec3 c = T0(uv).xyz * ls(.15, .21, uv.x);
 	if (x < 1.)
 		c = RGB(59, 48, 49) * (.7 + .6 * b);
 	c *= 1. + .5 * tri(.05, .05, ridged(x));

@@ -190,7 +190,7 @@
 	x(gskdr_e,			Texture::gblks15,	Shader::gskdr_e,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr_f,			Texture::gblks15,	Shader::gskdr_f,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1a,			Texture::White,		Shader::gwdclg1a,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gwdclg1bd,		Texture::White,		Shader::gwdclg1bd,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gwdclg1bd,		Texture::gwdclg1a,	Shader::gwdclg1bd,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gsltrfc,			Texture::White,		Shader::gsltrfc,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlbg6,			Texture::White,		Shader::gmtlbg6,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* Note: original gothic_floor/largerblock3b_ow texture was 256x256, with just a section of the source*/\
