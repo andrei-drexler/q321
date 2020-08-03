@@ -7,6 +7,7 @@
 //#define DRAW_CLIPPING
 //#define SAVE_TEXTURE gblks15
 //#define SAVE_ICON
+//#define SAVE_LIGHTGRID
 //#define SAVE_LIGHTMAP
 //#define SHOW_LIGHTMAP
 //#define FULLBRIGHT
@@ -184,7 +185,7 @@ namespace Demo {
 			if (model_id != -1) {
 				for (u32 i = 0; i < 3; ++i, model_color >>= 8)
 					Demo::Uniform::Time[i + 1] = (model_color & 255) / 255.f;
-				Demo::Model::Draw(Demo::Model::ID(model_id), transform);
+				Map::DrawLitModel(Demo::Model::ID(model_id), transform);
 
 				if (ent.IsHealth()) {
 					MemSet(&transform.angles);
@@ -192,13 +193,13 @@ namespace Demo {
 						// HACK: color >1.0 = sharper, stationary reflection
 						MemCopy(&Uniform::Time[1], vec3{1.25f, 1.25f, 1.25f}.data, 3);
 					}
-					Demo::Model::Draw(Demo::Model::ID::large_sphere, transform);
+					Map::DrawLitModel(Demo::Model::ID::large_sphere, transform);
 				}
 
 				if (ent.type == Entity::Type::item_quad) {
 					transform.angles[0] *= -2.f;
 					transform.position[2] += 12.f;
-					Demo::Model::Draw(Demo::Model::ID::quad_ring, transform);
+					Map::DrawLitModel(Demo::Model::ID::quad_ring, transform);
 				}
 			}
 		}
@@ -234,7 +235,7 @@ namespace Demo {
 		transform.scale = WeaponScale;
 
 		Demo::Uniform::Time.w = float(Demo::Entity::Type::weapon_rocketlauncher);
-		Demo::Model::Draw(Demo::Model::ID::rocketl, transform);
+		Map::DrawLitModel(Demo::Model::ID::rocketl, transform);
 	}
 
 	////////////////////////////////////////////////////////////////

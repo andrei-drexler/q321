@@ -360,7 +360,7 @@ namespace R2 {
 
 ////////////////////////////////////////////////////////////////
 
-void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace, vec3& accum, LightMode mode) {
+NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace, vec3& accum, LightGrid::InfluenceList* influences, LightMode mode) {
 	using namespace Demo;
 
 	if (mode != LightMode::Bounce) {
@@ -371,13 +371,18 @@ void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& 
 				light_pos += pos;
 
 			vec3 light_dir = pos - light_pos;
-			float angle = -dot(nor, light_dir);
-			if (angle < 0.f)
-				continue;
-
 			float dist = length(light_dir);
-			if (dist > 0.f)
-				angle /= dist;
+			float angle;
+			if (!influences) {
+				angle = -dot(nor, light_dir);
+				if (angle < 0.f)
+					continue;
+				if (dist > 0.f)
+					angle /= dist;
+			} else {
+				angle = 1.f;
+			}
+
 			assign_max(dist, 16.f);
 
 			float scale = light.intensity * angle;
@@ -429,6 +434,11 @@ void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& 
 			}
 
 			mad(accum, light.color, scale);
+			if (influences && influences->count < size(influences->data)) {
+				LightGrid::Influence& inf = influences->data[influences->count++];
+				mul(inf.color, light.color, scale);
+				inf.dir = -light_dir;
+			}
 		}
 	}
 
@@ -457,8 +467,14 @@ void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& 
 			auto vis = GetVisibility(brushes.GetPlaneMaterial(trace.plane));
 
 			if (mode == LightMode::Shadows) {
-				if (vis == Sky)
+				if (vis == Sky) {
 					accum += skylight;
+					if (influences && influences->count < size(influences->data)) {
+						LightGrid::Influence& inf = influences->data[influences->count++];
+						inf.color = skylight;
+						inf.dir = trace.delta;
+					}
+				}
 #ifdef ENABLE_RADIOSITY
 			} else {
 				if (vis != Opaque)
@@ -484,6 +500,14 @@ void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& 
 			}
 		}
 	}
+}
+
+NOINLINE void Map::Details::InitLightTrace(TraceInfo& trace) {
+	MemSet(&trace);
+	trace.type = TraceInfo::Type::Lightmap;
+	// prevent the ray from squeezing between diagonally-adjacent brushes
+	// this fixes a sun light leak in the left hallway of DM1
+	trace.box_half_size = 1.f/32.f;
 }
 
 // Maintains hue instead of clamping to white
@@ -531,11 +555,7 @@ void Map::ComputeLighting(LightMode mode) {
 			vec3* texel_nor = Map::lightmap.nor + y * Lightmap::Width;
 
 			TraceInfo trace;
-			MemSet(&trace);
-			trace.type = TraceInfo::Type::Lightmap;
-			// prevent the ray from squeezing between diagonally-adjacent brushes
-			// this fixes a sun light leak in the left hallway of DM1
-			trace.box_half_size = 1.f/32.f;
+			Details::InitLightTrace(trace);
 
 			TraceInfo occlusion_trace;
 			if constexpr (Lightmap::JitterOccluded) {
@@ -565,7 +585,7 @@ void Map::ComputeLighting(LightMode mode) {
 						if constexpr (Lightmap::JitterOccluded)
 							Details::GetUnoccludedPos(pos, nor, x_axis, y_axis, occlusion_trace);
 
-						Details::SampleLighting(pos, nor, x_axis, y_axis, trace, accum, params->mode);
+						Details::SampleLighting(pos, nor, x_axis, y_axis, trace, accum, nullptr, params->mode);
 					}
 
 					u32 color = Details::ClampColor(accum);
@@ -613,11 +633,7 @@ void Map::ComputeLighting(LightMode mode) {
 			LightMode mode = *(LightMode*)data;
 
 			TraceInfo trace;
-			MemSet(&trace);
-			trace.type = TraceInfo::Type::Lightmap;
-			// prevent the ray from squeezing between diagonally-adjacent brushes
-			// this fixes a sun light leak in the left hallway of DM1
-			trace.box_half_size = 1.f/32.f;
+			Details::InitLightTrace(trace);
 
 			for (u32 i = begin; i < end; ++i) {
 				u32 index = Map::model_vertex_indices[i];
@@ -632,7 +648,7 @@ void Map::ComputeLighting(LightMode mode) {
 					ComputeTangentFrame(nor, x_axis, y_axis);
 			
 					vec3 accum = Lightmap::Ambient;
-					Details::SampleLighting(pos, nor, x_axis, y_axis, trace, accum, mode);
+					Details::SampleLighting(pos, nor, x_axis, y_axis, trace, accum, nullptr, mode);
 					color = Details::ClampColor(accum);
 				} else {
 					color = 0;
@@ -640,6 +656,100 @@ void Map::ComputeLighting(LightMode mode) {
 			}
 		});
 	}
+
+	/* compute model light grid */
+
+	MemSet(&lightgrid);
+
+	u32 num_grid_points = 1;
+	for (u32 axis = 0; axis < 3; ++axis) {
+		u16 size_bits = LightGrid::GridSizeBits[axis];
+		u16 grid_size = LightGrid::GridSize[axis];
+		lightgrid.offset[axis] = i32(Map::brushes.world_bounds[0][axis]) & ~u32(grid_size - 1);
+		//if (axis != 2)
+		//	lightgrid.offset[axis] += grid_size / 2;
+		lightgrid.dims[axis] = (Map::brushes.world_bounds[1][axis] - lightgrid.offset[axis] + (grid_size - 1)) >> size_bits;
+		num_grid_points *= lightgrid.dims[axis];
+		assert(num_grid_points <= LightGrid::MaxPoints);
+	}
+
+	ParallelFor(num_grid_points, &mode, [](u32 begin, u32 end, void* data) {
+		LightMode mode = *(LightMode*)data;
+
+		TraceInfo trace;
+		Details::InitLightTrace(trace);
+
+		for (; begin < end; ++begin) {
+			u32 i = begin;
+
+			u32 cell[3];
+			cell[0] = i % lightgrid.dims[0]; i /= lightgrid.dims[0];
+			cell[1] = i % lightgrid.dims[1]; i /= lightgrid.dims[1];
+			cell[2] = i;
+
+			vec3 pos;
+			for (u32 axis = 0; axis < 3; ++axis)
+				pos[axis] = i32(lightgrid.offset[axis]) + i32(cell[axis] * LightGrid::GridSize[axis]);
+
+			LightGrid::Point& sample = lightgrid.points[begin];
+			LightGrid::InfluenceList influences;
+			influences.count = 0;
+
+			vec3 ignore_color;
+			Details::SampleLighting(pos, i4x4.GetAxis(2), i4x4.GetAxis(0), i4x4.GetAxis(1), trace, ignore_color, &influences, mode);
+
+			for (u32 j = 0; j < influences.count; ++j) {
+				LightGrid::Influence& inf = influences.data[j];
+				safe_normalize(inf.dir);
+				mad(sample.dir, inf.dir, length(inf.color));
+			}
+			safe_normalize(sample.dir);
+
+			for (u32 j = 0; j < influences.count; ++j) {
+				LightGrid::Influence& inf = influences.data[j];
+				float align = max(0.f, dot(inf.dir, sample.dir));
+				mad(sample.color, inf.color, align);
+				mad(sample.ambient, inf.color, 0.25f * (1.f - align));
+			}
+
+			mad(sample.ambient, sample.color, 0.125f);
+
+			Details::ClampColor(sample.color);
+			Details::ClampColor(sample.ambient);
+			sample.color /= 255.f / 2.f; // normalize + overbright
+			sample.ambient /= 255.f / 2.f; // normalize + overbright
+		}
+	});
+
+#ifdef SAVE_LIGHTGRID
+	{
+		u32 width = lightgrid.dims[0];
+		u32 height = lightgrid.dims[1] * lightgrid.dims[2];
+		u32 num_pixels = width * height;
+		u32* pixels = Sys::Alloc<u32>(num_pixels);
+
+		static constexpr const char* Paths[] = {"grid_color.tga", "grid_ambient.tga", "grid_dir.tga",};
+
+		for (u32 channel = 0; channel < size(Paths); ++channel) {
+			for (u32 z = 0, idx = 0; z < lightgrid.dims[2]; ++z) {
+				for (u32 y = 0; y < lightgrid.dims[1]; ++y) {
+					for (u32 x = 0; x < lightgrid.dims[0]; ++x, ++idx) {
+						switch (channel) {
+							case 0 : pixels[idx] = Lightmap::PackVec3(lightgrid.points[idx].color); break;
+							case 1 : pixels[idx] = Lightmap::PackVec3(lightgrid.points[idx].ambient); break;
+							case 2 : pixels[idx] = Lightmap::PackVec3(lightgrid.points[idx].dir * 0.5f + 0.5f); break;
+							default: pixels[idx] = 0x00'FF'00'FF; break;
+						}
+						pixels[idx] |= 0xFF'00'00'00;
+					}
+				}
+			}
+			Gfx::SaveTGA(Paths[channel], pixels, width, height);
+		}
+
+		Sys::Free(pixels);
+	}
+#endif
 }
 
 ////////////////////////////////////////////////////////////////

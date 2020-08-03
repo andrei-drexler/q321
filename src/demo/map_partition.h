@@ -118,7 +118,7 @@ NOINLINE void Map::Details::CreatePartition() {
 	partition.num_nodes = 1;
 
 	i16 bounds[2][3];
-	MemCopy(bounds, source->world_bounds, sizeof(bounds));
+	MemCopy(&bounds, &brushes.world_bounds);
 
 #ifndef DISABLE_PARTITION
 	SplitNode(0, bounds);

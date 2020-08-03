@@ -19,7 +19,7 @@ struct PackedMap {
 
 	const u16*			entity_brushes;
 	const i16*			entity_data;
-	const i16*			world_bounds;
+	const i16*			world_bounds; // min[3], size[3]
 	const i16*			brush_bounds;
 	const i32*			plane_data;
 	const u8*			nonaxial_counts;

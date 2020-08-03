@@ -58,6 +58,8 @@ namespace Map {
 		Array<u16,  MAX_NUM_PLANES>		plane_mat_uv_axis;	// material: 8, uv_axis: 2
 		Array<vec2, MAX_NUM_PLANES>		plane_lmap_offset;
 		Array<u8,   MAX_NUM_BRUSHES>	entity;
+		
+		i16								world_bounds[2][3];
 
 		u8								GetPlaneMaterial(u32 plane_index) const { return plane_mat_uv_axis[plane_index] >> 2; }
 		u8								GetPlaneUVAxis(u32 plane_index) const { return plane_mat_uv_axis[plane_index] & 3; }
@@ -192,6 +194,43 @@ namespace Map {
 		RectPacker					packer;
 	} lightmap;
 
+	struct LightGrid {
+		enum : u32 {
+			MaxPoints = 256 * 1024,
+			MaxInfluences = 256,
+		};
+
+		static constexpr u8
+			GridSizeBits[3] = {6, 6, 7}, // 64 x 64 x 128 cell size
+			GridSize[3] = {
+				u8(1 << GridSizeBits[0]),
+				u8(1 << GridSizeBits[1]),
+				u8(1 << GridSizeBits[2]),
+			}
+		;
+
+		struct Point {
+			vec3 color;
+			vec3 dir;
+			vec3 ambient;
+		};
+
+		struct Influence {
+			vec3 color;
+			vec3 dir;
+		};
+
+		struct InfluenceList {
+			using Data = Array<Influence, MaxInfluences>;
+			Data					data;
+			u32						count;
+		};
+
+		i16							offset[3];
+		u16							dims[3];
+		Array<Point, MaxPoints>		points;
+	} lightgrid;
+
 	/* Light data */
 
 	using Light						= PackedMap::Light;
@@ -208,6 +247,7 @@ namespace Map {
 	void							AllocLightmap();
 	void							ComputeLighting(LightMode mode = LightMode::Shadows);
 	void							UpdateLightmapTexture();
+	void							DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform& transform = Demo::Model::TransformIdentity);
 
 	/* Internal functions */
 	namespace Details {
@@ -224,7 +264,8 @@ namespace Map {
 		void						InitLights();
 		void						PackLightmap();
 		void						DebugFillLightmap();
-		void						SampleLighting(const vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace, vec3& accum, LightMode mode = LightMode::Shadows);
+		void						InitLightTrace(TraceInfo& trace);
+		void						SampleLighting(const vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace, vec3& accum, LightGrid::InfluenceList* influences = nullptr, LightMode mode = LightMode::Shadows);
 		u32							ClampColor(const vec3& accum);
 		void						GetUnoccludedPos(vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace);
 
@@ -703,6 +744,23 @@ NOINLINE void Map::Load(ID id) {
 		Details::LoadModels(pass);
 	}
 
+	/* Recompute world bounds (including mirrored brushes) */
+
+	for (u32 axis = 0; axis < 3; ++axis) {
+		brushes.world_bounds[0][axis] = i16(0x7FFF);
+		brushes.world_bounds[1][axis] = i16(0x8000);
+	}
+
+	for (u32 brush_index = 0; brush_index < brushes.count; ++brush_index) {
+		u16 axis = 0;
+		const auto& brush_bounds = brushes.bounds[brush_index];
+		do {
+			assert(brush_bounds[0][axis] < brush_bounds[1][axis]);
+			assign_min(brushes.world_bounds[0][axis], brush_bounds[0][axis]);
+			assign_max(brushes.world_bounds[1][axis], brush_bounds[1][axis]);
+		} while (++axis < 3);
+	}
+
 	Details::ComputeNormals();
 
 	assert(Map::num_total_vertices <= MAX_NUM_VERTS);
@@ -847,4 +905,74 @@ void Map::Render() {
 		Gfx::Draw(mesh);
 	}
 #endif
+}
+
+NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform& transform) {
+	struct {
+		vec3 dir, color, ambient;
+		float weight;
+	} light;
+	MemSet(&light);
+
+	i32 pitch[3];
+	pitch[0] = 1;
+	pitch[1] = lightgrid.dims[0];
+	pitch[2] = pitch[1] * lightgrid.dims[1];
+	u32 num_points = pitch[2] * lightgrid.dims[2];
+
+	i32 coord[3];
+	float mix_weights[3];
+
+	i32 base = 0;
+	for (u16 axis = 0; axis < 3; ++axis) {
+		i16 pos = i16(transform.position[axis]) - lightgrid.offset[axis];
+		u16 cell_size = LightGrid::GridSize[axis];
+		coord[axis] = clamp(pos / cell_size, 0, lightgrid.dims[axis] - 1);
+		mix_weights[axis] = 1.f - float(pos & (cell_size - 1)) / float(cell_size);
+		base += coord[axis] * pitch[axis];
+	}
+
+	u16 corner = 0;
+	do {
+		i32 index = base;
+		float corner_weight = 1.f;
+
+		u16 axis;
+		for (axis = 0; axis < 3; ++axis) {
+			float partial_weight = mix_weights[axis];
+			if (corner & (1 << axis)) {
+				partial_weight = 1.f - partial_weight;
+				index += pitch[axis];
+				if (coord[axis] == lightgrid.dims[axis] - 1)
+					break;
+			}
+			corner_weight *= partial_weight;
+		}
+
+		if (axis != 3)
+			continue;
+
+		const LightGrid::Point& sample = lightgrid.points[index];
+		if (length(sample.color) < 1.f/64.f)
+			continue;
+
+		mad(light.dir, sample.dir, corner_weight);
+		mad(light.color, sample.color, corner_weight);
+		mad(light.ambient, sample.ambient, corner_weight);
+		light.weight += corner_weight;
+	} while (++corner < 8);
+
+	safe_normalize(light.dir);
+	if (light.weight > 0.f) {
+		light.color /= light.weight;
+		light.ambient /= light.weight;
+	}
+
+	Demo::Uniform::LightDir.xyz = light.dir;
+	Demo::Uniform::LightColor.xyz = light.color;
+	Demo::Uniform::LightColor.w = 1.f;
+	Demo::Uniform::Ambient.xyz = light.ambient;
+	Demo::Uniform::Ambient.w = 1.f;
+	
+	Demo::Model::Draw(id, transform);
 }

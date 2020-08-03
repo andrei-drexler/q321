@@ -261,7 +261,7 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
+FORCEINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 	mat4 model_matrix = MakeRotation(transform.angles * Math::DEG2RAD);
 	for (u16 i = 0; i < 3; ++i)
 		mul(model_matrix.GetAxis(i), transform.scale);

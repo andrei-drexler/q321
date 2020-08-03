@@ -67,7 +67,7 @@
 
 ////////////////////////////////////////////////////////////////
 
-uniform vec4 Time, Cam;
+uniform vec4 Time, Cam, LightDir, LightColor, Ambient;
 uniform sampler2D Texture0, Texture1;
 
 in vec3 Pos, Nor, WNor, Ref;
@@ -731,6 +731,10 @@ vec3 Light() {
 		b = FBMT(d.xy/256.*rot(Cam.w), vec2(3), .7, 3., 4),
 		l = 1. - ls(14., -6., length(d.xy) - b * 8.) * ls(128., 48., d.z) * step(.1, Nor.z);
 	return texture(Texture1, LUV).xyz * 2. * l;
+}
+
+vec3 ModelLight() {
+	return sat(dot(LightDir.xyz, WNor)) * LightColor.xyz + Ambient.xyz;
 }
 
 // base_wall/c_met5_2
@@ -2461,8 +2465,9 @@ void miscmodel2s() {
 }
 
 void item() {
-	FCol = triplanar(16.) * (normalize(WNor).z * .5 + .5) * vec4(1, .95, .9, 1);
-	FCol += 2. * pow(sat(normalize(Nor).z), mix(2., 8., FCol.y)) * sqr(FCol);
+	FCol = triplanar(16.);
+	FCol.xyz *= ModelLight() * vec3(1, .95, .9);
+	//FCol += 2. * pow(sat(normalize(Nor).z), mix(2., 8., FCol.y)) * sqr(FCol); // fake baked specular
 }
 
 void itemshiny() {
