@@ -372,20 +372,20 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 
 			vec3 light_dir = pos - light_pos;
 			float dist = length(light_dir);
-			float angle;
+			float angle_atten;
 			if (!influences) {
-				angle = -dot(nor, light_dir);
-				if (angle < 0.f)
+				angle_atten = -dot(nor, light_dir);
+				if (angle_atten < 0.f)
 					continue;
 				if (dist > 0.f)
-					angle /= dist;
+					angle_atten /= dist;
 			} else {
-				angle = 1.f;
+				angle_atten = 1.f;
 			}
 
 			assign_max(dist, 16.f);
 
-			float scale = light.intensity * angle;
+			float scale = light.intensity * angle_atten;
 			if (light_index != 0)
 				scale *= Lightmap::PointScale / (dist * dist);
 
