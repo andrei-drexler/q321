@@ -1071,3 +1071,4 @@
 60974,increased rocketl contrast
 60972,tweaked lightgrid size
 60983,increased lightgrid threshold
+60980,noinline spawnthread+jointhread

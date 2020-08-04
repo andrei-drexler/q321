@@ -329,13 +329,13 @@ FORCEINLINE u32 Sys::GetNumCPUThreads() {
 	return info.dwNumberOfProcessors;
 }
 
-FORCEINLINE void Sys::SpawnThread(Thread& thread) {
+NOINLINE void Sys::SpawnThread(Thread& thread) {
 	HANDLE handle = CreateThread(NULL, 0, &Win32::StartThread, &thread, 0, NULL);
 	assert(handle != INVALID_HANDLE_VALUE);
 	thread.handle = (void*)handle;
 }
 
-FORCEINLINE void Sys::JoinThread(Thread& thread) {
+NOINLINE void Sys::JoinThread(Thread& thread) {
 	assert((HANDLE)thread.handle != INVALID_HANDLE_VALUE);
 	DWORD result = WaitForSingleObject((HANDLE)thread.handle, INFINITE);
 	assert(result == WAIT_OBJECT_0);
