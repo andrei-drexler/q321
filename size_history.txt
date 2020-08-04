@@ -1070,3 +1070,4 @@
 60973,tweaked lightgrid code
 60974,increased rocketl contrast
 60972,tweaked lightgrid size
+60983,increased lightgrid threshold

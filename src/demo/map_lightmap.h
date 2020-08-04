@@ -388,7 +388,9 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 			float scale = light.intensity * angle;
 			if (light_index != 0)
 				scale *= Lightmap::PointScale / (dist * dist);
-			if (scale < Lightmap::ThreshIgnore)
+
+			float threshold = influences ? Lightmap::ThreshIgnore * 4.f : Lightmap::ThreshIgnore;
+			if (scale < threshold)
 				continue;
 
 			if (light.flags & Light::IsSpotlight) {
