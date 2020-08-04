@@ -2466,8 +2466,8 @@ void miscmodel2s() {
 
 void item() {
 	FCol = triplanar(16.);
+	FCol.xyz += pow(sat(normalize(Nor).z), mix(2., 8., FCol.y)) * sqr(FCol.xyz); // fake baked specular
 	FCol.xyz *= ModelLight() * vec3(1, .95, .9);
-	//FCol += 2. * pow(sat(normalize(Nor).z), mix(2., 8., FCol.y)) * sqr(FCol); // fake baked specular
 }
 
 void itemshiny() {
@@ -2843,10 +2843,10 @@ TEX(rocketl) {
 		t = .8 + .6 * b * b // texture intensity
 		;
 	vec3 c = mix(RGB(36, 33, 30), RGB(168, 177, 168), .3 + .7 * m) * t;
-	//c *= 1.
-		//+ .2 * ls(.4, .6, m)
-		//- .1 * ls(.3, .2, m)
-	//;
+	c *= 1.
+		+ .2 * ls(.4, .6, m)
+		- .2 * tri(.3, .1, m)
+		;
 	return c;
 }
 
