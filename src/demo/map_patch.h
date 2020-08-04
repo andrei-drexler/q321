@@ -112,8 +112,10 @@ NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const P
 		u32 second = (delta >> 1) + first;
 
 		float f = coeff[axis];
-		for (u32 q = 0; q < size(c[dst].data); ++q)
-			c[dst].data[q] = mix(c[first].data[q], c[second].data[q], f);
+		u32 field = 0;
+		do {
+			c[dst].data[field] = mix(c[first].data[field], c[second].data[field], f);
+		} while (++field < size(c[dst].data));
 	}
 
 	safe_normalize(cross(
