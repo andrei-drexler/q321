@@ -663,12 +663,12 @@ void Map::ComputeLighting(LightMode mode) {
 
 	u32 num_grid_points = 1;
 	for (u32 axis = 0; axis < 3; ++axis) {
-		u32 size_bits = LightGrid::GridSizeBits[axis];
-		u32 grid_size = LightGrid::GridSize[axis];
-		lightgrid.offset[axis] = i32(Map::brushes.world_bounds[0][axis]) & ~(grid_size - 1);
+		i32 size_bits = LightGrid::GridSizeBits[axis];
+		i32 grid_size = LightGrid::GridSize[axis];
+		lightgrid.offset[axis] = (Map::brushes.world_bounds[0][axis] + (grid_size - 1)) & ~(grid_size - 1);
 		//if (axis != 2)
 		//	lightgrid.offset[axis] += grid_size / 2;
-		lightgrid.dims[axis] = (Map::brushes.world_bounds[1][axis] - lightgrid.offset[axis] + (grid_size - 1)) >> size_bits;
+		lightgrid.dims[axis] = (Map::brushes.world_bounds[1][axis] - lightgrid.offset[axis]) >> size_bits;
 		num_grid_points *= lightgrid.dims[axis];
 		assert(num_grid_points <= LightGrid::MaxPoints);
 	}
