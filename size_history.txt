@@ -1072,3 +1072,4 @@
 60972,tweaked lightgrid size
 60983,increased lightgrid threshold
 60980,noinline spawnthread+jointhread
+60978,lightgrid dir/ambient blending

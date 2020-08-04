@@ -734,7 +734,7 @@ vec3 Light() {
 }
 
 vec3 ModelLight() {
-	return sat(dot(LightDir.xyz, WNor)) * LightColor.xyz + Ambient.xyz;
+	return mix(Ambient.xyz, LightColor.xyz, sat(dot(LightDir.xyz, WNor)));
 }
 
 // base_wall/c_met5_2
