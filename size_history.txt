@@ -1076,3 +1076,4 @@
 60986,changed lightgrid tonemapping
 61017,more detailed rocketl/item
 60999,tweaked influencelist layout
+60995,tweaked light storage

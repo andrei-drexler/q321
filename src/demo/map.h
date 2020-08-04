@@ -238,8 +238,10 @@ namespace Map {
 
 	using Light						= PackedMap::Light;
 	using LightList					= Array<Light, MAX_NUM_LIGHTS>;
-	LightList						lights;
-	u16								num_lights;
+	struct {
+		u16							count;
+		LightList					data;
+	} lights;
 
 	enum class LightMode {
 		Draft,
@@ -294,16 +296,16 @@ FORCEINLINE void Map::Details::InitLights() {
 
 	// light 0 is the sun, always present
 	assert(source->num_lights > 0);
-	source->GetLight(0, lights[0]);
-	num_lights = 1;
+	source->GetLight(0, lights.data[0]);
+	lights.count = 1;
 
 	// mirror all other lights (starting from 1)
 	if (UseSymmetry()) {
 		for (u32 light_index = 1; light_index < source->num_lights; ++light_index) {
-			auto& light = lights[num_lights++];
+			auto& light = lights.data[lights.count++];
 			source->GetLight(light_index, light);
 			if (light.position[symmetry_axis] < symmetry_level - 1) {
-				auto& light2 = lights[num_lights++];
+				auto& light2 = lights.data[lights.count++];
 				MemCopy(&light2, &light);
 				light2.position[symmetry_axis] = 2.f * symmetry_level - light2.position[symmetry_axis];
 				if (EnableSpotlights && light2.flags & Light::IsSpotlight)
@@ -331,9 +333,9 @@ FORCEINLINE void Map::Details::InitLights() {
 				center += pos[i];
 			center /= vtx_count;
 
-			assert(num_lights < MAX_NUM_LIGHTS);
+			assert(lights.count < MAX_NUM_LIGHTS);
 			const vec4& plane = brushes.planes[plane_index];
-			auto& light = lights[num_lights++];
+			auto& light = lights.data[lights.count++];
 		
 			light.position = center;
 			mad(light.position, plane.xyz, 0.125f);

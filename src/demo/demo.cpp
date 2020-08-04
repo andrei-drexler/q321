@@ -105,8 +105,8 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	void DrawLights() {
-		for (u16 i = 0; i < Map::num_lights; ++i) {
-			auto& light = Map::lights[i];
+		for (u16 i = 0; i < Map::lights.count; ++i) {
+			auto& light = Map::lights.data[i];
 			vec3 pos;
 			pos[0] = light.position[0];
 			pos[1] = light.position[1];

@@ -364,8 +364,8 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 	using namespace Demo;
 
 	if (mode != LightMode::Bounce) {
-		for (u16 light_index = 0; light_index < Map::num_lights; ++light_index) {
-			const auto& light = Map::lights[light_index];
+		for (u16 light_index = 0; light_index < Map::lights.count; ++light_index) {
+			const auto& light = Map::lights.data[light_index];
 			vec3 light_pos = light.position;
 			if (light_index == 0)
 				light_pos += pos;
