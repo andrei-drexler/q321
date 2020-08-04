@@ -2840,7 +2840,7 @@ TEX(rocketl) {
 	float
 		b = FBMT(uv, vec2(6), .8, 2., 4), // base FBM, tileable
 		m = FBMT(uv, vec2(2), .6, 2., 4),
-		t = .8 + .3 * b * b // texture intensity
+		t = .8 + .6 * b * b // texture intensity
 		;
 	vec3 c = mix(RGB(36, 33, 30), RGB(168, 177, 168), .3 + .7 * m) * t;
 	//c *= 1.
