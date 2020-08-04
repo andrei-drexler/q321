@@ -1073,3 +1073,4 @@
 60983,increased lightgrid threshold
 60980,noinline spawnthread+jointhread
 60978,lightgrid dir/ambient blending
+60986,changed lightgrid tonemapping

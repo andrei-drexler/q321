@@ -684,6 +684,9 @@ void Map::ComputeLighting(LightMode mode) {
 		for (; begin < end; ++begin) {
 			u32 i = begin;
 
+			/* determine cell location */
+			LightGrid::Point& sample = lightgrid.points[i];
+
 			u32 cell[3];
 			cell[0] = i % lightgrid.dims[0]; i /= lightgrid.dims[0];
 			cell[1] = i % lightgrid.dims[1]; i /= lightgrid.dims[1];
@@ -693,13 +696,14 @@ void Map::ComputeLighting(LightMode mode) {
 			for (u32 axis = 0; axis < 3; ++axis)
 				pos[axis] = i32(lightgrid.offset[axis]) + i32(cell[axis] * LightGrid::GridSize[axis]);
 
-			LightGrid::Point& sample = lightgrid.points[begin];
+			/* gather lights */
 			LightGrid::InfluenceList influences;
 			influences.count = 0;
 
 			vec3 ignore_color;
 			Details::SampleLighting(pos, i4x4.GetAxis(2), i4x4.GetAxis(0), i4x4.GetAxis(1), trace, ignore_color, &influences, mode);
 
+			/* determine average light direction */
 			for (u32 j = 0; j < influences.count; ++j) {
 				LightGrid::Influence& inf = influences.data[j];
 				safe_normalize(inf.dir);
@@ -707,6 +711,7 @@ void Map::ComputeLighting(LightMode mode) {
 			}
 			safe_normalize(sample.dir);
 
+			/* accumulate directional/ambient lighting */
 			for (u32 j = 0; j < influences.count; ++j) {
 				LightGrid::Influence& inf = influences.data[j];
 				float align = max(0.f, dot(inf.dir, sample.dir));
@@ -714,12 +719,21 @@ void Map::ComputeLighting(LightMode mode) {
 				mad(sample.ambient, inf.color, 0.25f * (1.f - align));
 			}
 
+			/* boost ambient color a bit */
 			mad(sample.ambient, sample.color, 0.125f);
 
-			Details::ClampColor(sample.color);
-			Details::ClampColor(sample.ambient);
-			sample.color /= 255.f / 2.f; // normalize + overbright
-			sample.ambient /= 255.f / 2.f; // normalize + overbright
+			/* apply tonemapping */
+			float max_value = 255.f;
+			u32 j = 0;
+			do {
+				assign_max(max_value, sample.color[j] + sample.ambient[j]);
+			} while (++j < 3);
+			max_value *= 0.5f;
+
+			j = 0;
+			do {
+				sample.data[j] /= max_value;
+			} while (++j < 6);
 		}
 	});
 

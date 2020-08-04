@@ -209,10 +209,13 @@ namespace Map {
 			}
 		;
 
-		struct Point {
-			vec3 color;
-			vec3 dir;
-			vec3 ambient;
+		union Point {
+			struct {
+				vec3 color;
+				vec3 ambient;
+				vec3 dir;
+			};
+			float data[9];
 		};
 
 		struct Influence {
