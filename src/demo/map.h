@@ -225,8 +225,8 @@ namespace Map {
 
 		struct InfluenceList {
 			using Data = Array<Influence, MaxInfluences>;
-			Data					data;
 			u32						count;
+			Data					data;
 		};
 
 		i32							offset[3];
