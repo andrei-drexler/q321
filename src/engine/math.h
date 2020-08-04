@@ -757,14 +757,14 @@ FORCEINLINE float ScaleFov(float fov_radians, float scale) {
 }
 
 NOINLINE mat4 MakeRotation(const vec3& angles) {
-	float sy = Math::sin(angles.x);
-	float sp = Math::sin(angles.y);
-	float sr = Math::sin(angles.z);
-	float cy = Math::cos(angles.x);
-	float cp = Math::cos(angles.y);
-	float cr = Math::cos(angles.z);
+	if constexpr (0) {
+		float sy = Math::sin(angles.x);
+		float sp = Math::sin(angles.y);
+		float sr = Math::sin(angles.z);
+		float cy = Math::cos(angles.x);
+		float cp = Math::cos(angles.y);
+		float cr = Math::cos(angles.z);
 
-	if constexpr (1) {
 		// https://www.symbolab.com/solver/matrix-multiply-calculator FTW!
 
 		return {
@@ -774,26 +774,30 @@ NOINLINE mat4 MakeRotation(const vec3& angles) {
 			0.f,				0.f,				0.f,	1.f,	// column 3
 		};
 	} else {
-		mat4 yaw = i4x4;
-		mat4 pitch = i4x4;
-		mat4 roll = i4x4;
+		mat4 rot[3]; // yaw, pitch, roll
 
-		yaw[0][0] = cy;
-		yaw[0][1] = sy;
-		yaw[1][0] = -sy;
-		yaw[1][1] = cy;
+		u32 axis = 0;
+		do {
+			float s = Math::sin(angles[axis]);
+			float c = Math::cos(angles[axis]);
 
-		pitch[0][0] = cp;
-		pitch[0][2] = sp;
-		pitch[2][0] = -sp;
-		pitch[2][2] = cp;
+			static constexpr u8 Indices[3][2] = {
+				{0, 1}, // yaw
+				{0, 2}, // pitch
+				{1, 2}, // roll
+			};
+			u16 i = Indices[axis][0];
+			u16 j = Indices[axis][1];
 
-		roll[1][1] = cr;
-		roll[1][2] = sr;
-		roll[2][1] = -sr;
-		roll[2][2] = cr;
+			rot[axis] = i4x4;
+			rot[axis][i][i] = c;
+			rot[axis][i][j] = s;
+			rot[axis][j][i] = -s;
+			rot[axis][j][j] = c;
+		
+		} while (++axis < 3);
 
-		return yaw * pitch * roll;
+		return rot[0] * rot[1] * rot[2];
 	}
 }
 
