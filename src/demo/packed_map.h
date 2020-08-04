@@ -134,10 +134,10 @@ struct PackedMap {
 	};
 
 	struct Patch {
-		u8		width;
-		u8		height;
-		u8		divx;
-		u8		divy;
+		u16		width;
+		u16		height;
+		u16		divx;
+		u16		divy;
 		u8		material;
 		bool	asymmetric;
 

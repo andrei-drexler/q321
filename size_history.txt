@@ -1065,3 +1065,4 @@
 60115,redesigned largerblock3b_ow
 61055,added lightgrid
 61044,tweaked evaluatepatch
+61008,tweaked patch struct
