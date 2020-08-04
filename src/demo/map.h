@@ -226,8 +226,8 @@ namespace Map {
 			u32						count;
 		};
 
-		i16							offset[3];
-		u16							dims[3];
+		i32							offset[3];
+		u32							dims[3];
 		Array<Point, MaxPoints>		points;
 	} lightgrid;
 
@@ -925,8 +925,8 @@ NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform
 
 	i32 base = 0;
 	for (u16 axis = 0; axis < 3; ++axis) {
-		i16 pos = i16(transform.position[axis]) - lightgrid.offset[axis];
-		u16 cell_size = LightGrid::GridSize[axis];
+		i32 pos = i32(transform.position[axis]) - lightgrid.offset[axis];
+		u32 cell_size = LightGrid::GridSize[axis];
 		coord[axis] = clamp(pos / cell_size, 0, lightgrid.dims[axis] - 1);
 		mix_weights[axis] = 1.f - float(pos & (cell_size - 1)) / float(cell_size);
 		base += coord[axis] * pitch[axis];
@@ -973,6 +973,6 @@ NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform
 	Demo::Uniform::LightColor.w = 1.f;
 	Demo::Uniform::Ambient.xyz = light.ambient;
 	Demo::Uniform::Ambient.w = 1.f;
-	
+
 	Demo::Model::Draw(id, transform);
 }
