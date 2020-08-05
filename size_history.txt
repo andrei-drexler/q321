@@ -1079,3 +1079,4 @@
 60995,tweaked light storage
 60980,fixed compiler warnings
 60989,split computelighting
+60989,separate computeworldbounds function

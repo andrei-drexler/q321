@@ -262,6 +262,7 @@ namespace Map {
 		void						LoadPatches(const PackedMap& packed, u8 pass);
 		void						EvaluatePatch(const PackedMap::Patch& patch, const PackedMap::PatchVertex* ctrl, float s, float t, vec3& pos, vec3& nor, vec2& uv);
 		void						LoadModels(u8 pass);
+		void						ComputeWorldBounds();
 		void						ComputeNormals();
 		void						CreatePartition();
 
@@ -752,23 +753,7 @@ NOINLINE void Map::Load(ID id) {
 		Details::LoadModels(pass);
 	}
 
-	/* Recompute world bounds (including mirrored brushes) */
-
-	for (u32 axis = 0; axis < 3; ++axis) {
-		brushes.world_bounds[0][axis] = i16(0x7FFF);
-		brushes.world_bounds[1][axis] = i16(0x8000);
-	}
-
-	for (u32 brush_index = 0; brush_index < brushes.count; ++brush_index) {
-		u16 axis = 0;
-		const auto& brush_bounds = brushes.bounds[brush_index];
-		do {
-			assert(brush_bounds[0][axis] < brush_bounds[1][axis]);
-			assign_min(brushes.world_bounds[0][axis], brush_bounds[0][axis]);
-			assign_max(brushes.world_bounds[1][axis], brush_bounds[1][axis]);
-		} while (++axis < 3);
-	}
-
+	Details::ComputeWorldBounds();
 	Details::ComputeNormals();
 
 	assert(Map::num_total_vertices <= MAX_NUM_VERTS);
@@ -803,6 +788,25 @@ NOINLINE void Map::Load(ID id) {
 }
 
 ////////////////////////////////////////////////////////////////
+
+FORCEINLINE void Map::Details::ComputeWorldBounds() {
+	/* Recompute world bounds (including mirrored brushes) */
+
+	for (u32 axis = 0; axis < 3; ++axis) {
+		brushes.world_bounds[0][axis] = i16(0x7FFF);
+		brushes.world_bounds[1][axis] = i16(0x8000);
+	}
+
+	for (u32 brush_index = 0; brush_index < brushes.count; ++brush_index) {
+		u16 axis = 0;
+		const auto& brush_bounds = brushes.bounds[brush_index];
+		do {
+			assert(brush_bounds[0][axis] < brush_bounds[1][axis]);
+			assign_min(brushes.world_bounds[0][axis], brush_bounds[0][axis]);
+			assign_max(brushes.world_bounds[1][axis], brush_bounds[1][axis]);
+		} while (++axis < 3);
+	}
+}
 
 FORCEINLINE void Map::Details::ComputeNormals() {
 	for (u8 material = 0; material < Demo::Material::Count; ++material) {
