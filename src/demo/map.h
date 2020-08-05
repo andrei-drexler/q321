@@ -268,6 +268,9 @@ namespace Map {
 		void						InitEntities();
 		void						InitLights();
 		void						PackLightmap();
+		void						ComputeVertexColors(LightMode mode);
+		void						ComputeLightGrid(LightMode mode);
+		void						ComputeLightmap(LightMode mode);
 		void						DebugFillLightmap();
 		void						InitLightTrace(TraceInfo& trace);
 		void						SampleLighting(const vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace, vec3& accum, LightGrid::InfluenceList* influences = nullptr, LightMode mode = LightMode::Shadows);

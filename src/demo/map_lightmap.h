@@ -529,7 +529,13 @@ NOINLINE u32 Map::Details::ClampColor(const vec3& accum) {
 
 ////////////////////////////////////////////////////////////////
 
-void Map::ComputeLighting(LightMode mode) {
+NOINLINE void Map::ComputeLighting(LightMode mode) {
+	Details::ComputeLightmap(mode);
+	Details::ComputeVertexColors(mode);
+	Details::ComputeLightGrid(mode);
+}
+
+FORCEINLINE void Map::Details::ComputeLightmap(LightMode mode) {
 	using namespace Demo;
 
 #ifdef DEV
@@ -627,8 +633,10 @@ void Map::ComputeLighting(LightMode mode) {
 	} else {
 		Details::DebugFillLightmap();
 	}
+}
 
-	/* compute vertex lighting (for models) */
+FORCEINLINE void Map::Details::ComputeVertexColors(LightMode mode) {
+	/* compute vertex lighting (for misc_models) */
 
 	if (mode != LightMode::Bounce) {
 		ParallelFor(num_model_vertices, &mode, [](u32 begin, u32 end, void* data) {
@@ -648,8 +656,8 @@ void Map::ComputeLighting(LightMode mode) {
 				if (length_squared(nor) > 0.f) {
 					vec3 x_axis, y_axis;
 					ComputeTangentFrame(nor, x_axis, y_axis);
-			
-					vec3 accum = Lightmap::Ambient;
+
+					vec3 accum = Demo::Lightmap::Ambient;
 					Details::SampleLighting(pos, nor, x_axis, y_axis, trace, accum, nullptr, mode);
 					color = Details::ClampColor(accum);
 				} else {
@@ -658,7 +666,9 @@ void Map::ComputeLighting(LightMode mode) {
 			}
 		});
 	}
+}
 
+FORCEINLINE void Map::Details::ComputeLightGrid(LightMode mode) {
 	/* compute model light grid */
 
 	MemSet(&lightgrid);
