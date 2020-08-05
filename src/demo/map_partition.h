@@ -190,7 +190,7 @@ beginning:
 			if (best_brush_plane != -1 && t_exit > max(t_enter, 0.f) && t_enter < trace.fraction) {
 				using namespace Demo;
 
-				assert(best_brush_plane < brushes.plane_count);
+				assert(best_brush_plane < (i32)brushes.plane_count);
 
 				auto material = brushes.GetPlaneMaterial(best_brush_plane);
 				auto props = Material::Properties[material];

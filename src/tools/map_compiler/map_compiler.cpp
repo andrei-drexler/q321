@@ -68,7 +68,7 @@ struct ShaderProperties {
 	int16_t				height = 0;
 
 	bool IsVisible() const {
-		return Demo::Material::GetVisibility(map_material) != Demo::Material::Invisible;
+		return Demo::Material::GetVisibility((u8)map_material) != Demo::Material::Invisible;
 	}
 };
 
@@ -832,9 +832,9 @@ static constexpr string_view ModelPaths[] = {
 // Returns 0 if not found or index + 1 if found
 int FindModel(string_view path) {
 	if (!path.empty()) {
-		for (int i = 0; i < std::size(ModelPaths); ++i)
+		for (size_t i = 0; i < std::size(ModelPaths); ++i)
 			if (path == ModelPaths[i])
-				return i + 1;
+				return int(i + 1);
 	}
 	return 0;
 }
@@ -1385,8 +1385,8 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 		vec2 max_dist = 0.f;
 
 		auto* ctrl = patch.vertices.data();
-		for (i16 j = 0; j < patch.height; ++j) {
-			for (i16 i = 0; i < patch.width; ++i, ++ctrl) {
+		for (u32 j = 0; j < patch.height; ++j) {
+			for (u32 i = 0; i < patch.width; ++i, ++ctrl) {
 				if (i & 1)
 					max_dist.x = std::max(max_dist.x, LineDistance(ctrl[0].pos, ctrl[-1].pos, ctrl[1].pos));
 				if (j & 1)
@@ -1458,10 +1458,10 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 				case 0:
 				case 1:
 				case 2:
-					value = std::lround(v.pos.data[i]); break;
+					value = (i16)std::lround(v.pos.data[i]); break;
 				case 3:
 				case 4:
-					value = std::lround((v.uv.data[i-3] - uv_base[i-3]) * 256.f); break;
+					value = (i16)std::lround((v.uv.data[i-3] - uv_base[i-3]) * 256.f); break;
 				default:
 					assert(false);
 					continue;
@@ -1672,7 +1672,7 @@ void WriteLights
 				if (face_edges.size() < 3)
 					continue;
 
-				center /= face_edges.size() * 2;
+				center /= float(face_edges.size() * 2);
 				vec3 x_axis = normalize(brush_edges[face_edges[0]].first_point - center);
 				vec3 y_axis = cross(x_axis, plane.xyz);
 
@@ -1812,9 +1812,9 @@ void WriteLights
 	print << "\nconst i16 "sv << array_name << "[] = {"sv;
 	for (auto& light : lights) {
 		u16 ldr =
-			(std::clamp<u8>(light.color.x * 31.f + 0.5f, 0, 31) << 0) |
-			(std::clamp<u8>(light.color.y * 31.f + 0.5f, 0, 31) << 5) |
-			(std::clamp<u8>(light.color.z * 31.f + 0.5f, 0, 31) << 10) ;
+			(std::clamp<u16>(u16(light.color.x * 31.f + 0.5f), 0, 31) << 0) |
+			(std::clamp<u16>(u16(light.color.y * 31.f + 0.5f), 0, 31) << 5) |
+			(std::clamp<u16>(u16(light.color.z * 31.f + 0.5f), 0, 31) << 10) ;
 
 		print
 			<< i16(floor(light.pos.x + 0.5f)) << ","sv
@@ -1924,10 +1924,10 @@ void WriteLightmap(ArrayPrinter& print, const Map& map, const Options& options, 
 			auto& surf = surfaces.emplace_back();
 			surf.brush = brush_index;
 			surf.plane = plane_index;
-			surf.x = uv_bounds.mins.x;
-			surf.y = uv_bounds.mins.y;
-			surf.width = uv_bounds.size().x + 1;
-			surf.height = uv_bounds.size().y + 1;
+			surf.x = (i16)uv_bounds.mins.x;
+			surf.y = (i16)uv_bounds.mins.y;
+			surf.width  = u16(uv_bounds.size().x + 1);
+			surf.height = u16(uv_bounds.size().y + 1);
 
 			area += surf.width * surf.height;
 		}

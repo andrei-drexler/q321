@@ -48,7 +48,7 @@ void Arena::grow(size_t size) {
 uint8_t* Arena::alloc(size_t size) {
 	const size_t alignment = alignof(std::max_align_t);
 	size = (size + alignment - 1) & ~(alignment - 1);
-	if (size > m_end - m_cursor)
+	if (size > size_t(m_end - m_cursor))
 		grow(size);
 
 	auto ptr = m_cursor;

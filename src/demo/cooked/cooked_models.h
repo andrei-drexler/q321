@@ -790,7 +790,7 @@ const u16 stream_lengths[] = {6,0,0,0,0,};
 ////////////////////////////////////////////////////////////////
 
 static constexpr Demo::PackedModel cooked_models[] = {
-	#define PP_ADD_MODEL_ENTRY(path,name,...) {size(name::parts),name::parts,name::vertices,name::stream_lengths,name::indices},
+	#define PP_ADD_MODEL_ENTRY(path,name,...) {(u8)size(name::parts),name::parts,name::vertices,name::stream_lengths,name::indices},
 	DEMO_MODELS(PP_ADD_MODEL_ENTRY)
 	#undef PP_ADD_MODEL_ENTRY
 };

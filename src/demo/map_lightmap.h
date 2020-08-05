@@ -57,9 +57,9 @@ namespace Demo {
 		}
 
 		void UnpackVec3(vec3& v, u32 u) {
-			v.x = (u >> 16) & 255;
-			v.y = (u >>  8) & 255;
-			v.z = (u >>  0) & 255;
+			v.x = float((u >> 16) & 255);
+			v.y = float((u >>  8) & 255);
+			v.z = float((u >>  0) & 255);
 		}
 	} // namespace Lightmap
 } // namespace Demo
@@ -694,7 +694,7 @@ void Map::ComputeLighting(LightMode mode) {
 
 			vec3 pos;
 			for (u32 axis = 0; axis < 3; ++axis)
-				pos[axis] = i32(lightgrid.offset[axis]) + i32(cell[axis] * LightGrid::GridSize[axis]);
+				pos[axis] = float(lightgrid.offset[axis] + i32(cell[axis] * LightGrid::GridSize[axis]));
 
 			/* gather lights */
 			LightGrid::InfluenceList influences;

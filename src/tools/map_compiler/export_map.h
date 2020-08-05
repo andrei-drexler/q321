@@ -44,7 +44,7 @@ bool ExportMap(const Q3::Map& map, const char* path) {
 				auto& plane = brush.planes[i];
 				
 				const size_t MAX_FACE_EDGES = 256;
-				u8 face_edges[MAX_FACE_EDGES];
+				u32 face_edges[MAX_FACE_EDGES];
 				size_t num_face_edges = 0;
 
 				u32 face_mask = 1 << i;

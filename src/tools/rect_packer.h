@@ -82,7 +82,7 @@ bool RectPacker::AddRec(unsigned node_index, Rectangle node_rect, const Dimensio
 			return false;
 
 		if (node_rect.GetWidth() == wanted[0] && node_rect.GetHeight() == wanted[1]) {
-			m_nodes[node_index].data = m_tiles.size();
+			m_nodes[node_index].data = (Node::Field)m_tiles.size();
 			m_tiles.push_back(node_rect);
 			return true;
 		}

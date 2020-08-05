@@ -327,7 +327,7 @@ NOINLINE float StringToFloat(const char* text, iptr* consumed = 0) {
 
 constexpr u32 HashAppend(u32 partial, char c) {
 	// Paul Larson's multiplicative hash
-	partial = partial * 101 + (unsigned char)c;
+	partial = u32(partial * 101ull + (unsigned char)c);
 	return partial;
 }
 

@@ -544,13 +544,13 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 			static_assert(sizeof(rect.min) == sizeof(u32));
 
 			*(u32*)g.box_min = *(u32*)rect.min;
-			g.box_size[0] = rect.GetWidth();
-			g.box_size[1] = rect.GetHeight();
-			g.anchor[0] = metrics.gmptGlyphOrigin.x - Padding;
-			g.anchor[1] = metrics.gmptGlyphOrigin.y - metrics.gmBlackBoxY - Padding;
+			g.box_size[0] = (u8)rect.GetWidth();
+			g.box_size[1] = (u8)rect.GetHeight();
+			g.anchor[0] = i8(metrics.gmptGlyphOrigin.x - Padding);
+			g.anchor[1] = i8(metrics.gmptGlyphOrigin.y - metrics.gmBlackBoxY - Padding);
 		}
 
-		g.advance = metrics.gmCellIncX;
+		g.advance = (u8)metrics.gmCellIncX;
 	}
 
 	::SelectObject(hMemDC, hOldFont);
@@ -628,8 +628,8 @@ FORCEINLINE void* CreateSystemWindow(Sys::Window* window) {
 
 	RECT rect = monitorinfo.rcMonitor;
 
-	window->width = rect.right - rect.left;
-	window->height = rect.bottom - rect.top;
+	window->width  = i16(rect.right - rect.left);
+	window->height = i16(rect.bottom - rect.top);
 
 	auto handle = CreateWindowExA(Win32::WindowStyleEx, ClassName, window->title, Win32::WindowStyle,
 		rect.left, rect.top, rect.right-rect.left, rect.bottom-rect.top,
@@ -639,7 +639,7 @@ FORCEINLINE void* CreateSystemWindow(Sys::Window* window) {
 	dev.dmSize = sizeof(dev);
 	dev.dmDriverExtra = 0;
 	if (EnumDisplaySettingsA(monitorinfo.szDevice, ENUM_CURRENT_SETTINGS, &dev) && (dev.dmFields & DM_DISPLAYFREQUENCY))
-		window->refresh = dev.dmDisplayFrequency;
+		window->refresh = (i16)dev.dmDisplayFrequency;
 
 #ifdef USE_RAW_INPUT
 	RAWINPUTDEVICE rid;
@@ -713,7 +713,7 @@ FORCEINLINE void Sys::Sleep(float seconds) {
 // For use on main thread only
 FORCEINLINE void Sys::PreciseSleep(float seconds) {
 	LARGE_INTEGER due_time;
-	due_time.QuadPart = -seconds * 1e7f; // 100 nanosecond intervals
+	due_time.QuadPart = LONGLONG(-seconds * 1e7f); // 100 nanosecond intervals
 	if (::SetWaitableTimer(Win32::g_waitable_timer, &due_time, 0, NULL, NULL, FALSE)) {
 		DWORD result = ::WaitForSingleObject(Win32::g_waitable_timer, INFINITE);
 		assert(result == WAIT_OBJECT_0);
@@ -783,8 +783,8 @@ FORCEINLINE void Sys::UpdateMouseState(vec2& pt, float dt) {
 		POINT p;
 		::GetCursorPos(&p);
 
-		pt.x = p.x;
-		pt.y = p.y;
+		pt.x = (float)p.x;
+		pt.y = (float)p.y;
 	}
 #else
 	POINT p;

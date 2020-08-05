@@ -335,7 +335,7 @@ FORCEINLINE void Gfx::RegisterShaders(const Shader::Flags* flags, u16 count, con
 	g_state.shader_sources[1]	= fragment_shaders;
 
 	assert(g_state.num_shaders <= size(g_state.shader_programs));
-	assert(g_state.num_shaders * g_state.num_uniforms <= size(g_state.shader_uniforms));
+	assert(u32(g_state.num_shaders * g_state.num_uniforms) <= size(g_state.shader_uniforms));
 }
 
 NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {

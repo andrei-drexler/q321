@@ -1077,3 +1077,4 @@
 61017,more detailed rocketl/item
 60999,tweaked influencelist layout
 60995,tweaked light storage
+60980,fixed compiler warnings

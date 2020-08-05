@@ -74,10 +74,10 @@ namespace Demo {
 
 		FORCEINLINE SurfaceLight UnpackSurfaceLight(u32 packed) {
 			SurfaceLight light;
-			light.intensity = packed >> 15;
-			light.color.r = (packed >>  0) & 31;
-			light.color.g = (packed >>  5) & 31;
-			light.color.b = (packed >> 10) & 31;
+			light.intensity = u16(packed >> 15);
+			light.color.r = float((packed >>  0) & 31);
+			light.color.g = float((packed >>  5) & 31);
+			light.color.b = float((packed >> 10) & 31);
 			light.color /= 31.f;
 			return light;
 		}

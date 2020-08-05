@@ -186,10 +186,10 @@ bool Q3::Map::Error(const char* format, ...) {
 }
 
 Q3::Map::Material::ID Q3::Map::FindMaterial(string_view name) const {
-	for (Material::ID i=0; i<materials.size(); ++i)
+	for (size_t i=0; i<materials.size(); ++i)
 		if (name == materials[i].name)
-			return i;
-	return -1;
+			return Material::ID(i);
+	return Material::ID(-1);
 }
 
 Q3::Map::Material::ID Q3::Map::AddMaterial(string_view name) {

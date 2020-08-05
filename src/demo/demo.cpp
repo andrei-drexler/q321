@@ -225,7 +225,7 @@ namespace Demo {
 		const float WeaponScale = 0.5f;
 		const float WeaponSway = 0.125f;
 		float speed = length(g_player.velocity.xy) * (WeaponScale / 320.f);
-		float idle = WeaponSway * (sin(g_time) * .5f + .5f);
+		float idle = WeaponSway * (sin((float)g_time) * .5f + .5f);
 
 		vec3 offset = g_weapon_offset;
 		offset.y += speed * sin(g_player.walk_cycle * 10.f) + idle;
@@ -342,7 +342,7 @@ namespace Demo {
 		Gfx::SetRenderTarget(Gfx::Backbuffer);
 		Gfx::SetShader(Demo::Shader::Loading);
 		Demo::Uniform::Texture0 = Map::source->levelshot.texture;
-		Demo::Uniform::Time.x = g_time;
+		Demo::Uniform::Time.x = (float)g_time;
 		Gfx::UpdateUniforms();
 		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
 		Gfx::DrawFullScreen();
@@ -411,7 +411,7 @@ namespace Demo {
 		frame.angles.y		-= abs(bob);
 		frame.angles.z		+= bob;
 		frame.fov			= mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
-		frame.time			= g_time - g_load_time;
+		frame.time			= float(g_time - g_load_time);
 		frame.shadow_angle	= g_player.shadow_angle;
 		frame.render_target	= Gfx::Backbuffer;
 
@@ -498,7 +498,7 @@ namespace Demo {
 
 			float fov = mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
 			float zoom_scale = tan(fov * (0.5f * Math::DEG2RAD)) / tan(cg_fov.value * (0.5f * Math::DEG2RAD));
-			float mouse_scale = zoom_scale * sensitivity.value * -90.f / sqrt(Sys::g_window.width * Sys::g_window.height);
+			float mouse_scale = zoom_scale * sensitivity.value * -90.f / sqrt(float(Sys::g_window.width * Sys::g_window.height));
 			g_player.angles.x += mouse.x * mouse_scale;
 			g_player.angles.y += mouse.y * mouse_scale;
 			g_player.angles.x = mod(g_player.angles.x, 360.f);
@@ -575,7 +575,7 @@ int FORCEINLINE demo_main() {
 
 	while (Sys::PumpMessages(&code)) {
 		Demo::g_time = Sys::GetTime();
-		Demo::Tick(Demo::g_time - last_tick);
+		Demo::Tick(float(Demo::g_time - last_tick));
 		last_tick = Demo::g_time;
 
 		Demo::RenderFrame();
@@ -589,7 +589,7 @@ int FORCEINLINE demo_main() {
 		float wait = 0.f;
 		if (interval > 0.f) {
 			auto now = Sys::GetTime();
-			wait = next_time - now;
+			wait = float(next_time - now);
 			if (wait <= 0.f) {
 				next_time = now + interval;
 				wait = 0.f;

@@ -261,8 +261,8 @@ FORCEINLINE void PackedMap::GetPlane(const i32*& plane_data, const i16 brush_bou
 
 		bool negative_axis1 = (value >> 2) & 1;
 		bool negative_axis2 = (value >> 3) & 1;
-		float offset1 = (value >> 4) & OffsetMask;
-		float offset2 = value >> 16;
+		float offset1 = float((value >> 4) & OffsetMask);
+		float offset2 = float(value >> 16);
 
 		const u8 NextAxis[] = {1, 2, 0, 1};
 		u8 axis1 = NextAxis[axis0];

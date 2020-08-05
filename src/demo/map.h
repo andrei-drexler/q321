@@ -331,7 +331,7 @@ FORCEINLINE void Map::Details::InitLights() {
 			vec3 center = pos[0];
 			for (u8 i = 1; i < vtx_count; ++i)
 				center += pos[i];
-			center /= vtx_count;
+			center /= (float)vtx_count;
 
 			assert(lights.count < MAX_NUM_LIGHTS);
 			const vec4& plane = brushes.planes[plane_index];
@@ -931,8 +931,8 @@ NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform
 	i32 base = 0;
 	for (u16 axis = 0; axis < 3; ++axis) {
 		i32 pos = i32(transform.position[axis]) - lightgrid.offset[axis];
-		u32 cell_size = LightGrid::GridSize[axis];
-		coord[axis] = clamp(pos / cell_size, 0, lightgrid.dims[axis] - 1);
+		i32 cell_size = LightGrid::GridSize[axis];
+		coord[axis] = clamp<i32>(pos / cell_size, 0, lightgrid.dims[axis] - 1);
 		mix_weights[axis] = 1.f - float(pos & (cell_size - 1)) / float(cell_size);
 		base += coord[axis] * pitch[axis];
 	}

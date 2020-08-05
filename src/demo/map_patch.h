@@ -82,8 +82,8 @@ NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const P
 		s -= ix;
 		t -= iy;
 
-		assert(x <= prim_x);
-		assert(y <= prim_y);
+		assert(u32(x) <= prim_x);
+		assert(u32(y) <= prim_y);
 
 		if (x == prim_x) {
 			--x;

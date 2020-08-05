@@ -269,7 +269,7 @@ namespace Forsyth {
 			// use the vert, so we get rid of lone verts quickly.
 
 			// float valence_boost = powf(vertex.num_active_tris, -FindVertexScore_ValenceBoostPower);
-			float valence_boost = 1.f / sqrtf(num_active_tris);
+			float valence_boost = 1.f / sqrtf((float)num_active_tris);
 			score += FindVertexScore_ValenceBoostScale * valence_boost;
 		}
 	};
@@ -428,7 +428,7 @@ namespace Forsyth {
 					v.cache_pos = -1;
 					index = -1;
 				} else {
-					v.cache_pos = i;
+					v.cache_pos = i8(i);
 				}
 
 				/* update scores of active triangles */
@@ -821,7 +821,7 @@ int main() {
 			++num_errors;
 			continue;
 		}
-		
+
 		auto& model = *(MD3::Header*)contents.data();
 		if (!CheckModel(model)) {
 			++num_errors;
@@ -841,7 +841,7 @@ int main() {
 		"////////////////////////////////////////////////////////////////\n"
 		"\n"
 		"static constexpr Demo::PackedModel cooked_models[] = {\n"
-		"\t#define PP_ADD_MODEL_ENTRY(path,name,...) {size(name::parts),name::parts,name::vertices,name::stream_lengths,name::indices},\n"
+		"\t#define PP_ADD_MODEL_ENTRY(path,name,...) {(u8)size(name::parts),name::parts,name::vertices,name::stream_lengths,name::indices},\n"
 		"\tDEMO_MODELS(PP_ADD_MODEL_ENTRY)\n"
 		"\t#undef PP_ADD_MODEL_ENTRY\n"
 		"};\n"
