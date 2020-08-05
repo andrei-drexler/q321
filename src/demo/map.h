@@ -930,7 +930,6 @@ NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform
 	pitch[0] = 1;
 	pitch[1] = lightgrid.dims[0];
 	pitch[2] = pitch[1] * lightgrid.dims[1];
-	u32 num_points = pitch[2] * lightgrid.dims[2];
 
 	i32 coord[3];
 	float mix_weights[3];
