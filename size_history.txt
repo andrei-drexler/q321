@@ -1083,3 +1083,4 @@
 60987,tweaked largerblock3blood
 60986,tweaked lightgrid ambient bias
 60986,for loop instead of do while
+60986,tweaked drawlitmodel

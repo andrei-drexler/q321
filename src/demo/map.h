@@ -921,10 +921,10 @@ void Map::Render() {
 
 NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform& transform) {
 	struct {
-		vec3 dir, color, ambient;
+		vec3 color, ambient, dir;
 		float weight;
-	} light;
-	MemSet(&light);
+	} accum;
+	MemSet(&accum);
 
 	i32 pitch[3];
 	pitch[0] = 1;
@@ -966,23 +966,23 @@ NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform
 		if (length(sample.color) < 1.f/64.f)
 			continue;
 
-		mad(light.dir, sample.dir, corner_weight);
-		mad(light.color, sample.color, corner_weight);
-		mad(light.ambient, sample.ambient, corner_weight);
-		light.weight += corner_weight;
+		mad(accum.color,   sample.color,   corner_weight);
+		mad(accum.ambient, sample.ambient, corner_weight);
+		mad(accum.dir,     sample.dir,     corner_weight);
+		accum.weight += corner_weight;
 	}
 
-	safe_normalize(light.dir);
-	if (light.weight > 0.f) {
-		light.color /= light.weight;
-		light.ambient /= light.weight;
+	safe_normalize(accum.dir);
+	if (accum.weight > 0.f) {
+		accum.color /= accum.weight;
+		accum.ambient /= accum.weight;
 	}
 
-	Demo::Uniform::LightDir.xyz = light.dir;
-	Demo::Uniform::LightColor.xyz = light.color;
-	Demo::Uniform::LightColor.w = 1.f;
-	Demo::Uniform::Ambient.xyz = light.ambient;
-	Demo::Uniform::Ambient.w = 1.f;
+	Demo::Uniform::LightColor.xyz = accum.color;
+	Demo::Uniform::LightColor.w   = 1.f;
+	Demo::Uniform::Ambient.xyz    = accum.ambient;
+	Demo::Uniform::Ambient.w      = 1.f;
+	Demo::Uniform::LightDir.xyz   = accum.dir;
 
 	Demo::Model::Draw(id, transform);
 }
