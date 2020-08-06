@@ -726,11 +726,8 @@ FORCEINLINE void Map::Details::ComputeLightGrid(LightMode mode) {
 				LightGrid::Influence& inf = influences.data[j];
 				float align = max(0.f, dot(inf.dir, sample.dir));
 				mad(sample.color, inf.color, align);
-				mad(sample.ambient, inf.color, 0.25f * (1.f - align));
+				mad(sample.ambient, inf.color, 0.25f);
 			}
-
-			/* boost ambient color a bit */
-			mad(sample.ambient, sample.color, 0.25f);
 
 			/* apply tonemapping */
 			float max_value = 255.f;
