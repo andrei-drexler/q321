@@ -730,7 +730,7 @@ FORCEINLINE void Map::Details::ComputeLightGrid(LightMode mode) {
 			}
 
 			/* boost ambient color a bit */
-			mad(sample.ambient, sample.color, 0.125f);
+			mad(sample.ambient, sample.color, 0.25f);
 
 			/* apply tonemapping */
 			float max_value = 255.f;
