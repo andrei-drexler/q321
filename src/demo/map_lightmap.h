@@ -455,12 +455,9 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 
 		R2::CosineHemisphere hemisphere;
 		for (i16 i = 0; i < num_env_samples; ++i) {
-			trace.start.x = pos.x + nor.x;
-			trace.start.y = pos.y + nor.y;
-			trace.start.z = pos.z + nor.z;
+			trace.start = pos + nor;
 
 			vec3 dir = hemisphere.NextSample();
-
 			mul(trace.delta, x_axis, Lightmap::EnvRayLength * dir.x);
 			mad(trace.delta, y_axis, Lightmap::EnvRayLength * dir.y);
 			mad(trace.delta, nor,    Lightmap::EnvRayLength * dir.z);

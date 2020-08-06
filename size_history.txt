@@ -1085,3 +1085,4 @@
 60986,for loop instead of do while
 60986,tweaked drawlitmodel
 61012,halved grid sky samples
+60991,tweaked samplelighting
