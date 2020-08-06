@@ -943,8 +943,7 @@ NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform
 		base += coord[axis] * pitch[axis];
 	}
 
-	u16 corner = 0;
-	do {
+	for (u16 corner = 0; corner < 8; ++corner) {
 		i32 index = base;
 		float corner_weight = 1.f;
 
@@ -971,7 +970,7 @@ NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform
 		mad(light.color, sample.color, corner_weight);
 		mad(light.ambient, sample.ambient, corner_weight);
 		light.weight += corner_weight;
-	} while (++corner < 8);
+	}
 
 	safe_normalize(light.dir);
 	if (light.weight > 0.f) {
