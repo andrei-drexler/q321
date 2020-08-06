@@ -6,10 +6,11 @@ namespace Demo {
 	namespace Lightmap {
 		/* Lighting parameters */
 		constexpr u16
-			TexelSize		= 16,
-			Dilate			= true,
-			JitterOccluded	= false,
-			NumEnvSamples	= 12
+			TexelSize			= 16,
+			Dilate				= true,
+			JitterOccluded		= false,
+			NumEnvSamples		= 12,
+			NumEnvSamplesGrid	= 6
 		;
 
 		static constexpr vec3 Ambient = {
@@ -31,7 +32,8 @@ namespace Demo {
 		constexpr float
 			PointScale		= 7500.f * 2.f,
 			BounceScale		= 16.f,
-			ThreshIgnore	= 2.f,
+			Threshold		= 2.f,
+			ThresholdGrid	= 8.f,
 			SurfaceBias		= 4.f,
 			EnvRayLength	= 8192.f
 		;
@@ -389,7 +391,7 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 			if (light_index != 0)
 				scale *= Lightmap::PointScale / (dist * dist);
 
-			float threshold = influences ? Lightmap::ThreshIgnore * 4.f : Lightmap::ThreshIgnore;
+			float threshold = influences ? Lightmap::ThresholdGrid : Lightmap::Threshold;
 			if (scale < threshold)
 				continue;
 
@@ -445,13 +447,14 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 	}
 
 	if (mode == LightMode::Bounce || (mode == LightMode::Shadows && source->skylight)) {
+		i16 num_env_samples = influences ? Lightmap::NumEnvSamplesGrid : Lightmap::NumEnvSamples;
 		vec3 skylight;
-		skylight.r = ((source->skylight      ) & 255) / float(Lightmap::NumEnvSamples);
-		skylight.g = ((source->skylight >>  8) & 255) / float(Lightmap::NumEnvSamples);
-		skylight.b = ((source->skylight >> 16) & 255) / float(Lightmap::NumEnvSamples);
+		skylight.r = float((source->skylight      ) & 255) / float(num_env_samples);
+		skylight.g = float((source->skylight >>  8) & 255) / float(num_env_samples);
+		skylight.b = float((source->skylight >> 16) & 255) / float(num_env_samples);
 
 		R2::CosineHemisphere hemisphere;
-		for (u16 i = 0; i < Lightmap::NumEnvSamples; ++i) {
+		for (i16 i = 0; i < num_env_samples; ++i) {
 			trace.start.x = pos.x + nor.x;
 			trace.start.y = pos.y + nor.y;
 			trace.start.z = pos.z + nor.z;

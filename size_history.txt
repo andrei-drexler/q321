@@ -1084,3 +1084,4 @@
 60986,tweaked lightgrid ambient bias
 60986,for loop instead of do while
 60986,tweaked drawlitmodel
+61012,halved grid sky samples
