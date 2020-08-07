@@ -2456,8 +2456,8 @@ vec4 triplanar(float s) {
 }
 
 void miscmodel() {
-	vec3 n = Nor * Nor;
-	FCol = triplanar(4.) * (Clr + .5 * n.z * n.z * sign(Nor.z)) * 1.5;
+	float n = normalize(Nor).z;
+	FCol = triplanar(4.) * 1.5 * (.5 * n * n * n * n * sign(n) + Clr);
 }
 
 void miscmodel2s() {

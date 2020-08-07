@@ -1087,3 +1087,4 @@
 61012,halved grid sky samples
 60991,tweaked samplelighting
 60963,simplified lightgrid init
+60940,tweaked miscmodel shader
