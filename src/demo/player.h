@@ -87,8 +87,8 @@ namespace Demo {
 		enum {
 			MaxTouchEnts = 16,
 		};
-		u16					touch_ents[MaxTouchEnts];
 		u16					num_touch_ents;
+		u16					touch_ents[MaxTouchEnts];
 
 		void				Update(float dt);
 		void				Spawn();
