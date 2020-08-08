@@ -433,28 +433,6 @@ void mix_into(vec2& dst, const vec2& v, float f) {
 	dst.y += (v.y - dst.y) * f;
 }
 
-// When all else fails, resort to old-school (Q3A-style) macros...
-
-#define V3MULS(vdst,va,b)\
-	vdst.x = (b) * va.x,\
-	vdst.y = (b) * va.y,\
-	vdst.z = (b) * va.z
-
-#define V3MUL(vdst,va,vb)\
-	vdst.x = va.x * vb.x,\
-	vdst.y = va.y * vb.y,\
-	vdst.z = va.z * vb.z
-
-#define V3MSAD(vdst,va,b)\
-	vdst.x += (b) * va.x,\
-	vdst.y += (b) * va.y,\
-	vdst.z += (b) * va.z
-
-#define V3MAD(vdst,va,vb)\
-	vdst.x += vb.x * va.x,\
-	vdst.y += vb.y * va.y,\
-	vdst.z += vb.z * va.z
-
 ////////////////////////////////////////////////////////////////
 
 constexpr NOINLINE float dot(const vec2& a, const vec2& b)	{ return a.x*b.x + a.y*b.y; }
