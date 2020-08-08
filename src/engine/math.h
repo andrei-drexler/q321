@@ -459,19 +459,16 @@ FORCEINLINE void safe_normalize(vec3& dst) {
 		dst /= len;
 }
 
-constexpr NOINLINE vec3 cross(const vec3& a, const vec3& b) {
-	return vec3
-	(
-		a.y*b.z - a.z*b.y,
-		a.z*b.x - a.x*b.z,
-		a.x*b.y - a.y*b.x
-	);
+NOINLINE void cross(const vec3& a, const vec3& b, vec3& dst) {
+	dst.x = a.y * b.z - a.z * b.y;
+	dst.y = a.z * b.x - a.x * b.z;
+	dst.z = a.x * b.y - a.y * b.x;
 }
 
-constexpr NOINLINE void cross(const vec3& a, const vec3& b, vec3& dst) {
-	dst.x = a.y*b.z - a.z*b.y;
-	dst.y = a.z*b.x - a.x*b.z;
-	dst.z = a.x*b.y - a.y*b.x;
+NOINLINE vec3 cross(const vec3& a, const vec3& b) {
+	vec3 dst;
+	cross(a, b, dst);
+	return dst;
 }
 
 ////////////////////////////////////////////////////////////////
