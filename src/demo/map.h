@@ -300,21 +300,18 @@ FORCEINLINE void Map::Details::InitLights() {
 
 	// light 0 is the sun, always present
 	assert(source->num_lights > 0);
-	source->GetLight(0, lights.data[0]);
-	lights.count = 1;
 
-	// mirror all other lights (starting from 1)
-	if (UseSymmetry()) {
-		for (u32 light_index = 1; light_index < source->num_lights; ++light_index) {
-			auto& light = lights.data[lights.count++];
-			source->GetLight(light_index, light);
-			if (light.position[symmetry_axis] < symmetry_level - 1) {
-				auto& light2 = lights.data[lights.count++];
-				MemCopy(&light2, &light);
-				light2.position[symmetry_axis] = 2.f * symmetry_level - light2.position[symmetry_axis];
-				if (EnableSpotlights && light2.flags & Light::IsSpotlight)
-					light2.spot[symmetry_axis] = -light2.spot[symmetry_axis];
-			}
+	lights.count = 0;
+	for (u32 light_index = 0; light_index < source->num_lights; ++light_index) {
+		auto& light = lights.data[lights.count++];
+		source->GetLight(light_index, light);
+
+		if (light_index > 0 && UseSymmetry() && light.position[symmetry_axis] < symmetry_level - 1) {
+			auto& light2 = lights.data[lights.count++];
+			MemCopy(&light2, &light);
+			light2.position[symmetry_axis] = 2.f * symmetry_level - light2.position[symmetry_axis];
+			if (EnableSpotlights && light2.flags & Light::IsSpotlight)
+				light2.spot[symmetry_axis] = -light2.spot[symmetry_axis];
 		}
 	}
 

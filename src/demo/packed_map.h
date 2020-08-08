@@ -163,9 +163,9 @@ struct PackedMap {
 		};
 
 		vec3	position;
+		float	intensity;
 		u32		flags;
 		vec3	color;
-		float	intensity;
 		vec4	spot;
 	};
 

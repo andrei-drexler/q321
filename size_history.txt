@@ -1089,3 +1089,4 @@
 60963,simplified lightgrid init
 60940,tweaked miscmodel shader
 60938,tweaked player struct
+60846,tweaked light init
