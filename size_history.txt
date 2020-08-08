@@ -1090,3 +1090,4 @@
 60940,tweaked miscmodel shader
 60938,tweaked player struct
 60846,tweaked light init
+60838,removed printf arg count

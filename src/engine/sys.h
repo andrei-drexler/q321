@@ -33,10 +33,10 @@ namespace Sys {
 		};
 	}
 
-	void						PrintfEx(const char* format, const Details::PrintArg* args, size_t count);
+	void						PrintfEx(const char* format, const Details::PrintArg* args);
 
 	template <typename... Args>
-	FORCEINLINE void			Printf(const char* format, const Args&... args) { const Details::PrintArg list[] = {args...}; PrintfEx(format, list, sizeof...(Args)); }
+	FORCEINLINE void			Printf(const char* format, const Args&... args) { const Details::PrintArg list[] = {args...}; PrintfEx(format, list); }
 	FORCEINLINE void			Printf(const char* format) { Log(format); }
 
 	void						Breakpoint();
@@ -209,18 +209,11 @@ bool Sys::FileExists(const char* path) {
 	return true;
 }
 
-NOINLINE void Sys::PrintfEx(const char* format, const Details::PrintArg* args, size_t count) {
+NOINLINE void Sys::PrintfEx(const char* format, const Details::PrintArg* args) {
 	const size_t BufferSize = 4096;
 	char buffer[BufferSize];
 
-#ifdef DEV
-	auto NEXT_ARG = [&] () {
-		assert(count--);
-		return args++;
-	};
-#else
 	#define NEXT_ARG() (args++)
-#endif
 
 	size_t write_cursor = 0;
 	while (*format) {
