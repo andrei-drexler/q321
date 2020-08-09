@@ -217,8 +217,7 @@ namespace Demo {
 			// on startup for 'borderless full-screen' windows by drawing
 			// a few fully black frames before the actual loading screen
 
-			Gfx::SetRenderTarget(Gfx::Backbuffer);
-			Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
+			Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
 
 			if (frame == 0) {
 				Gfx::SetShader(Shader::bglogo);

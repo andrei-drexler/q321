@@ -201,13 +201,27 @@ namespace Gfx {
 
 	////////////////////////////////////////////////////////////////
 
-	namespace ClearBit {
-		enum {
-			Color			= 1 << 0,
-			Depth			= 1 << 1,
-			ColorAndDepth	= Color | Depth,
+	namespace Clear {
+		namespace Mask {
+			enum {
+				Color			= 1 << 0,
+				Depth			= 1 << 1,
+				ColorAndDepth	= Color | Depth,
+			};
+		}
+
+		struct Mode {
+			u32				what;
+			vec4			color;
+			float			depth;
 		};
-	}
+
+		static constexpr Mode
+			Color			{Mask::Color,         {0.f, 0.f, 0.f, 0.f}, 0.f},
+			Depth			{Mask::Depth,         {0.f, 0.f, 0.f, 0.f}, 1.f},
+			ColorAndDepth	{Mask::ColorAndDepth, {0.f, 0.f, 0.f, 0.f}, 1.f}
+		;
+	};
 
 	////////////////////////////////////////////////////////////////
 
@@ -259,18 +273,17 @@ namespace Gfx {
 	const Texture::Descriptor& GetTextureDescriptor(Texture::ID id);
 	bool SaveTGA(const char* path, const u32* pixels, u16 width, u16 height);
 	bool SaveTGA(const char* path, Texture::ID id);
-	
-	void SetRenderTarget(Texture::ID id, const IRect* viewport = nullptr);
+
+	void SetRenderTarget(Texture::ID id, const Clear::Mode* clear = nullptr, const IRect* viewport = nullptr);
 	void SetShader(Shader::ID id);
 	void UpdateUniforms();
-	
-	void Clear(u16 mask, const vec4& color = vec4(0.f), float z = 1.f);
+
 	void DrawFullScreen();
 	void Draw(const Mesh& mesh);
-	
+
 	void Present();
 	void Sync();
-	
+
 	vec2 GetResolution();
 
 	////////////////////////////////////////////////////////////////

@@ -278,8 +278,7 @@ namespace Demo {
 		Uniform::Cam.xyz = frame.pos;
 		Uniform::Cam.w = frame.shadow_angle * RAD2DEG;
 
-		Gfx::SetRenderTarget(frame.render_target);
-		Gfx::Clear(Gfx::ClearBit::Depth);
+		Gfx::SetRenderTarget(frame.render_target, &Gfx::Clear::Depth);
 		Map::Render();
 		RenderEntities();
 		if (frame.render_target == Gfx::Backbuffer)
@@ -339,12 +338,11 @@ namespace Demo {
 	}
 
 	FORCEINLINE void RenderLoadingScreen() {
-		Gfx::SetRenderTarget(Gfx::Backbuffer);
+		Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
 		Gfx::SetShader(Demo::Shader::Loading);
 		Demo::Uniform::Texture0 = Map::source->levelshot.texture;
 		Demo::Uniform::Time.x = (float)g_time;
 		Gfx::UpdateUniforms();
-		Gfx::Clear(Gfx::ClearBit::ColorAndDepth);
 		Gfx::DrawFullScreen();
 
 		vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.125f};

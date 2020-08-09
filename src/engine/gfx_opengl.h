@@ -693,7 +693,7 @@ FORCEINLINE void Gfx::SetShader(Shader::ID id) {
 	g_state.pending_shader = id;
 }
 
-NOINLINE void Gfx::SetRenderTarget(Texture::ID id, const IRect* viewport) {
+NOINLINE void Gfx::SetRenderTarget(Texture::ID id, const Clear::Mode* clear, const IRect* viewport) {
 	using namespace GL;
 
 	g_state.render_target = id;
@@ -714,32 +714,29 @@ NOINLINE void Gfx::SetRenderTarget(Texture::ID id, const IRect* viewport) {
 	} else {
 		glViewport(viewport->x, viewport->y, viewport->w, viewport->h);
 	}
+
+	if (clear) {
+		GLbitfield bits = 0;
+
+		if (clear->what & Clear::Mask::Color) {
+			const vec4& color = clear->color;
+			glClearColor(color.r, color.g, color.b, color.a);
+			bits |= GL_COLOR_BUFFER_BIT;
+		}
+
+		if (clear->what & Clear::Mask::Depth) {
+			SetState(g_state.current_bits & ~Shader::NoZWrite);
+			glClearDepth(clear->depth);
+			bits |= GL_DEPTH_BUFFER_BIT;
+		}
+
+		glClear(bits);
+	}
 }
 
 ////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Gfx::UpdateUniforms() {
-}
-
-////////////////////////////////////////////////////////////////
-
-FORCEINLINE void Gfx::Clear(u16 mask, const vec4& color, float z) {
-	using namespace GL;
-	GLbitfield bits = 0;
-
-	if (mask & ClearBit::Color) {
-		glClearColor(color.r, color.g, color.b, color.a);
-		bits |= GL_COLOR_BUFFER_BIT;
-	}
-
-	if (mask & ClearBit::Depth) {
-		SetState(g_state.current_bits & ~Shader::NoZWrite);
-		glClearDepth(z);
-		bits |= GL_DEPTH_BUFFER_BIT;
-	}
-
-	if (bits)
-		glClear(bits);
 }
 
 ////////////////////////////////////////////////////////////////
