@@ -1094,3 +1094,4 @@
 60803,tweaked cross functions
 60721,simplified gl state mgmt
 60728,simplified render target clearing
+60686,noinline settexturecontents/generatemipmaps/drawfullscreen

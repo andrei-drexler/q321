@@ -591,7 +591,7 @@ FORCEINLINE void Gfx::RegisterUniforms(const char* names, const Uniform::Type* t
 
 ////////////////////////////////////////////////////////////////
 
-void Gfx::SetTextureContents(Texture::ID id, const void* pixels, const IRect* rect) {
+NOINLINE void Gfx::SetTextureContents(Texture::ID id, const void* pixels, const IRect* rect) {
 	using namespace GL;
 
 	assert(id < g_state.num_textures);
@@ -603,7 +603,7 @@ void Gfx::SetTextureContents(Texture::ID id, const void* pixels, const IRect* re
 	glTexSubImage2D(GL_TEXTURE_2D, 0, rect->x, rect->y, rect->w, rect->h, texture.format, texture.type, pixels);
 }
 
-void Gfx::GenerateMipMaps(Texture::ID id) {
+NOINLINE void Gfx::GenerateMipMaps(Texture::ID id) {
 	using namespace GL;
 
 	assert(id < g_state.num_textures);
@@ -831,7 +831,7 @@ NOINLINE void Gfx::Draw(const Mesh& mesh) {
 	}
 }
 
-void Gfx::DrawFullScreen() {
+NOINLINE void Gfx::DrawFullScreen() {
 	static constexpr vec2 positions[3] = {
 		{-1.f, -1.f},
 		{ 3.f, -1.f},
