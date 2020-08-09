@@ -244,17 +244,15 @@ namespace GL {
 			MaskShaderID					= (MaxNumShaders - 1) << ShiftShaderID,
 			MaskShaderIDAndState			= (1 << (ShiftShaderID + ShaderIDBits)) - 1,
 
-			ShiftRenderTargetID				= ShiftShaderID + ShaderIDBits,
-			MaskRenderTargetID				= (MaxNumRenderTargets - 1) << ShiftRenderTargetID,
-
 			/* texture state is currently not included in shadowed state */
 			TextureIDBits					= 8,
 			MaxNumTextures					= 1 << TextureIDBits,
 		};
 
 		u32									current_bits;
+		u16									render_target;
+		u16									pending_shader;
 		u16									GetShader() { return (current_bits & MaskShaderID) >> ShiftShaderID; }
-		u16									GetRenderTarget() { return (current_bits & MaskRenderTargetID) >> ShiftRenderTargetID; }
 
 		GLuint								vao;
 		GLuint								vbo;
@@ -285,7 +283,6 @@ namespace GL {
 	} g_state;
 
 	void SetState(u32 bits, u32 force_change = 0);
-	void ChangeState(u32 bits, u32 mask);
 
 	void TrimLog(char* buf, int lines = 8);
 }
@@ -305,7 +302,8 @@ FORCEINLINE void* CreateSystemRenderer(Sys::Window* window) {
 	if (!LoadFunctions())
 		Sys::Fatal(Error::RenderFunctions);
 
-	g_state.current_bits = State::MaskRenderTargetID | State::MaskShaderID;
+	g_state.render_target = Gfx::Backbuffer;
+	g_state.current_bits = State::MaskShaderID;
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	glEnable(GL_BLEND);
@@ -638,12 +636,6 @@ NOINLINE void GL::SetState(u32 bits, u32 force_change) {
 
 	u32 changed_bits = (bits ^ g_state.current_bits) | force_change;
 
-	if (changed_bits & GL::State::MaskRenderTargetID) {
-		auto id = (bits & GL::State::MaskRenderTargetID) >> GL::State::ShiftRenderTargetID;
-		auto fbo = id < g_state.num_textures ? g_state.texture_state[id].fbo : 0;
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	}
-
 	if (changed_bits & GL::State::MaskShaderID) {
 		auto id = (bits & GL::State::MaskShaderID) >> GL::State::ShiftShaderID;
 		glUseProgram(g_state.shader_programs[id]);
@@ -696,20 +688,17 @@ NOINLINE void GL::SetState(u32 bits, u32 force_change) {
 	g_state.current_bits = bits;
 }
 
-FORCEINLINE void GL::ChangeState(u32 bits, u32 mask) {
-	SetState(SelectBits(mask, bits, g_state.current_bits));
-}
-
 FORCEINLINE void Gfx::SetShader(Shader::ID id) {
 	using namespace GL;
-	u32 bits = (id << GL::State::ShiftShaderID) | g_state.shader_flags[id];
-	GL::ChangeState(bits, State::MaskShaderIDAndState);
+	g_state.pending_shader = id;
 }
 
 NOINLINE void Gfx::SetRenderTarget(Texture::ID id, const IRect* viewport) {
 	using namespace GL;
-	u32 bits = id << GL::State::ShiftRenderTargetID;
-	GL::ChangeState(bits, State::MaskRenderTargetID);
+
+	g_state.render_target = id;
+	auto fbo = id < g_state.num_textures ? g_state.texture_state[id].fbo : 0;
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 	if (!viewport) {
 		GLsizei w, h;
@@ -729,39 +718,7 @@ NOINLINE void Gfx::SetRenderTarget(Texture::ID id, const IRect* viewport) {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Gfx::UpdateUniforms() {
-	using namespace GL;
-
-	u16 shader = g_state.GetShader();
-	GLint* locations = g_state.shader_uniforms + shader * g_state.num_uniforms;
-	
-	for (u16 uniform = 0; uniform < g_state.num_uniforms; ++uniform) {
-		GLint location = locations[uniform];
-		if (location == -1)
-			continue;
-
-		const void* data = g_state.uniform_values[uniform];
-		switch (g_state.uniform_types[uniform]) {
-			case Uniform::Type::Vec4:
-				glUniform4fv(location, 1, (const float*)data);
-				break;
-
-			case Uniform::Type::Mat4:
-				glUniformMatrix4fv(location, 1, GL_FALSE, (const float*)data);
-				break;
-
-			case Uniform::Type::Sampler: {
-				auto id = *(const Gfx::Texture::ID*)data;
-				GLuint handle = id < g_state.num_textures ? g_state.texture_state[id].handle : 0;
-				glActiveTexture(GL_TEXTURE0 + g_state.uniform_tex_unit[uniform]);
-				glBindTexture(GL_TEXTURE_2D, handle);
-				break;
-			}
-
-			default:
-				break;
-		}
-	}
+FORCEINLINE void Gfx::UpdateUniforms() {
 }
 
 ////////////////////////////////////////////////////////////////
@@ -816,11 +773,42 @@ namespace GL {
 NOINLINE void Gfx::Draw(const Mesh& mesh) {
 	using namespace GL;
 
-	auto shader = g_state.GetShader();
-
-	GL::ChangeState(g_state.shader_flags[shader], GL::State::MaskShaderState);
-
+	auto shader = g_state.pending_shader;
 	auto flags = g_state.shader_flags[shader];
+	SetState((shader << GL::State::ShiftShaderID) | flags);
+
+	/* update uniforms */
+	GLint* locations = g_state.shader_uniforms + shader * g_state.num_uniforms;
+
+	for (u16 uniform = 0; uniform < g_state.num_uniforms; ++uniform) {
+		GLint location = locations[uniform];
+		if (location == -1)
+			continue;
+
+		const void* data = g_state.uniform_values[uniform];
+		switch (g_state.uniform_types[uniform]) {
+			case Uniform::Type::Vec4:
+				glUniform4fv(location, 1, (const float*)data);
+				break;
+
+			case Uniform::Type::Mat4:
+				glUniformMatrix4fv(location, 1, GL_FALSE, (const float*)data);
+				break;
+
+			case Uniform::Type::Sampler: {
+				auto id = *(const Gfx::Texture::ID*)data;
+				GLuint handle = id < g_state.num_textures ? g_state.texture_state[id].handle : 0;
+				glActiveTexture(GL_TEXTURE0 + g_state.uniform_tex_unit[uniform]);
+				glBindTexture(GL_TEXTURE_2D, handle);
+				break;
+			}
+
+			default:
+				break;
+		}
+	}
+
+	/* update attributes */
 	for (u8 attrib = 0; attrib < Vertex::MaxNumAttributes; ++attrib) {
 		if (flags & (1 << attrib)) {
 			auto& stream = mesh.vertices[attrib];
@@ -836,6 +824,7 @@ NOINLINE void Gfx::Draw(const Mesh& mesh) {
 		}
 	}
 
+	/* issue draw call */
 	if (mesh.num_indices) {
 		assert(mesh.index_addr >= Arena::BaseOffset);
 		const void* ptr = (const void*)(mesh.index_addr - Arena::BaseOffset);

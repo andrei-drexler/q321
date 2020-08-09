@@ -1092,3 +1092,4 @@
 60846,tweaked light init
 60838,removed printf arg count
 60803,tweaked cross functions
+60721,simplified gl state mgmt
