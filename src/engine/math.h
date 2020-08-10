@@ -542,14 +542,16 @@ static constexpr mat3 o3x3(0.f);
 static constexpr mat3 i3x3(1.f);
 
 NOINLINE void transpose(const mat3& m, mat3& out) {
-	const u32 ORDER =
-		/*******/ (3<< 0) | (6<< 4) |
-		(1<< 8) | (4<<12) | (7<<16) |
-		(2<<20) | (5<<24) | (8<<28) ;
+	u32 remap =
+		((0^0)<< 0) | ((1^3)<< 3) | ((2^6)<< 6) |
+		((3^1)<< 9) | ((4^4)<<12) | ((5^7)<<15) |
+		((6^2)<<18) | ((7^5)<<21) | ((8^8)<<24) ;
 
-	out.data[0] = m.data[0];
-	for (u32 i=0; i<8; ++i)
-		out.data[i + 1] = m.data[(ORDER >> (i<<2)) & 15];
+	u32 i = 0;
+	do {
+		out.data[i] = m.data[i ^ (remap & 7)];
+		remap >>= 3;
+	} while (++i < 9);
 }
 
 FORCEINLINE mat3 transpose(const mat3& m) {
