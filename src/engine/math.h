@@ -453,7 +453,7 @@ NOINLINE void safe_normalize(const vec3& src, vec3& dst) {
 		dst /= len;
 }
 
-FORCEINLINE void safe_normalize(vec3& dst) {
+NOINLINE void safe_normalize(vec3& dst) {
 	float len = length(dst);
 	if (len > 0.f)
 		dst /= len;
