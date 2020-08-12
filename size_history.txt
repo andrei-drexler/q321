@@ -1098,3 +1098,4 @@
 60684,tweaked mat3 transpose
 60683,floating-point lightgrid interpolation
 60639,tweaked samplelighting
+60632,tweaked settexturecontents

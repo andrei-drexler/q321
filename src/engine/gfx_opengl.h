@@ -596,9 +596,14 @@ NOINLINE void Gfx::SetTextureContents(Texture::ID id, const void* pixels, const 
 
 	assert(id < g_state.num_textures);
 	auto& texture = g_state.texture_state[id];
-	IRect full = {0, 0, texture.width, texture.height};
-	if (!rect)
+	IRect full;
+	if (!rect) {
 		rect = &full;
+		full.x = 0;
+		full.y = 0;
+		full.w = texture.width;
+		full.h = texture.height;
+	}
 	glBindTexture(GL_TEXTURE_2D, texture.handle);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, rect->x, rect->y, rect->w, rect->h, texture.format, texture.type, pixels);
 }
