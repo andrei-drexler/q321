@@ -1096,3 +1096,4 @@
 60728,simplified render target clearing
 60686,noinline settexturecontents/generatemipmaps/drawfullscreen
 60684,tweaked mat3 transpose
+60683,floating-point lightgrid interpolation

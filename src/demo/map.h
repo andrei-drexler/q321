@@ -933,10 +933,12 @@ NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform
 
 	i32 base = 0;
 	for (u16 axis = 0; axis < 3; ++axis) {
-		i32 pos = i32(transform.position[axis]) - lightgrid.offset[axis];
-		i32 cell_size = LightGrid::GridSize[axis];
-		coord[axis] = clamp<i32>(pos / cell_size, 0, lightgrid.dims[axis] - 1);
-		mix_weights[axis] = 1.f - float(pos & (cell_size - 1)) / float(cell_size);
+		float cell_size = float(LightGrid::GridSize[axis]);
+		float pos = (transform.position[axis] - float(lightgrid.offset[axis])) / cell_size;
+		float cell = floor(pos);
+		float frac = pos - cell;
+		coord[axis] = clamp<i32>(i32(cell), 0, lightgrid.dims[axis] - 1);
+		mix_weights[axis] = 1.f - frac;
 		base += coord[axis] * pitch[axis];
 	}
 
