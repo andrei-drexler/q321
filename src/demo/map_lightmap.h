@@ -326,7 +326,7 @@ NOINLINE void ComputeTangentFrame(const vec3& z, vec3& x, vec3& y) {
 	MemSet(&x);
 	x[next_axis] = 1.f;
 	cross(z, x, y);
-	normalize(y);
+	safe_normalize(y);
 	cross(z, y, x);
 }
 

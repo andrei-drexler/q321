@@ -1100,3 +1100,4 @@
 60639,tweaked samplelighting
 60632,tweaked settexturecontents
 60654,noinline safe_normalize
+60644,proper normalization in computetangentframe
