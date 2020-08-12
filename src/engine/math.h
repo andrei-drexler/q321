@@ -446,17 +446,15 @@ NOINLINE float length(const vec3& v)						{ return Math::sqrt(dot(v, v)); }
 NOINLINE vec2 normalize(const vec2& p)						{ return p / length(p); }
 NOINLINE vec3 normalize(const vec3& p)						{ return p / length(p); }
 
-NOINLINE void safe_normalize(const vec3& src, vec3& dst) {
-	dst = src;
-	float len = length(src);
-	if (len > 0.f)
-		dst /= len;
-}
-
 NOINLINE void safe_normalize(vec3& dst) {
 	float len = length(dst);
 	if (len > 0.f)
 		dst /= len;
+}
+
+FORCEINLINE void safe_normalize(const vec3& src, vec3& dst) {
+	dst = src;
+	safe_normalize(dst);
 }
 
 NOINLINE void cross(const vec3& a, const vec3& b, vec3& dst) {
