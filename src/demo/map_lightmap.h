@@ -441,7 +441,7 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 			if (influences && influences->count < size(influences->data)) {
 				LightGrid::Influence& inf = influences->data[influences->count++];
 				mul(inf.color, light.color, scale);
-				inf.dir = -light_dir;
+				mul(inf.dir, light_dir, -1.f);
 			}
 		}
 	}
