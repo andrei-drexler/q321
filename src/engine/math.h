@@ -981,5 +981,6 @@ FORCEINLINE vec3 oct_to_vec3(const vec2& e) {
 	vec3 v{e.x, e.y, 1.f - Math::abs(e.x) - Math::abs(e.y)};
 	if (v.z < 0.f)
 		v.xy = (1.f - vec2(Math::abs(v.y), Math::abs(v.x))) * signNotZero(v.xy);
-	return normalize(v);
+	safe_normalize(v);
+	return v;
 }

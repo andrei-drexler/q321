@@ -1101,3 +1101,4 @@
 60632,tweaked settexturecontents
 60654,noinline safe_normalize
 60644,proper normalization in computetangentframe
+60621,tweaked oct_to_vec3
