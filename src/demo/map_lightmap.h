@@ -507,8 +507,6 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 NOINLINE void Map::Details::InitLightTrace(TraceInfo& trace) {
 	MemSet(&trace);
 	trace.type = TraceInfo::Type::Lightmap;
-	// prevent the ray from squeezing between diagonally-adjacent brushes
-	// this fixes a sun light leak in the left hallway of DM1
 	trace.box_half_size = 1.f/32.f;
 }
 
