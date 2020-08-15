@@ -138,6 +138,7 @@ namespace Demo {
 		/* Fonts */
 		
 		enum Font {
+			LargeFontBlurry,
 			LargeFont,
 			SmallFont,
 
@@ -154,12 +155,15 @@ namespace Demo {
 		void						PrintShadowed(const char* text, const vec2& pos, const vec2& scale = 1.f, u32 color = -1, float align = 0.f, Font font = SmallFont);
 
 		constexpr char FontDescriptors[] =
-			"\x30" "Impact"					"\0"
-			"\x10" "Courier New Bold"		"\0"
+			/*Size		Padding+1	Name*/
+			"\x30"		"\x09"		"Impact"				"\0"
+			"\x30"		"\x01"		"Impact"				"\0"
+			"\x10"		"\x01"		"Courier New Bold"		"\0"
 		;
 		constexpr vec2 FontScale[FontCount] = {
 			{1.5f, 1.f},
-			{1.f, 1.f},
+			{1.5f, 1.f},
+			{1.f,  1.f},
 		};
 
 		constexpr auto TexDescriptor = Texture::Descriptors[Texture::Font];
@@ -285,11 +289,48 @@ FORCEINLINE void Demo::Texture::GenerateFont() {
 
 	u8 font_index = 0;
 	for (const char* descriptor = UI::FontDescriptors; *descriptor; descriptor = NextAfter(descriptor), ++font_index) {
-		Sys::RasterizeFont(descriptor + 1, descriptor[0], 0, font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height, packer, UI::glyphs[font_index]);
+		const char* name = descriptor + 2;
+		int size = descriptor[0];
+		u16 padding = u16(descriptor[1] - 1);
+		Sys::RasterizeFont(name, size, 0, font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height, padding, packer, UI::glyphs[font_index]);
+	}
+
+	// 2-pass box blur for the large, blurry font
+	const u32 BlurRadius = 4;
+	for (u32 axis = 0, axis_pitch = 1, cross_pitch = UI::TexDescriptor.width; axis < 2; ++axis, Swap(axis_pitch, cross_pitch)) {
+		for (u32 glyph_index = 0; glyph_index < size(UI::glyphs[UI::LargeFontBlurry]); ++glyph_index) {
+			const Sys::Font::Glyph& glyph = UI::glyphs[UI::LargeFontBlurry][glyph_index];
+			u32* data = font_pixels + glyph.box_min[1] * UI::TexDescriptor.width + glyph.box_min[0];
+
+			for (u32 i = 0; i < glyph.box_size[!axis]; ++i, data += cross_pitch) {
+				const u16 MaxGlyphSize = 256;
+				assert(glyph.box_size[axis] <= MaxGlyphSize);
+
+				u32 prefix_sum[MaxGlyphSize + 1];
+				prefix_sum[0] = 0;
+				for (u32 j = 0, *pixel = data; j < glyph.box_size[axis]; ++j, pixel += axis_pitch)
+					prefix_sum[j + 1] = prefix_sum[j] + (*pixel & 0xff);
+
+				for (u32 j = 0, *pixel = data; j < glyph.box_size[axis]; ++j, pixel += axis_pitch) {
+					i32 left  = j - BlurRadius;
+					i32 right = j + BlurRadius;
+					assign_max(left, 0);
+					assign_min(right, i32(glyph.box_size[axis]));
+
+					u32 blurred = prefix_sum[right] - prefix_sum[left];
+					blurred += blurred >> 1; // boost
+					blurred /= BlurRadius * 2;
+					assign_min(blurred, u32(255));
+
+					*pixel = blurred * 0x01'01'01'01u;
+				}
+			}
+		}
 	}
 
 	// Hack: remap large font lowercase glyphs to uppercase
 	MemCopy(UI::glyphs[UI::LargeFont] + 'a' - Sys::Font::Glyph::Begin, UI::glyphs[UI::LargeFont] + 'A' - Sys::Font::Glyph::Begin, 'z' - 'a' + 1);
+	MemCopy(UI::glyphs[UI::LargeFontBlurry] + 'a' - Sys::Font::Glyph::Begin, UI::glyphs[UI::LargeFontBlurry] + 'A' - Sys::Font::Glyph::Begin, 'z' - 'a' + 1);
 
 	// 'Impact' is a decent match for the large Q3 font, but it's not perfect.
 	// We can get somewhat closer with a few glyph spacing tweaks, though:
@@ -297,10 +338,14 @@ FORCEINLINE void Demo::Texture::GenerateFont() {
 	// increase space glyph advance by 100%
 	auto& large_space = UI::glyphs[UI::LargeFont][' ' - Sys::Font::Glyph::Begin];
 	large_space.advance <<= 1;
+	auto& large_space_blurry = UI::glyphs[UI::LargeFontBlurry][' ' - Sys::Font::Glyph::Begin];
+	large_space_blurry.advance <<= 1;
 
 	// increase advance a bit for all glyphs
-	for (u16 i = 0; i < size(UI::glyphs[UI::LargeFont]); ++i)
+	for (u16 i = 0; i < size(UI::glyphs[UI::LargeFont]); ++i) {
 		++UI::glyphs[UI::LargeFont][i].advance;
+		++UI::glyphs[UI::LargeFontBlurry][i].advance;
+	}
 
 	if constexpr (0) {
 		Gfx::SaveTGA("font.tga", font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height);

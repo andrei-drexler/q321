@@ -1103,3 +1103,4 @@
 60644,proper normalization in computetangentframe
 60621,tweaked oct_to_vec3
 60606,tweaked safe_normalize overload
+60876,added blurred large font variant

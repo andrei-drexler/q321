@@ -156,7 +156,7 @@
 	x(LevelshotZ,		Texture::White,		Gfx::InvalidID,			512,	512,	Z32F,		Gfx::Texture::Flags::ZBuffer)\
 	x(Levelshot_q3dm1,	Texture::White,		Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
 	x(Levelshot_q3dm17,	Texture::White,		Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
-	x(Font,				Texture::White,		Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(Font,				Texture::White,		Gfx::InvalidID,			1024,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(cmet52,			Texture::White,		Shader::cmet52,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2c,			Texture::White,		Shader::dmnd2c,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2cow,			Texture::dmnd2c,	Shader::dmnd2cow,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\

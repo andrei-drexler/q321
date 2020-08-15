@@ -190,7 +190,7 @@ namespace Sys {
 		};
 	}
 
-	void RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, RectPacker& packer, Font::Glyph* glyphs);
+	void RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, u16 padding, RectPacker& packer, Font::Glyph* glyphs);
 }
 
 ////////////////////////////////////////////////////////////////

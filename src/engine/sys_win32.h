@@ -464,8 +464,10 @@ FORCEINLINE void Sys::SetWindowIcon(Window* window, const u32* pixels, u16 size)
 		DestroyIcon(hIcon);
 }
 
-FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, RectPacker& packer, Font::Glyph* glyphs) {
+FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, u16 padding, RectPacker& packer, Font::Glyph* glyphs) {
 	using namespace Font;
+
+	padding += 4;
 
 	HFONT font = CreateFontA(
 		-font_size,									// height
@@ -521,15 +523,13 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 
 		auto& g = glyphs[c - Font::Glyph::Begin];
 		if (required > 0) {
-			const u16 Padding = 4;
-
-			auto tile = packer.Add(metrics.gmBlackBoxX + Padding * 2, metrics.gmBlackBoxY + Padding * 2);
+			auto tile = packer.Add(metrics.gmBlackBoxX + padding * 2, metrics.gmBlackBoxY + padding * 2);
 			assert(tile != packer.Full);
 			auto& rect = packer.GetTile(tile);
 
 			u32 src_pitch = (metrics.gmBlackBoxX + 3) & ~3;
 			u8* src_pixels = buffer + (metrics.gmBlackBoxY - 1) * src_pitch; // flip vertically
-			u32* dst_pixels = pixels + (rect.min[1] + Padding) * width + rect.min[0] + Padding;
+			u32* dst_pixels = pixels + (rect.min[1] + padding) * width + rect.min[0] + padding;
 			for (u16 y = 0; y < metrics.gmBlackBoxY; ++y, src_pixels -= src_pitch, dst_pixels += width) {
 				for (u16 x = 0; x < metrics.gmBlackBoxX; ++x) {
 					u8 src = src_pixels[x];
@@ -546,8 +546,8 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 			*(u32*)g.box_min = *(u32*)rect.min;
 			g.box_size[0] = (u8)rect.GetWidth();
 			g.box_size[1] = (u8)rect.GetHeight();
-			g.anchor[0] = i8(metrics.gmptGlyphOrigin.x - Padding);
-			g.anchor[1] = i8(metrics.gmptGlyphOrigin.y - metrics.gmBlackBoxY - Padding);
+			g.anchor[0] = i8(metrics.gmptGlyphOrigin.x - padding);
+			g.anchor[1] = i8(metrics.gmptGlyphOrigin.y - metrics.gmBlackBoxY - padding);
 		}
 
 		g.advance = (u8)metrics.gmCellIncX;

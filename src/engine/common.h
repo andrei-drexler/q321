@@ -459,3 +459,14 @@ constexpr auto MakeLookupTable(MapFunction map) {
 	return result;
 }
 
+////////////////////////////////////////////////////////////////
+
+namespace Constexpr {
+	static constexpr u32 LZCNT(u32 x) {
+		for (u32 i = 0; i < 32; ++i, x <<= 1)
+			if (x & 0x8000'0000u)
+				return i;
+		return 32;
+	}
+}
+
