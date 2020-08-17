@@ -526,10 +526,15 @@ NOINLINE void Demo::UI::FlushGeometry() {
 
 	static constexpr Gfx::Mesh BaseMesh = {
 		{
-			{OFFSET_OF(VertexFormat, pos),		Gfx::Vertex::TypeToEnum<vec3>,	false, sizeof(vertices[0])},
-			{OFFSET_OF(VertexFormat, uv),		Gfx::Vertex::TypeToEnum<vec2>,	false, sizeof(vertices[0])},
+			#define PP_ADD_MEMBER(name, normalized)\
+				{OFFSET_OF(VertexFormat, name), Gfx::Vertex::TypeToEnum<decltype(vertices[0].name)>, normalized, sizeof(vertices[0])}
+
+			PP_ADD_MEMBER(pos,   false),
+			PP_ADD_MEMBER(uv,    false),
 			{},
-			{OFFSET_OF(VertexFormat, color),	Gfx::Vertex::TypeToEnum<u32>,	true, sizeof(vertices[0])},
+			PP_ADD_MEMBER(color, true),
+
+			#undef PP_ADD_MEMBER
 		},
 	};
 	static_assert(0 == Attrib::Position,	"Invalid BaseMesh position stream index");
