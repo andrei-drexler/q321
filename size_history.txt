@@ -1106,3 +1106,4 @@
 60876,added blurred large font variant
 60875,fixed ui vertex format info
 60872,tweaked getblendfactors
+60859,proper nomips filter
