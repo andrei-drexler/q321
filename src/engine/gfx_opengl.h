@@ -197,11 +197,12 @@ namespace GL {
 
 	static constexpr inline BlendFactors GetBlendFactors(Gfx::Shader::Flags flags) {
 		using namespace Gfx::Shader;
-		switch (flags & Flags::MaskBlend) {
-			case Flags::Opaque:			return {GL_ONE, GL_ZERO};
-			case Flags::Premultiplied:	return {GL_ONE, GL_ONE_MINUS_SRC_ALPHA};
-			case Flags::Multiply:		return {GL_ZERO, GL_SRC_COLOR};
-			default:					return {GL_INVALID_ENUM, GL_INVALID_ENUM};
+		switch ((flags & Flags::MaskBlend) >> Flags::ShiftBlend) {
+			case Flags::Opaque             >> Flags::ShiftBlend: return {GL_ONE, GL_ZERO};
+			case Flags::Premultiplied      >> Flags::ShiftBlend: return {GL_ONE, GL_ONE_MINUS_SRC_ALPHA};
+			case Flags::Multiply           >> Flags::ShiftBlend: return {GL_ZERO, GL_SRC_COLOR};
+			default:
+				return {GL_INVALID_ENUM, GL_INVALID_ENUM};
 		}
 	}
 

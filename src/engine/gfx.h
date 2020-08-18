@@ -159,10 +159,11 @@ namespace Gfx {
 		enum Flags {
 			MaskAttribs			= (1 << Vertex::MaxNumAttributes) - 1,
 
-			Opaque				= 0 << (0 + Vertex::MaxNumAttributes),
-			Premultiplied		= 1 << (0 + Vertex::MaxNumAttributes),
-			Multiply			= 2 << (0 + Vertex::MaxNumAttributes),
-			MaskBlend			= 3 << (0 + Vertex::MaxNumAttributes),
+			ShiftBlend			= Vertex::MaxNumAttributes,
+			Opaque				= 0 << ShiftBlend,
+			Premultiplied		= 1 << ShiftBlend,
+			Multiply			= 2 << ShiftBlend,
+			MaskBlend			= 3 << ShiftBlend,
 
 			NoZWrite			= 1 << (2 + Vertex::MaxNumAttributes),
 			MaskZWrite			= 1 << (2 + Vertex::MaxNumAttributes),
