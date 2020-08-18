@@ -1108,3 +1108,4 @@
 60872,tweaked getblendfactors
 60859,proper nomips filter
 60882,tweaked blend state update
+60888,diamond2c_ow uvs
