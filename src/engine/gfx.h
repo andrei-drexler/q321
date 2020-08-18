@@ -164,6 +164,7 @@ namespace Gfx {
 			Premultiplied		= 1 << ShiftBlend,
 			Multiply			= 2 << ShiftBlend,
 			MaskBlend			= 3 << ShiftBlend,
+			NumBlendModes		= 3,
 
 			NoZWrite			= 1 << (2 + Vertex::MaxNumAttributes),
 			MaskZWrite			= 1 << (2 + Vertex::MaxNumAttributes),

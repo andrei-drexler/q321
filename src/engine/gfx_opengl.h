@@ -195,16 +195,20 @@ namespace GL {
 
 	struct BlendFactors { GLenum src, dst; };
 
-	static constexpr inline BlendFactors GetBlendFactors(Gfx::Shader::Flags flags) {
+	static constexpr inline BlendFactors GetBlendFactors(u32 index) {
 		using namespace Gfx::Shader;
-		switch ((flags & Flags::MaskBlend) >> Flags::ShiftBlend) {
-			case Flags::Opaque             >> Flags::ShiftBlend: return {GL_ONE, GL_ZERO};
-			case Flags::Premultiplied      >> Flags::ShiftBlend: return {GL_ONE, GL_ONE_MINUS_SRC_ALPHA};
-			case Flags::Multiply           >> Flags::ShiftBlend: return {GL_ZERO, GL_SRC_COLOR};
+		switch (index) {
 			default:
-				return {GL_INVALID_ENUM, GL_INVALID_ENUM};
+				assert(!"Unhandled blending mode");
+				[[fallthrough]];
+			case Flags::Opaque        >> Flags::ShiftBlend: return {GL_ONE, GL_ZERO};
+			case Flags::Premultiplied >> Flags::ShiftBlend: return {GL_ONE, GL_ONE_MINUS_SRC_ALPHA};
+			case Flags::Multiply      >> Flags::ShiftBlend: return {GL_ZERO, GL_SRC_COLOR};
 		}
 	}
+
+	static constexpr auto
+		BlendFactorTable = MakeLookupTable<u32, BlendFactors, u32(0), u32(Gfx::Shader::NumBlendModes - 1)>(GetBlendFactors);
 
 	////////////////////////////////////////////////////////////////
 
@@ -660,7 +664,7 @@ NOINLINE void GL::SetState(u32 bits, u32 force_change) {
 	}
 
 	if (changed_bits & Shader::Flags::MaskBlend) {
-		auto blend_factor = GetBlendFactors(Shader::Flags(bits));
+		auto blend_factor = BlendFactorTable[(bits & Shader::MaskBlend) >> Shader::ShiftBlend];
 		glBlendFunc(blend_factor.src, blend_factor.dst);
 	}
 

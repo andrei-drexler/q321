@@ -1107,3 +1107,4 @@
 60875,fixed ui vertex format info
 60872,tweaked getblendfactors
 60859,proper nomips filter
+60882,tweaked blend state update
