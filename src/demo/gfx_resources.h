@@ -298,8 +298,7 @@ FORCEINLINE void Demo::Texture::GenerateFont() {
 	// 2-pass box blur for the large, blurry font
 	const u32 BlurRadius = 4;
 	for (u32 axis = 0, axis_pitch = 1, cross_pitch = UI::TexDescriptor.width; axis < 2; ++axis, Swap(axis_pitch, cross_pitch)) {
-		for (u32 glyph_index = 0; glyph_index < size(UI::glyphs[UI::LargeFontBlurry]); ++glyph_index) {
-			const Sys::Font::Glyph& glyph = UI::glyphs[UI::LargeFontBlurry][glyph_index];
+		for (const Sys::Font::Glyph& glyph : UI::glyphs[UI::LargeFontBlurry]) {
 			u32* data = font_pixels + glyph.box_min[1] * UI::TexDescriptor.width + glyph.box_min[0];
 
 			for (u32 i = 0; i < glyph.box_size[!axis]; ++i, data += cross_pitch) {

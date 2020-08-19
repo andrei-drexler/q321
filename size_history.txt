@@ -1113,3 +1113,5 @@
 61252,autorepeat for menu up/down
 61262,no autorepeat w/ multiple keys
 61315,delay quad spawn
+61304,loop on glyph pointers not indices
+61304,range-based for loop
