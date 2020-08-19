@@ -499,7 +499,7 @@ NOINLINE void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const v
 		u32 pass_color = color;
 		vec2 cursor = pos;
 		if (!pass) {
-			cursor += 6.f * GetScale().y;
+			cursor += 5.f * GetScale().y;
 			pass_color &= 0xFF000000;
 		}
 		Print(text, cursor, scale, pass_color, align, font);
