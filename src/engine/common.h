@@ -70,6 +70,7 @@
 #define PP_EXPAND(x)			x
 #define PP_FIRST_ARG2(x,...)	x
 #define PP_FIRST_ARG(x,...)		PP_EXPAND(PP_FIRST_ARG2(x))
+#define PP_IGNORE_ARGS(...)
 
 ////////////////////////////////////////////////////////////////
 

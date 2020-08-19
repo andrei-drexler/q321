@@ -90,6 +90,12 @@
     <ClInclude Include="src\demo\cooked\cooked_models.h">
       <Filter>Cooked</Filter>
     </ClInclude>
+    <ClInclude Include="src\demo\menu.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\game_state.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\demo\demo.cpp">

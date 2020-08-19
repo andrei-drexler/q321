@@ -26,8 +26,8 @@
 	/*Name,					Flags*/\
 	x(Generic,				MapVertexBits)\
 	x(icon,					FSVertexBits)\
-	x(bglogo,				FSVertexBits)\
-	x(Loading,				FSVertexBits)\
+	x(bglogo,				FSVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull)\
+	x(Loading,				FSVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull)\
 	x(UI,					UIVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(Lmapped,				MapVertexBits)\
 	x(fixture,				MapVertexBits)\

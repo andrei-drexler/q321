@@ -30,6 +30,8 @@
 #include "cooked/cooked_maps.h"
 #include "map.h"
 #include "player.h"
+#include "game_state.h"
+#include "menu.h"
 
 ////////////////////////////////////////////////////////////////
 
@@ -39,24 +41,6 @@ namespace Demo {
 		16 * Mem::MB,	// level
 		16 * Mem::MB,	// dynamic
 	};
-
-	Sys::Thread				g_loading_thread;
-	bool					g_updated_lightmap;
-	Sys::Time				g_load_time;
-	Sys::Time				g_time;
-
-	FORCEINLINE bool IsLoading() {
-		return !Sys::IsThreadReady(g_loading_thread);
-	}
-
-	void GenerateLightmap(void*) {
-		g_updated_lightmap = false;
-		Map::ComputeLighting(Map::LightMode::Shadows);
-#ifdef ENABLE_RADIOSITY
-		if (r_bounce.integer)
-			Map::ComputeLighting(Map::LightMode::Bounce);
-#endif
-	}
 
 	void RenderSprite(const vec3& point, float size) {
 		using namespace Demo;
@@ -171,8 +155,8 @@ namespace Demo {
 			for (u32 i = 0; i < 3; ++i)
 				transform.position[i] = ent.origin[i];
 			float phase = (transform.position[0] + transform.position[1]) / 1024.f;
-			transform.position[2] += 4.f + 4.f * sin(Math::TAU * (float(g_time) + phase));
-			transform.angles[0] = ent.angle + float(g_time) * 180.f;
+			transform.position[2] += 4.f + 4.f * sin(Math::TAU * (float(g_level_time) + phase));
+			transform.angles[0] = ent.angle + float(g_level_time) * 180.f;
 
 			if (ent.IsWeapon()) {
 				transform.scale = 1.5f;
@@ -225,7 +209,7 @@ namespace Demo {
 		const float WeaponScale = 0.5f;
 		const float WeaponSway = 0.125f;
 		float speed = length(g_player.velocity.xy) * (WeaponScale / 320.f);
-		float idle = WeaponSway * (sin((float)g_time) * .5f + .5f);
+		float idle = WeaponSway * (sin((float)g_level_time) * .5f + .5f);
 
 		vec3 offset = g_weapon_offset;
 		offset.y += speed * sin(g_player.walk_cycle * 10.f) + idle;
@@ -382,12 +366,6 @@ namespace Demo {
 			return;
 		}
 
-		if (!g_updated_lightmap) {
-			Map::UpdateLightmapTexture();
-			g_updated_lightmap = true;
-			g_load_time = g_time;
-		}
-
 		Frame frame;
 		frame.pos			= g_player.position;
 		frame.pos.z			-= g_player.step;
@@ -409,13 +387,14 @@ namespace Demo {
 		frame.angles.y		-= abs(bob);
 		frame.angles.z		+= bob;
 		frame.fov			= mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
-		frame.time			= float(g_time - g_load_time);
+		frame.time			= float(g_level_time);
 		frame.shadow_angle	= g_player.shadow_angle;
 		frame.render_target	= Gfx::Backbuffer;
 
 		Gfx::Sync();
 		RenderWorld(frame);
 		RenderDebug();
+		Menu::Draw();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -450,19 +429,6 @@ namespace Demo {
 
 	////////////////////////////////////////////////////////////////
 
-	float g_delta_time;
-
-	NOINLINE void LoadMap(Map::ID id) {
-		Map::Load(id);
-		Map::UpdateLightmapTexture();
-
-		Demo::g_updated_lightmap = false;
-		Demo::g_loading_thread.work = &Demo::GenerateLightmap;
-		Sys::SpawnThread(Demo::g_loading_thread);
-
-		Demo::g_player.Spawn();
-	}
-
 	FORCEINLINE void Tick(float dt) {
 		assign_min(dt, 0.25f);
 		if (g_delta_time == 0.f)
@@ -471,13 +437,10 @@ namespace Demo {
 		g_delta_time = dt;
 
 		Sys::UpdateKeyboardState();
-		if (Sys::IsKeyFirstDown(Key::Escape))
-			Sys::Exit();
 		if (Sys::IsKeyFirstDown(Key::PrintScreen))
 			TakeScreenshot();
 		if (Sys::IsKeyFirstDown(Key::Backspace))
 			g_player.Spawn();
-
 		if (Sys::IsKeyFirstDown(Key::L))
 			r_lightmap.Toggle();
 		if (Sys::IsKeyFirstDown(Key::Backslash))
@@ -487,6 +450,17 @@ namespace Demo {
 		Sys::UpdateMouseState(mouse, dt);
 
 		if (!IsLoading()) {
+			if (!g_updated_lightmap) {
+				Map::UpdateLightmapTexture();
+				g_updated_lightmap = true;
+				g_level_time = Sys::Time{};
+			}
+
+			if (Menu::Update(dt))
+				return;
+
+			g_level_time += dt;
+
 			for (u32 entity_index = Map::num_brush_entities; entity_index < Map::num_entities; ++entity_index) {
 				Demo::Entity& entity = Map::entities[entity_index];
 				entity.respawn -= dt;
@@ -503,11 +477,6 @@ namespace Demo {
 			g_player.angles.y = clamp(g_player.angles.y, -85.f, 85.f);
 
 			g_player.Update(dt);
-
-			if (Sys::IsKeyFirstDown(Key::F3)) {
-				Map::ID next_map = Map::ID((u8(Map::current_id) + 1) % u8(Map::ID::Count));
-				LoadMap(next_map);
-			}
 		}
 	}
 
@@ -541,6 +510,7 @@ namespace Demo {
 		Demo::UpdateWindowIcon();
 		Demo::Model::LoadAll(cooked_models);
 		Demo::GenerateLevelShots();
+		Demo::Menu::Init();
 
 #ifdef SHOW_LIGHTMAP
 		Demo::r_lightmap.Set(1);

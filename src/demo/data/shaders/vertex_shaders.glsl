@@ -48,6 +48,7 @@ void UI() {
 	gl_Position = vec4(2. * P.x - 1., 1. - 2. * P.y, 1, 1);
 	UV = T.xy;
 	Clr = C;
+	Clr.xyz *= Clr.w; // convert to premultiplied alpha
 }
 void Lmapped() { Generic(); }
 void fixture() { Generic(); }

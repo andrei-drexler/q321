@@ -25,6 +25,7 @@
     <ClInclude Include="src\demo\cooked\cooked_shaders.h" />
     <ClInclude Include="src\demo\entity.h" />
     <ClInclude Include="src\demo\gfx_resources.h" />
+    <ClInclude Include="src\demo\game_state.h" />
     <ClInclude Include="src\demo\map.h" />
     <ClInclude Include="src\demo\map_lightmap.h" />
     <ClInclude Include="src\demo\map_partition.h" />
@@ -35,6 +36,7 @@
     <ClInclude Include="src\demo\player.h" />
     <ClInclude Include="src\demo\player_move.h" />
     <ClInclude Include="src\demo\resource_def.h" />
+    <ClInclude Include="src\demo\menu.h" />
     <ClInclude Include="src\engine\aabb.h" />
     <ClInclude Include="src\engine\demo.h" />
     <ClInclude Include="src\engine\gfx.h" />
