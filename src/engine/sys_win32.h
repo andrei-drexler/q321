@@ -757,11 +757,17 @@ FORCEINLINE void Sys::UpdateKeyboardState() {
 	else
 		MemSet(current_state, 0, 256);
 
-	for (u16 i = 0; i < 256; ++i)
-		g_key_state[i] = ((g_key_state[i] & 1) << 1) | (current_state[i] >> 7);
-
 	if (!g_repeat_flag)
 		g_repeat_key = 0;
+
+	for (u16 i = 0; i < 256; ++i) {
+		u8 down = current_state[i] >> 7;
+		g_key_state[i] = ((g_key_state[i] & 1) << 1) | down;
+		// disable auto-repeat when multiple keys are pressed
+		if (down && i != g_repeat_key && g_repeat_key)
+			g_repeat_key = 0;
+	}
+
 	g_repeat_flag = false;
 }
 

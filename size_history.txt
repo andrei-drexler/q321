@@ -1111,3 +1111,4 @@
 60888,diamond2c_ow uvs
 61253,very basic ingame menu
 61252,autorepeat for menu up/down
+61262,no autorepeat w/ multiple keys
