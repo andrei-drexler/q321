@@ -121,12 +121,12 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 	}
 
 	if (g_active) {
-		if (Sys::IsKeyFirstDown(Key::Up)) {
+		if (Sys::IsKeyRepeating(Key::Up)) {
 			if (--g_active->focus > g_active->num_items)
 				g_active->focus = g_active->num_items - 1;
 		}
 
-		if (Sys::IsKeyFirstDown(Key::Down)) {
+		if (Sys::IsKeyRepeating(Key::Down)) {
 			if (++g_active->focus == g_active->num_items)
 				g_active->focus = 0;
 		}

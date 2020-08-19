@@ -74,6 +74,9 @@ namespace Win32 {
 	i32 g_last_mouse_x;
 	i32 g_last_mouse_y;
 
+	WPARAM g_repeat_key;
+	bool g_repeat_flag;
+
 	Sys::Point GetPoint(LPARAM lParam) {
 		return { SHORT(LOWORD(lParam)), SHORT(HIWORD(lParam)) };
 	}
@@ -148,6 +151,12 @@ namespace Win32 {
 					window->flags &= ~Window::Flags::Active;
 				}
 				SetCursorPos(center.x, center.y);
+				return 0;
+			}
+
+			case WM_KEYDOWN: {
+				g_repeat_key = wParam;
+				g_repeat_flag = true;
 				return 0;
 			}
 
@@ -740,6 +749,8 @@ FORCEINLINE int Sys::RunApplication() {
 }
 
 FORCEINLINE void Sys::UpdateKeyboardState() {
+	using namespace Win32;
+
 	BYTE current_state[256];
 	if (g_window.flags & Window::Flags::Active)
 		::GetKeyboardState(current_state);
@@ -748,6 +759,14 @@ FORCEINLINE void Sys::UpdateKeyboardState() {
 
 	for (u16 i = 0; i < 256; ++i)
 		g_key_state[i] = ((g_key_state[i] & 1) << 1) | (current_state[i] >> 7);
+
+	if (!g_repeat_flag)
+		g_repeat_key = 0;
+	g_repeat_flag = false;
+}
+
+FORCEINLINE bool Sys::IsKeyRepeating(u8 key) {
+	return Win32::g_repeat_key == key;
 }
 
 FORCEINLINE void Sys::UpdateMouseState(vec2& pt, float dt) {

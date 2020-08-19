@@ -125,6 +125,7 @@ namespace Sys {
 	FORCEINLINE bool IsKeyFirstDown(u8 key)							{ return g_key_state[key] == 1; }
 	FORCEINLINE bool IsKeyReleased(u8 key)							{ return g_key_state[key] == 2; }
 	FORCEINLINE bool IsKeyToggled(u8 key, bool new_state = true)	{ return g_key_state[key] == (1 << (u8)new_state); }
+	bool IsKeyRepeating(u8 key); // returns true for the initial press, too!
 
 	void UpdateKeyboardState();
 	void UpdateMouseState(vec2& pt, float dt);
