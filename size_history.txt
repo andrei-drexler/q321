@@ -1112,3 +1112,4 @@
 61253,very basic ingame menu
 61252,autorepeat for menu up/down
 61262,no autorepeat w/ multiple keys
+61315,delay quad spawn

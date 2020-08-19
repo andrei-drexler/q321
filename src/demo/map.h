@@ -377,6 +377,11 @@ FORCEINLINE void Map::Details::InitEntities() {
 			*(i16*)dst_data = src_data[entity_index];
 		}
 	}
+
+	for (Demo::Entity *entity = entities, *end = entities + num_entities; entity != end; ++entity) {
+		if (entity->type == Demo::Entity::Type::item_quad)
+			entity->respawn = 45.f; // "wait" property
+	}
 }
 
 ////////////////////////////////////////////////////////////////
