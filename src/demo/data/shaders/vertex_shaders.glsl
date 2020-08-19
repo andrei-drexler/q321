@@ -43,6 +43,7 @@ void misc_model() {
 }
 void icon() { FS(); }
 void bglogo() { FS(); }
+void uiframe() { FS(); }
 void Loading() { FS(); }
 void UI() {
 	gl_Position = vec4(2. * P.x - 1., 1. - 2. * P.y, 1, 1);

@@ -2395,6 +2395,29 @@ TEX(bglogo) {
 	return c;
 }
 
+// menu/art/addbotframe.tga
+void uiframe() {
+	vec2 uv = UV - .5;
+	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
+	uv /= r / mx(r); // correct aspect ratio
+	uv /= Time.yz;
+
+	float
+		n = NT(uv, vec2(7)) * .8 + .6,
+		d = circ(uv, .48),
+		m = msk(d, .005),
+		i = msk(elips(uv, vec2(.42, .47)), .03);
+	vec3 c = RGB(144, 88, 66) * n;
+	m *= 1. - i * .5;
+	c *= 1. - i;
+	c *= 1.
+		- 2. * sqrt(tri(.0, .45, uv.y))
+		+ 4. * (uv.y + .5)
+		+ .5 * tri(.0, .01, d) * uv.x
+		;
+	FCol = vec4(c * m, m);
+}
+
 float banner_fold(vec2 uv, float s, float i, float amp) {
 	i = (uv.y - sqr(abs(uv.x - .5)) * amp) * s - i;
 	return 2. * tri(.5, .4, i) * (fract(i) - .5);

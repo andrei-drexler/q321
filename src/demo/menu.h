@@ -171,7 +171,9 @@ FORCEINLINE void Demo::Menu::Draw() {
 	if (!g_active)
 		return;
 
-	Gfx::SetShader(Shader::bglogo);
+	Gfx::SetShader(Shader::uiframe);
+	Uniform::Time.y = 7.f / 8.f;
+	Uniform::Time.z = 5.f / 8.f;
 	Gfx::DrawFullScreen();
 
 	vec2 pos = Gfx::GetResolution() * 0.5f;
@@ -179,7 +181,7 @@ FORCEINLINE void Demo::Menu::Draw() {
 	vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;
 
 	float line_height = ui_scale.y * 80.f;
-	pos.y -= line_height * 0.5f * float(g_active->num_items);
+	pos.y -= line_height * 0.5f * float(g_active->num_items - 1);
 
 	for (u32 item_index = 0; item_index < g_active->num_items; ++item_index) {
 		const char* text = g_active->items[item_index].text;
