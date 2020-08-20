@@ -111,7 +111,7 @@ FORCEINLINE void Demo::Menu::Init() {
 }
 
 FORCEINLINE bool Demo::Menu::Update(float dt) {
-	if (Sys::IsKeyFirstDown(Key::Escape)) {
+	if (Sys::IsKeyRepeating(Key::Escape)) {
 		if (g_active) {
 			g_active = nullptr;
 		} else {

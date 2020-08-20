@@ -1117,3 +1117,4 @@
 61304,range-based for loop
 61405,custom ingame menu background
 61404,tweaked text shadow distance
+61357,autorepeat esc toggle
