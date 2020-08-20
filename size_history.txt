@@ -1121,3 +1121,4 @@
 61416,added menu stack
 61376,tweaked menustate struct layout
 61374,tweaked menu set function
+61366,cycle items with tab

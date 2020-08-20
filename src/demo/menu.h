@@ -153,7 +153,7 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 				g_active->focus = g_active->num_items - 1;
 		}
 
-		if (Sys::IsKeyRepeating(Key::Down)) {
+		if (Sys::IsKeyRepeating(Key::Down) || Sys::IsKeyRepeating(Key::Tab)) {
 			if (++g_active->focus == g_active->num_items)
 				g_active->focus = 0;
 		}
