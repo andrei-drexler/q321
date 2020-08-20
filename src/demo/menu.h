@@ -103,9 +103,9 @@ FORCEINLINE void Demo::Menu::CloseAll() {
 }
 
 FORCEINLINE void Demo::Menu::Set(MenuState* menu) {
-	g_active = menu;
 	menu->focus = 0;
 	menu->prev = nullptr;
+	g_active = menu;
 }
 
 FORCEINLINE void Demo::Menu::Push(MenuState* menu) {

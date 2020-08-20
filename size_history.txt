@@ -1120,3 +1120,4 @@
 61357,autorepeat esc toggle
 61416,added menu stack
 61376,tweaked menustate struct layout
+61374,tweaked menu set function
