@@ -72,9 +72,10 @@ namespace Demo::Menu {
 	};
 
 	struct MenuState {
-		ItemState*				items;
 		u32						num_items;
 		u32						focus;
+		ItemState*				items;
+		MenuState*				prev;
 	};
 
 	ItemState					items[Details::ItemCount];
@@ -88,6 +89,34 @@ namespace Demo::Menu {
 	};
 
 	MenuState*					g_active;
+
+	void						CloseAll();
+	void						Set(MenuState* menu);
+	void						Push(MenuState* menu);
+	void						CloseCurrent();
+}
+
+////////////////////////////////////////////////////////////////
+
+FORCEINLINE void Demo::Menu::CloseAll() {
+	g_active = nullptr;
+}
+
+FORCEINLINE void Demo::Menu::Set(MenuState* menu) {
+	g_active = menu;
+	menu->focus = 0;
+	menu->prev = nullptr;
+}
+
+FORCEINLINE void Demo::Menu::Push(MenuState* menu) {
+	menu->focus = 0;
+	menu->prev = g_active;
+	g_active = menu;
+}
+
+FORCEINLINE void Demo::Menu::CloseCurrent() {
+	assert(g_active);
+	g_active = g_active->prev;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -112,12 +141,10 @@ FORCEINLINE void Demo::Menu::Init() {
 
 FORCEINLINE bool Demo::Menu::Update(float dt) {
 	if (Sys::IsKeyRepeating(Key::Escape)) {
-		if (g_active) {
-			g_active = nullptr;
-		} else {
-			g_active = &InGame;
-			g_active->focus = 0;
-		}
+		if (g_active)
+			CloseCurrent();
+		else
+			Set(&InGame);
 	}
 
 	if (g_active) {
@@ -136,11 +163,11 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 
 			switch (g_active->items[g_active->focus].action) {
 				case Action::ResumeGame:
-					g_active = nullptr;
+					CloseAll();
 					break;
 
 				case Action::CloseMenu:
-					g_active = nullptr;
+					CloseCurrent();
 					break;
 
 				case Action::Options:
@@ -148,7 +175,7 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 
 				case Action::NextMap:
 					LoadNextMap();
-					g_active = nullptr;
+					CloseAll();
 					break;
 
 				case Action::QuitMap:

@@ -1118,3 +1118,5 @@
 61405,custom ingame menu background
 61404,tweaked text shadow distance
 61357,autorepeat esc toggle
+61416,added menu stack
+61376,tweaked menustate struct layout
