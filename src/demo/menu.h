@@ -9,12 +9,12 @@
 		item("NEXT ARENA",		NextMap,			0)\
 		item("LEAVE ARENA",		QuitMap,			0)\
 		item("EXIT GAME",		ConfirmExitGame,	0)\
-	end(InGame)\
+	end()\
 	begin(ExitGameModal)\
 		item("EXIT GAME?",		CloseMenu,			Item::Flags::Decoration)\
 		item("YES",				ExitGame,			0)\
 		item("NO",				CloseMenu,			0)\
-	end(ExitGameModal)\
+	end()\
 
 ////////////////////////////////////////////////////////////////
 
