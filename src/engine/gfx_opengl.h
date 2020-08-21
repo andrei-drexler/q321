@@ -199,7 +199,6 @@ namespace GL {
 		using namespace Gfx::Shader;
 		switch (index) {
 			default:
-				assert(!"Unhandled blending mode");
 				[[fallthrough]];
 			case Flags::Opaque        >> Flags::ShiftBlend: return {GL_ONE, GL_ZERO};
 			case Flags::Premultiplied >> Flags::ShiftBlend: return {GL_ONE, GL_ONE_MINUS_SRC_ALPHA};

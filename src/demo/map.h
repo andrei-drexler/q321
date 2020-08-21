@@ -378,7 +378,7 @@ FORCEINLINE void Map::Details::InitEntities() {
 		}
 	}
 
-	for (Demo::Entity *entity = entities, *end = entities + num_entities; entity != end; ++entity) {
+	for (Demo::Entity *entity = &entities[0], *end = &entities[0] + num_entities; entity != end; ++entity) {
 		if (entity->type == Demo::Entity::Type::item_quad)
 			entity->respawn = 45.f; // "wait" property
 	}
