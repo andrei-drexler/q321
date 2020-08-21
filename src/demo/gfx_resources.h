@@ -233,7 +233,7 @@ namespace Demo {
 
 				vec2 font_scale = UI::FontScale[UI::LargeFont] * 0.75f;
 				vec2 pos = {0.f, -128.f};
-				UI::PrintShadowed("starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
+				UI::PrintShadowed("Starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
 				UI::FlushGeometry();
 			}
 

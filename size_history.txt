@@ -1128,3 +1128,4 @@
 61508,focus no in exit confirmation
 61523,better ui scaling on non-16/9
 61441,virtual ui resolution
+61440,tweaked startup string
