@@ -109,9 +109,9 @@ namespace Demo::Menu {
 
 	Menu::State*				g_active;
 
-	enum class Direction {
-		Back,
-		Forward,
+	enum class Direction : i32 {
+		Back = -1,
+		Forward = +1,
 	};
 
 	void						FocusFirstItem();
@@ -129,15 +129,22 @@ FORCEINLINE void Demo::Menu::FocusFirstItem() {
 }
 
 NOINLINE void Demo::Menu::AdvanceFocus(Direction direction) {
+	i32 delta = i32(direction);
+	u32 num_items = g_active->num_items;
+	u32 focus = g_active->focus;
+	const Item::State* items = g_active->items;
+	u32 wrap = (num_items - 1) & (delta >> 31); // delta > 0 ? 0 : num_items - 1;
+	
 	do {
-		if (direction == Direction::Back) {
-			if (--g_active->focus >= g_active->num_items)
-				g_active->focus = g_active->num_items - 1;
-		} else {
-			if (++g_active->focus >= g_active->num_items)
-				g_active->focus = 0;
-		}
-	} while (g_active->items[g_active->focus].flags & Item::Flags::Decoration);
+		focus += delta;
+		// Note: underflows if direction is -1 and focus is 0,
+		// producing a number that is definitely > num_items.
+		// This allows us to use the same wrap-around check for both directions!
+		if (focus >= num_items)
+			focus = wrap;
+	} while (items[focus].flags & Item::Flags::Decoration);
+	
+	g_active->focus = focus;
 }
 
 NOINLINE void Demo::Menu::Push(Menu::State* menu) {

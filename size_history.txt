@@ -1130,3 +1130,4 @@
 61441,virtual ui resolution
 61440,tweaked startup string
 61405,const print params
+61400,tweaked advancefocus
