@@ -235,8 +235,15 @@ FORCEINLINE void Demo::Menu::Draw() {
 		return;
 
 	Gfx::SetShader(Shader::uiframe);
-	Uniform::Time.y = 7.f / 8.f;
-	Uniform::Time.z = 5.f / 8.f;
+	if (g_active->prev) {
+		// nested menu
+		Uniform::Time.y = 5.f / 8.f;
+		Uniform::Time.z = 3.5f / 8.f;
+	} else {
+		// top-level menu
+		Uniform::Time.y = 7.f / 8.f;
+		Uniform::Time.z = 5.f / 8.f;
+	}
 	Gfx::DrawFullScreen();
 
 	vec2 pos = Gfx::GetResolution() * 0.5f;
@@ -244,7 +251,7 @@ FORCEINLINE void Demo::Menu::Draw() {
 	vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;
 
 	float line_height = ui_scale.y * 80.f;
-	pos.y -= line_height * 0.5f * float(g_active->num_items - 1);
+	pos.y -= line_height * 0.5f * float(g_active->num_items - 1) - 16.f * ui_scale.y;
 
 	for (u32 item_index = 0; item_index < g_active->num_items; ++item_index) {
 		const char* text = g_active->items[item_index].text;
