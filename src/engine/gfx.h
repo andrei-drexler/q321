@@ -287,6 +287,7 @@ namespace Gfx {
 	void Sync();
 
 	vec2 GetResolution();
+	float GetAspectRatio();
 
 	////////////////////////////////////////////////////////////////
 

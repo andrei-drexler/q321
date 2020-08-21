@@ -135,6 +135,12 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	namespace UI {
+		static constexpr float
+			VirtualHalfWidth  = 512.f,
+			VirtualHalfHeight = 512.f
+		;
+		static constexpr float VirtualAspectRatio = VirtualHalfWidth / VirtualHalfHeight;
+
 		/* Fonts */
 		
 		enum Font {
@@ -144,8 +150,6 @@ namespace Demo {
 
 			FontCount,
 		};
-
-		vec2 GetScale()				{ return {float(Sys::g_window.width)/1920.f, float(Sys::g_window.height)/1080.f}; }
 
 		Sys::Font::Glyph			glyphs[FontCount][Sys::Font::Glyph::Count];
 		const Sys::Font::Glyph&		GetGlyph(char c, UI::Font font = UI::SmallFont);
@@ -227,9 +231,8 @@ namespace Demo {
 				Gfx::SetShader(Shader::bglogo);
 				Gfx::DrawFullScreen();
 
-				vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.375f};
-				float ui_scale = min_component(UI::GetScale()) * 0.75f;
-				vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale;
+				vec2 font_scale = UI::FontScale[UI::LargeFont] * 0.75f;
+				vec2 pos = {0.f, -128.f};
 				UI::PrintShadowed("starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
 				UI::FlushGeometry();
 			}
@@ -499,7 +502,7 @@ NOINLINE void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const v
 		u32 pass_color = color;
 		vec2 cursor = pos;
 		if (!pass) {
-			cursor += 5.f * min_component(GetScale());
+			cursor += 4.f * scale.y;
 			pass_color &= 0xFF000000;
 		}
 		Print(text, cursor, scale, pass_color, align, font);
@@ -543,7 +546,17 @@ NOINLINE void Demo::UI::FlushGeometry() {
 	u32 num_vertices = num_quads * 4;
 	u32 num_indices = num_quads * 6;
 
-	vec2 scale = 1.f / Gfx::GetResolution();
+	float real_aspect = Gfx::GetAspectRatio();
+
+	vec2 scale;
+	if (real_aspect > UI::VirtualAspectRatio) {
+		scale.x = 1.f / VirtualHalfHeight / real_aspect;
+		scale.y = -1.f / VirtualHalfHeight;
+	} else {
+		scale.x = 1.f / VirtualHalfWidth;
+		scale.y = real_aspect / -VirtualHalfWidth;
+	}
+
 	for (u16 i = 0, count = num_vertices; i < count; ++i)
 		vertices[i].pos *= scale;
 

@@ -872,3 +872,7 @@ FORCEINLINE void Gfx::Sync() {
 FORCEINLINE vec2 Gfx::GetResolution() {
 	return {(float)Sys::g_window.width, (float)Sys::g_window.height};
 }
+
+FORCEINLINE float Gfx::GetAspectRatio() {
+	return float(Sys::g_window.width) / float(Sys::g_window.height);
+}
