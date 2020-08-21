@@ -8,8 +8,13 @@
 		item("SETUP",			Options,			0)\
 		item("NEXT ARENA",		NextMap,			0)\
 		item("LEAVE ARENA",		QuitMap,			0)\
-		item("EXIT GAME",		ExitGame,			0)\
+		item("EXIT GAME",		ConfirmExitGame,	0)\
 	end(InGame)\
+	begin(ExitGameModal)\
+		item("EXIT GAME?",		CloseMenu,			Item::Flags::Decoration)\
+		item("YES",				ExitGame,			0)\
+		item("NO",				CloseMenu,			0)\
+	end(ExitGameModal)\
 
 ////////////////////////////////////////////////////////////////
 
@@ -24,6 +29,7 @@ namespace Demo::Menu {
 		Options,
 		NextMap,
 		QuitMap,
+		ConfirmExitGame,
 		ExitGame,
 
 		Count,
@@ -90,7 +96,6 @@ namespace Demo::Menu {
 		Item::State*			items;
 		Menu::State*			prev;
 	};
-
 
 	Item::State					items[Details::ItemCount];
 	static union {
@@ -206,6 +211,10 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 					break;
 
 				case Action::QuitMap:
+					break;
+
+				case Action::ConfirmExitGame:
+					Push(&ExitGameModal);
 					break;
 
 				case Action::ExitGame:

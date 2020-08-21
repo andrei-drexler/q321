@@ -1123,3 +1123,4 @@
 61374,tweaked menu set function
 61366,cycle items with tab
 61443,decorative menu items
+61510,game exit confirmation menu
