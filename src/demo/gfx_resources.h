@@ -231,8 +231,10 @@ namespace Demo {
 				Gfx::SetShader(Shader::bglogo);
 				Gfx::DrawFullScreen();
 
-				vec2 font_scale = UI::FontScale[UI::LargeFont] * 0.75f;
-				vec2 pos = {0.f, -128.f};
+				static constexpr vec2
+					font_scale = UI::FontScale[UI::LargeFont] * 0.75f,
+					pos = {0.f, -128.f}
+				;
 				UI::PrintShadowed("Starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
 				UI::FlushGeometry();
 			}

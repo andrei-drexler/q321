@@ -329,8 +329,8 @@ namespace Demo {
 		Gfx::UpdateUniforms();
 		Gfx::DrawFullScreen();
 
-		float line_height = 80.f;
-		vec2 font_scale = UI::FontScale[UI::LargeFont];
+		const float line_height = 80.f;
+		const vec2& font_scale = UI::FontScale[UI::LargeFont];
 		vec2 pos = {0.f, line_height * -5.f};
 
 		using namespace LoadingScreen;

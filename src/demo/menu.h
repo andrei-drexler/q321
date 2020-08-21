@@ -247,15 +247,15 @@ FORCEINLINE void Demo::Menu::Draw() {
 	}
 	Gfx::DrawFullScreen();
 
-	float line_height = 80.f;
-	vec2 font_scale = UI::FontScale[UI::LargeFont];
+	const float line_height = 80.f;
+	const vec2& font_scale = UI::FontScale[UI::LargeFont];
 	vec2 pos = {0.f, 16.f - line_height * 0.5f * float(g_active->num_items - 1)};
 
 	for (u32 item_index = 0; item_index < g_active->num_items; ++item_index) {
 		const char* text = g_active->items[item_index].text;
 		bool focused = g_active->focus == item_index;
 		u32 color = focused ? Details::FocusFolor : Details::ItemColor;
-		
+
 		UI::PrintShadowed(text, pos, font_scale, color, 0.5f, UI::LargeFont);
 
 		if (focused) {
