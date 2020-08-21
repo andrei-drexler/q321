@@ -248,11 +248,11 @@ FORCEINLINE void Demo::Menu::Draw() {
 	Gfx::DrawFullScreen();
 
 	vec2 pos = Gfx::GetResolution() * 0.5f;
-	vec2 ui_scale = UI::GetScale();
-	vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;
+	float ui_scale = min_component(UI::GetScale());
+	vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale;
 
-	float line_height = ui_scale.y * 80.f;
-	pos.y -= line_height * 0.5f * float(g_active->num_items - 1) - 16.f * ui_scale.y;
+	float line_height = ui_scale * 80.f;
+	pos.y -= line_height * 0.5f * float(g_active->num_items - 1) - 16.f * ui_scale;
 
 	for (u32 item_index = 0; item_index < g_active->num_items; ++item_index) {
 		const char* text = g_active->items[item_index].text;

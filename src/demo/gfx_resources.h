@@ -228,8 +228,8 @@ namespace Demo {
 				Gfx::DrawFullScreen();
 
 				vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.375f};
-				vec2 ui_scale = UI::GetScale() * 0.75f;
-				vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;
+				float ui_scale = min_component(UI::GetScale()) * 0.75f;
+				vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale;
 				UI::PrintShadowed("starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
 				UI::FlushGeometry();
 			}
@@ -499,7 +499,7 @@ NOINLINE void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const v
 		u32 pass_color = color;
 		vec2 cursor = pos;
 		if (!pass) {
-			cursor += 5.f * GetScale().y;
+			cursor += 5.f * min_component(GetScale());
 			pass_color &= 0xFF000000;
 		}
 		Print(text, cursor, scale, pass_color, align, font);

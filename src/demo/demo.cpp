@@ -329,9 +329,11 @@ namespace Demo {
 		Gfx::UpdateUniforms();
 		Gfx::DrawFullScreen();
 
-		vec2 pos = Gfx::GetResolution() * vec2{0.5f, 0.125f};
-		vec2 ui_scale = UI::GetScale();
-		vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale.y;
+		vec2 pos = Gfx::GetResolution() * 0.5f;
+		float ui_scale = min_component(UI::GetScale());
+		float line_height = ui_scale * 80.f;
+		vec2 font_scale = UI::FontScale[UI::LargeFont] * ui_scale;
+		pos.y -= line_height * 5.f;
 
 		using namespace LoadingScreen;
 
@@ -353,7 +355,7 @@ namespace Demo {
 			}
 
 			UI::PrintShadowed(text, pos, font_scale, -1, 0.5f, UI::LargeFont);
-			pos.y += ui_scale.y * 80.f;
+			pos.y += line_height;
 		}
 		UI::FlushGeometry();
 	}
