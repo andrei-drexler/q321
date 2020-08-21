@@ -1125,3 +1125,4 @@
 61443,decorative menu items
 61510,game exit confirmation menu
 61488,tweaked menu layout
+61508,focus no in exit confirmation

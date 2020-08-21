@@ -215,6 +215,7 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 
 				case Action::ConfirmExitGame:
 					Push(&ExitGameModal);
+					AdvanceFocus(); // focus 'NO'
 					break;
 
 				case Action::ExitGame:
