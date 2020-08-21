@@ -4,11 +4,11 @@
 
 #define DEMO_MENUS(begin, item, end)\
 	begin(InGame)\
-		item("RESUME GAME",		ResumeGame)\
-		item("SETUP",			Options)\
-		item("NEXT ARENA",		NextMap)\
-		item("LEAVE ARENA",		QuitMap)\
-		item("EXIT GAME",		ExitGame)\
+		item("RESUME GAME",		CloseMenu,			0)\
+		item("SETUP",			Options,			0)\
+		item("NEXT ARENA",		NextMap,			0)\
+		item("LEAVE ARENA",		QuitMap,			0)\
+		item("EXIT GAME",		ExitGame,			0)\
 	end(InGame)\
 
 ////////////////////////////////////////////////////////////////
@@ -19,14 +19,26 @@ namespace Demo::Menu {
 	void Draw();
 
 	enum class Action : u8 {
-		ResumeGame,
 		CloseMenu,
+		ResumeGame,
 		Options,
 		NextMap,
 		QuitMap,
 		ExitGame,
 
 		Count,
+	};
+
+	namespace Item {
+		enum Flags {
+			Decoration			= 1 << 0,
+		};
+
+		struct State {
+			const char*			text;
+			u16					flags;
+			Action				action;
+		};
 	};
 
 	namespace Details {
@@ -36,7 +48,7 @@ namespace Demo::Menu {
 		;
 
 		enum {
-			#define PP_COUNT_ITEM(caption, action) +1
+			#define PP_COUNT_ITEM(caption, action, flags) +1
 			ItemCount = DEMO_MENUS(PP_IGNORE_ARGS, PP_COUNT_ITEM, PP_IGNORE_ARGS),
 			#undef PP_COUNT_ITEM
 
@@ -46,19 +58,25 @@ namespace Demo::Menu {
 		};
 
 		static constexpr char ItemStringList[] =
-			#define PP_ADD_ITEM_STRING(caption, action) caption "\0"
+			#define PP_ADD_ITEM_STRING(caption, action, flags) caption "\0"
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_STRING, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_STRING
 		;
 
 		static constexpr Action ItemActions[ItemCount] = {
-			#define PP_ADD_ITEM_ACTION(caption, action) Action::action,
+			#define PP_ADD_ITEM_ACTION(caption, action, flags) Action::action,
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_ACTION, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_ACTION
 		};
 
+		static constexpr u16 ItemFlags[ItemCount] = {
+			#define PP_ADD_ITEM_FLAGS(caption, action, flags) flags,
+			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_FLAGS, PP_IGNORE_ARGS)
+			#undef PP_ADD_ITEM_FLAGS
+		};
+
 		static constexpr u8 MenuItemCounts[MenuCount] = {
-			#define PP_COUNT_ITEM(caption, action) +1
+			#define PP_COUNT_ITEM(caption, action, flags) +1
 			#define PP_ADD_COMMA(...) ,
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_COUNT_ITEM, PP_ADD_COMMA)
 			#undef PP_COUNT_ITEM
@@ -66,52 +84,61 @@ namespace Demo::Menu {
 		};
 	}
 
-	struct ItemState {
-		const char*				text;
-		Action					action;
-	};
-
-	struct MenuState {
+	struct State {
 		u32						num_items;
 		u32						focus;
-		ItemState*				items;
-		MenuState*				prev;
+		Item::State*			items;
+		Menu::State*			prev;
 	};
 
-	ItemState					items[Details::ItemCount];
+
+	Item::State					items[Details::ItemCount];
 	static union {
-		MenuState				list[Details::MenuCount];
+		Menu::State				list[Details::MenuCount];
 		struct {
-			#define PP_ADD_MENU(name) MenuState name;
+			#define PP_ADD_MENU(name) Menu::State name;
 			DEMO_MENUS(PP_ADD_MENU, PP_IGNORE_ARGS, PP_IGNORE_ARGS)
 			#undef PP_ADD_MENU
 		};
 	};
 
-	MenuState*					g_active;
+	Menu::State*				g_active;
 
+	enum class Direction {
+		Back,
+		Forward,
+	};
+
+	void						FocusFirstItem();
+	void						AdvanceFocus(Direction direction = Direction::Forward);
+	void						Push(Menu::State* menu);
 	void						CloseAll();
-	void						Set(MenuState* menu);
-	void						Push(MenuState* menu);
 	void						CloseCurrent();
 }
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Demo::Menu::CloseAll() {
-	g_active = nullptr;
+FORCEINLINE void Demo::Menu::FocusFirstItem() {
+	g_active->focus = g_active->num_items;
+	AdvanceFocus();
 }
 
-FORCEINLINE void Demo::Menu::Set(MenuState* menu) {
-	menu->focus = 0;
-	menu->prev = nullptr;
-	g_active = menu;
+NOINLINE void Demo::Menu::AdvanceFocus(Direction direction) {
+	do {
+		if (direction == Direction::Back) {
+			if (--g_active->focus >= g_active->num_items)
+				g_active->focus = g_active->num_items - 1;
+		} else {
+			if (++g_active->focus >= g_active->num_items)
+				g_active->focus = 0;
+		}
+	} while (g_active->items[g_active->focus].flags & Item::Flags::Decoration);
 }
 
-FORCEINLINE void Demo::Menu::Push(MenuState* menu) {
-	menu->focus = 0;
+NOINLINE void Demo::Menu::Push(Menu::State* menu) {
 	menu->prev = g_active;
 	g_active = menu;
+	FocusFirstItem();
 }
 
 FORCEINLINE void Demo::Menu::CloseCurrent() {
@@ -119,19 +146,24 @@ FORCEINLINE void Demo::Menu::CloseCurrent() {
 	g_active = g_active->prev;
 }
 
+FORCEINLINE void Demo::Menu::CloseAll() {
+	g_active = nullptr;
+}
+
 ////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Demo::Menu::Init() {
 	u32 item_index = 0;
 	for (const char* text = Details::ItemStringList; *text; text = NextAfter(text), ++item_index) {
-		ItemState& item = items[item_index];
+		Item::State& item = items[item_index];
 		item.text = text;
+		item.flags = Details::ItemFlags[item_index];
 		item.action = Details::ItemActions[item_index];
 	}
 
 	item_index = 0;
 	for (u32 menu_index = 0; menu_index < Details::MenuCount; ++menu_index) {
-		MenuState& menu = list[menu_index];
+		Menu::State& menu = list[menu_index];
 		u32 num_items = Details::MenuItemCounts[menu_index];
 		menu.items = &items[item_index];
 		menu.num_items = num_items;
@@ -144,19 +176,14 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 		if (g_active)
 			CloseCurrent();
 		else
-			Set(&InGame);
+			Push(&InGame);
 	}
 
 	if (g_active) {
-		if (Sys::IsKeyRepeating(Key::Up)) {
-			if (--g_active->focus > g_active->num_items)
-				g_active->focus = g_active->num_items - 1;
-		}
-
-		if (Sys::IsKeyRepeating(Key::Down) || Sys::IsKeyRepeating(Key::Tab)) {
-			if (++g_active->focus == g_active->num_items)
-				g_active->focus = 0;
-		}
+		if (Sys::IsKeyRepeating(Key::Up))
+			AdvanceFocus(Direction::Back);
+		else if (Sys::IsKeyRepeating(Key::Down) || Sys::IsKeyRepeating(Key::Tab))
+			AdvanceFocus(Direction::Forward);
 
 		if (Sys::IsKeyFirstDown(Key::Enter)) {
 			assert(g_active->focus < g_active->num_items);
