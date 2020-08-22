@@ -5,7 +5,7 @@ pushd %~dp0
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set crinkler_options=/COMPMODE:FAST
-::set crinkler_options=/COMPMODE:FAST /ORDERTRIES:4000 /HASHTRIES:300
+::set crinkler_options=/COMPMODE:FAST /ORDERTRIES:6000 /HASHTRIES:300
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -66,7 +66,7 @@ for %%f in (src\demo\*.cpp) do (
 	set obj_files=!obj_files! !obj_folder!%%~nf.obj
 )
 
-%crinkler% /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /CRINKLER /TRUNCATEFLOATS %crinkler_options% /SATURATE /NOINITIALIZERS /TRANSFORM:CALLS %obj_files% %libs% %range_libs% /REPORT:!out_folder!report.html /NODEFAULTLIB /OUT:%exe_path%
+%crinkler% /PRIORITY:IDLE /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /CRINKLER /TRUNCATEFLOATS %crinkler_options% /SATURATE /NOINITIALIZERS /TRANSFORM:CALLS %obj_files% %libs% %range_libs% /REPORT:!out_folder!report.html /REUSE:!out_folder!reuse.dat /REUSEMODE:WRITE /NODEFAULTLIB /OUT:%exe_path%
 
 set /p comment=Log comment: 
 ::for %%f in (%exe_path%) do @echo %isodate%,%%~zf,%comment%>>%size_log%
