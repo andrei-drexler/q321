@@ -1131,3 +1131,4 @@
 61440,tweaked startup string
 61405,const print params
 61400,tweaked advancefocus
+61388,changed vertical ui orientation

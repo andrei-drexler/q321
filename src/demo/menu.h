@@ -256,7 +256,7 @@ FORCEINLINE void Demo::Menu::Draw() {
 
 	const float line_height = 80.f;
 	const vec2& font_scale = UI::FontScale[UI::LargeFont];
-	vec2 pos = {0.f, 16.f - line_height * 0.5f * float(g_active->num_items - 1)};
+	vec2 pos = {0.f, line_height * 0.5f * float(g_active->num_items - 1) - 16.f};
 
 	for (u32 item_index = 0; item_index < g_active->num_items; ++item_index) {
 		const char* text = g_active->items[item_index].text;
@@ -271,7 +271,7 @@ FORCEINLINE void Demo::Menu::Draw() {
 			UI::Print(text, pos, font_scale, color, 0.5f, UI::LargeFontBlurry);
 		}
 
-		pos.y += line_height;
+		pos.y -= line_height;
 	}
 
 	UI::FlushGeometry();

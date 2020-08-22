@@ -233,7 +233,7 @@ namespace Demo {
 
 				static constexpr vec2
 					font_scale = UI::FontScale[UI::LargeFont] * 0.75f,
-					pos = {0.f, -128.f}
+					pos = {0.f, 128.f}
 				;
 				UI::PrintShadowed("Starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
 				UI::FlushGeometry();
@@ -467,9 +467,9 @@ NOINLINE i32 Demo::UI::Measure(const char* text, Font font) {
 }
 
 NOINLINE void Demo::UI::Print(const char* text, const vec2& pos, vec2 scale, u32 color, float align, Font font) {
-	vec2 cursor = pos;
-	cursor.x -= align * Measure(text, font) * scale.x;
-	scale.y = -scale.y;
+	vec2 cursor;
+	cursor.x = pos.x - align * Measure(text, font) * scale.x;
+	cursor.y = pos.y;
 
 	u32 num_chars = StrLen(text);
 
@@ -504,7 +504,9 @@ NOINLINE void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const v
 		u32 pass_color = color;
 		vec2 cursor = pos;
 		if (!pass) {
-			cursor += 4.f * scale.y;
+			float shadow_dist = 4.f * scale.y;
+			cursor.x += shadow_dist;
+			cursor.y -= shadow_dist;
 			pass_color &= 0xFF000000;
 		}
 		Print(text, cursor, scale, pass_color, align, font);
@@ -553,10 +555,10 @@ NOINLINE void Demo::UI::FlushGeometry() {
 	vec2 scale;
 	if (real_aspect > UI::VirtualAspectRatio) {
 		scale.x = 1.f / VirtualHalfHeight / real_aspect;
-		scale.y = -1.f / VirtualHalfHeight;
+		scale.y = 1.f / VirtualHalfHeight;
 	} else {
 		scale.x = 1.f / VirtualHalfWidth;
-		scale.y = real_aspect / -VirtualHalfWidth;
+		scale.y = real_aspect / VirtualHalfWidth;
 	}
 
 	for (u16 i = 0, count = num_vertices; i < count; ++i)

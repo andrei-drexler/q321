@@ -331,7 +331,7 @@ namespace Demo {
 
 		const float line_height = 80.f;
 		const vec2& font_scale = UI::FontScale[UI::LargeFont];
-		vec2 pos = {0.f, line_height * -5.f};
+		vec2 pos = {0.f, line_height * 5.f};
 
 		using namespace LoadingScreen;
 
@@ -353,7 +353,7 @@ namespace Demo {
 			}
 
 			UI::PrintShadowed(text, pos, font_scale, -1, 0.5f, UI::LargeFont);
-			pos.y += line_height;
+			pos.y -= line_height;
 		}
 		UI::FlushGeometry();
 	}
