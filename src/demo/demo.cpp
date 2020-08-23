@@ -441,30 +441,22 @@ namespace Demo {
 		dt = mix(g_delta_time, dt, 0.125f);
 		g_delta_time = dt;
 
-		Sys::UpdateKeyboardState();
-		if (Sys::IsKeyFirstDown(Key::PrintScreen))
-			TakeScreenshot();
-		if (Sys::IsKeyFirstDown(Key::Backspace))
-			g_player.Spawn();
-		if (Sys::IsKeyFirstDown(Key::L))
-			r_lightmap.Toggle();
-		if (Sys::IsKeyFirstDown(Key::Backslash))
-			g_player.flags ^= Player::Flag::NoClip;
-
 		vec2 mouse;
 		Sys::UpdateMouseState(mouse, dt);
+		Sys::UpdateKeyboardState();
 
-		if (!Map::IsLoaded()) {
-			Menu::Update(dt);
-		} else if (!IsLoading()) {
+		if (Sys::IsKeyFirstDown(Key::PrintScreen))
+			TakeScreenshot();
+
+		if (Menu::Update(dt))
+			return;
+
+		if (Map::IsLoaded() && !IsLoading()) {
 			if (!g_updated_lightmap) {
 				Map::UpdateLightmapTexture();
 				g_updated_lightmap = true;
 				g_level_time = Sys::Time{};
 			}
-
-			if (Menu::Update(dt))
-				return;
 
 			g_level_time += dt;
 
@@ -474,6 +466,13 @@ namespace Demo {
 				if (entity.respawn < 0.f)
 					entity.respawn = 0.f;
 			}
+
+			if (Sys::IsKeyFirstDown(Key::Backspace))
+				g_player.Spawn();
+			if (Sys::IsKeyFirstDown(Key::L))
+				r_lightmap.Toggle();
+			if (Sys::IsKeyFirstDown(Key::Backslash))
+				g_player.flags ^= Player::Flag::NoClip;
 
 			float fov = mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
 			float zoom_scale = tan(fov * (0.5f * Math::DEG2RAD)) / tan(cg_fov.value * (0.5f * Math::DEG2RAD));

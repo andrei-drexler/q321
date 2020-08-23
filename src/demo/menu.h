@@ -195,7 +195,7 @@ FORCEINLINE void Demo::Menu::ShowMainMenu() {
 	Push(&MainMenu);
 }
 
-NOINLINE bool Demo::Menu::Update(float dt) {
+FORCEINLINE bool Demo::Menu::Update(float dt) {
 	if (Sys::IsKeyRepeating(Key::Escape)) {
 		if (g_active) {
 			if (g_active->prev || Map::IsLoaded()) // don't close main menu
