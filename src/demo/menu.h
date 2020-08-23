@@ -54,13 +54,8 @@ namespace Demo::Menu {
 		;
 
 		enum {
-			#define PP_COUNT_ITEM(caption, action, flags) +1
-			ItemCount = DEMO_MENUS(PP_IGNORE_ARGS, PP_COUNT_ITEM, PP_IGNORE_ARGS),
-			#undef PP_COUNT_ITEM
-
-			#define PP_COUNT_MENU(name) +1
-			MenuCount = DEMO_MENUS(PP_COUNT_MENU, PP_IGNORE_ARGS, PP_IGNORE_ARGS),
-			#undef PP_COUNT_MENU
+			ItemCount = DEMO_MENUS(PP_IGNORE_ARGS, PP_INCREMENT, PP_IGNORE_ARGS),
+			MenuCount = DEMO_MENUS(PP_INCREMENT, PP_IGNORE_ARGS, PP_IGNORE_ARGS),
 		};
 
 		static constexpr char ItemStringList[] =
@@ -82,11 +77,7 @@ namespace Demo::Menu {
 		};
 
 		static constexpr u8 MenuItemCounts[MenuCount] = {
-			#define PP_COUNT_ITEM(caption, action, flags) +1
-			#define PP_ADD_COMMA(...) ,
-			DEMO_MENUS(PP_IGNORE_ARGS, PP_COUNT_ITEM, PP_ADD_COMMA)
-			#undef PP_COUNT_ITEM
-			#undef PP_ADD_COMMA
+			DEMO_MENUS(PP_IGNORE_ARGS, PP_INCREMENT, PP_ADD_COMMA)
 		};
 	}
 
