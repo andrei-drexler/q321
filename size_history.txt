@@ -1136,3 +1136,4 @@
 61499,basic main menu
 61483,tweaked tick function
 61483,nextafter map helper
+61483,changed isloading to ismapready

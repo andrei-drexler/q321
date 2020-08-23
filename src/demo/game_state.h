@@ -7,8 +7,8 @@ namespace Demo {
 	Sys::Time				g_time;
 	float					g_delta_time;
 
-	FORCEINLINE bool IsLoading() {
-		return !Sys::IsThreadReady(g_loading_thread);
+	FORCEINLINE bool IsMapReady() {
+		return Sys::IsThreadReady(g_loading_thread);
 	}
 
 	void GenerateLightmap(void*) {

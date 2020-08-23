@@ -362,7 +362,7 @@ namespace Demo {
 
 	FORCEINLINE void RenderFrame() {
 		if (Map::IsLoaded()) {
-			if (IsLoading()) {
+			if (!IsMapReady()) {
 				RenderLoadingScreen();
 				return;
 			}
@@ -451,7 +451,7 @@ namespace Demo {
 		if (Menu::Update(dt))
 			return;
 
-		if (Map::IsLoaded() && !IsLoading()) {
+		if (Map::IsLoaded() && IsMapReady()) {
 			if (!g_updated_lightmap) {
 				Map::UpdateLightmapTexture();
 				g_updated_lightmap = true;
