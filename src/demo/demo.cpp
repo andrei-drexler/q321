@@ -361,39 +361,44 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	FORCEINLINE void RenderFrame() {
-		if (IsLoading()) {
-			RenderLoadingScreen();
-			return;
-		}
-
-		Frame frame;
-		frame.pos			= g_player.position;
-		frame.pos.z			-= g_player.step;
-
-		if (g_player.land_time > 0.f) {
-			float land_frac;
-			if (g_player.land_time > g_player.LandReturnTime) {
-				land_frac = 1.f - (g_player.land_time - g_player.LandReturnTime) / g_player.LandDeflectTime;
-			} else {
-				land_frac = g_player.land_time / g_player.LandReturnTime;
+		if (Map::IsLoaded()) {
+			if (IsLoading()) {
+				RenderLoadingScreen();
+				return;
 			}
-			frame.pos.z -= land_frac * g_player.land_change;
+
+			Frame frame;
+			frame.pos			= g_player.position;
+			frame.pos.z			-= g_player.step;
+
+			if (g_player.land_time > 0.f) {
+				float land_frac;
+				if (g_player.land_time > g_player.LandReturnTime) {
+					land_frac = 1.f - (g_player.land_time - g_player.LandReturnTime) / g_player.LandDeflectTime;
+				} else {
+					land_frac = g_player.land_time / g_player.LandReturnTime;
+				}
+				frame.pos.z -= land_frac * g_player.land_change;
+			}
+
+			float speed = length(g_player.velocity.xy);
+			float bob = speed / 640.f * sin(g_player.walk_cycle * 10.f);
+
+			frame.angles		= g_player.angles;
+			frame.angles.y		-= abs(bob);
+			frame.angles.z		+= bob;
+			frame.fov			= mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
+			frame.time			= float(g_level_time);
+			frame.shadow_angle	= g_player.shadow_angle;
+			frame.render_target	= Gfx::Backbuffer;
+
+			Gfx::Sync();
+			RenderWorld(frame);
+			RenderDebug();
+		} else {
+			Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
 		}
 
-		float speed = length(g_player.velocity.xy);
-		float bob = speed / 640.f * sin(g_player.walk_cycle * 10.f);
-
-		frame.angles		= g_player.angles;
-		frame.angles.y		-= abs(bob);
-		frame.angles.z		+= bob;
-		frame.fov			= mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
-		frame.time			= float(g_level_time);
-		frame.shadow_angle	= g_player.shadow_angle;
-		frame.render_target	= Gfx::Backbuffer;
-
-		Gfx::Sync();
-		RenderWorld(frame);
-		RenderDebug();
 		Menu::Draw();
 	}
 
@@ -449,7 +454,9 @@ namespace Demo {
 		vec2 mouse;
 		Sys::UpdateMouseState(mouse, dt);
 
-		if (!IsLoading()) {
+		if (!Map::IsLoaded()) {
+			Menu::Update(dt);
+		} else if (!IsLoading()) {
 			if (!g_updated_lightmap) {
 				Map::UpdateLightmapTexture();
 				g_updated_lightmap = true;
@@ -521,8 +528,6 @@ namespace Demo {
 #endif
 
 		[[maybe_unused]] auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };
-
-		LoadMap(Map::ID::START_MAP);
 
 		g_weapon_offset = {-9.f, -5.f, -9.f}; // rocket launcher
 		//g_weapon_offset = {-1.f, -2.5f, -8.f}; // shotgun

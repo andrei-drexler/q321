@@ -22,6 +22,8 @@ namespace Demo {
 
 	NOINLINE void LoadMap(Map::ID id) {
 		Map::Load(id);
+		if (!Map::IsLoaded())
+			return;
 		Map::UpdateLightmapTexture();
 
 		g_updated_lightmap = false;

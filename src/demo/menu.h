@@ -3,6 +3,12 @@
 ////////////////////////////////////////////////////////////////
 
 #define DEMO_MENUS(begin, item, end)\
+	begin(MainMenu)\
+		item("NEW GAME",		NewGame,			0)\
+		item("SETUP",			Options,			0)\
+		item("CINEMATICS",		Options,			0)\
+		item("EXIT",			ConfirmExitGame,	0)\
+	end()\
 	begin(InGame)\
 		item("RESUME GAME",		CloseMenu,			0)\
 		item("SETUP",			Options,			0)\
@@ -22,10 +28,11 @@ namespace Demo::Menu {
 	void Init();
 	bool Update(float dt);
 	void Draw();
+	void ShowMainMenu();
 
 	enum class Action : u8 {
 		CloseMenu,
-		ResumeGame,
+		NewGame,
 		Options,
 		NextMap,
 		QuitMap,
@@ -79,6 +86,8 @@ namespace Demo::Menu {
 		static constexpr u8 MenuItemCounts[MenuCount] = {
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_INCREMENT, PP_ADD_COMMA)
 		};
+
+		Map::ID g_start_map;
 	}
 
 	struct State {
@@ -175,14 +184,25 @@ FORCEINLINE void Demo::Menu::Init() {
 		menu.num_items = num_items;
 		item_index += num_items;
 	} while (++menu_index < Details::MenuCount);
+
+	Details::g_start_map = Map::ID::START_MAP;
+	
+	Push(&MainMenu);
 }
 
-FORCEINLINE bool Demo::Menu::Update(float dt) {
+FORCEINLINE void Demo::Menu::ShowMainMenu() {
+	CloseAll();
+	Push(&MainMenu);
+}
+
+NOINLINE bool Demo::Menu::Update(float dt) {
 	if (Sys::IsKeyRepeating(Key::Escape)) {
-		if (g_active)
-			CloseCurrent();
-		else
+		if (g_active) {
+			if (g_active->prev || Map::IsLoaded()) // don't close main menu
+				CloseCurrent();
+		} else {
 			Push(&InGame);
+		}
 	}
 
 	if (g_active) {
@@ -195,15 +215,16 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 			assert(g_active->focus < g_active->num_items);
 
 			switch (g_active->items[g_active->focus].action) {
-				case Action::ResumeGame:
-					CloseAll();
-					break;
-
 				case Action::CloseMenu:
 					CloseCurrent();
 					break;
 
 				case Action::Options:
+					break;
+
+				case Action::NewGame:
+					CloseAll();
+					LoadMap(Details::g_start_map);
 					break;
 
 				case Action::NextMap:
@@ -212,6 +233,8 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 					break;
 
 				case Action::QuitMap:
+					LoadMap(Map::ID::None);
+					ShowMainMenu();
 					break;
 
 				case Action::ConfirmExitGame:
@@ -236,7 +259,11 @@ FORCEINLINE void Demo::Menu::Draw() {
 	if (!g_active)
 		return;
 
-	Gfx::SetShader(Shader::uiframe);
+	if (g_active->prev || Map::IsLoaded())
+		Gfx::SetShader(Shader::uiframe);
+	else
+		Gfx::SetShader(Shader::bglogo);
+
 	if (g_active->prev) {
 		// nested menu
 		Uniform::Time.y = 5.f / 8.f;
