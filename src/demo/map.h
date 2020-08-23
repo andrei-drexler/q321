@@ -40,6 +40,7 @@ namespace Map {
 
 	void					Load(ID id);
 	bool					IsLoaded();
+	ID						NextAfter(ID id);
 
 	i8						symmetry_axis;
 	i16						symmetry_level;
@@ -464,6 +465,10 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 
 FORCEINLINE bool Map::IsLoaded() {
 	return source != nullptr;
+}
+
+FORCEINLINE Map::ID Map::NextAfter(Map::ID id) {
+	return Map::ID((u8(id) + 1) % u8(Map::ID::Count));
 }
 
 NOINLINE void Map::Load(ID id) {

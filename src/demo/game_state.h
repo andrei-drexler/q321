@@ -34,7 +34,6 @@ namespace Demo {
 	}
 
 	FORCEINLINE void LoadNextMap() {
-		Map::ID next_map = Map::ID((u8(Map::current_id) + 1) % u8(Map::ID::Count));
-		LoadMap(next_map);
+		LoadMap(NextAfter(Map::current_id));
 	}
 }
