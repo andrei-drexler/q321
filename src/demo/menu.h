@@ -157,21 +157,24 @@ FORCEINLINE void Demo::Menu::CloseAll() {
 
 FORCEINLINE void Demo::Menu::Init() {
 	u32 item_index = 0;
-	for (const char* text = Details::ItemStringList; *text; text = NextAfter(text), ++item_index) {
+	const char* text = Details::ItemStringList;
+	do {
 		Item::State& item = items[item_index];
 		item.text = text;
+		text = NextAfter(text);
 		item.flags = Details::ItemFlags[item_index];
 		item.action = Details::ItemActions[item_index];
-	}
+	} while (++item_index < Details::ItemCount);
 
+	u32 menu_index = 0;
 	item_index = 0;
-	for (u32 menu_index = 0; menu_index < Details::MenuCount; ++menu_index) {
+	do {
 		Menu::State& menu = list[menu_index];
 		u32 num_items = Details::MenuItemCounts[menu_index];
 		menu.items = &items[item_index];
 		menu.num_items = num_items;
 		item_index += num_items;
-	}
+	} while (++menu_index < Details::MenuCount);
 }
 
 FORCEINLINE bool Demo::Menu::Update(float dt) {
