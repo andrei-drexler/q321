@@ -143,6 +143,8 @@ void miscmodel2s() { misc_model(); }
 void storchtl() { misc_model(); }
 void q3bnr() { FS(); }
 void q3bnr_m() { Generic(); }
+void menubnr() { FS(); }
+void menubnr_m() { FS(); }
 void beam() { Generic(); }
 void kmlampwt() { misc_model(); }
 void flare03() {

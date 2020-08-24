@@ -2614,11 +2614,8 @@ void storchtl() {
 		;
 }
 
-// base_wall/main_q3abanner (texture)
-TEXA(q3bnr) {
+float bnr_sdf(vec2 uv) {
 	uv *= vec2(256, 64);
-	uv.y += 2.;
-
 	// Q
 	float d = circ(uv - vec2(81, 30), 11.);
 	d = max(d, uv.x - 80.);
@@ -2630,7 +2627,7 @@ TEXA(q3bnr) {
 	d = max(d, -box(uv - vec2(91.5, 47), vec2(0, 17.5)) + 1.);
 	// A
 	d = min(d, box(mirr(uv, 111.) - vec2(105. + ls(23., 50., uv.y) * 3., 43), vec2(3.5, 19)));
-	d = min(d, box(uv - vec2(111, 32), vec2(4, 3)));
+	d = min(d, box(uv - vec2(111, 32), vec2(6, 3)));
 	// K
 	d = min(d, box(uv - vec2(126, 37), vec2(3, 13)));
 	d = min(d, box(uv - vec2(125.5 + ls(23., 50., uv.y) * 10., 44), vec2(3.5, 6)));
@@ -2644,8 +2641,12 @@ TEXA(q3bnr) {
 	d = min(d, box(uv - vec2(178., 37), vec2(3.5, 13)));
 	d = min(d, box(uv - vec2(188, 37), vec2(3.5, 13)));
 
-	d = max(d, uv.y - 50.);
-	return vec4(msk(d, .8), 0, 0, H(uv * 511.));
+	return max(d, uv.y - 50.);
+}
+
+// base_wall/main_q3abanner
+TEXA(q3bnr) {
+	return vec4(msk(bnr_sdf(uv), .8), 0, 0, H(uv * 511.));
 }
 
 // base_wall/main_q3abanner (map shader)
@@ -2653,6 +2654,44 @@ void q3bnr_m() {
 	vec3 c = T0(UV * 2.).xyz * step(.5, fract(Time.x * .5));
 	c = mix(c * Light(), vec3(.5, 0, 0), tri(fract(Time.x * 2.), 1./64., fract(UV.y)));
 	FCol = vec4(c + env(Ref) * .25 + T0(UV + H(Time.xx)).w * .1, 1);
+}
+
+// main menu banner (texture)
+TEXA(menubnr) {
+	float d = abs(bnr_sdf(uv)) / 32.;
+	return vec4(d, grad(d), NT(uv, vec2(256, 64)) * .5 + .5);
+}
+
+// main menu banner (menu shader)
+TEXA(menubnr_m) {
+	uv -= .5;
+	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
+	uv /= r / mx(r); // correct aspect ratio
+	uv *= .5;
+	uv += .5;
+
+	uv.y = (uv.y - .59) * 7.;
+	if (mx(abs(uv - .5)) > .5)
+		return vec4(0); // out of bounds
+
+	float
+		n = H(uv * 133.7 + Time.x),
+		k = 1./64.,
+		s = pow(1.2, k),
+		l = 0.,
+		i
+	;
+	vec2 p = uv - .5, q;
+	for (i = n * k; i < 1.; i += k) {
+		p.x += (N(Time.x * .37) - .5) / 3e3;
+		p.y += (N(Time.x * .21) - .5) / 2e3;
+		q = p /= s;
+        q.y -= i * .15;
+        q.x *= 1. + q.y * .15;
+		vec4 c = T0(q += .5);
+		l += sat(1. - c.x * 32.) * (1. - i) * 8. * k * c.w;
+	}
+	return l * vec4(2, 1, 0, 0);
 }
 
 // sfx/beam

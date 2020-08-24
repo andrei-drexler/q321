@@ -115,6 +115,8 @@
 	x(storchtl,				MapVertexBits|Attrib::ColorBit)\
 	x(q3bnr,				FSVertexBits)\
 	x(q3bnr_m,				MapVertexBits)\
+	x(menubnr,				FSVertexBits)\
+	x(menubnr_m,			FSVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(beam,					MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(kmlampwt,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::Premultiplied)\
 	x(flare03,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
@@ -226,6 +228,7 @@
 	x(plasma_glo,		Texture::White,		Shader::plasma_glo,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(light5,			Texture::White,		Shader::light5,			16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(q3bnr,			Texture::White,		Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(menubnr,			Texture::White,		Shader::menubnr,		512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gr8torch2b,		Texture::White,		Shader::gr8torch2b,		32,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(tlptrns,			Texture::White,		Shader::tlptrns,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(rocketl,			Texture::White,		Shader::rocketl,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\

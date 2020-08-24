@@ -259,11 +259,13 @@ FORCEINLINE void Demo::Menu::Draw() {
 	if (!g_active)
 		return;
 
-	if (g_active->prev || Map::IsLoaded())
-		Gfx::SetShader(Shader::uiframe);
-	else
+	bool main_menu = !g_active->prev && !Map::IsLoaded();
+	if (main_menu)
 		Gfx::SetShader(Shader::bglogo);
+	else
+		Gfx::SetShader(Shader::uiframe);
 
+	Uniform::Time.x = float(g_time);
 	if (g_active->prev) {
 		// nested menu
 		Uniform::Time.y = 5.f / 8.f;
@@ -274,6 +276,12 @@ FORCEINLINE void Demo::Menu::Draw() {
 		Uniform::Time.z = 5.f / 8.f;
 	}
 	Gfx::DrawFullScreen();
+
+	if (main_menu) {
+		Uniform::Texture0 = Demo::Texture::menubnr;
+		Gfx::SetShader(Shader::menubnr_m);
+		Gfx::DrawFullScreen();
+	}
 
 	const float line_height = 80.f;
 	const vec2& font_scale = UI::FontScale[UI::LargeFont];
