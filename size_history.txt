@@ -1138,3 +1138,4 @@
 61483,nextafter map helper
 61483,changed isloading to ismapready
 61647,added main menu banner
+61789,main menu disclaimer

@@ -2686,12 +2686,12 @@ TEXA(menubnr_m) {
 		p.x += (N(Time.x * .37) - .5) / 3e3;
 		p.y += (N(Time.x * .21) - .5) / 2e3;
 		q = p /= s;
-        q.y -= i * .15;
-        q.x *= 1. + q.y * .15;
+		q.y -= i * .15;
+		q.x *= 1. + q.y * .15;
 		vec4 c = T0(q += .5);
-		l += sat(1. - c.x * 32.) * (1. - i) * 8. * k * c.w;
+		l += sat(1. - c.x * 48.) * (1. - i) * 8. * k * c.w;
 	}
-	return l * vec4(2, 1, 0, 0);
+	return l * vec4(4, 2, .5, 0);
 }
 
 // sfx/beam

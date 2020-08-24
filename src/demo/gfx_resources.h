@@ -162,7 +162,7 @@ namespace Demo {
 			/*Size		Padding+1	Name*/
 			"\x30"		"\x09"		"Impact"				"\0"
 			"\x30"		"\x01"		"Impact"				"\0"
-			"\x10"		"\x01"		"Courier New Bold"		"\0"
+			"\x12"		"\x01"		"Courier New Bold"		"\0"
 		;
 		constexpr vec2 FontScale[FontCount] = {
 			{1.5f, 1.f},

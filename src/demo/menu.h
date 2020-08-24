@@ -57,7 +57,8 @@ namespace Demo::Menu {
 	namespace Details {
 		static constexpr u32
 			ItemColor  = 0xFF'B2'00'00,
-			FocusFolor = 0xFF'FF'00'00
+			FocusFolor = 0xFF'FF'00'00,
+			DisclaimerColor = 0xFF'80'00'00;
 		;
 
 		enum {
@@ -70,6 +71,11 @@ namespace Demo::Menu {
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_STRING, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_STRING
 		;
+
+		static constexpr char DisclaimerText[] = {
+			"DEMO    FOR MATURE AUDIENCES ONLY    DEMO" "\0"
+			"Quake III Arena(c) 1999, id Software, Inc. All Rights Reserved." "\0"
+		};
 
 		static constexpr Action ItemActions[ItemCount] = {
 			#define PP_ADD_ITEM_ACTION(caption, action, flags) Action::action,
@@ -278,9 +284,29 @@ FORCEINLINE void Demo::Menu::Draw() {
 	Gfx::DrawFullScreen();
 
 	if (main_menu) {
+		// QUAKE III banner
 		Uniform::Texture0 = Demo::Texture::menubnr;
 		Gfx::SetShader(Shader::menubnr_m);
 		Gfx::DrawFullScreen();
+
+		// disclaimer text
+		// TODO: decoration items with custom placement & size?
+
+		static constexpr UI::Font Fonts[] = {
+			UI::LargeFont,
+			UI::SmallFont
+		};
+		static constexpr vec2 FontScales[] = {
+			UI::FontScale[UI::LargeFont] * 0.75f,
+			UI::FontScale[UI::SmallFont] * 1.5f,
+		};
+		vec2 pos = {0.f, -11.f/16.f * UI::VirtualHalfHeight};
+
+		const char* text = Details::DisclaimerText;
+		for (u32 line = 0; line < 2; ++line, text = NextAfter(text)) {
+			UI::Print(text, pos, FontScales[line], Details::DisclaimerColor, 0.5f, Fonts[line]);
+			pos.y -= 48.f;
+		}
 	}
 
 	const float line_height = 80.f;
