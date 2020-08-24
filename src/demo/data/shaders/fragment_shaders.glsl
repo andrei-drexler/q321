@@ -2657,9 +2657,8 @@ void q3bnr_m() {
 }
 
 // main menu banner (texture)
-TEXA(menubnr) {
-	float d = abs(bnr_sdf(uv)) / 32.;
-	return vec4(d, grad(d), NT(uv, vec2(256, 64)) * .5 + .5);
+TEX(menubnr) {
+	return vec3(sat(1. - 1.4 * abs(bnr_sdf(uv))), NT(uv, vec2(256, 64)) * .5 + .5, .5);
 }
 
 // main menu banner (menu shader)
@@ -2668,10 +2667,9 @@ TEXA(menubnr_m) {
 	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
 	uv /= r / mx(r); // correct aspect ratio
 	uv *= .5;
-	uv += .5;
 
-	uv.y = (uv.y - .59) * 7.;
-	if (mx(abs(uv - .5)) > .5)
+	uv.y = (uv.y - .16) * 7.;
+	if (mx(abs(uv)) > .5)
 		return vec4(0); // out of bounds
 
 	float
@@ -2681,17 +2679,16 @@ TEXA(menubnr_m) {
 		l = 0.,
 		i
 	;
-	vec2 p = uv - .5, q;
 	for (i = n * k; i < 1.; i += k) {
-		p.x += (N(Time.x * .37) - .5) / 3e3;
-		p.y += (N(Time.x * .21) - .5) / 2e3;
-		q = p /= s;
-		q.y -= i * .15;
-		q.x *= 1. + q.y * .15;
-		vec4 c = T0(q += .5);
-		l += sat(1. - c.x * 48.) * (1. - i) * 8. * k * c.w;
+		uv.x += (N(Time.x * .37) - .5) / 3e3;
+		uv.y += (N(Time.x * .21) - .5) / 2e3;
+		r = uv /= s;
+		r.y -= i * .15;
+		r.x *= 1. + r.y * .15;
+		vec4 c = T0(r + .5);
+		l += c.x * (1. - i) * k * c.y;
 	}
-	return l * vec4(4, 2, .5, 0);
+	return l * vec4(32, 16, 4, 0);
 }
 
 // sfx/beam

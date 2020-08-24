@@ -1139,3 +1139,4 @@
 61483,changed isloading to ismapready
 61647,added main menu banner
 61789,main menu disclaimer
+61784,tweaked main menu banner
