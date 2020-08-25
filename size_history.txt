@@ -1143,3 +1143,4 @@
 61785,no mips for main menu banner
 61794,tweaked confirmation menu bg
 61833,scrolling main menu banner texture
+61845,optimized main menu banner shader

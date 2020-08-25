@@ -2670,19 +2670,20 @@ TEXA(menubnr_m) {
 	uv *= .5;
 
 	uv.y = (uv.y - .16) * 7.;
-	if (mx(abs(uv)) > .5)
+	if (mx(abs(uv - vec2(0, .15)) / vec2(.77, 1)) > .4)
 		return vec4(0); // out of bounds
 
 	float
 		n = H(uv * 133.7 + Time.x),
-		k = 1./64.,
+		k = 1./48.,
 		s = pow(1.2, k),
 		l = 0.,
 		i
 	;
+	uv /= mix(1., s, n);
 	for (i = n * k; i < 1.; i += k) {
-		uv.x += (N(Time.x * .37) - .5) / 3e3;
-		uv.y += (N(Time.x * .21) - .5) / 2e3;
+		uv.x += (N(Time.x * .37) - .5) * k / 48.;
+		uv.y += (N(Time.x * .21) - .5) * k / 32.;
 		r = uv /= s;
 		r.y -= i * .15;
 		r.x *= 1. + r.y * .15;
