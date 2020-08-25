@@ -1141,3 +1141,4 @@
 61789,main menu disclaimer
 61784,tweaked main menu banner
 61785,no mips for main menu banner
+61794,tweaked confirmation menu bg

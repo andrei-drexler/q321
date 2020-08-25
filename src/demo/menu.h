@@ -274,7 +274,7 @@ FORCEINLINE void Demo::Menu::Draw() {
 	Uniform::Time.x = float(g_time);
 	if (g_active->prev) {
 		// nested menu
-		Uniform::Time.y = 5.f / 8.f;
+		Uniform::Time.y = 6.f / 8.f;
 		Uniform::Time.z = 3.5f / 8.f;
 	} else {
 		// top-level menu
