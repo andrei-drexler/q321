@@ -2691,7 +2691,7 @@ TEXA(menubnr_m) {
 		vec2 g = c.xy * 2.;
 		r = sign(--g) * r * vec2(133, 33) + Time.x * 4.;
 		g *= g;
-		l += c.z * (1. - i) * k * ((N(r.x) * g.x + N(r.y) * g.y) / sum(g) * .7 + .3);
+		l += c.z * (1. - i) * k * ((N(r.x) * g.x + N(r.y) * g.y) / sum(g + .01) * .7 + .3);
 	}
 	return l * vec4(32, 16, 4, 0);
 }
