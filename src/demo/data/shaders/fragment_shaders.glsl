@@ -2658,7 +2658,8 @@ void q3bnr_m() {
 
 // main menu banner (texture)
 TEX(menubnr) {
-	return vec3(sat(1. - 1.4 * abs(bnr_sdf(uv))), NT(uv, vec2(256, 64)) * .5 + .5, .5);
+	float d = bnr_sdf(uv);
+	return vec3(grad(d) * rot(90.) * .5 + .5, 1. - 1.4 * abs(d));
 }
 
 // main menu banner (menu shader)
@@ -2686,7 +2687,10 @@ TEXA(menubnr_m) {
 		r.y -= i * .15;
 		r.x *= 1. + r.y * .15;
 		vec4 c = T0(r + .5);
-		l += c.x * (1. - i) * k * c.y;
+		vec2 g = c.xy * 2.;
+		r = sign(--g) * r * vec2(133, 33) + Time.x * 4.;
+		g *= g;
+		l += c.z * (1. - i) * k * ((N(r.x) * g.x + N(r.y) * g.y) / sum(g) * .7 + .3);
 	}
 	return l * vec4(32, 16, 4, 0);
 }
