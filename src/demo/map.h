@@ -537,10 +537,11 @@ NOINLINE void Map::Load(ID id) {
 			brush_bounds[1][1] = bounds_src[4] + brush_bounds[0][1];
 			brush_bounds[1][2] = bounds_src[5] + brush_bounds[0][2];
 
+			u32 brush_flags = packed.brush_flags[brush_index];
 			bool mirrored =
-				UseSymmetry() && entity_index == 0 &&
-				brush_bounds[1][symmetry_axis] < symmetry_level + 1 &&
-				packed.brush_asymmetry[brush_index] == 0;
+				UseSymmetry() &&
+				(entity_index | (brush_flags & PackedMap::BrushFlagAsymmetric)) == 0 && // entity_index == 0 && brush_flags & PackedMap::BrushFlagAsymmetric == 0
+				brush_bounds[1][symmetry_axis] < symmetry_level + 1;
 
 			bounds_src += 6;
 
@@ -641,7 +642,9 @@ NOINLINE void Map::Load(ID id) {
 				u32 uv_axis = material & 3;
 				material >>= 2;
 
-				bool needs_uv = Demo::Material::Properties[material] & Demo::Material::NeedsUV;
+				bool needs_uv =
+					(Demo::Material::Properties[material] & Demo::Material::NeedsUV) |
+					(brush_flags & PackedMap::BrushFlagKeepUVs);
 
 				vec3 center = 0.f;
 				for (u32 j = 0; j < num_face_edges; ++j) {

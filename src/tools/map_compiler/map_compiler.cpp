@@ -1315,14 +1315,14 @@ void WriteBrushUVs(ArrayPrinter& print, const Map& map, const Options& options, 
 
 ////////////////////////////////////////////////////////////////
 
-void WriteBrushAsymmetry(ArrayPrinter& print, const Map& map, const Options& options, string_view array_name) {
-	printf("Writing brush asymmetry\n");
+void WriteBrushFlags(ArrayPrinter& print, const Map& map, const Options& options, string_view array_name) {
+	printf("Writing brush flags\n");
 
 	auto& world = map.World();
 
 	print << "\nconst u8 "sv << array_name << "[] = {"sv;
 	for (auto& brush : world.brushes)
-		print << brush.extra.asymmetric << ","sv;
+		print << (i32(brush.extra.keep_uvs) | (i32(brush.extra.asymmetric) << 1)) << ","sv;
 	print << "};"sv;
 	print.Flush();
 }
@@ -2083,7 +2083,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 	WriteUnalignedPlanes	(print, map, options,											"num_nonaxial_planes"sv,	"nonaxial_planes"sv,	"nonaxial_counts"sv);
 	WriteMaterials			(print, map, options, shader_props.data(),						"plane_materials"sv);
 	WriteBrushUVs			(print, map, options, shader_props.data(),						"uv_set"sv,					"plane_uvs"sv			);
-	WriteBrushAsymmetry		(print, map, options,											"brush_asymmetry"									);
+	WriteBrushFlags			(print, map, options,											"brush_flags"										);
 	WritePatchData			(print, map, options, shader_props.data(),						"patches"sv,				"patch_verts"sv			);
 	WriteLights				(print, map, options, shader_props.data(),	lights,	symmetry,	"light_data"sv,				"num_spotlights"sv		);
 	//WriteLightmap			(print, map, options, shader_props.data(),	"lightmap_offsets"										);
@@ -2106,7 +2106,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 		"    entity_brushes, entity_data,\n"
 		"    world_bounds, brush_bounds,\n"
 		"    num_nonaxial_planes, nonaxial_planes, nonaxial_counts,\n"
-		"    brush_asymmetry,\n"
+		"    brush_flags,\n"
 		"    plane_materials,\n"
 		"    uv_set, plane_uvs,\n"
 		"    patches, patch_verts,\n"

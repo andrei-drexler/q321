@@ -30,7 +30,7 @@ struct PackedMap {
 	const i16*			patch_vertices;
 	const i16*			light_data;
 
-	const u8*			brush_asymmetry;
+	const u8*			brush_flags;
 	i8					symmetry_axis;
 	i16					symmetry_level;
 
@@ -53,7 +53,7 @@ struct PackedMap {
 		int NumUVEntries, int NumPlaneUVEntries, int NumMaterialEntries,
 		int NumPatches, int NumPatchVertEntries,
 		int NumLightEntries,
-		int NumAsymmetryEntries
+		int NumBrushFlagsEntries
 	>
 	constexpr PackedMap
 	(
@@ -68,7 +68,7 @@ struct PackedMap {
 		u16								num_unaligned_planes,
 		const i32	(&plane_data)		[NumPlaneEntries],
 		const u8	(&nonaxial_counts)	[NumNonaxialEntries],
-		const u8	(&brush_asymmetry)	[NumAsymmetryEntries],
+		const u8	(&brush_flags)		[NumBrushFlagsEntries],
 		const u16	(&plane_materials)	[NumMaterialEntries],
 		const float (&uv_data)			[NumUVEntries],
 		const u8	(&plane_uvs)		[NumPlaneUVEntries],
@@ -107,7 +107,7 @@ struct PackedMap {
 		patches					(patches),
 		patch_vertices			(patch_verts),
 		light_data				(light_data),
-		brush_asymmetry			(brush_asymmetry),
+		brush_flags				(brush_flags),
 		symmetry_axis			(symmetry_axis),
 		symmetry_level			(symmetry_level),
 #ifdef DEV
@@ -126,6 +126,11 @@ struct PackedMap {
 		levelshot.angles[1] = levelshot_pitch;
 		levelshot.texture = levelshot_texture;
 	}
+
+	enum {
+		BrushFlagKeepUVs		= 1 << 0,
+		BrushFlagAsymmetric		= 1 << 1,
+	};
 
 	struct UV {
 		vec2	offset;
@@ -159,7 +164,7 @@ struct PackedMap {
 
 	struct Light {
 		enum Flags {
-			IsSpotlight = 1 << 0,
+			IsSpotlight			= 1 << 0,
 		};
 
 		vec3	position;
@@ -308,4 +313,3 @@ FORCEINLINE void PackedMap::GetPlane(const i32*& plane_data, const i16 brush_bou
 		plane.w = DecodeSignMagnitude(w) * (1.f / float(DistScale));
 	}
 }
-

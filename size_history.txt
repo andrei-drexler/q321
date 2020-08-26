@@ -1145,3 +1145,4 @@
 61833,scrolling main menu banner texture
 61845,optimized main menu banner shader
 61847,fixed potential nan
+61868,fixed _keep_uvs mirroring
