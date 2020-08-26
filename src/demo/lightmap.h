@@ -528,6 +528,11 @@ NOINLINE u32 Map::Details::ClampColor(const vec3& accum) {
 ////////////////////////////////////////////////////////////////
 
 NOINLINE void Map::ComputeLighting(LightMode mode) {
+#ifdef DEV
+	if (mode == LightMode::Shadows)
+		mode = LightMode::Draft;
+#endif
+
 	Details::ComputeLightmap(mode);
 	Details::ComputeVertexColors(mode);
 	Details::ComputeLightGrid(mode);
@@ -535,11 +540,6 @@ NOINLINE void Map::ComputeLighting(LightMode mode) {
 
 FORCEINLINE void Map::Details::ComputeLightmap(LightMode mode) {
 	using namespace Demo;
-
-#ifdef DEV
-	if (mode == LightMode::Shadows)
-		mode = LightMode::Draft;
-#endif
 
 	if constexpr (Lightmap::Debug == Lightmap::DebugMode::Off) {
 #ifdef ENABLE_RADIOSITY
