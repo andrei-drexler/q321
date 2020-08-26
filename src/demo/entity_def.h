@@ -21,8 +21,10 @@
 
 #define DEMO_ENTITY_TYPES_WEAPONS(x)\
 	/*Name							Description				Model								  R,   G,   B*/\
-	x(weapon_rocketlauncher,		"Rocket launcher",		Demo::Model::rocketl,				  0,   0,   0)\
+	x(weapon_gauntlet,				"Gauntlet",				Demo::Model::gauntlet_barrel,		  0,   0,   0)\
+	x(weapon_machinegun,			"Machinegun",			Demo::Model::machinegun_barrel,		  0,   0,   0)\
 	x(weapon_shotgun,				"Shotgun",				Demo::Model::shotgun,				  0,   0,   0)\
+	x(weapon_rocketlauncher,		"Rocket launcher",		Demo::Model::rocketl,				  0,   0,   0)\
 	x(weapon_railgun,				"Railgun",				Demo::Model::railgun,				  0,   0,   0)\
 	x(weapon_plasmagun,				"Plasma Gun",			Demo::Model::plasma,				  0,   0,   0)\
 
@@ -51,8 +53,8 @@
 	x(item_quad,					"Quad Damage",			Demo::Model::quad,					  8, 119, 234)\
 
 #define DEMO_ENTITY_TYPES_PICKUPS(x)\
-	DEMO_ENTITY_TYPES_AMMO(x)\
 	DEMO_ENTITY_TYPES_WEAPONS(x)\
+	DEMO_ENTITY_TYPES_AMMO(x)\
 	DEMO_ENTITY_TYPES_HEALTH(x)\
 	DEMO_ENTITY_TYPES_ARMOR(x)\
 	DEMO_ENTITY_TYPES_POWERUPS(x)\
@@ -90,8 +92,8 @@ namespace Demo {
 				name##Start = PP_FIRST_ARG(list(PP_DEMO_ENTITY_TYPE_DECLARE)),	\
 				name##Count = list(PP_DEMO_ENTITY_TYPE_COUNT)					\
 
-			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Ammo,    DEMO_ENTITY_TYPES_AMMO),
 			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Weapon,  DEMO_ENTITY_TYPES_WEAPONS),
+			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Ammo,    DEMO_ENTITY_TYPES_AMMO),
 			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Health,  DEMO_ENTITY_TYPES_HEALTH),
 			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Armor,   DEMO_ENTITY_TYPES_ARMOR),
 			PP_DEMO_ENTITY_TYPE_LIST_RANGE(Powerup, DEMO_ENTITY_TYPES_POWERUPS),
@@ -124,8 +126,8 @@ namespace Demo {
 			static constexpr bool	Is##name(Type type)		{ return u8(u32(type) - u32(Type::name##Start)) < u8(Type::name##Count); }		\
 			constexpr bool			Is##name() const		{ return Is##name(type); }														\
 
-		PP_ADD_ENTITY_TYPE_CHECK(Ammo)
 		PP_ADD_ENTITY_TYPE_CHECK(Weapon)
+		PP_ADD_ENTITY_TYPE_CHECK(Ammo)
 		PP_ADD_ENTITY_TYPE_CHECK(Health)
 		PP_ADD_ENTITY_TYPE_CHECK(Armor)
 		PP_ADD_ENTITY_TYPE_CHECK(Powerup)
@@ -136,8 +138,8 @@ namespace Demo {
 		////////////////////////////////////////////////////////////////
 
 		static constexpr u8 GetRespawnTime(Type type) {
-			if (IsAmmo(type))		return 40;
 			if (IsWeapon(type))		return 5;
+			if (IsAmmo(type))		return 40;
 			if (IsHealth(type))		return 35;
 			if (IsArmor(type))		return 25;
 			if (IsPowerup(type))	return 120;

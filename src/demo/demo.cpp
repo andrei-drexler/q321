@@ -134,6 +134,26 @@ namespace Demo {
 
 	////////////////////////////////////////////////////////////////
 
+	static constexpr StaticArray<float, 3> GetWeaponModelOffset(Entity::Type type) {
+		switch (type) {
+			case Entity::Type::weapon_gauntlet:			return { -9.0f, -5.0f,  -9.0f };
+			case Entity::Type::weapon_machinegun:		return {  4.0f, -3.5f,  -7.0f };
+			case Entity::Type::weapon_shotgun:			return { -1.0f, -2.5f,  -8.0f };
+			case Entity::Type::weapon_rocketlauncher:	return { -9.0f, -5.0f,  -9.0f };
+			case Entity::Type::weapon_railgun:			return {  1.5f, -5.0f, -10.5f };
+			case Entity::Type::weapon_plasmagun:		return { -1.0f, -5.0f, -10.0f };
+			default:
+				return { 0.f, 0.f, 0.f };
+		}
+	};
+
+	static constexpr auto WeaponModelOffsets = MakeLookupTable<
+		Entity::Type,
+		StaticArray<float, 3>,
+		Entity::Type::WeaponStart,
+		Entity::Type(i16(Entity::Type::WeaponStart) + i16(Demo::Entity::Type::WeaponCount) - 1)
+	>(GetWeaponModelOffset);
+
 	FORCEINLINE void RenderEntities() {
 		Demo::Model::Transform transform;
 
@@ -205,15 +225,20 @@ namespace Demo {
 		float speed = length(g_player.velocity.xy) * (WeaponScale / 320.f);
 		float idle = WeaponSway * (sin((float)g_level_time) * .5f + .5f);
 
-		vec3 offset = g_weapon_offset;
+		Entity::Type weapon = g_player.weapon;
+		i32 model_id = i32(EntityModels[(u32)weapon]) - 1;
+		if (u32(model_id) >= Model::Count)
+			return;
+
+		vec3 offset = *(const vec3*)&WeaponModelOffsets[g_player.weapon];
+		//vec3 offset = g_weapon_offset;
 		offset.y += speed * sin(g_player.walk_cycle * 10.f) + idle;
 		offset.z += speed * sin(g_player.walk_cycle * 20.f) * 0.25f + (WeaponSway - idle);
 
 		transform.position += rotation * (offset * WeaponScale);
 		transform.scale = WeaponScale;
 
-		Demo::Uniform::Time.w = float(Demo::Entity::Type::weapon_rocketlauncher);
-		Map::DrawLitModel(Demo::Model::ID::rocketl, transform);
+		Map::DrawLitModel(Model::ID(model_id), transform);
 	}
 
 	////////////////////////////////////////////////////////////////

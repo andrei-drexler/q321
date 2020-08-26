@@ -83,6 +83,7 @@ namespace Demo {
 		vec3				angles;
 		u32					flags;
 		i16					health;
+		Entity::Type		weapon;
 
 		enum {
 			MaxTouchEnts = 16,
@@ -337,9 +338,9 @@ NOINLINE void Demo::Player::Spawn() {
 	u16 num_spawn_points = 0;
 
 	for (u16 i = Map::num_brush_entities; i < Map::num_entities; ++i) {
-		auto& e = Map::entities[i];
+		Entity& e = Map::entities[i];
 		if (e.type == Entity::Type::info_player_deathmatch) {
-			auto& spawn = spawn_points[num_spawn_points++];
+			vec4& spawn = spawn_points[num_spawn_points++];
 			spawn[0] = e.origin[0];
 			spawn[1] = e.origin[1];
 			spawn[2] = e.origin[2] + SpawnOffset;
@@ -351,14 +352,15 @@ NOINLINE void Demo::Player::Spawn() {
 
 	assert(num_spawn_points > 0);
 	u32 index = Random() % num_spawn_points;
-	auto& spawn = spawn_points[index];
+	const vec4& spawn = spawn_points[index];
 
-	position = spawn.xyz;
-	angles.x = spawn.w;
-	step = 16.f;
-	health = 100;
-	flags = Flag::NoJump;
+	position	= spawn.xyz;
+	angles.x	= spawn.w;
+	step		= 16.f;
+	health		= 100;
+	weapon		= Entity::Type::weapon_rocketlauncher;
+	flags		= Flag::NoJump;
 #ifdef START_NOCLIP
-	flags |= Flag::NoClip;
+	flags		|= Flag::NoClip;
 #endif
 }
