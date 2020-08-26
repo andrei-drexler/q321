@@ -36,12 +36,6 @@
 ////////////////////////////////////////////////////////////////
 
 namespace Demo {
-	static const u32 GPUPoolSizes[Gfx::Arena::Count] = {
-		8  * Mem::MB,	// permanent
-		16 * Mem::MB,	// level
-		16 * Mem::MB,	// dynamic
-	};
-
 	void RenderSprite(const vec3& point, float size) {
 		using namespace Demo;
 
@@ -441,8 +435,8 @@ namespace Demo {
 		dt = mix(g_delta_time, dt, 0.125f);
 		g_delta_time = dt;
 
-		vec2 mouse;
-		Sys::UpdateMouseState(mouse, dt);
+		vec2 mouse_delta;
+		Sys::UpdateMouseState(mouse_delta, dt);
 		Sys::UpdateKeyboardState();
 
 		if (Sys::IsKeyFirstDown(Key::PrintScreen))
@@ -451,39 +445,7 @@ namespace Demo {
 		if (Menu::Update(dt))
 			return;
 
-		if (Map::IsLoaded() && IsMapReady()) {
-			if (!g_updated_lightmap) {
-				Map::UpdateLightmapTexture();
-				g_updated_lightmap = true;
-				g_level_time = Sys::Time{};
-			}
-
-			g_level_time += dt;
-
-			for (u32 entity_index = Map::num_brush_entities; entity_index < Map::num_entities; ++entity_index) {
-				Demo::Entity& entity = Map::entities[entity_index];
-				entity.respawn -= dt;
-				if (entity.respawn < 0.f)
-					entity.respawn = 0.f;
-			}
-
-			if (Sys::IsKeyFirstDown(Key::Backspace))
-				g_player.Spawn();
-			if (Sys::IsKeyFirstDown(Key::L))
-				r_lightmap.Toggle();
-			if (Sys::IsKeyFirstDown(Key::Backslash))
-				g_player.flags ^= Player::Flag::NoClip;
-
-			float fov = mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
-			float zoom_scale = tan(fov * (0.5f * Math::DEG2RAD)) / tan(cg_fov.value * (0.5f * Math::DEG2RAD));
-			float mouse_scale = zoom_scale * sensitivity.value * -90.f / sqrt(float(Sys::g_window.width * Sys::g_window.height));
-			g_player.angles.x += mouse.x * mouse_scale;
-			g_player.angles.y += mouse.y * mouse_scale;
-			g_player.angles.x = mod(g_player.angles.x, 360.f);
-			g_player.angles.y = clamp(g_player.angles.y, -85.f, 85.f);
-
-			g_player.Update(dt);
-		}
+		UpdateGameState(dt, mouse_delta);
 	}
 
 	////////////////////////////////////////////////////////////////

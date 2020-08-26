@@ -3,6 +3,14 @@
 #include "cooked/cooked_shaders.h"
 
 namespace Demo {
+	static const u32 GPUPoolSizes[Gfx::Arena::Count] = {
+		8  * Mem::MB,	// permanent
+		16 * Mem::MB,	// level
+		16 * Mem::MB,	// dynamic
+	};
+
+	////////////////////////////////////////////////////////////////
+
 	enum Attrib : u8 {
 		#define PP_DEMO_VERTEX_ATTRIB_ID(name, type)		name,
 		DEMO_VERTEX_ATTRIBS(PP_DEMO_VERTEX_ATTRIB_ID)
