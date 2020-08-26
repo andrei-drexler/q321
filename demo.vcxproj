@@ -23,13 +23,13 @@
     <ClInclude Include="src\demo\cooked\cooked_maps.h" />
     <ClInclude Include="src\demo\cooked\cooked_models.h" />
     <ClInclude Include="src\demo\cooked\cooked_shaders.h" />
-    <ClInclude Include="src\demo\entity.h" />
+    <ClInclude Include="src\demo\entity_def.h" />
     <ClInclude Include="src\demo\gfx_resources.h" />
     <ClInclude Include="src\demo\game_state.h" />
     <ClInclude Include="src\demo\map.h" />
-    <ClInclude Include="src\demo\map_lightmap.h" />
-    <ClInclude Include="src\demo\map_partition.h" />
-    <ClInclude Include="src\demo\map_patch.h" />
+    <ClInclude Include="src\demo\lightmap.h" />
+    <ClInclude Include="src\demo\partition.h" />
+    <ClInclude Include="src\demo\curves.h" />
     <ClInclude Include="src\demo\material.h" />
     <ClInclude Include="src\demo\models.h" />
     <ClInclude Include="src\demo\packed_map.h" />

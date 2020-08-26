@@ -1,7 +1,7 @@
 #include "../common.h"
 #include "../../demo/resource_def.h"
 #include "../../demo/material.h"
-#include "../../demo/entity.h"
+#include "../../demo/entity_def.h"
 #include "q3map.h"
 #include "../model_compiler/q3model.h"
 #include "export_obj.h"

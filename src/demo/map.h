@@ -286,9 +286,9 @@ namespace Map {
 
 ////////////////////////////////////////////////////////////////
 
-#include "map_patch.h"
-#include "map_partition.h"
-#include "map_lightmap.h"
+#include "curves.h"
+#include "partition.h"
+#include "lightmap.h"
 
 // The first 6 brush planes correspond to the 6 sides of the bounding box.
 // In order to maintain this order for mirrored brushes we need to swap

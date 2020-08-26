@@ -54,26 +54,14 @@
     <ClInclude Include="src\demo\material.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\map_patch.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\demo\map_partition.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
     <ClInclude Include="src\demo\player_move.h">
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="src\demo\player.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\map_lightmap.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\rect_packer.h">
       <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\demo\entity.h">
-      <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="src\demo\cooked\cooked_shaders.h">
       <Filter>Cooked</Filter>
@@ -94,6 +82,18 @@
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="src\demo\game_state.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\entity_def.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\lightmap.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\partition.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\curves.h">
       <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>

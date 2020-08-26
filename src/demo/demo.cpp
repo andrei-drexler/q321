@@ -22,7 +22,7 @@
 #include "console.h"
 #include "resource_def.h"
 #include "material.h"
-#include "entity.h"
+#include "entity_def.h"
 #include "packed_map.h"
 #include "gfx_resources.h"
 #include "models.h"
