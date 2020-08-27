@@ -1149,3 +1149,4 @@
 61869,moved a few things out of demo.cpp
 61869,renamed a few files
 61904,added gauntlet+machinegun and weap ofs table
+61903,higher-res menu banner

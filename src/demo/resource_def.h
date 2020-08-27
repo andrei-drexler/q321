@@ -228,7 +228,7 @@
 	x(plasma_glo,		Texture::White,		Shader::plasma_glo,		64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(light5,			Texture::White,		Shader::light5,			16,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(q3bnr,			Texture::White,		Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(menubnr,			Texture::White,		Shader::menubnr,		512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget|Gfx::Texture::Flags::NoMips)\
+	x(menubnr,			Texture::White,		Shader::menubnr,		1024,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget|Gfx::Texture::Flags::NoMips)\
 	x(gr8torch2b,		Texture::White,		Shader::gr8torch2b,		32,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(tlptrns,			Texture::White,		Shader::tlptrns,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(rocketl,			Texture::White,		Shader::rocketl,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
