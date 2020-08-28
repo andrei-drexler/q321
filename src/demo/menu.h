@@ -278,6 +278,10 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 					CloseAll();
 					break;
 
+				case Action::ExitGame:
+					g_credits = 1;
+					[[fallthrough]];
+
 				case Action::QuitMap:
 					LoadMap(Map::ID::None);
 					ShowMainMenu();
@@ -286,10 +290,6 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 				case Action::ConfirmExitGame:
 					Push(&ExitGameModal);
 					AdvanceFocus(); // focus 'NO'
-					break;
-
-				case Action::ExitGame:
-					g_credits = 1;
 					break;
 
 				default:
@@ -305,8 +305,6 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 
 FORCEINLINE void Demo::Menu::Draw() {
 	if (g_credits) {
-		Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
-
 		static constexpr vec2 FontScale = UI::FontScale[UI::LargeFont] * 0.75f;
 		vec2 pos = {0.f, 440.f};
 
