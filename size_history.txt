@@ -1157,3 +1157,4 @@
 62266,tweaked credits action + rendering
 62259,lowercase credits text
 62249,lowercase loading screen text
+62247,removed extraneous dot

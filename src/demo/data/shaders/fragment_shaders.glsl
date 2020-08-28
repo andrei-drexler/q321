@@ -2638,7 +2638,7 @@ float bnr_sdf(vec2 uv) {
 	d = max(d, -box(uv - vec2(155, 43), vec2(6, 2)));
 	// III
 	d = min(d, box(uv - vec2(168, 37), vec2(3.5, 13)));
-	d = min(d, box(uv - vec2(178., 37), vec2(3.5, 13)));
+	d = min(d, box(uv - vec2(178, 37), vec2(3.5, 13)));
 	d = min(d, box(uv - vec2(188, 37), vec2(3.5, 13)));
 
 	return max(d, uv.y - 50.);
