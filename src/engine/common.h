@@ -194,7 +194,7 @@ FORCEINLINE size_t CopyString(char* dst, const char* src) {
 	return result;
 }
 
-FORCEINLINE constexpr const char* NextAfter(const char* multistr) {
+NOINLINE constexpr const char* NextAfter(const char* multistr) {
 	return multistr + StrLen(multistr) + 1;
 }
 
