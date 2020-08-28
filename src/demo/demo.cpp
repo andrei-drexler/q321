@@ -320,16 +320,16 @@ namespace Demo {
 
 	namespace LoadingScreen {
 		static constexpr char Text[] = 
-			"LOADING "						"\0"
-			"CONNECTING TO LOCALHOST"		"\0"
-			"PRESS ESC TO ABORT"			"\0"
+			"loading "						"\0"
+			"connecting to localhost"		"\0"
+			"press esc to abort"			"\0"
 			" "								"\0"
-			"LOADING... MAPS/"				"\0"
+			"loading... maps/"				"\0"
 			" "								"\0"
-			" "/* MAP MESSAGE */			"\0"
-			"CHEATS ARE ENABLED"			"\0"
-			"FREE FOR ALL"					"\0"
-			"FRAGLIMIT 20"					"\0"
+			" "/* map message */			"\0"
+			"cheats are enabled"			"\0"
+			"free for all"					"\0"
+			"fraglimit 20"					"\0"
 		;
 		namespace Line {
 			enum {
