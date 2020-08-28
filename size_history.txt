@@ -1152,3 +1152,4 @@
 61903,higher-res menu banner
 62296,credits screen
 62298,slightly narrower large font
+62298,replaced deadname in credits
