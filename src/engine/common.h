@@ -471,5 +471,25 @@ namespace Constexpr {
 				return i;
 		return 32;
 	}
+
+	static constexpr u32 CountLines(const char* multistr) {
+		u32 count = 0;
+		while (*multistr) {
+			multistr = NextAfter(multistr);
+			++count;
+		}
+		return count;
+	}
+
+	static constexpr u32 CountEmptyLines(const char* multistr) {
+		u32 count = 0;
+		while (*multistr) {
+			while (*multistr == ' ')
+				++multistr;
+			count += *multistr == '\0';
+			multistr = NextAfter(multistr);
+		}
+		return count;
+	}
 }
 

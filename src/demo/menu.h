@@ -77,6 +77,39 @@ namespace Demo::Menu {
 			"Quake III Arena(c) 1999, id Software, Inc. All Rights Reserved." "\0"
 		};
 
+		static constexpr char CreditsText[] = {
+			"ID SOFTWARE WAS:\0"
+			" \0"
+			"PROGRAMMING\0"
+			"JOHN CARMACK, ROBERT A. DUFFY, JIM DOSE'\0"
+			" \0"
+			"ART\0"
+			"ADRIAN CARMACK, KEVIN CLOUD,\0"
+			"KENNETH SCOTT, SENECA MENARD, FRED NILSSON\0"
+			" \0"
+			"GAME DESIGNER\0"
+			"GRAEME DEVINE\0"
+			" \0"
+			"LEVEL DESIGN\0"
+			"TIM WILLITS, CHRISTIAN ANTKOW, PAUL JAQUAYS\0"
+			" \0"
+			"CEO\0"
+			"TODD HOLLENSHEAD\0"
+			" \0"
+			"DIRECTOR OF BUSINESS DEVELOPMENT\0"
+			"MARTY STRATTON\0"
+			" \0"
+			"BIZ ASSIST AND ID MOM\0"
+			"DONNA JACKSON\0"
+			" \0"
+			"DEVELOPMENT ASSISTANCE\0"
+			"ERIC WEBB\0"
+		};
+
+		static constexpr u32
+			NumCreditsLines = Constexpr::CountLines(Details::CreditsText),
+			NumEmptyCreditsLines = Constexpr::CountEmptyLines(Details::CreditsText);
+
 		static constexpr Action ItemActions[ItemCount] = {
 			#define PP_ADD_ITEM_ACTION(caption, action, flags) Action::action,
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_ACTION, PP_IGNORE_ARGS)
@@ -114,6 +147,7 @@ namespace Demo::Menu {
 	};
 
 	Menu::State*				g_active;
+	i32							g_credits;
 
 	enum class Direction : i32 {
 		Back = -1,
@@ -202,6 +236,12 @@ FORCEINLINE void Demo::Menu::ShowMainMenu() {
 }
 
 FORCEINLINE bool Demo::Menu::Update(float dt) {
+	if (g_credits) {
+		if (Sys::IsAnyKeyFirstDown())
+			Sys::Exit();
+		return true;
+	}
+
 	if (Sys::IsKeyRepeating(Key::Escape)) {
 		if (g_active) {
 			if (g_active->prev || Map::IsLoaded()) // don't close main menu
@@ -249,19 +289,36 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 					break;
 
 				case Action::ExitGame:
-					Sys::Exit();
+					g_credits = 1;
 					break;
 
 				default:
 					break;
 			}
 		}
+
+		return true;
 	}
 
-	return g_active;
+	return false;
 }
 
 FORCEINLINE void Demo::Menu::Draw() {
+	if (g_credits) {
+		Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
+
+		static constexpr vec2 FontScale = UI::FontScale[UI::LargeFont] * 0.75f;
+		vec2 pos = {0.f, 440.f};
+
+		for (const char* text = Details::CreditsText; *text; text = NextAfter(text)) {
+			UI::Print(text, pos, FontScale, ~0, 0.5f, UI::LargeFont);
+			pos.y -= *text == ' ' ? 28.f : 40.f;
+		}
+
+		UI::FlushGeometry();
+		return;
+	}
+
 	if (!g_active)
 		return;
 

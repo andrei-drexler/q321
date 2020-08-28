@@ -76,6 +76,7 @@ namespace Win32 {
 
 	WPARAM g_repeat_key;
 	bool g_repeat_flag;
+	u8 g_any_key;
 
 	Sys::Point GetPoint(LPARAM lParam) {
 		return { SHORT(LOWORD(lParam)), SHORT(HIWORD(lParam)) };
@@ -759,20 +760,29 @@ FORCEINLINE void Sys::UpdateKeyboardState() {
 
 	if (!g_repeat_flag)
 		g_repeat_key = 0;
+	u16 any_key = 0;
 
 	for (u16 i = 0; i < 256; ++i) {
 		u8 down = current_state[i] >> 7;
-		g_key_state[i] = ((g_key_state[i] & 1) << 1) | down;
+		u8 new_state = ((g_key_state[i] & 1) << 1) | down;
+		g_key_state[i] = new_state;
 		// disable auto-repeat when multiple keys are pressed
 		if (down && i != g_repeat_key && g_repeat_key)
 			g_repeat_key = 0;
+		if (new_state == 1)
+			any_key = i;
 	}
 
 	g_repeat_flag = false;
+	g_any_key = u8(any_key);
 }
 
 FORCEINLINE bool Sys::IsKeyRepeating(u8 key) {
 	return Win32::g_repeat_key == key;
+}
+
+FORCEINLINE u8 Sys::IsAnyKeyFirstDown() {
+	return Win32::g_any_key;
 }
 
 FORCEINLINE void Sys::UpdateMouseState(vec2& pt, float dt) {
