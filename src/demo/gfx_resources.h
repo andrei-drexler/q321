@@ -173,9 +173,9 @@ namespace Demo {
 			"\x12"		"\x01"		"Courier New Bold"		"\0"
 		;
 		constexpr vec2 FontScale[FontCount] = {
-			{1.5f, 1.f},
-			{1.5f, 1.f},
-			{1.f,  1.f},
+			{1.375f, 1.f},
+			{1.375f, 1.f},
+			{1.f,    1.f},
 		};
 
 		constexpr auto TexDescriptor = Texture::Descriptors[Texture::Font];
