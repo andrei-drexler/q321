@@ -1158,3 +1158,4 @@
 62259,lowercase credits text
 62249,lowercase loading screen text
 62247,removed extraneous dot
+62243,tweaked clipvelocity
