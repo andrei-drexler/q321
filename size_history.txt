@@ -1160,3 +1160,4 @@
 62247,removed extraneous dot
 62243,tweaked clipvelocity
 62487,added main_q3abanner arena text
+62347,tweaked arena sdf
