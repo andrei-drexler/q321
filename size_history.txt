@@ -1159,3 +1159,4 @@
 62249,lowercase loading screen text
 62247,removed extraneous dot
 62243,tweaked clipvelocity
+62487,added main_q3abanner arena text

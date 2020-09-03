@@ -2644,9 +2644,31 @@ float bnr_sdf(vec2 uv) {
 	return max(d, uv.y - 50.);
 }
 
+float arena_sdf(vec2 uv) {
+	vec2 p = uv *= vec2(256, 64);
+	float d = 1e6;
+	// E
+	d = min(d, box(uv - vec2(130, 18), vec2(2, 3)));
+	d = max(d, -box(uv - vec2(131.5, 19.5), vec2(2.5, 1)));
+	d = max(d, -box(uv - vec2(131.5, 17), vec2(2.5, 1)));
+	// R
+	d = min(d, box(uv - vec2(106, 18), vec2(.5, 3)));
+	d = min(d, max(106. - uv.x, onion(box(uv - vec2(106.5, 19.25), vec2(2, .5)) - .75, .5)));
+	d = min(d, box(uv - vec2(109.5 - ls(15., 18., uv.y) * 1.5, 16.5), vec2(.5, 1.5)));
+	// A
+	uv = mirr(p, 132.);
+	d = min(d, box(mirr(uv, 86.) - vec2(86. - ls(21., 15., uv.y) * 2., 18), vec2(.5, 3)));
+	d = min(d, box(uv - vec2(86, 16.5), vec2(1, .25)));
+	// N
+	uv = mirr(p, 154.);
+	d = min(d, box(uv - vec2(152, 18), vec2(.5, 3)));
+	d = min(d, box(p - vec2(152. + ls(21., 15., uv.y) * 4., 18), vec2(.5, 3)));
+	return d;
+}
+
 // base_wall/main_q3abanner
 TEXA(q3bnr) {
-	return vec4(msk(bnr_sdf(uv), .8), 0, 0, H(uv * 511.));
+	return vec4(msk(min(bnr_sdf(uv), arena_sdf(uv)), .8), 0, 0, H(uv * 511.));
 }
 
 // base_wall/main_q3abanner (map shader)
