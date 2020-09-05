@@ -2614,7 +2614,8 @@ void storchtl() {
 		;
 }
 
-float bnr_sdf(vec2 uv) {
+// QUAKE III sdf
+float quakeiii_sdf(vec2 uv) {
 	uv *= vec2(256, 64);
 	// Q
 	float d = circ(uv - vec2(81, 30), 11.);
@@ -2644,31 +2645,36 @@ float bnr_sdf(vec2 uv) {
 	return max(d, uv.y - 50.);
 }
 
-float arena_sdf(vec2 uv) {
-	uv *= vec2(256, 64);
+// ARENA sdf
+// s = scale
+float arena_sdf(vec2 uv, float s) {
+	uv *= vec2(256. * s, 64);
 	float d = 1e6;
 	// R
-	d = min(d, max(106. - uv.x, onion(box(uv - vec2(106.5, 19.25), vec2(2, .5)) - .75, .5)));
-	d = min(d, box(uv - vec2(109.5 - ls(15., 18., uv.y) * 1.5, 16.5), vec2(.5, 1.5)));
-	d = min(d, box(uv - vec2(106, 18), vec2(.5, 3)));
+	uv.x -= s * 106.;
+	d = min(d, max(-uv.x - 1., onion(box(uv - vec2(-.5, 19.25), vec2(2, .5)) - .75, .5)));
+	d = min(d, box(uv - vec2(2.5 - ls(15., 18., uv.y) * 1.5, 16.5), vec2(.5, 1.5)));
+	d = min(d, box(uv - vec2(-1, 18), vec2(.5, 3)));
 	// E
-	d = min(d, box(uv - vec2(130, 18), vec2(2, 3)));
-	d = max(d, -box(uv - vec2(131.5, 19.5), vec2(2.5, 1)));
-	d = max(d, -box(uv - vec2(131.5, 17), vec2(2.5, 1)));
+	uv.x -= s * 24.;
+	d = min(d, box(uv - vec2(0, 18), vec2(2, 3)));
+	d = max(d, -box(uv - vec2(1.5, 19.5), vec2(2.5, 1)));
+	d = max(d, -box(uv - vec2(1.5, 17), vec2(2.5, 1)));
 	// N
-	d = min(d, box(uv - vec2(152, 18), vec2(.5, 3)));
-	d = min(d, box(uv - vec2(156, 18), vec2(.5, 3)));
-	d = min(d, box(uv - vec2(152. + ls(21., 15., uv.y) * 4., 18), vec2(.5, 3)));
+	uv.x -= s * 24.;
+	d = min(d, box(uv - vec2(-2, 18), vec2(.5, 3)));
+	d = min(d, box(uv - vec2(2, 18), vec2(.5, 3)));
+	d = min(d, box(uv - vec2((18. - uv.y) * .5, 18), vec2(.7, 3)));
 	// A
-	uv = mirr(uv, 132.);
-	d = min(d, box(mirr(uv, 86.) - vec2(86. - ls(21., 15., uv.y) * 2., 18), vec2(.5, 3)));
-	d = min(d, box(uv - vec2(86, 16.5), vec2(1, .25)));
+	uv.x = mirr(uv.x + s * 68., s * 46.);
+	d = min(d, box(mirr(uv, 0.) - vec2((uv.y - 21.) * .33, 18), vec2(.5, 3)));
+	d = min(d, box(uv - vec2(0, 16.5), vec2(1, .25)));
 	return d;
 }
 
 // base_wall/main_q3abanner
 TEXA(q3bnr) {
-	return vec4(msk(min(bnr_sdf(uv), arena_sdf(uv)), .8), 0, 0, H(uv * 511.));
+	return vec4(msk(min(quakeiii_sdf(uv), arena_sdf(uv, 1.)), .8), 0, 0, H(uv * 511.));
 }
 
 // base_wall/main_q3abanner (map shader)
@@ -2679,31 +2685,36 @@ void q3bnr_m() {
 }
 
 // main menu banner (texture)
-TEX(menubnr) {
-	float d = bnr_sdf(uv);
-	return vec3(grad(d) * rot(90.) * .5 + .5, 1. - 1.4 * abs(d));
+TEXA(menubnr) {
+	float d = quakeiii_sdf(uv);
+	return vec4(grad(d) * rot(90.) * .5 + .5, 1. - 1.4 * abs(d), 3. - 6. * arena_sdf(uv, .7));
 }
 
 // main menu banner (menu shader)
-TEXA(menubnr_m) {
-	uv -= .5;
+void menubnr_m() {
+	vec2 uv = UV - .5;
 	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
 	uv /= r / mx(r); // correct aspect ratio
 	uv *= .5;
 
 	uv.y = (uv.y - .16) * 7.;
+	FCol = mx(abs(uv + vec2(0, .23)) / vec2(.55, .2)) > .4 ?
+			vec4(0) :
+			T0(uv + .51).w
+			* FBMT(uv - vec2(N(Time.x), Time.x), vec2(7, 3), .7, 2., 4)
+			* vec4(2, 1, .3, 0)
+	;
 	if (mx(abs(uv - vec2(0, .15)) / vec2(.77, 1)) > .4)
-		return vec4(0); // out of bounds
+		return; // out of bounds
 
 	float
 		n = H(uv * 133.7 + Time.x),
 		k = 1./48.,
 		s = pow(1.2, k),
-		l = 0.,
-		i
+		i = n * k
 	;
 	uv /= mix(1., s, n);
-	for (i = n * k; i < 1.; i += k) {
+	for (; i < 1.; i += k) {
 		uv.x += (N(Time.x * .37) - .5) * k / 48.;
 		uv.y += (N(Time.x * .21) - .5) * k / 32.;
 		r = uv /= s;
@@ -2713,9 +2724,11 @@ TEXA(menubnr_m) {
 		vec2 g = c.xy * 2.;
 		r = sign(--g) * r * vec2(133, 33) + Time.x * 4.;
 		g *= g;
-		l += c.z * (1. - i) * k * ((N(r.x) * g.x + N(r.y) * g.y) / sum(g + .01) * .7 + .3);
+		FCol += c.z * (1. - i) * k
+			* ((N(r.x) * g.x + N(r.y) * g.y) / sum(g + .01) * .7 + .3)
+			* vec4(32, 16, 4, 0)
+		;
 	}
-	return l * vec4(32, 16, 4, 0);
 }
 
 // sfx/beam
