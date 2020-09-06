@@ -180,7 +180,7 @@ NOINLINE void Demo::Menu::AdvanceFocus(Direction direction) {
 		focus += delta;
 		// Note: underflows if direction is -1 and focus is 0,
 		// producing a number that is definitely > num_items.
-		// This allows us to use the same wrap-around check for both directions!
+		// This allows us to use the same wrap-around check for both directions.
 		if (focus >= num_items)
 			focus = wrap;
 	} while (items[focus].flags & Item::Flags::Decoration);
