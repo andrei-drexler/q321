@@ -2685,9 +2685,16 @@ void q3bnr_m() {
 }
 
 // main menu banner (texture)
-TEXA(menubnr) {
+TEX(menubnr) {
 	float d = quakeiii_sdf(uv);
-	return vec4(grad(d) * rot(90.) * .5 + .5, 1. - 1.4 * abs(d), 3. - 6. * arena_sdf(uv, .7));
+	vec2 p = grad(d) * rot(90.);
+	vec2 q = sign(p) * uv * vec2(133, 33) + Time.x * 4.;
+	p *= p;
+	return vec3(
+		(1. - 1.4 * abs(d)) * ((N(q.x) * p.x + N(q.y) * p.y) / sum(p + .01) * .7 + .3),
+		sat(3. - 6. * arena_sdf(uv, .7)) * FBMT(uv - vec2(N(Time.x), Time.x), vec2(7, 3), .7, 2., 4),
+		0
+	);
 }
 
 // main menu banner (menu shader)
@@ -2700,8 +2707,7 @@ void menubnr_m() {
 	uv.y = (uv.y - .16) * 7.;
 	FCol = mx(abs(uv + vec2(0, .23)) / vec2(.55, .2)) > .4 ?
 			vec4(0) :
-			T0(uv + .51).w
-			* FBMT(uv - vec2(N(Time.x), Time.x), vec2(7, 3), .7, 2., 4)
+			T0(uv + .51).y
 			* vec4(2, 1, .3, 0)
 	;
 	if (mx(abs(uv - vec2(0, .15)) / vec2(.77, 1)) > .4)
@@ -2721,13 +2727,7 @@ void menubnr_m() {
 		r.y -= i * .15;
 		r.x *= 1. + r.y * .15;
 		vec4 c = T0(r + .5);
-		vec2 g = c.xy * 2.;
-		r = sign(--g) * r * vec2(133, 33) + Time.x * 4.;
-		g *= g;
-		FCol += c.z * (1. - i) * k
-			* ((N(r.x) * g.x + N(r.y) * g.y) / sum(g + .01) * .7 + .3)
-			* vec4(32, 16, 4, 0)
-		;
+		FCol += c.x * (1. - i) * k * vec4(32, 16, 4, 0);
 	}
 }
 

@@ -27,6 +27,7 @@
 namespace Demo::Menu {
 	void Init();
 	bool Update(float dt);
+	void UpdateBannerTexture();
 	void Draw();
 	void ShowMainMenu();
 	bool IsMainMenu(); // precondition: g_active != nullptr
@@ -310,6 +311,14 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 	return false;
 }
 
+FORCEINLINE void Demo::Menu::UpdateBannerTexture() {
+	Gfx::SetRenderTarget(Texture::menubnr);
+	Gfx::SetShader(Shader::menubnr);
+	Uniform::Time.x = float(g_time);
+	Gfx::UpdateUniforms();
+	Gfx::DrawFullScreen();
+}
+
 FORCEINLINE void Demo::Menu::Draw() {
 	if (g_credits) {
 		static constexpr vec2 FontScale = UI::FontScale[UI::LargeFont] * 0.75f;
@@ -333,7 +342,6 @@ FORCEINLINE void Demo::Menu::Draw() {
 	else
 		Gfx::SetShader(Shader::uiframe);
 
-	Uniform::Time.x = float(g_time);
 	if (g_active->prev) {
 		// nested menu
 		Uniform::Time.y = 6.f / 8.f;

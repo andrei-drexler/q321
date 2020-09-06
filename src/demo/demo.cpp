@@ -415,6 +415,7 @@ namespace Demo {
 			RenderWorld(frame);
 			RenderDebug();
 		} else {
+			Menu::UpdateBannerTexture();
 			Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
 		}
 
