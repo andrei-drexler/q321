@@ -2627,20 +2627,20 @@ float quakeiii_sdf(vec2 uv) {
 	d = min(d, box(uv - vec2(91.5, 47), vec2(4, 19)) - 4.);
 	d = max(d, -box(uv - vec2(91.5, 47), vec2(0, 17.5)) + 1.);
 	// A
-	d = min(d, box(mirr(uv, 111.) - vec2(105. + ls(23., 50., uv.y) * 3., 43), vec2(3.5, 19)));
-	d = min(d, box(uv - vec2(111, 32), vec2(6, 3)));
+	d = min(d, box1(mirr(uv, 111.) - vec2(105. + ls(23., 50., uv.y) * 3., 43), vec2(3.5, 19)));
+	d = min(d, box1(uv - vec2(111, 32), vec2(6, 3)));
 	// K
-	d = min(d, box(uv - vec2(126, 37), vec2(3, 13)));
-	d = min(d, box(uv - vec2(125.5 + ls(23., 50., uv.y) * 10., 44), vec2(3.5, 6)));
-	d = min(d, box(uv - vec2(136.5 - ls(23., 50., uv.y) * 9., 32), vec2(3.5, 8)));
+	d = min(d, box1(uv - vec2(126, 37), vec2(3, 13)));
+	d = min(d, box1(uv - vec2(125.5 + ls(23., 50., uv.y) * 10., 44), vec2(3.5, 6)));
+	d = min(d, box1(uv - vec2(136.5 - ls(23., 50., uv.y) * 9., 32), vec2(3.5, 8)));
 	// E
-	d = min(d, box(uv - vec2(148.5, 37), vec2(7, 13)));
-	d = max(d, -box(uv - vec2(155, 33), vec2(6, 3)));
-	d = max(d, -box(uv - vec2(155, 43), vec2(6, 2)));
+	d = min(d, box1(uv - vec2(148.5, 37), vec2(7, 13)));
+	d = max(d, -box1(uv - vec2(155, 33), vec2(6, 3)));
+	d = max(d, -box1(uv - vec2(155, 43), vec2(6, 2)));
 	// III
-	d = min(d, box(uv - vec2(168, 37), vec2(3.5, 13)));
-	d = min(d, box(uv - vec2(178, 37), vec2(3.5, 13)));
-	d = min(d, box(uv - vec2(188, 37), vec2(3.5, 13)));
+	d = min(d, box1(uv - vec2(168, 37), vec2(3.5, 13)));
+	d = min(d, box1(uv - vec2(178, 37), vec2(3.5, 13)));
+	d = min(d, box1(uv - vec2(188, 37), vec2(3.5, 13)));
 
 	return max(d, uv.y - 50.);
 }
@@ -2653,22 +2653,22 @@ float arena_sdf(vec2 uv, float s) {
 	// R
 	uv.x -= s * 106.;
 	d = min(d, max(-uv.x - 1., onion(box(uv - vec2(-.5, 19.25), vec2(2, .5)) - .75, .5)));
-	d = min(d, box(uv - vec2(2.5 - ls(15., 18., uv.y) * 1.5, 16.5), vec2(.5, 1.5)));
-	d = min(d, box(uv - vec2(-1, 18), vec2(.5, 3)));
+	d = min(d, box1(uv - vec2(1. + (18. - uv.y) * .5, 16.5), vec2(.5, 1.5)));
+	d = min(d, box1(uv - vec2(-1, 18), vec2(.5, 3)));
 	// E
 	uv.x -= s * 24.;
-	d = min(d, box(uv - vec2(0, 18), vec2(2, 3)));
-	d = max(d, -box(uv - vec2(1.5, 19.5), vec2(2.5, 1)));
-	d = max(d, -box(uv - vec2(1.5, 17), vec2(2.5, 1)));
+	d = min(d, box1(uv - vec2(0, 18), vec2(2, 3)));
+	d = max(d, -box1(uv - vec2(1.5, 19.5), vec2(2.5, 1)));
+	d = max(d, -box1(uv - vec2(1.5, 17), vec2(2.5, 1)));
 	// N
 	uv.x -= s * 24.;
-	d = min(d, box(uv - vec2(-2, 18), vec2(.5, 3)));
-	d = min(d, box(uv - vec2(2, 18), vec2(.5, 3)));
-	d = min(d, box(uv - vec2((18. - uv.y) * .5, 18), vec2(.7, 3)));
+	d = min(d, box1(uv - vec2(-2, 18), vec2(.5, 3)));
+	d = min(d, box1(uv - vec2(2, 18), vec2(.5, 3)));
+	d = min(d, box1(uv - vec2((18. - uv.y) * .5, 18), vec2(.7, 3)));
 	// A
 	uv.x = mirr(uv.x + s * 68., s * 46.);
-	d = min(d, box(mirr(uv, 0.) - vec2((uv.y - 21.) * .33, 18), vec2(.5, 3)));
-	d = min(d, box(uv - vec2(0, 16.5), vec2(1, .25)));
+	d = min(d, box1(mirr(uv, 0.) - vec2((uv.y - 21.) * .33, 18), vec2(.5, 3)));
+	d = min(d, box1(uv - vec2(0, 16.5), vec2(1, .25)));
 	return d;
 }
 

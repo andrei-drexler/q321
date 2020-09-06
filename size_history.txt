@@ -1162,3 +1162,4 @@
 62487,added main_q3abanner arena text
 62347,tweaked arena sdf
 62529,main menu arena text
+62533,sharper main menu arena text
