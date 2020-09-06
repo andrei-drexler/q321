@@ -29,6 +29,7 @@ namespace Demo::Menu {
 	bool Update(float dt);
 	void Draw();
 	void ShowMainMenu();
+	bool IsMainMenu(); // precondition: g_active != nullptr
 
 	enum class Action : u8 {
 		CloseMenu,
@@ -235,6 +236,12 @@ FORCEINLINE void Demo::Menu::ShowMainMenu() {
 	Push(&MainMenu);
 }
 
+// precondition: g_active != nullptr
+FORCEINLINE bool Demo::Menu::IsMainMenu() {
+	assert(g_active);
+	return !g_active->prev && !Map::IsLoaded();
+}
+
 FORCEINLINE bool Demo::Menu::Update(float dt) {
 	if (g_credits) {
 		if (Sys::IsAnyKeyFirstDown())
@@ -244,7 +251,7 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 
 	if (Sys::IsKeyRepeating(Key::Escape)) {
 		if (g_active) {
-			if (g_active->prev || Map::IsLoaded()) // don't close main menu
+			if (!IsMainMenu()) // don't close main menu
 				CloseCurrent();
 		} else {
 			Push(&InGame);
@@ -320,7 +327,7 @@ FORCEINLINE void Demo::Menu::Draw() {
 	if (!g_active)
 		return;
 
-	bool main_menu = !g_active->prev && !Map::IsLoaded();
+	bool main_menu = IsMainMenu();
 	if (main_menu)
 		Gfx::SetShader(Shader::bglogo);
 	else
