@@ -4,22 +4,23 @@
 
 #define DEMO_MENUS(begin, item, end)\
 	begin(MainMenu)\
-		item("NEW GAME",		NewGame,			0)\
-		item("SETUP",			Options,			0)\
-		item("CINEMATICS",		Options,			0)\
-		item("EXIT",			ConfirmExitGame,	0)\
+		/*Text,					Action,				X,		Y,		Flags*/\
+		item("NEW GAME",		NewGame,			0,		120,	0)\
+		item("SETUP",			Options,			0,		40,		0)\
+		item("CINEMATICS",		Options,			0,		-40,	0)\
+		item("EXIT",			ConfirmExitGame,	0,		-120,	0)\
 	end()\
 	begin(InGame)\
-		item("RESUME GAME",		CloseMenu,			0)\
-		item("SETUP",			Options,			0)\
-		item("NEXT ARENA",		NextMap,			0)\
-		item("LEAVE ARENA",		QuitMap,			0)\
-		item("EXIT GAME",		ConfirmExitGame,	0)\
+		item("RESUME GAME",		CloseMenu,			0,		160,	0)\
+		item("SETUP",			Options,			0,		80,		0)\
+		item("NEXT ARENA",		NextMap,			0,		0,		0)\
+		item("LEAVE ARENA",		QuitMap,			0,		-80,	0)\
+		item("EXIT GAME",		ConfirmExitGame,	0,		-160,	0)\
 	end()\
 	begin(ExitGameModal)\
-		item("EXIT GAME?",		CloseMenu,			Item::Flags::Decoration)\
-		item("YES",				ExitGame,			0)\
-		item("NO",				CloseMenu,			0)\
+		item("EXIT GAME?",		CloseMenu,			0,		80,		Item::Flags::Decoration)\
+		item("YES",				ExitGame,			0,		0,		0)\
+		item("NO",				CloseMenu,			0,		-80,	0)\
 	end()\
 
 ////////////////////////////////////////////////////////////////
@@ -53,6 +54,7 @@ namespace Demo::Menu {
 			const char*			text;
 			u16					flags;
 			Action				action;
+			vec2				pos;
 		};
 	};
 
@@ -69,7 +71,7 @@ namespace Demo::Menu {
 		};
 
 		static constexpr char ItemStringList[] =
-			#define PP_ADD_ITEM_STRING(caption, action, flags) caption "\0"
+			#define PP_ADD_ITEM_STRING(caption, action, x, y, flags) caption "\0"
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_STRING, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_STRING
 		;
@@ -113,15 +115,24 @@ namespace Demo::Menu {
 			NumEmptyCreditsLines = Constexpr::CountEmptyLines(Details::CreditsText);
 
 		static constexpr Action ItemActions[ItemCount] = {
-			#define PP_ADD_ITEM_ACTION(caption, action, flags) Action::action,
+			#define PP_ADD_ITEM_ACTION(caption, action, x, y, flags) Action::action,
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_ACTION, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_ACTION
 		};
 
 		static constexpr u16 ItemFlags[ItemCount] = {
-			#define PP_ADD_ITEM_FLAGS(caption, action, flags) flags,
+			#define PP_ADD_ITEM_FLAGS(caption, action, x, y, flags) flags,
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_FLAGS, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_FLAGS
+		};
+
+		static constexpr float ItemOffsets[2][ItemCount] = {
+			#define PP_ADD_ITEM_OFFSET_X(caption, action, x, y, flags) x,
+			#define PP_ADD_ITEM_OFFSET_Y(caption, action, x, y, flags) y - 16.f,
+			{DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_OFFSET_X, PP_IGNORE_ARGS)},
+			{DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_OFFSET_Y, PP_IGNORE_ARGS)},
+			#undef PP_ADD_ITEM_OFFSET_X
+			#undef PP_ADD_ITEM_OFFSET_Y
 		};
 
 		static constexpr u8 MenuItemCounts[MenuCount] = {
@@ -215,6 +226,8 @@ FORCEINLINE void Demo::Menu::Init() {
 		text = NextAfter(text);
 		item.flags = Details::ItemFlags[item_index];
 		item.action = Details::ItemActions[item_index];
+		item.pos[0] = Details::ItemOffsets[0][item_index];
+		item.pos[1] = Details::ItemOffsets[1][item_index];
 	} while (++item_index < Details::ItemCount);
 
 	u32 menu_index = 0;
@@ -379,15 +392,18 @@ FORCEINLINE void Demo::Menu::Draw() {
 		}
 	}
 
-	const float line_height = 80.f;
-	const vec2& font_scale = UI::FontScale[UI::LargeFont];
-	vec2 pos = {0.f, line_height * 0.5f * float(g_active->num_items - 1) - 16.f};
+	const Menu::State* menu = g_active;
+	const Item::State* items = menu->items;
 
-	for (u32 item_index = 0; item_index < g_active->num_items; ++item_index) {
-		const char* text = g_active->items[item_index].text;
-		bool focused = g_active->focus == item_index;
+	const vec2& font_scale = UI::FontScale[UI::LargeFont];
+
+	for (u32 item_index = 0; item_index < menu->num_items; ++item_index) {
+		const Item::State& item = items[item_index];
+		const char* text = item.text;
+		bool focused = menu->focus == item_index;
 		u32 color = focused ? Details::FocusFolor : Details::ItemColor;
 
+		const vec2& pos = item.pos;
 		UI::PrintShadowed(text, pos, font_scale, color, 0.5f, UI::LargeFont);
 
 		if (focused) {
@@ -395,8 +411,6 @@ FORCEINLINE void Demo::Menu::Draw() {
 			color = (color & 0xFF'FF'FFu) | glow_alpha;
 			UI::Print(text, pos, font_scale, color, 0.5f, UI::LargeFontBlurry);
 		}
-
-		pos.y -= line_height;
 	}
 
 	UI::FlushGeometry();
