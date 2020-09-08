@@ -127,9 +127,9 @@ namespace Demo::Menu {
 			#undef PP_ADD_ITEM_FLAGS
 		};
 
-		static constexpr float ItemOffsets[2][ItemCount] = {
-			#define PP_ADD_ITEM_OFFSET_X(caption, action, x, y, flags) x,
-			#define PP_ADD_ITEM_OFFSET_Y(caption, action, x, y, flags) y - 16.f,
+		static constexpr u8 ItemOffsets[2][ItemCount] = {
+			#define PP_ADD_ITEM_OFFSET_X(caption, action, x, y, flags) EncodeSignMagnitude(x / 4),
+			#define PP_ADD_ITEM_OFFSET_Y(caption, action, x, y, flags) EncodeSignMagnitude((y - 16) / 4),
 			{DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_OFFSET_X, PP_IGNORE_ARGS)},
 			{DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_OFFSET_Y, PP_IGNORE_ARGS)},
 			#undef PP_ADD_ITEM_OFFSET_X
@@ -227,8 +227,8 @@ FORCEINLINE void Demo::Menu::Init() {
 		text = NextAfter(text);
 		item.flags = Details::ItemFlags[item_index];
 		item.action = Details::ItemActions[item_index];
-		item.pos[0] = Details::ItemOffsets[0][item_index];
-		item.pos[1] = Details::ItemOffsets[1][item_index];
+		item.pos[0] = float(DecodeSignMagnitude(Details::ItemOffsets[0][item_index]) << 2);
+		item.pos[1] = float(DecodeSignMagnitude(Details::ItemOffsets[1][item_index]) << 2);
 	} while (++item_index < Details::ItemCount);
 
 	u32 menu_index = 0;

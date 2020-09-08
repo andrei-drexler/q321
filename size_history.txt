@@ -1167,3 +1167,4 @@
 62422,optimized main menu banner
 62468,manual menu item layout
 62475,horizontal yes/no buttons
+62472,more compact item layout storage
