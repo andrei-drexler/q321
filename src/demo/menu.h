@@ -4,24 +4,29 @@
 
 #define DEMO_MENUS(begin, item, end)\
 	begin(MainMenu)\
-		/*Text,					Action,				X,		Y,		Flags*/\
-		item("NEW GAME",		NewGame,			0,		120,	0)\
-		item("SETUP",			Options,			0,		40,		0)\
-		item("CINEMATICS",		Options,			0,		-40,	0)\
-		item("EXIT",			ConfirmExitGame,	0,		-120,	0)\
+		/*Text,						Action,				X,		Y,		Flags*/\
+		item("NEW GAME",			NewGame,			0,		120,	0)\
+		item("SETUP",				Options,			0,		40,		0)\
+		item("CINEMATICS",			Options,			0,		-40,	0)\
+		item("EXIT",				ConfirmExitGame,	0,		-120,	0)\
 	end()\
 	begin(InGame)\
-		item("RESUME GAME",		CloseMenu,			0,		160,	0)\
-		item("SETUP",			Options,			0,		80,		0)\
-		item("NEXT ARENA",		NextMap,			0,		0,		0)\
-		item("LEAVE ARENA",		QuitMap,			0,		-80,	0)\
-		item("EXIT GAME",		ConfirmExitGame,	0,		-160,	0)\
+		item("RESUME GAME",			CloseMenu,			0,		160,	0)\
+		item("SETUP",				Options,			0,		80,		0)\
+		item("NEXT ARENA",			NextMap,			0,		0,		0)\
+		item("LEAVE ARENA",			QuitMap,			0,		-80,	0)\
+		item("EXIT GAME",			ConfirmExitGame,	0,		-160,	0)\
 	end()\
 	begin(ExitGameModal)\
-		item("EXIT GAME?",		CloseMenu,			0,		56,		Item::Flags::Decoration)\
-		item("YES",				ExitGame,			-76,	-56,	0)\
-		item("/",				CloseMenu,			0,		-56,	Item::Flags::Decoration)\
-		item("NO",				CloseMenu,			64,		-56,	0)\
+		item("EXIT GAME?",			CloseMenu,			0,		56,		Item::Flags::Decoration)\
+		item("YES",					ExitGame,			-76,	-56,	0)\
+		item("/",					CloseMenu,			0,		-56,	Item::Flags::Decoration)\
+		item("NO",					CloseMenu,			64,		-56,	0)\
+	end()\
+	begin(NewGame)\
+		item("CHOOSE LEVEL:",		CloseMenu,			0,		112,	Item::Flags::Decoration)\
+		item("THE LONGEST YARD",	LoadMapDM17,		0,		-16,	0)\
+		item("ARENA GATE",			LoadMapDM1,			0,		-88,	0)\
 	end()\
 
 ////////////////////////////////////////////////////////////////
@@ -42,6 +47,8 @@ namespace Demo::Menu {
 		QuitMap,
 		ConfirmExitGame,
 		ExitGame,
+		LoadMapDM1,
+		LoadMapDM17,
 
 		Count,
 	};
@@ -291,6 +298,17 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 					break;
 
 				case Action::NewGame:
+					Push(&NewGame);
+					break;
+
+				case Action::LoadMapDM1:
+					Details::g_start_map = Map::ID::q3dm1;
+					CloseAll();
+					LoadMap(Details::g_start_map);
+					break;
+
+				case Action::LoadMapDM17:
+					Details::g_start_map = Map::ID::q3dm17;
 					CloseAll();
 					LoadMap(Details::g_start_map);
 					break;
