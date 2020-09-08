@@ -1166,3 +1166,4 @@
 62533,added ismainmenu helper
 62422,optimized main menu banner
 62468,manual menu item layout
+62475,horizontal yes/no buttons

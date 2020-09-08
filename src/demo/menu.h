@@ -18,9 +18,10 @@
 		item("EXIT GAME",		ConfirmExitGame,	0,		-160,	0)\
 	end()\
 	begin(ExitGameModal)\
-		item("EXIT GAME?",		CloseMenu,			0,		80,		Item::Flags::Decoration)\
-		item("YES",				ExitGame,			0,		0,		0)\
-		item("NO",				CloseMenu,			0,		-80,	0)\
+		item("EXIT GAME?",		CloseMenu,			0,		56,		Item::Flags::Decoration)\
+		item("YES",				ExitGame,			-76,	-56,	0)\
+		item("/",				CloseMenu,			0,		-56,	Item::Flags::Decoration)\
+		item("NO",				CloseMenu,			64,		-56,	0)\
 	end()\
 
 ////////////////////////////////////////////////////////////////
@@ -273,9 +274,9 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 	}
 
 	if (g_active) {
-		if (Sys::IsKeyRepeating(Key::Up))
+		if (Sys::IsKeyRepeating(Key::Up) || Sys::IsKeyRepeating(Key::Left))
 			AdvanceFocus(Direction::Back);
-		else if (Sys::IsKeyRepeating(Key::Down) || Sys::IsKeyRepeating(Key::Tab))
+		else if (Sys::IsKeyRepeating(Key::Down) || Sys::IsKeyRepeating(Key::Right) || Sys::IsKeyRepeating(Key::Tab))
 			AdvanceFocus(Direction::Forward);
 
 		if (Sys::IsKeyFirstDown(Key::Enter)) {
