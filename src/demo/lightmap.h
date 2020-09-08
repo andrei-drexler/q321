@@ -179,9 +179,9 @@ FORCEINLINE void Map::Details::PackLightmap() {
 			vec3* pos = positions + vtx_offset;
 			vec4* uv = texcoords + vtx_offset;
 
-			u8 uv_axis = brushes.GetPlaneUVAxis(plane_index);
-			u8 s_axis = brushes.GetSAxis(uv_axis);
-			u8 t_axis = brushes.GetTAxis(uv_axis);
+			u32 uv_axis = brushes.GetPlaneUVAxis(plane_index);
+			u32 s_axis = brushes.GetSAxis(uv_axis);
+			u32 t_axis = brushes.GetTAxis(uv_axis);
 
 			Rect uv_bounds;
 			uv_bounds.clear();

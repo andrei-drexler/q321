@@ -63,10 +63,11 @@ namespace Map {
 		
 		i16								world_bounds[2][3];
 
-		u8								GetPlaneMaterial(u32 plane_index) const { return plane_mat_uv_axis[plane_index] >> 2; }
-		u8								GetPlaneUVAxis(u32 plane_index) const { return plane_mat_uv_axis[plane_index] & 3; }
-		static u8						GetSAxis(u8 uv_axis) { return (uv_axis == 0);     } // 1 0 0
-		static u8						GetTAxis(u8 uv_axis) { return (uv_axis != 2) + 1; } // 2 2 1
+		u32								GetPlaneMaterial(u32 plane_index) const { return plane_mat_uv_axis[plane_index] >> 2; }
+		u32								GetPlaneUVAxis(u32 plane_index) const { return plane_mat_uv_axis[plane_index] & 3; }
+
+		static u32						GetSAxis(u32 uv_axis) { return (uv_axis == 0);     } // 1 0 0
+		static u32						GetTAxis(u32 uv_axis) { return (uv_axis != 2) + 1; } // 2 2 1
 
 		struct {
 			u32							data;
@@ -694,10 +695,10 @@ NOINLINE void Map::Load(ID id) {
 					texture_size.y = descriptor.height;
 				}
 
-				u8 s_axis = brushes.GetSAxis(uv_axis);
-				u8 t_axis = brushes.GetTAxis(uv_axis);
+				u32 s_axis = brushes.GetSAxis(uv_axis);
+				u32 t_axis = brushes.GetTAxis(uv_axis);
 				vec2 rot{sin(uv.angle), cos(uv.angle)};
-				
+
 				auto uv_map = [&] (const vec3& v) -> vec2 {
 					vec2 st{v[s_axis], v[t_axis]};
 					st = st.x * vec2{rot.y, rot.x} + st.y * vec2{-rot.x, rot.y};
@@ -716,7 +717,7 @@ NOINLINE void Map::Load(ID id) {
 					texcoords[index].xy = uv_map(positions[index]);
 					normals[index] = plane.xyz;
 				}
-				
+
 				brushes.plane_vertex_range[brush_start + i].Set(mat_vertex_offset[material] + first_vertex, num_face_edges);
 				if (mirrored) {
 					brushes
