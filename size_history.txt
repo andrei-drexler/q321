@@ -1171,3 +1171,4 @@
 62434,removed a few u32-u8 conversions
 62453,rudimentary level selection menu
 62445,lowercase menu text
+62439,lowercase map descriptions

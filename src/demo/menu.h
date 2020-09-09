@@ -25,8 +25,8 @@
 	end()\
 	begin(NewGame)\
 		item("choose level:",		CloseMenu,			0,		112,	Item::Flags::Decoration)\
-		item("THE LONGEST YARD",	LoadMapDM17,		0,		-16,	0)\
-		item("ARENA GATE",			LoadMapDM1,			0,		-88,	0)\
+		item("the longest yard",	LoadMapDM17,		0,		-16,	0)\
+		item("arena gate",			LoadMapDM1,			0,		-88,	0)\
 	end()\
 
 ////////////////////////////////////////////////////////////////

@@ -2094,7 +2094,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 	assert(has_levelshot);
 
 	for (auto& c : description)
-		c = std::toupper(c);
+		c = std::tolower(c);
 	ReplaceAll(description, "\\",  "\\\\");
 	ReplaceAll(description, "\"",  "\\\"");
 
