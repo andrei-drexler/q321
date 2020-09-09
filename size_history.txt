@@ -1172,3 +1172,4 @@
 62453,rudimentary level selection menu
 62445,lowercase menu text
 62439,lowercase map descriptions
+62440,s/level/arena
