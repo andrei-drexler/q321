@@ -1173,3 +1173,4 @@
 62445,lowercase menu text
 62439,lowercase map descriptions
 62440,s/level/arena
+62438,tweaked setrendertarget

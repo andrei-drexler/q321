@@ -710,16 +710,12 @@ NOINLINE void Gfx::SetRenderTarget(Texture::ID id, const Clear::Mode* clear, con
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 	if (!viewport) {
-		GLsizei w, h;
 		if (id < g_state.num_textures) {
 			assert(g_state.texture_state[id].fbo);
-			w = g_state.texture_state[id].width;
-			h = g_state.texture_state[id].height;
+			glViewport(0, 0, g_state.texture_state[id].width, g_state.texture_state[id].height);
 		} else {
-			w = Sys::g_window.width;
-			h = Sys::g_window.height;
+			glViewport(0, 0, Sys::g_window.width, Sys::g_window.height);
 		}
-		glViewport(0, 0, w, h);
 	} else {
 		glViewport(viewport->x, viewport->y, viewport->w, viewport->h);
 	}
