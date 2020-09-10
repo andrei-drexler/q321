@@ -169,12 +169,28 @@ FORCEINLINE T* MemSet(T* dest, int c = 0, size_t count = 1) {
 	return dest;
 }
 
-NOINLINE constexpr size_t StrLen(const char* text) {
+#ifdef PP_USE_INLINE_ASM
+__declspec(naked) size_t __fastcall StrLen(const char* text) {
+	__asm {
+		xor eax, eax;
+body:
+		cmp byte ptr[ecx],0;
+		je done;
+		inc eax;
+		inc ecx;
+		jmp body;
+done:
+		ret
+	}
+}
+#else
+NOINLINE size_t StrLen(const char* text) {
 	size_t result = 0;
 	while (text[result])
 		++result;
 	return result;
 }
+#endif
 
 FORCEINLINE constexpr int StrCmp(const char* lhs, const char* rhs) {
 	while (*lhs && *rhs && *lhs == *rhs)
@@ -194,7 +210,7 @@ FORCEINLINE size_t CopyString(char* dst, const char* src) {
 	return result;
 }
 
-NOINLINE constexpr const char* NextAfter(const char* multistr) {
+NOINLINE const char* NextAfter(const char* multistr) {
 	return multistr + StrLen(multistr) + 1;
 }
 
@@ -479,6 +495,17 @@ constexpr auto MakeLookupTable(MapFunction map) {
 ////////////////////////////////////////////////////////////////
 
 namespace Constexpr {
+	static constexpr size_t StrLen(const char* text) {
+		size_t result = 0;
+		while (text[result])
+			++result;
+		return result;
+	}
+
+	static constexpr const char* NextAfter(const char* multistr) {
+		return multistr + StrLen(multistr) + 1;
+	}
+
 	static constexpr u32 LZCNT(u32 x) {
 		for (u32 i = 0; i < 32; ++i, x <<= 1)
 			if (x & 0x8000'0000u)
