@@ -395,10 +395,10 @@ __declspec(naked) i32 __fastcall DecodeSignMagnitude(u32 u) {
 	__asm {
 		mov eax, ecx
 		shr eax, 1
-		mov edx, eax
-		neg edx
-		and ecx, 1
-		cmovnz eax, edx
+		and cl, 1
+		jz done
+		neg eax
+	done:
 		ret
 	}
 }

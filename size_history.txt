@@ -1176,3 +1176,4 @@
 62438,tweaked setrendertarget
 62426,asm decodesignmagnitude
 62422,asm strlen
+62415,tweaked decodesignmagnitude
