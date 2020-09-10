@@ -1174,3 +1174,4 @@
 62439,lowercase map descriptions
 62440,s/level/arena
 62438,tweaked setrendertarget
+62426,asm decodesignmagnitude

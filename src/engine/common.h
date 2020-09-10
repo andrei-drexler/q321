@@ -374,11 +374,25 @@ NOINLINE constexpr u32 EncodeSignMagnitude(i32 i) {
 	return (u32((i ^ -i32(s)) + s) << 1) | s;
 }
 
-NOINLINE constexpr i32 DecodeSignMagnitude(u32 u) {
+#if PP_USE_INLINE_ASM
+__declspec(naked) i32 __fastcall DecodeSignMagnitude(u32 u) {
+	__asm {
+		mov eax, ecx
+		shr eax, 1
+		mov edx, eax
+		neg edx
+		and ecx, 1
+		cmovnz eax, edx
+		ret
+	}
+}
+#else
+NOINLINE i32 DecodeSignMagnitude(u32 u) {
 	bool negative = u & 1;
 	u >>= 1;
 	return negative ? -i32(u) : i32(u);
 }
+#endif
 
 ////////////////////////////////////////////////////////////////
 
