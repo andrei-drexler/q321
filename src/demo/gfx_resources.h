@@ -183,7 +183,8 @@ namespace Demo {
 		/* Levelshots */
 		static constexpr u16
 			LevelshotWidth		= 192,
-			LevelshotHeight		= 144
+			LevelshotHeight		= 144,
+			LevelshotPadding	= 8
 		;
 		IRect					levelshot_rects[DEMO_MAPS(PP_INCREMENT)];
 
@@ -321,10 +322,14 @@ FORCEINLINE void Demo::Texture::GenerateFont() {
 
 	// reserve space for levelshots
 	for (u32 map_index = 0; map_index < size(UI::levelshot_rects); ++map_index) {
-		auto& src = packer.GetTile(packer.Add(UI::LevelshotWidth, UI::LevelshotHeight));
+		const u16
+			PaddedWidth  = UI::LevelshotPadding + UI::LevelshotWidth,
+			PaddedHeight = UI::LevelshotPadding + UI::LevelshotHeight
+		;
+		auto& src = packer.GetTile(packer.Add(PaddedWidth, PaddedHeight));
 		auto& dst = UI::levelshot_rects[map_index];
-		dst.x = src.min[0];
-		dst.y = src.min[1];
+		dst.x = UI::LevelshotPadding + src.min[0];
+		dst.y = UI::LevelshotPadding + src.min[1];
 		dst.w = UI::LevelshotWidth;
 		dst.h = UI::LevelshotHeight;
 	}

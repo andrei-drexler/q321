@@ -1178,3 +1178,4 @@
 62422,asm strlen
 62415,tweaked decodesignmagnitude
 62604,map selection levelshots
+62608,levelshot padding
