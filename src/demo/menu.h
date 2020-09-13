@@ -171,7 +171,7 @@ namespace Demo::Menu {
 	i32							g_credits;
 
 	enum class Direction : i32 {
-		Back = -1,
+		Back    = -1,
 		Forward = +1,
 	};
 
@@ -195,7 +195,7 @@ NOINLINE void Demo::Menu::AdvanceFocus(Direction direction) {
 	u32 focus = g_active->focus;
 	const Item::State* items = g_active->items;
 	u32 wrap = (num_items - 1) & (delta >> 31); // delta > 0 ? 0 : num_items - 1;
-	
+
 	do {
 		focus += delta;
 		// Note: underflows if direction is -1 and focus is 0,
@@ -204,7 +204,7 @@ NOINLINE void Demo::Menu::AdvanceFocus(Direction direction) {
 		if (focus >= num_items)
 			focus = wrap;
 	} while (items[focus].flags & Item::Flags::Decoration);
-	
+
 	g_active->focus = focus;
 }
 
@@ -249,7 +249,7 @@ FORCEINLINE void Demo::Menu::Init() {
 	} while (++menu_index < Details::MenuCount);
 
 	Details::g_start_map = Map::ID::START_MAP;
-	
+
 	Push(&MainMenu);
 }
 
