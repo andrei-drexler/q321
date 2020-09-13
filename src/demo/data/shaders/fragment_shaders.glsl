@@ -2843,8 +2843,7 @@ void lavaf() {
 }
 
 void Loading() {
-	FCol = texture(Texture0, (.5 + UV * 127.) / 128., 2.5);
-	FCol.xyz *= .7 + .3 * NT(UV, .5/fwidth(UV));
+	FCol = vec4(textureLod(Texture0, (.5 + UV * 127.) / 128., 1.5).xyz * (.7 + .3 * NT(UV, .5/fwidth(UV))), 1);
 }
 
 void UI() {

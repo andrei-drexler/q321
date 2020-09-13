@@ -287,6 +287,7 @@ namespace GL {
 	} g_state;
 
 	void SetState(u32 bits, u32 force_change = 0);
+	void SetViewportAndScissor(GLsizei x, GLsizei y, GLsizei width, GLsizei height);
 
 	void TrimLog(char* buf, int lines = 8);
 }
@@ -312,6 +313,7 @@ FORCEINLINE void* CreateSystemRenderer(Sys::Window* window) {
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_CULL_FACE);
 
 	return context;
@@ -640,6 +642,11 @@ NOINLINE void Gfx::ReadBack(Texture::ID id, void* pixels) {
 
 ////////////////////////////////////////////////////////////////
 
+NOINLINE void GL::SetViewportAndScissor(GLsizei x, GLsizei y, GLsizei width, GLsizei height) {
+	glViewport(x, y, width, height);
+	glScissor(x, y, width, height);
+}
+
 NOINLINE void GL::SetState(u32 bits, u32 force_change) {
 	using namespace Gfx;
 
@@ -712,12 +719,12 @@ NOINLINE void Gfx::SetRenderTarget(Texture::ID id, const Clear::Mode* clear, con
 	if (!viewport) {
 		if (id < g_state.num_textures) {
 			assert(g_state.texture_state[id].fbo);
-			glViewport(0, 0, g_state.texture_state[id].width, g_state.texture_state[id].height);
+			SetViewportAndScissor(0, 0, g_state.texture_state[id].width, g_state.texture_state[id].height);
 		} else {
-			glViewport(0, 0, Sys::g_window.width, Sys::g_window.height);
+			SetViewportAndScissor(0, 0, Sys::g_window.width, Sys::g_window.height);
 		}
 	} else {
-		glViewport(viewport->x, viewport->y, viewport->w, viewport->h);
+		SetViewportAndScissor(viewport->x, viewport->y, viewport->w, viewport->h);
 	}
 
 	if (clear) {

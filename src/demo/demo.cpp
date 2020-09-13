@@ -312,8 +312,15 @@ namespace Demo {
 
 			Gfx::GenerateMipMaps(levelshot.texture);
 		}
-
 		Map::Load(Map::ID::None);
+
+		for (u32 map_index = 0; map_index < size(UI::levelshot_rects); ++map_index) {
+			Gfx::SetRenderTarget(Texture::Font, nullptr, &UI::levelshot_rects[map_index]);
+			Gfx::SetShader(Shader::Loading);
+			Uniform::Texture0 = cooked_maps[map_index]->levelshot.texture;
+			Gfx::DrawFullScreen();
+		}
+		Gfx::GenerateMipMaps(Texture::Font);
 	}
 
 	////////////////////////////////////////////////////////////////

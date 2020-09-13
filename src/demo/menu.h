@@ -4,29 +4,29 @@
 
 #define DEMO_MENUS(begin, item, end)\
 	begin(MainMenu)\
-		/*Text,						Action,				X,		Y,		Flags*/\
-		item("new game",			NewGame,			0,		120,	0)\
-		item("setup",				Options,			0,		40,		0)\
-		item("cinematics",			Options,			0,		-40,	0)\
-		item("exit",				ConfirmExitGame,	0,		-120,	0)\
+		/*Text,						Action,				X,		Y,		Flags,						Data*/\
+		item("new game",			NewGame,			0,		120,	0,							0)\
+		item("setup",				Options,			0,		40,		0,							0)\
+		item("cinematics",			Options,			0,		-40,	0,							0)\
+		item("exit",				ConfirmExitGame,	0,		-120,	0,							0)\
 	end()\
 	begin(InGame)\
-		item("resume game",			CloseMenu,			0,		160,	0)\
-		item("setup",				Options,			0,		80,		0)\
-		item("next arena",			NextMap,			0,		0,		0)\
-		item("leave arena",			QuitMap,			0,		-80,	0)\
-		item("exit game",			ConfirmExitGame,	0,		-160,	0)\
+		item("resume game",			CloseMenu,			0,		160,	0,							0)\
+		item("setup",				Options,			0,		80,		0,							0)\
+		item("next arena",			NextMap,			0,		0,		0,							0)\
+		item("leave arena",			QuitMap,			0,		-80,	0,							0)\
+		item("exit game",			ConfirmExitGame,	0,		-160,	0,							0)\
 	end()\
 	begin(ExitGameModal)\
-		item("exit game?",			CloseMenu,			0,		56,		Item::Flags::Decoration)\
-		item("yes",					ExitGame,			-76,	-56,	0)\
-		item("/",					CloseMenu,			0,		-56,	Item::Flags::Decoration)\
-		item("no",					CloseMenu,			64,		-56,	0)\
+		item("exit game?",			CloseMenu,			0,		56,		Item::Flags::Decoration,	0)\
+		item("yes",					ExitGame,			-76,	-56,	0,							0)\
+		item("/",					CloseMenu,			0,		-56,	Item::Flags::Decoration,	0)\
+		item("no",					CloseMenu,			64,		-56,	0,							0)\
 	end()\
 	begin(NewGame)\
-		item("choose arena:",		CloseMenu,			0,		112,	Item::Flags::Decoration)\
-		item("the longest yard",	LoadMapDM17,		0,		-16,	0)\
-		item("arena gate",			LoadMapDM1,			0,		-88,	0)\
+		item("choose arena:",		CloseMenu,			0,		120,	Item::Flags::Decoration,	0)\
+		item(" ",					LoadMap,			-120,	-108,	Item::Flags::Levelshot,		Map::ID::q3dm1)\
+		item(" ",					LoadMap,			+120,	-108,	Item::Flags::Levelshot,		Map::ID::q3dm17)\
 	end()\
 
 ////////////////////////////////////////////////////////////////
@@ -47,8 +47,7 @@ namespace Demo::Menu {
 		QuitMap,
 		ConfirmExitGame,
 		ExitGame,
-		LoadMapDM1,
-		LoadMapDM17,
+		LoadMap,
 
 		Count,
 	};
@@ -56,12 +55,14 @@ namespace Demo::Menu {
 	namespace Item {
 		enum Flags {
 			Decoration			= 1 << 0,
+			Levelshot			= 1 << 1,
 		};
 
 		struct State {
 			const char*			text;
 			u16					flags;
 			Action				action;
+			u8					data;
 			vec2				pos;
 		};
 	};
@@ -79,7 +80,7 @@ namespace Demo::Menu {
 		};
 
 		static constexpr char ItemStringList[] =
-			#define PP_ADD_ITEM_STRING(caption, action, x, y, flags) caption "\0"
+			#define PP_ADD_ITEM_STRING(caption, action, x, y, flags, data) caption "\0"
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_STRING, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_STRING
 		;
@@ -123,24 +124,30 @@ namespace Demo::Menu {
 			NumEmptyCreditsLines = Constexpr::CountEmptyLines(Details::CreditsText);
 
 		static constexpr Action ItemActions[ItemCount] = {
-			#define PP_ADD_ITEM_ACTION(caption, action, x, y, flags) Action::action,
+			#define PP_ADD_ITEM_ACTION(caption, action, x, y, flags, data) Action::action,
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_ACTION, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_ACTION
 		};
 
 		static constexpr u16 ItemFlags[ItemCount] = {
-			#define PP_ADD_ITEM_FLAGS(caption, action, x, y, flags) flags,
+			#define PP_ADD_ITEM_FLAGS(caption, action, x, y, flags, data) flags,
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_FLAGS, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_FLAGS
 		};
 
 		static constexpr u8 ItemOffsets[2][ItemCount] = {
-			#define PP_ADD_ITEM_OFFSET_X(caption, action, x, y, flags) EncodeSignMagnitude(x / 4),
-			#define PP_ADD_ITEM_OFFSET_Y(caption, action, x, y, flags) EncodeSignMagnitude((y - 16) / 4),
+			#define PP_ADD_ITEM_OFFSET_X(caption, action, x, y, flags, data) EncodeSignMagnitude(x / 4),
+			#define PP_ADD_ITEM_OFFSET_Y(caption, action, x, y, flags, data) EncodeSignMagnitude((y - 16) / 4),
 			{DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_OFFSET_X, PP_IGNORE_ARGS)},
 			{DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_OFFSET_Y, PP_IGNORE_ARGS)},
 			#undef PP_ADD_ITEM_OFFSET_X
 			#undef PP_ADD_ITEM_OFFSET_Y
+		};
+
+		static constexpr u8 ItemData[ItemCount] = {
+			#define PP_ADD_ITEM_DATA(caption, action, x, y, flags, data) (u8)data,
+			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_DATA, PP_IGNORE_ARGS)
+			#undef PP_ADD_ITEM_DATA
 		};
 
 		static constexpr u8 MenuItemCounts[MenuCount] = {
@@ -233,6 +240,7 @@ FORCEINLINE void Demo::Menu::Init() {
 		item.text = text;
 		text = NextAfter(text);
 		item.flags = Details::ItemFlags[item_index];
+		item.data = Details::ItemData[item_index];
 		item.action = Details::ItemActions[item_index];
 		item.pos[0] = float(DecodeSignMagnitude(Details::ItemOffsets[0][item_index]) << 2);
 		item.pos[1] = float(DecodeSignMagnitude(Details::ItemOffsets[1][item_index]) << 2);
@@ -288,8 +296,9 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 
 		if (Sys::IsKeyFirstDown(Key::Enter)) {
 			assert(g_active->focus < g_active->num_items);
+			const Item::State& item = g_active->items[g_active->focus];
 
-			switch (g_active->items[g_active->focus].action) {
+			switch (item.action) {
 				case Action::CloseMenu:
 					CloseCurrent();
 					break;
@@ -301,14 +310,8 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 					Push(&NewGame);
 					break;
 
-				case Action::LoadMapDM1:
-					Details::g_start_map = Map::ID::q3dm1;
-					CloseAll();
-					LoadMap(Details::g_start_map);
-					break;
-
-				case Action::LoadMapDM17:
-					Details::g_start_map = Map::ID::q3dm17;
+				case Action::LoadMap:
+					Details::g_start_map = Map::ID(item.data);
 					CloseAll();
 					LoadMap(Details::g_start_map);
 					break;
@@ -414,21 +417,28 @@ FORCEINLINE void Demo::Menu::Draw() {
 	const Menu::State* menu = g_active;
 	const Item::State* items = menu->items;
 
-	const vec2& font_scale = UI::FontScale[UI::LargeFont];
-
 	for (u32 item_index = 0; item_index < menu->num_items; ++item_index) {
 		const Item::State& item = items[item_index];
 		const char* text = item.text;
 		bool focused = menu->focus == item_index;
 		u32 color = focused ? Details::FocusFolor : Details::ItemColor;
 
+		const vec2* font_scale = &UI::FontScale[UI::LargeFont];
 		const vec2& pos = item.pos;
-		UI::PrintShadowed(text, pos, font_scale, color, 0.5f, UI::LargeFont);
+
+		if (item.flags & Item::Flags::Levelshot) {
+			static constexpr vec2 LevelshotFontScale = UI::FontScale[UI::LargeFont] * 0.75f;
+			font_scale = &LevelshotFontScale;
+			UI::DrawLevelshot(pos, item.data);
+			text = cooked_maps[item.data]->name;
+		}
+
+		UI::PrintShadowed(text, pos, *font_scale, color, 0.5f, UI::LargeFont);
 
 		if (focused) {
 			u32 glow_alpha = u32(255.f * 2.f * abs(fract(float(g_time) * 2.f) - 0.5f)) << 24;
 			color = (color & 0xFF'FF'FFu) | glow_alpha;
-			UI::Print(text, pos, font_scale, color, 0.5f, UI::LargeFontBlurry);
+			UI::Print(text, pos, *font_scale, color, 0.5f, UI::LargeFontBlurry);
 		}
 	}
 

@@ -159,7 +159,7 @@ namespace Demo {
 			FontCount,
 		};
 
-		Sys::Font::Glyph			glyphs[FontCount][Sys::Font::Glyph::Count];
+		Sys::Font::Glyph			font_glyphs[FontCount][Sys::Font::Glyph::Count];
 		const Sys::Font::Glyph&		GetGlyph(char c, UI::Font font = UI::SmallFont);
 
 		i32							Measure(const char* text, Font font = LargeFont);
@@ -179,7 +179,25 @@ namespace Demo {
 		};
 
 		constexpr auto TexDescriptor = Texture::Descriptors[Texture::Font];
-		
+
+		/* Levelshots */
+		static constexpr u16
+			LevelshotWidth		= 192,
+			LevelshotHeight		= 144
+		;
+		IRect					levelshot_rects[DEMO_MAPS(PP_INCREMENT)];
+
+		void					DrawLevelshot(const vec2& pos, u32 index);
+
+		static constexpr Sys::Font::Glyph BaseLevelshotGlyph = []() constexpr {
+			Sys::Font::Glyph glyph = {};
+			glyph.box_size[0] = LevelshotWidth;
+			glyph.box_size[1] = LevelshotHeight;
+			glyph.anchor[0] = -LevelshotWidth/2;
+			glyph.anchor[1] = 40;
+			return glyph;
+		}();
+
 		/* Geometry buffers */
 
 		enum {
@@ -199,6 +217,7 @@ namespace Demo {
 		u32				indices[MAX_NUM_INDICES];
 
 		VertexFormat*	AddQuads(u16 count);
+		void			DrawGlyph(const vec2& pos, const vec2& scale, const Sys::Font::Glyph& glyph, u32 color = -1);
 		void			FlushGeometry();
 		void			InitIndices();
 	}
@@ -300,18 +319,28 @@ FORCEINLINE void Demo::Texture::GenerateFont() {
 	RectPacker packer;
 	packer.Init(UI::TexDescriptor.width, UI::TexDescriptor.height);
 
+	// reserve space for levelshots
+	for (u32 map_index = 0; map_index < size(UI::levelshot_rects); ++map_index) {
+		auto& src = packer.GetTile(packer.Add(UI::LevelshotWidth, UI::LevelshotHeight));
+		auto& dst = UI::levelshot_rects[map_index];
+		dst.x = src.min[0];
+		dst.y = src.min[1];
+		dst.w = UI::LevelshotWidth;
+		dst.h = UI::LevelshotHeight;
+	}
+
 	u8 font_index = 0;
 	for (const char* descriptor = UI::FontDescriptors; *descriptor; descriptor = NextAfter(descriptor), ++font_index) {
 		const char* name = descriptor + 2;
 		int size = descriptor[0];
 		u16 padding = u16(descriptor[1] - 1);
-		Sys::RasterizeFont(name, size, 0, font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height, padding, packer, UI::glyphs[font_index]);
+		Sys::RasterizeFont(name, size, 0, font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height, padding, packer, UI::font_glyphs[font_index]);
 	}
 
 	// 2-pass box blur for the large, blurry font
 	const u32 BlurRadius = 4;
 	for (u32 axis = 0, axis_pitch = 1, cross_pitch = UI::TexDescriptor.width; axis < 2; ++axis, Swap(axis_pitch, cross_pitch)) {
-		for (const Sys::Font::Glyph& glyph : UI::glyphs[UI::LargeFontBlurry]) {
+		for (const Sys::Font::Glyph& glyph : UI::font_glyphs[UI::LargeFontBlurry]) {
 			u32* data = font_pixels + glyph.box_min[1] * UI::TexDescriptor.width + glyph.box_min[0];
 
 			for (u32 i = 0; i < glyph.box_size[!axis]; ++i, data += cross_pitch) {
@@ -340,23 +369,23 @@ FORCEINLINE void Demo::Texture::GenerateFont() {
 		}
 	}
 
-	// Hack: remap large font lowercase glyphs to uppercase
-	MemCopy(UI::glyphs[UI::LargeFont] + 'a' - Sys::Font::Glyph::Begin, UI::glyphs[UI::LargeFont] + 'A' - Sys::Font::Glyph::Begin, 'z' - 'a' + 1);
-	MemCopy(UI::glyphs[UI::LargeFontBlurry] + 'a' - Sys::Font::Glyph::Begin, UI::glyphs[UI::LargeFontBlurry] + 'A' - Sys::Font::Glyph::Begin, 'z' - 'a' + 1);
+	// Hack: remap large font lowercase font_glyphs to uppercase
+	MemCopy(UI::font_glyphs[UI::LargeFont] + 'a' - Sys::Font::Glyph::Begin, UI::font_glyphs[UI::LargeFont] + 'A' - Sys::Font::Glyph::Begin, 'z' - 'a' + 1);
+	MemCopy(UI::font_glyphs[UI::LargeFontBlurry] + 'a' - Sys::Font::Glyph::Begin, UI::font_glyphs[UI::LargeFontBlurry] + 'A' - Sys::Font::Glyph::Begin, 'z' - 'a' + 1);
 
 	// 'Impact' is a decent match for the large Q3 font, but it's not perfect.
 	// We can get somewhat closer with a few glyph spacing tweaks, though:
 
 	// increase space glyph advance by 100%
-	auto& large_space = UI::glyphs[UI::LargeFont][' ' - Sys::Font::Glyph::Begin];
+	auto& large_space = UI::font_glyphs[UI::LargeFont][' ' - Sys::Font::Glyph::Begin];
 	large_space.advance <<= 1;
-	auto& large_space_blurry = UI::glyphs[UI::LargeFontBlurry][' ' - Sys::Font::Glyph::Begin];
+	auto& large_space_blurry = UI::font_glyphs[UI::LargeFontBlurry][' ' - Sys::Font::Glyph::Begin];
 	large_space_blurry.advance <<= 1;
 
-	// increase advance a bit for all glyphs
-	for (u16 i = 0; i < size(UI::glyphs[UI::LargeFont]); ++i) {
-		++UI::glyphs[UI::LargeFont][i].advance;
-		++UI::glyphs[UI::LargeFontBlurry][i].advance;
+	// increase advance a bit for all font_glyphs
+	for (u16 i = 0; i < size(UI::font_glyphs[UI::LargeFont]); ++i) {
+		++UI::font_glyphs[UI::LargeFont][i].advance;
+		++UI::font_glyphs[UI::LargeFontBlurry][i].advance;
 	}
 
 	if constexpr (0) {
@@ -464,7 +493,7 @@ NOINLINE const Sys::Font::Glyph& Demo::UI::GetGlyph(char c, Font font) {
 	u8 index = u8(c - Sys::Font::Glyph::Begin);
 	if (index >= Sys::Font::Glyph::Count)
 		index = 0;
-	return glyphs[font][index];
+	return font_glyphs[font][index];
 }
 
 NOINLINE i32 Demo::UI::Measure(const char* text, Font font) {
@@ -474,36 +503,31 @@ NOINLINE i32 Demo::UI::Measure(const char* text, Font font) {
 	return total;
 }
 
+NOINLINE void Demo::UI::DrawGlyph(const vec2& pos, const vec2& scale, const Sys::Font::Glyph& glyph, u32 color) {
+	VertexFormat* v = AddQuads(1);
+
+	for (u32 i = 0; i < 4; ++i) {
+		u32 d[2];
+		d[0] = (6 >> i) & 1;	// 0 1 1 0
+		d[1] = i >> 1;		// 0 0 1 1
+		for (u16 j = 0; j < 2; ++j) {
+			v[i].pos[j] = pos[j] + glyph.anchor[j] * scale[j] + (glyph.box_size[j] * d[j]) * scale[j];
+			v[i].uv[j] = (glyph.box_min[j] + (glyph.box_size[j] * d[j])) / float(TexDescriptor.size[j]);
+		}
+		v[i].color = color;
+	}
+}
+
 NOINLINE void Demo::UI::Print(const char* text, const vec2& pos, vec2 scale, u32 color, float align, Font font) {
 	vec2 cursor;
 	cursor.x = pos.x - align * Measure(text, font) * scale.x;
 	cursor.y = pos.y;
 
 	u32 num_chars = StrLen(text);
-
-	while (num_chars) {
-		i32 batch_chars = min<i32>(num_chars, MAX_NUM_QUADS);
-		num_chars -= batch_chars;
-		
-		VertexFormat* v = AddQuads(batch_chars);
-		
-		while (batch_chars > 0) {
-			auto& glyph = GetGlyph(*text++, font);
-			--batch_chars;
-
-			for (u32 i = 0; i < 4; ++i, ++v) {
-				u32 d[2];
-				d[0] = (6 >> i) & 1;	// 0 1 1 0
-				d[1] = i >> 1;		// 0 0 1 1
-				for (u16 j = 0; j < 2; ++j) {
-					v[0].pos[j] = cursor[j] + glyph.anchor[j] * scale[j] + (glyph.box_size[j] * d[j]) * scale[j];
-					v[0].uv[j] = (glyph.box_min[j] + (glyph.box_size[j] * d[j])) / float(TexDescriptor.size[j]);
-				}
-				v[0].color = color;
-			}
-
-			cursor.x += glyph.advance * scale[0];
-		}
+	while (num_chars--) {
+		auto& glyph = GetGlyph(*text++, font);
+		DrawGlyph(cursor, scale, glyph, color);
+		cursor.x += glyph.advance * scale[0];
 	}
 }
 
@@ -519,6 +543,21 @@ NOINLINE void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const v
 		}
 		Print(text, cursor, scale, pass_color, align, font);
 	}
+}
+
+////////////////////////////////////////////////////////////////
+
+NOINLINE void Demo::UI::DrawLevelshot(const vec2& pos, u32 index) {
+	const auto& src = levelshot_rects[index];
+
+	Sys::Font::Glyph glyph;
+	MemCopy(&glyph, &BaseLevelshotGlyph);
+	glyph.box_min[0] = src.x;
+	glyph.box_min[1] = src.y;
+
+	static constexpr vec2 Scale = 1.f;
+
+	DrawGlyph(pos, Scale, glyph);
 }
 
 ////////////////////////////////////////////////////////////////
