@@ -27,10 +27,10 @@
 		item("no",					CloseMenu,			64,		-56,	0,							0)\
 	end()\
 	/*Name,							Bg Scale X,			Bg Scale Y*/\
-	begin(NewGame,					6.f/8.f,			3.5f/8.f)\
-		item("choose arena:",		CloseMenu,			0,		120,	Item::Flags::Decoration,	0)\
-		item(" ",					LoadMap,			-120,	-108,	Item::Flags::Levelshot,		Map::ID::q3dm1)\
-		item(" ",					LoadMap,			+120,	-108,	Item::Flags::Levelshot,		Map::ID::q3dm17)\
+	begin(NewGame,					6.5f/8.f,			4.f/8.f)\
+		item("choose arena:",		CloseMenu,			0,		128,	Item::Flags::Decoration,	0)\
+		item(" ",					LoadMap,			-128,	-112,	Item::Flags::Levelshot,		Map::ID::q3dm1)\
+		item(" ",					LoadMap,			+128,	-112,	Item::Flags::Levelshot,		Map::ID::q3dm17)\
 	end()\
 
 ////////////////////////////////////////////////////////////////

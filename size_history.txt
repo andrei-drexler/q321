@@ -1180,3 +1180,4 @@
 62604,map selection levelshots
 62608,levelshot padding
 62608,custom menu bg scale support
+62609,tweaked map selection menu layout
