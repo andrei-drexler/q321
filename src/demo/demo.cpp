@@ -503,7 +503,7 @@ namespace Demo {
 
 		Mem::Init();
 		Demo::Console::Init();
-		Sys::InitWindow(&Sys::g_window, nullptr, "Q320");
+		Sys::InitWindow(&Sys::g_window, nullptr, "Q321");
 		Sys::SetFPSMode(&Sys::g_window);
 		Gfx::InitMemory(GPUPoolSizes);
 		Demo::InitGfxResources();
