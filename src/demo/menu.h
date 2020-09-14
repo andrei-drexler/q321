@@ -3,27 +3,31 @@
 ////////////////////////////////////////////////////////////////
 
 #define DEMO_MENUS(begin, item, end)\
-	begin(MainMenu)\
+	/*Name,							Bg Scale X,			Bg Scale Y*/\
+	begin(MainMenu,					0.f,				0.f)\
 		/*Text,						Action,				X,		Y,		Flags,						Data*/\
 		item("new game",			NewGame,			0,		120,	0,							0)\
 		item("setup",				Options,			0,		40,		0,							0)\
 		item("cinematics",			Options,			0,		-40,	0,							0)\
 		item("exit",				ConfirmExitGame,	0,		-120,	0,							0)\
 	end()\
-	begin(InGame)\
+	/*Name,							Bg Scale X,			Bg Scale Y*/\
+	begin(InGame,					7.f/8.f,			5.f/8.f)\
 		item("resume game",			CloseMenu,			0,		160,	0,							0)\
 		item("setup",				Options,			0,		80,		0,							0)\
 		item("next arena",			NextMap,			0,		0,		0,							0)\
 		item("leave arena",			QuitMap,			0,		-80,	0,							0)\
 		item("exit game",			ConfirmExitGame,	0,		-160,	0,							0)\
 	end()\
-	begin(ExitGameModal)\
+	/*Name,							Bg Scale X,			Bg Scale Y*/\
+	begin(ExitGameModal,			6.f/8.f,			3.5f/8.f)\
 		item("exit game?",			CloseMenu,			0,		56,		Item::Flags::Decoration,	0)\
 		item("yes",					ExitGame,			-76,	-56,	0,							0)\
 		item("/",					CloseMenu,			0,		-56,	Item::Flags::Decoration,	0)\
 		item("no",					CloseMenu,			64,		-56,	0,							0)\
 	end()\
-	begin(NewGame)\
+	/*Name,							Bg Scale X,			Bg Scale Y*/\
+	begin(NewGame,					6.f/8.f,			3.5f/8.f)\
 		item("choose arena:",		CloseMenu,			0,		120,	Item::Flags::Decoration,	0)\
 		item(" ",					LoadMap,			-120,	-108,	Item::Flags::Levelshot,		Map::ID::q3dm1)\
 		item(" ",					LoadMap,			+120,	-108,	Item::Flags::Levelshot,		Map::ID::q3dm17)\
@@ -154,6 +158,12 @@ namespace Demo::Menu {
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_INCREMENT, PP_ADD_COMMA)
 		};
 
+		static constexpr float MenuBgScale[MenuCount][2] = {
+			#define PP_ADD_MENU_BG_SCALE(name, x, y) {x, y},
+			DEMO_MENUS(PP_ADD_MENU_BG_SCALE, PP_IGNORE_ARGS, PP_IGNORE_ARGS)
+			#undef PP_ADD_MENU_BG_SCALE
+		};
+
 		Map::ID g_start_map;
 	}
 
@@ -162,13 +172,14 @@ namespace Demo::Menu {
 		u32						focus;
 		Item::State*			items;
 		Menu::State*			prev;
+		vec2					bg_scale;
 	};
 
 	Item::State					items[Details::ItemCount];
 	static union {
 		Menu::State				list[Details::MenuCount];
 		struct {
-			#define PP_ADD_MENU(name) Menu::State name;
+			#define PP_ADD_MENU(name, ...) Menu::State name;
 			DEMO_MENUS(PP_ADD_MENU, PP_IGNORE_ARGS, PP_IGNORE_ARGS)
 			#undef PP_ADD_MENU
 		};
@@ -253,6 +264,7 @@ FORCEINLINE void Demo::Menu::Init() {
 		u32 num_items = Details::MenuItemCounts[menu_index];
 		menu.items = &items[item_index];
 		menu.num_items = num_items;
+		MemCopy(&menu.bg_scale.data, &Details::MenuBgScale[menu_index]);
 		item_index += num_items;
 	} while (++menu_index < Details::MenuCount);
 
@@ -377,15 +389,8 @@ FORCEINLINE void Demo::Menu::Draw() {
 	else
 		Gfx::SetShader(Shader::uiframe);
 
-	if (g_active->prev) {
-		// nested menu
-		Uniform::Time.y = 6.f / 8.f;
-		Uniform::Time.z = 3.5f / 8.f;
-	} else {
-		// top-level menu
-		Uniform::Time.y = 7.f / 8.f;
-		Uniform::Time.z = 5.f / 8.f;
-	}
+	// store background scale in Time.yz
+	MemCopy(&Uniform::Time.y, &g_active->bg_scale.x, 2);
 	Gfx::DrawFullScreen();
 
 	if (main_menu) {
