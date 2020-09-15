@@ -285,15 +285,12 @@ FORCEINLINE bool Demo::Menu::IsMainMenu() {
 	return !g_active->prev && !Map::IsLoaded();
 }
 
-FORCEINLINE bool Demo::Menu::Update(float dt) {
+NOINLINE bool Demo::Menu::Update(float dt) {
 	if (g_credits) {
 		if (Sys::IsAnyKeyFirstDown())
 			Sys::Exit();
 		return true;
 	}
-
-	if (Map::IsLoaded() && IsMapReady() && Map::lightmap.abort)
-		ShowMainMenu();
 
 	if (Sys::IsKeyRepeating(Key::Escape)) {
 		if (g_active) {

@@ -44,14 +44,6 @@ namespace Demo {
 
 	FORCEINLINE void UpdateGameState(float dt, const vec2& mouse_delta) {
 		if (Map::IsLoaded() && IsMapReady()) {
-			if (!g_updated_lightmap) {
-				Map::UpdateLightmapTexture();
-				g_updated_lightmap = true;
-				g_level_time = Sys::Time{};
-			}
-
-			if (dt <= 0.f)
-				return;
 			g_level_time += dt;
 
 			for (u32 entity_index = Map::num_brush_entities; entity_index < Map::num_entities; ++entity_index) {

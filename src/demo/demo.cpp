@@ -475,15 +475,28 @@ namespace Demo {
 		if (Sys::IsKeyFirstDown(Key::PrintScreen))
 			TakeScreenshot();
 
-		if (Map::IsLoaded() && !IsMapReady()) {
-			if (Sys::IsKeyFirstDown(Key::Escape))
-				Map::lightmap.abort = true;
-		} else {
-			if (Menu::Update(dt))
-				dt = 0.f;
-		}
+		if (Map::IsLoaded()) {
+			if (IsMapReady()) {
+				if (!g_updated_lightmap) {
+					if (Map::lightmap.abort) {
+						Menu::ShowMainMenu();
+					} else {
+						Map::UpdateLightmapTexture();
+						g_updated_lightmap = true;
+						g_level_time = Sys::Time{};
+					}
+				}
 
-		UpdateGameState(dt, mouse_delta);
+				if (!Menu::Update(dt))
+					UpdateGameState(dt, mouse_delta);
+			} else { // map is still loading
+				if (Sys::IsKeyFirstDown(Key::Escape))
+					Map::lightmap.abort = true;
+				return;
+			}
+		} else { // no map loaded
+			Menu::Update(dt);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
