@@ -476,7 +476,7 @@ namespace Demo {
 			TakeScreenshot();
 
 		if (Menu::Update(dt))
-			return;
+			dt = 0.f;
 
 		UpdateGameState(dt, mouse_delta);
 	}
