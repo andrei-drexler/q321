@@ -69,7 +69,7 @@ static constexpr string_view ShaderNames[] = {
 
 ////////////////////////////////////////////////////////////////
 
-static constexpr string_view VectorComponents = "xyzwrgbastpq"sv;
+static constexpr string_view VectorComponents = "rgbaxyzwstpq"sv;
 
 constexpr bool IsMaybeSwizzle(string_view s) {
 	if (s.empty())

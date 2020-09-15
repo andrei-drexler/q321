@@ -1184,3 +1184,4 @@
 62610,changed window title to q321
 62614,fixed lightmap update bug if esc pressed during loading screen
 62678,esc to abort loading
+62675,use rgba for shader vector fields
