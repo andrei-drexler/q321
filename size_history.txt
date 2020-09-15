@@ -1183,3 +1183,4 @@
 62609,tweaked map selection menu layout
 62610,changed window title to q321
 62614,fixed lightmap update bug if esc pressed during loading screen
+62678,esc to abort loading

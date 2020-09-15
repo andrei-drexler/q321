@@ -273,7 +273,8 @@ FORCEINLINE void Demo::Menu::Init() {
 	Push(&MainMenu);
 }
 
-FORCEINLINE void Demo::Menu::ShowMainMenu() {
+NOINLINE void Demo::Menu::ShowMainMenu() {
+	LoadMap(Map::ID::None);
 	CloseAll();
 	Push(&MainMenu);
 }
@@ -290,6 +291,9 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 			Sys::Exit();
 		return true;
 	}
+
+	if (Map::IsLoaded() && IsMapReady() && Map::lightmap.abort)
+		ShowMainMenu();
 
 	if (Sys::IsKeyRepeating(Key::Escape)) {
 		if (g_active) {
@@ -338,7 +342,6 @@ FORCEINLINE bool Demo::Menu::Update(float dt) {
 					[[fallthrough]];
 
 				case Action::QuitMap:
-					LoadMap(Map::ID::None);
 					ShowMainMenu();
 					break;
 

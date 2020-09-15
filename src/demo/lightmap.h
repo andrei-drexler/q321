@@ -569,6 +569,9 @@ FORCEINLINE void Map::Details::ComputeLightmap(LightMode mode) {
 			}
 
 			for (; y < yend; ++y) {
+				if (lightmap.abort)
+					return;
+
 				for (u16 x = 0; x < Lightmap::Width; ++x, ++texel_pos, ++texel_nor, ++texel) {
 					vec3 pos = *texel_pos;
 					const vec3& nor = *texel_nor;
@@ -644,6 +647,9 @@ FORCEINLINE void Map::Details::ComputeVertexColors(LightMode mode) {
 			Details::InitLightTrace(trace);
 
 			for (u32 i = begin; i < end; ++i) {
+				if (lightmap.abort)
+					return;
+
 				u32 index = Map::model_vertex_indices[i];
 				const vec3& pos = Map::positions[index];
 				const vec3& packed_nor = Map::normals[index];
@@ -690,6 +696,9 @@ FORCEINLINE void Map::Details::ComputeLightGrid(LightMode mode) {
 		Details::InitLightTrace(trace);
 
 		for (; begin < end; ++begin) {
+			if (lightmap.abort)
+				return;
+
 			u32 i = begin;
 
 			/* determine cell location */

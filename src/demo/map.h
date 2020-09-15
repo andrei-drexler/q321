@@ -188,6 +188,7 @@ namespace Map {
 	ID								current_id;
 
 	struct {
+		bool						abort;
 		u32*						data;
 #ifdef ENABLE_RADIOSITY
 		u32*						bounce_data;

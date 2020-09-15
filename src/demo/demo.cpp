@@ -475,8 +475,13 @@ namespace Demo {
 		if (Sys::IsKeyFirstDown(Key::PrintScreen))
 			TakeScreenshot();
 
-		if (Menu::Update(dt))
-			dt = 0.f;
+		if (Map::IsLoaded() && !IsMapReady()) {
+			if (Sys::IsKeyFirstDown(Key::Escape))
+				Map::lightmap.abort = true;
+		} else {
+			if (Menu::Update(dt))
+				dt = 0.f;
+		}
 
 		UpdateGameState(dt, mouse_delta);
 	}

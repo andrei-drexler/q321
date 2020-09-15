@@ -28,6 +28,7 @@ namespace Demo {
 			return;
 		Map::UpdateLightmapTexture();
 
+		Map::lightmap.abort = false;
 		g_updated_lightmap = false;
 		g_loading_thread.work = &GenerateLightmap;
 		Sys::SpawnThread(Demo::g_loading_thread);
