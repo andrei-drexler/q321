@@ -1186,3 +1186,4 @@
 62678,esc to abort loading
 62675,use rgba for shader vector fields
 62666,tweaked state update
+62653,tweaked makerotation

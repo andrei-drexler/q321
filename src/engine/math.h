@@ -756,13 +756,8 @@ NOINLINE mat4 MakeRotation(const vec3& angles) {
 			float s = Math::sin(angles[axis]);
 			float c = Math::cos(angles[axis]);
 
-			static constexpr u8 Indices[3][2] = {
-				{0, 1}, // yaw
-				{0, 2}, // pitch
-				{1, 2}, // roll
-			};
-			u16 i = Indices[axis][0];
-			u16 j = Indices[axis][1];
+			u32 i = axis == 2;			// 0 0 1
+			u32 j = 2 - (axis == 0);	// 1 2 2
 
 			rot[axis] = i4x4;
 			rot[axis][i][i] = c;
