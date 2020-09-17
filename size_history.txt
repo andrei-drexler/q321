@@ -1192,3 +1192,4 @@
 62799,rearranged menu code
 62798,s/load/unpack
 62825,avoid lightmap thread leak
+62825,removed extraneous lightmap upload

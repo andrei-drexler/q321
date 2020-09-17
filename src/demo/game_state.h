@@ -27,7 +27,6 @@ namespace Demo {
 		Map::Unpack(id);
 		if (!Map::IsUnpacked())
 			return;
-		Map::UpdateLightmapTexture();
 
 		Map::lightmap.abort = false;
 		g_updated_lightmap = false;
