@@ -154,6 +154,25 @@ namespace Demo {
 		Entity::Type(i16(Entity::Type::WeaponStart) + i16(Demo::Entity::Type::WeaponCount) - 1)
 	>(GetWeaponModelOffset);
 
+	static constexpr u8 GetAmmoTileID(Entity::Type type) {
+		switch (type) {
+			case Entity::Type::ammo_bullets:		return 1 + UI::Tile::icon_machinegun;
+			case Entity::Type::ammo_cells:			return 1 + UI::Tile::icon_plasma;
+			case Entity::Type::ammo_rockets:		return 1 + UI::Tile::icon_rocketl;
+			case Entity::Type::ammo_shells:			return 1 + UI::Tile::icon_shotgun;
+			case Entity::Type::ammo_slugs:			return 1 + UI::Tile::icon_railgun;
+			default:
+				return 0;
+		}
+	}
+
+	static constexpr auto AmmoTileIDs = MakeLookupTable<
+		Entity::Type,
+		u8,
+		Entity::Type::AmmoStart,
+		Entity::Type(i16(Entity::Type::AmmoStart) + i16(Demo::Entity::Type::AmmoCount) - 1)
+	>(GetAmmoTileID);
+
 	FORCEINLINE void RenderEntities() {
 		Demo::Model::Transform transform;
 
@@ -183,6 +202,15 @@ namespace Demo {
 			if (model_id != -1) {
 				for (u32 i = 0; i < 3; ++i, model_color >>= 8)
 					Demo::Uniform::Time[i + 1] = (model_color & 255) / 255.f;
+
+				i32 tile_id = AmmoTileIDs[ent.type] - 1;
+				if (u32(tile_id) < UI::Tile::Count) {
+					const IRect& r = UI::Tile::rects[tile_id];
+					Uniform::Extra.x = float(r.x);
+					Uniform::Extra.y = float(r.y);
+					Uniform::Extra.z = float(r.w);
+					Uniform::Extra.w = float(r.h);
+				}
 				Map::DrawLitModel(Demo::Model::ID(model_id), transform);
 
 				if (ent.IsHealth()) {
@@ -320,6 +348,7 @@ namespace Demo {
 			Uniform::Texture0 = cooked_maps[map_index]->levelshot.texture;
 			Gfx::DrawFullScreen();
 		}
+		Gfx::GenerateMipMaps(Texture::Font);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -527,9 +556,8 @@ namespace Demo {
 		Map::AllocLightmap();
 		Demo::UpdateWindowIcon();
 		Demo::Model::LoadAll(cooked_models);
+		Demo::UI::Tile::GenerateAll();
 		Demo::GenerateLevelShots();
-		Demo::UI::Tile::Generate();
-		Gfx::GenerateMipMaps(Texture::Font);
 		Demo::Menu::Init();
 
 #ifdef SHOW_LIGHTMAP

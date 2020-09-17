@@ -150,6 +150,7 @@ namespace Demo {
 		static constexpr float VirtualAspectRatio = VirtualHalfWidth / VirtualHalfHeight;
 
 		RectPacker atlas;
+		void						PackTile(u16 width, u16 height, u16 padding, IRect& dst);
 
 		/* Fonts */
 		
@@ -203,6 +204,8 @@ namespace Demo {
 
 		/* Icons */
 		namespace Tile {
+			static constexpr u16 Padding = 8;
+
 			enum ID {
 				#define PP_ADD_TILE_ID(name, ...) name,
 				DEMO_TILES(PP_ADD_TILE_ID)
@@ -225,8 +228,8 @@ namespace Demo {
 
 			IRect				rects[Count];
 
-			void				Pack();
-			void				Generate();
+			void				PackAll();
+			void				GenerateAll();
 		}
 
 		/* Geometry buffers */
@@ -333,6 +336,31 @@ namespace Demo {
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
+NOINLINE void Demo::UI::PackTile(u16 width, u16 height, u16 padding, IRect& dst) {
+	auto& src = atlas.GetTile(atlas.Add(width + padding * 2, height + padding * 2));
+	dst.x = src.min[0] + padding;
+	dst.y = src.min[1] + padding;
+	dst.w = width;
+	dst.h = height;
+}
+
+NOINLINE void Demo::UI::Tile::PackAll() {
+	for (u32 tile_index = 0; tile_index < Tile::Count; ++tile_index) {
+		u16 width  = Dimensions[tile_index][0];
+		u16 height = Dimensions[tile_index][1];
+		PackTile(width, height, Padding, rects[tile_index]);
+	}
+}
+
+NOINLINE void Demo::UI::Tile::GenerateAll() {
+	for (u32 tile_index = 0; tile_index < Tile::Count; ++tile_index) {
+		Gfx::SetRenderTarget(Texture::Font, nullptr, &rects[tile_index]);
+		Gfx::SetShader(Shaders[tile_index]);
+		Gfx::DrawFullScreen();
+	}
+	Gfx::GenerateMipMaps(Texture::Font);
+}
+
 FORCEINLINE void Demo::Texture::GenerateSolidTextures() {
 	for (u16 i = 0; i < 2; ++i) {
 		const u32 WhiteTextureSize = Descriptors[Texture::White].width * Descriptors[Texture::White].height;
@@ -343,48 +371,17 @@ FORCEINLINE void Demo::Texture::GenerateSolidTextures() {
 	}
 }
 
-NOINLINE void Demo::UI::Tile::Pack() {
-	for (u32 tile_index = 0; tile_index < Tile::Count; ++tile_index) {
-		u16 width  = Dimensions[tile_index][0];
-		u16 height = Dimensions[tile_index][1];
-		auto& src = atlas.GetTile(UI::atlas.Add(width, height));
-		auto& dst = rects[tile_index];
-		dst.x = src.min[0];
-		dst.y = src.min[1];
-		dst.w = width;
-		dst.h = height;
-	}
-}
-
-NOINLINE void Demo::UI::Tile::Generate() {
-	for (u32 tile_index = 0; tile_index < Tile::Count; ++tile_index) {
-		Gfx::SetRenderTarget(Texture::Font, nullptr, &rects[tile_index]);
-		Gfx::SetShader(Shaders[tile_index]);
-		Gfx::DrawFullScreen();
-	}
-}
-
 FORCEINLINE void Demo::Texture::GenerateFont() {
 	u32* font_pixels = Sys::Alloc<u32>(UI::TexDescriptor.width * UI::TexDescriptor.height);
 
 	UI::atlas.Init(UI::TexDescriptor.width, UI::TexDescriptor.height);
 
 	// reserve space for levelshots
-	for (u32 map_index = 0; map_index < size(UI::levelshot_rects); ++map_index) {
-		const u16
-			PaddedWidth  = UI::LevelshotPadding + UI::LevelshotWidth,
-			PaddedHeight = UI::LevelshotPadding + UI::LevelshotHeight
-		;
-		auto& src = UI::atlas.GetTile(UI::atlas.Add(PaddedWidth, PaddedHeight));
-		auto& dst = UI::levelshot_rects[map_index];
-		dst.x = UI::LevelshotPadding + src.min[0];
-		dst.y = UI::LevelshotPadding + src.min[1];
-		dst.w = UI::LevelshotWidth;
-		dst.h = UI::LevelshotHeight;
-	}
+	for (u32 map_index = 0; map_index < size(UI::levelshot_rects); ++map_index)
+		UI::PackTile(UI::LevelshotWidth, UI::LevelshotHeight, UI::LevelshotPadding, UI::levelshot_rects[map_index]);
 
 	// reserve space for tiles
-	UI::Tile::Pack();
+	UI::Tile::PackAll();
 
 	u8 font_index = 0;
 	for (const char* descriptor = UI::FontDescriptors; *descriptor; descriptor = NextAfter(descriptor), ++font_index) {

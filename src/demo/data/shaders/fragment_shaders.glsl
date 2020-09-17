@@ -67,7 +67,7 @@
 
 ////////////////////////////////////////////////////////////////
 
-uniform vec4 Time, Cam, LightDir, LightColor, Ambient;
+uniform vec4 Time, Cam, LightDir, LightColor, Ambient, Extra;
 uniform sampler2D Texture0, Texture1;
 
 in vec3 Pos, Nor, WNor, Ref;
@@ -2518,6 +2518,11 @@ void healthsphere() {
 	}
 	s = env(r, s);
 	FCol = vec4(sqr(ls(.1, .9, s)) * 1.5 * fract(Time.yzw) + .5 * sqr(ls(.9, 1., s)), 0);
+}
+
+// models/powerups/ammo/rockammo2.tga
+void ammoboxicon() {
+	FCol = T0((sat((abs(Nor.z) > .5 ? Pos.xy : Pos.xz) / 12. + .5) * Extra.zw + Extra.xy) / 1024.);
 }
 
 // models/weapons2/plasma/plasma_glass
