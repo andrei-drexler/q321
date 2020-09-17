@@ -149,6 +149,8 @@ namespace Demo {
 		;
 		static constexpr float VirtualAspectRatio = VirtualHalfWidth / VirtualHalfHeight;
 
+		RectPacker atlas;
+
 		/* Fonts */
 		
 		enum Font {
@@ -199,8 +201,35 @@ namespace Demo {
 			return glyph;
 		}();
 
-		/* Geometry buffers */
+		/* Icons */
+		namespace Tile {
+			enum ID {
+				#define PP_ADD_TILE_ID(name, ...) name,
+				DEMO_TILES(PP_ADD_TILE_ID)
+				#undef PP_ADD_TILE_ID
 
+				Count,
+			};
+			
+			static constexpr u8 Dimensions[Count][2] = {
+				#define PP_ADD_TILE_SIZE(name, width, height) {width, height},
+				DEMO_TILES(PP_ADD_TILE_SIZE)
+				#undef PP_ADD_TILE_SIZE
+			};
+			
+			static constexpr u16 Shaders[Count] = {
+				#define PP_ADD_TILE_SHADER(name, ...) Shader::name,
+				DEMO_TILES(PP_ADD_TILE_SHADER)
+				#undef PP_ADD_TILE_SHADER
+			};
+
+			IRect				rects[Count];
+
+			void				Pack();
+			void				Generate();
+		}
+
+		/* Geometry buffers */
 		enum {
 			MAX_NUM_QUADS		= 2048,
 			MAX_NUM_VERTICES	= MAX_NUM_QUADS * 4,
@@ -314,11 +343,31 @@ FORCEINLINE void Demo::Texture::GenerateSolidTextures() {
 	}
 }
 
+NOINLINE void Demo::UI::Tile::Pack() {
+	for (u32 tile_index = 0; tile_index < Tile::Count; ++tile_index) {
+		u16 width  = Dimensions[tile_index][0];
+		u16 height = Dimensions[tile_index][1];
+		auto& src = atlas.GetTile(UI::atlas.Add(width, height));
+		auto& dst = rects[tile_index];
+		dst.x = src.min[0];
+		dst.y = src.min[1];
+		dst.w = width;
+		dst.h = height;
+	}
+}
+
+NOINLINE void Demo::UI::Tile::Generate() {
+	for (u32 tile_index = 0; tile_index < Tile::Count; ++tile_index) {
+		Gfx::SetRenderTarget(Texture::Font, nullptr, &rects[tile_index]);
+		Gfx::SetShader(Shaders[tile_index]);
+		Gfx::DrawFullScreen();
+	}
+}
+
 FORCEINLINE void Demo::Texture::GenerateFont() {
 	u32* font_pixels = Sys::Alloc<u32>(UI::TexDescriptor.width * UI::TexDescriptor.height);
 
-	RectPacker packer;
-	packer.Init(UI::TexDescriptor.width, UI::TexDescriptor.height);
+	UI::atlas.Init(UI::TexDescriptor.width, UI::TexDescriptor.height);
 
 	// reserve space for levelshots
 	for (u32 map_index = 0; map_index < size(UI::levelshot_rects); ++map_index) {
@@ -326,7 +375,7 @@ FORCEINLINE void Demo::Texture::GenerateFont() {
 			PaddedWidth  = UI::LevelshotPadding + UI::LevelshotWidth,
 			PaddedHeight = UI::LevelshotPadding + UI::LevelshotHeight
 		;
-		auto& src = packer.GetTile(packer.Add(PaddedWidth, PaddedHeight));
+		auto& src = UI::atlas.GetTile(UI::atlas.Add(PaddedWidth, PaddedHeight));
 		auto& dst = UI::levelshot_rects[map_index];
 		dst.x = UI::LevelshotPadding + src.min[0];
 		dst.y = UI::LevelshotPadding + src.min[1];
@@ -334,12 +383,15 @@ FORCEINLINE void Demo::Texture::GenerateFont() {
 		dst.h = UI::LevelshotHeight;
 	}
 
+	// reserve space for tiles
+	UI::Tile::Pack();
+
 	u8 font_index = 0;
 	for (const char* descriptor = UI::FontDescriptors; *descriptor; descriptor = NextAfter(descriptor), ++font_index) {
 		const char* name = descriptor + 2;
 		int size = descriptor[0];
 		u16 padding = u16(descriptor[1] - 1);
-		Sys::RasterizeFont(name, size, 0, font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height, padding, packer, UI::font_glyphs[font_index]);
+		Sys::RasterizeFont(name, size, 0, font_pixels, UI::TexDescriptor.width, UI::TexDescriptor.height, padding, UI::atlas, UI::font_glyphs[font_index]);
 	}
 
 	// 2-pass box blur for the large, blurry font

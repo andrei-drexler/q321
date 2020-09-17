@@ -320,7 +320,6 @@ namespace Demo {
 			Uniform::Texture0 = cooked_maps[map_index]->levelshot.texture;
 			Gfx::DrawFullScreen();
 		}
-		Gfx::GenerateMipMaps(Texture::Font);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -529,6 +528,8 @@ namespace Demo {
 		Demo::UpdateWindowIcon();
 		Demo::Model::LoadAll(cooked_models);
 		Demo::GenerateLevelShots();
+		Demo::UI::Tile::Generate();
+		Gfx::GenerateMipMaps(Texture::Font);
 		Demo::Menu::Init();
 
 #ifdef SHOW_LIGHTMAP
