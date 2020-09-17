@@ -90,7 +90,7 @@ namespace Demo::Menu {
 		;
 
 		static constexpr char DisclaimerText[] = {
-			"demo    for mature audiences only    demo" "\0"
+			"demo        unofficial recreation        demo" "\0"
 			"Quake III Arena(c) 1999, id Software, Inc. All Rights Reserved." "\0"
 		};
 
