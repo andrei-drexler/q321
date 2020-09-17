@@ -3,6 +3,7 @@
 namespace Demo {
 	Sys::Thread				g_loading_thread;
 	bool					g_updated_lightmap;
+	bool					g_first_update;
 	Sys::Time				g_level_time;
 	Sys::Time				g_time;
 	float					g_delta_time;
@@ -31,6 +32,10 @@ namespace Demo {
 		Map::lightmap.abort = false;
 		g_updated_lightmap = false;
 		g_loading_thread.work = &GenerateLightmap;
+		if (!g_first_update)
+			g_first_update = true;
+		else
+			Sys::JoinThread(Demo::g_loading_thread); // avoid leak
 		Sys::SpawnThread(Demo::g_loading_thread);
 
 		Demo::g_player.Spawn();
