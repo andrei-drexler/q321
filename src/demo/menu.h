@@ -301,7 +301,7 @@ NOINLINE void Demo::Menu::ShowMainMenu() {
 // precondition: g_active != nullptr
 FORCEINLINE bool Demo::Menu::IsMainMenu() {
 	assert(g_active);
-	return !g_active->prev && !Map::IsLoaded();
+	return !g_active->prev && !Map::IsUnpacked();
 }
 
 ////////////////////////////////////////////////////////////////

@@ -23,8 +23,8 @@ namespace Demo {
 	}
 
 	NOINLINE void LoadMap(Map::ID id) {
-		Map::Load(id);
-		if (!Map::IsLoaded())
+		Map::Unpack(id);
+		if (!Map::IsUnpacked())
 			return;
 		Map::UpdateLightmapTexture();
 
@@ -43,7 +43,7 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	FORCEINLINE void UpdateGameState(float dt, const vec2& mouse_delta) {
-		if (Map::IsLoaded() && IsMapReady()) {
+		if (Map::IsUnpacked() && IsMapReady()) {
 			g_level_time += dt;
 
 			for (u32 entity_index = Map::num_brush_entities; entity_index < Map::num_entities; ++entity_index) {

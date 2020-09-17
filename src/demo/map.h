@@ -38,8 +38,8 @@ namespace Map {
 		RecomputePlanes		= false,
 	};
 
-	void					Load(ID id);
-	bool					IsLoaded();
+	void					Unpack(ID id);
+	bool					IsUnpacked();
 	ID						NextAfter(ID id);
 
 	i8						symmetry_axis;
@@ -465,7 +465,7 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE bool Map::IsLoaded() {
+FORCEINLINE bool Map::IsUnpacked() {
 	return source != nullptr;
 }
 
@@ -473,7 +473,7 @@ FORCEINLINE Map::ID Map::NextAfter(Map::ID id) {
 	return Map::ID((u8(id) + 1) % u8(Map::ID::Count));
 }
 
-NOINLINE void Map::Load(ID id) {
+NOINLINE void Map::Unpack(ID id) {
 	u8 index = (u8)id;
 	if (index >= size(cooked_maps)) {
 		source = nullptr;

@@ -291,7 +291,7 @@ namespace Demo {
 
 	FORCEINLINE void GenerateLevelShots() {
 		for (u32 map_index = 0; map_index < (u32)Map::ID::Count; ++map_index) {
-			Map::Load(Map::ID(map_index));
+			Map::Unpack(Map::ID(map_index));
 			Map::ComputeLighting(Map::LightMode::Draft);
 			Map::UpdateLightmapTexture();
 
@@ -312,7 +312,7 @@ namespace Demo {
 
 			Gfx::GenerateMipMaps(levelshot.texture);
 		}
-		Map::Load(Map::ID::None);
+		Map::Unpack(Map::ID::None);
 
 		for (u32 map_index = 0; map_index < size(UI::levelshot_rects); ++map_index) {
 			Gfx::SetRenderTarget(Texture::Font, nullptr, &UI::levelshot_rects[map_index]);
@@ -387,7 +387,7 @@ namespace Demo {
 	////////////////////////////////////////////////////////////////
 
 	FORCEINLINE void RenderFrame() {
-		if (Map::IsLoaded()) {
+		if (Map::IsUnpacked()) {
 			if (!IsMapReady()) {
 				RenderLoadingScreen();
 				return;
@@ -475,7 +475,7 @@ namespace Demo {
 		if (Sys::IsKeyFirstDown(Key::PrintScreen))
 			TakeScreenshot();
 
-		if (Map::IsLoaded()) {
+		if (Map::IsUnpacked()) {
 			if (IsMapReady()) {
 				if (!g_updated_lightmap) {
 					if (Map::lightmap.abort) {
