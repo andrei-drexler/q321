@@ -594,11 +594,18 @@ float rivet_shadow(vec2 uv, float s) {
 	return ls(.3, .0, length(uv));
 }
 
-vec3 add_rivet(vec3 c, vec2 uv, float s) {
+// c = base color
+// l = light intensity (default: 0.5)
+// d = shadow intensity (default 0.3)
+vec3 add_rivet(vec3 c, vec2 uv, float s, float l, float d) {
 	vec4 b = rivet(uv, s);
-	c *= 1. + top_light(b.xyz) * msk(b.w) * .5;
-	c *= 1. - sqr(rivet_shadow(uv, 20. * s)) * (1. - msk(b.w)) * .3;
+	c *= 1. + top_light(b.xyz) * msk(b.w, s + s) * l;
+	c *= 1. - sqr(rivet_shadow(uv, 20. * s)) * (1. - msk(b.w, s + s)) * d;
 	return c;
+}
+
+vec3 add_rivet(vec3 c, vec2 uv, float s) {
+	return add_rivet(c, uv, s, .5, .3);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -2298,16 +2305,18 @@ TEX(brdr11b) {
 
 // base_light/baslt4_1_4k
 TEXA(blt414k) {
-	float b = FBMT(uv, vec2(1, 5), .4, 3., 4);
-	vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b);
-	uv = .5 - abs(uv - .5);
-	uv.y *= 4.;
+	float b = FBMT(uv, vec2(1, 5), .4, 3., 4); // base FBM
+	vec3 c = mix(RGB(56, 49, 43), RGB(142, 136, 136), b); // base color
+	uv = .5 - abs(uv - .5); // mirror horizontally and vertically
+	uv.y *= 4.; // aspect ratio correction
 	float
-		a = tri(.0, .1, length(uv - seg(uv, vec2(.41, .5), vec2(.42, 3.5)))),
-		d = mn(uv),
-		l = 1. - .7 * max(0., 1. - d / .15);
-	l *= 1. - .8 * ls(.24, .31, min(d, uv.y - .1));
-	c += RGB(80, 80, 20) * a;
+		a = tri(.0, .1, length(uv - seg(uv, vec2(.41, .5), vec2(.42, 3.5)))), // neon light mask
+		d = mn(uv), // edge distance
+		l = 1. - .7 * max(0., 1. - d / .15); // darken edges
+	l *= 1. - .8 * ls(.24, .31, min(d, uv.y - .1)); // darken inner area around neons
+	uv.y = mod(uv.y, .875); // repeat vertically
+	c = add_rivet(c, uv - vec2(.17, .25), .04, .2, .5); // knobs
+	c += RGB(80, 80, 20) * a; // yellow neon lights
 	return vec4(c * mix(l, 2.7, a), a);
 }
 
