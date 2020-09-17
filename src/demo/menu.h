@@ -36,13 +36,6 @@
 ////////////////////////////////////////////////////////////////
 
 namespace Demo::Menu {
-	void Init();
-	bool Update(float dt);
-	void UpdateBannerTexture();
-	void Draw();
-	void ShowMainMenu();
-	bool IsMainMenu(); // precondition: g_active != nullptr
-
 	enum class Action : u8 {
 		CloseMenu,
 		NewGame,
@@ -54,6 +47,11 @@ namespace Demo::Menu {
 		LoadMap,
 
 		Count,
+	};
+
+	enum class Direction : i32 {
+		Back    = -1,
+		Forward = +1,
 	};
 
 	namespace Item {
@@ -70,6 +68,33 @@ namespace Demo::Menu {
 			vec2				pos;
 		};
 	};
+
+	struct State {
+		u32						num_items;
+		u32						focus;
+		Item::State*			items;
+		Menu::State*			prev;
+		vec2					bg_scale;
+	};
+
+	Menu::State*				g_active;
+	i32							g_credits;
+
+	////////////////////////////////////////////////////////////////
+
+	void Init();
+	bool Update(float dt);
+	void UpdateBannerTexture();
+	void Draw();
+	void ShowMainMenu();
+	bool IsMainMenu(); // precondition: g_active != nullptr
+	void FocusFirstItem();
+	void AdvanceFocus(Direction direction = Direction::Forward);
+	void Push(Menu::State* menu);
+	void CloseAll();
+	void CloseCurrent();
+
+	////////////////////////////////////////////////////////////////
 
 	namespace Details {
 		static constexpr u32
@@ -164,18 +189,12 @@ namespace Demo::Menu {
 			#undef PP_ADD_MENU_BG_SCALE
 		};
 
+		Item::State g_items[Details::ItemCount];
 		Map::ID g_start_map;
 	}
 
-	struct State {
-		u32						num_items;
-		u32						focus;
-		Item::State*			items;
-		Menu::State*			prev;
-		vec2					bg_scale;
-	};
+	////////////////////////////////////////////////////////////////
 
-	Item::State					items[Details::ItemCount];
 	static union {
 		Menu::State				list[Details::MenuCount];
 		struct {
@@ -184,28 +203,18 @@ namespace Demo::Menu {
 			#undef PP_ADD_MENU
 		};
 	};
-
-	Menu::State*				g_active;
-	i32							g_credits;
-
-	enum class Direction : i32 {
-		Back    = -1,
-		Forward = +1,
-	};
-
-	void						FocusFirstItem();
-	void						AdvanceFocus(Direction direction = Direction::Forward);
-	void						Push(Menu::State* menu);
-	void						CloseAll();
-	void						CloseCurrent();
 }
 
+////////////////////////////////////////////////////////////////
+// Implementation //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Demo::Menu::FocusFirstItem() {
 	g_active->focus = g_active->num_items;
 	AdvanceFocus();
 }
+
+////////////////////////////////////////////////////////////////
 
 NOINLINE void Demo::Menu::AdvanceFocus(Direction direction) {
 	i32 delta = i32(direction);
@@ -226,16 +235,22 @@ NOINLINE void Demo::Menu::AdvanceFocus(Direction direction) {
 	g_active->focus = focus;
 }
 
+////////////////////////////////////////////////////////////////
+
 NOINLINE void Demo::Menu::Push(Menu::State* menu) {
 	menu->prev = g_active;
 	g_active = menu;
 	FocusFirstItem();
 }
 
+////////////////////////////////////////////////////////////////
+
 FORCEINLINE void Demo::Menu::CloseCurrent() {
 	assert(g_active);
 	g_active = g_active->prev;
 }
+
+////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Demo::Menu::CloseAll() {
 	g_active = nullptr;
@@ -247,7 +262,7 @@ FORCEINLINE void Demo::Menu::Init() {
 	u32 item_index = 0;
 	const char* text = Details::ItemStringList;
 	do {
-		Item::State& item = items[item_index];
+		Item::State& item = Details::g_items[item_index];
 		item.text = text;
 		text = NextAfter(text);
 		item.flags = Details::ItemFlags[item_index];
@@ -262,7 +277,7 @@ FORCEINLINE void Demo::Menu::Init() {
 	do {
 		Menu::State& menu = list[menu_index];
 		u32 num_items = Details::MenuItemCounts[menu_index];
-		menu.items = &items[item_index];
+		menu.items = &Details::g_items[item_index];
 		menu.num_items = num_items;
 		MemCopy(&menu.bg_scale.data, &Details::MenuBgScale[menu_index]);
 		item_index += num_items;
@@ -273,17 +288,23 @@ FORCEINLINE void Demo::Menu::Init() {
 	Push(&MainMenu);
 }
 
+////////////////////////////////////////////////////////////////
+
 NOINLINE void Demo::Menu::ShowMainMenu() {
 	LoadMap(Map::ID::None);
 	CloseAll();
 	Push(&MainMenu);
 }
 
+////////////////////////////////////////////////////////////////
+
 // precondition: g_active != nullptr
 FORCEINLINE bool Demo::Menu::IsMainMenu() {
 	assert(g_active);
 	return !g_active->prev && !Map::IsLoaded();
 }
+
+////////////////////////////////////////////////////////////////
 
 NOINLINE bool Demo::Menu::Update(float dt) {
 	if (g_credits) {
@@ -358,6 +379,8 @@ NOINLINE bool Demo::Menu::Update(float dt) {
 	return false;
 }
 
+////////////////////////////////////////////////////////////////
+
 FORCEINLINE void Demo::Menu::UpdateBannerTexture() {
 	Gfx::SetRenderTarget(Texture::menubnr);
 	Gfx::SetShader(Shader::menubnr);
@@ -365,6 +388,8 @@ FORCEINLINE void Demo::Menu::UpdateBannerTexture() {
 	Gfx::UpdateUniforms();
 	Gfx::DrawFullScreen();
 }
+
+////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Demo::Menu::Draw() {
 	if (g_credits) {
