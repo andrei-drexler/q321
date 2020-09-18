@@ -1197,3 +1197,4 @@
 62930,added ammo box icons
 63077,added level selection highlight
 63089,tweaked drawglyph
+63055,tweaked rectpacker::doadd

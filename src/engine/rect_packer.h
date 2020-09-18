@@ -100,19 +100,23 @@ beginning:
 		if (!node.IsLeafEmpty())
 			goto pop;
 
-		if (node_rect.GetWidth() < wanted[0] || node_rect.GetHeight() < wanted[1])
+		u32 width = node_rect.GetWidth();
+		u32 height = node_rect.GetHeight();
+		u32 delta_x = width - wanted[0];
+		u32 delta_y = height - wanted[1];
+		i32 delta_xy = delta_x | delta_y;
+
+		if (delta_xy < 0) // width < wanted[0] || height < wanted[1]
 			goto pop;
 
-		if (node_rect.GetWidth() == wanted[0] && node_rect.GetHeight() == wanted[1]) {
+		if (delta_xy == 0) { // width == wanted[0] && height == wanted[1]
 			m_nodes[node_index].data = m_numTiles;
 			m_tiles[m_numTiles++] = node_rect;
 			assert(m_numTiles <= size(m_tiles));
 			return true;
 		}
 
-		auto delta_x = node_rect.GetWidth() - wanted[0];
-		auto delta_y = node_rect.GetHeight() - wanted[1];
-		auto axis = delta_y > delta_x;
+		bool axis = delta_y > delta_x;
 		Node::Field split_pos = node_rect.min[axis] + wanted[axis];
 
 		auto first_child = (Node::Field) m_numNodes;
