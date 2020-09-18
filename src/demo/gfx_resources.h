@@ -191,14 +191,14 @@ namespace Demo {
 		;
 		IRect					levelshot_rects[DEMO_MAPS(PP_INCREMENT)];
 
-		void					DrawLevelshot(const vec2& pos, u32 index);
+		void					DrawLevelshot(const vec2& pos, u32 index, u32 outline_color = 0);
 
 		static constexpr Sys::Font::Glyph BaseLevelshotGlyph = []() constexpr {
 			Sys::Font::Glyph glyph = {};
 			glyph.box_size[0] = LevelshotWidth;
 			glyph.box_size[1] = LevelshotHeight;
 			glyph.anchor[0] = -LevelshotWidth/2;
-			glyph.anchor[1] = 40;
+			glyph.anchor[1] = 36;
 			return glyph;
 		}();
 
@@ -214,7 +214,7 @@ namespace Demo {
 				Count,
 			};
 			
-			static constexpr u8 Dimensions[Count][2] = {
+			static constexpr u16 Dimensions[Count][2] = {
 				#define PP_ADD_TILE_SIZE(name, width, height) {width, height},
 				DEMO_TILES(PP_ADD_TILE_SIZE)
 				#undef PP_ADD_TILE_SIZE
@@ -227,6 +227,15 @@ namespace Demo {
 			};
 
 			IRect				rects[Count];
+
+			static constexpr Sys::Font::Glyph BaseMapSelectGlyph = []() constexpr {
+				Sys::Font::Glyph glyph = {};
+				glyph.box_size[0] = Dimensions[mapselect][0];
+				glyph.box_size[1] = Dimensions[mapselect][1];
+				glyph.anchor[0] = -Dimensions[mapselect][0]/2;
+				glyph.anchor[1] = -44;
+				return glyph;
+			}();
 
 			void				PackAll();
 			void				GenerateAll();
@@ -344,7 +353,7 @@ NOINLINE void Demo::UI::PackTile(u16 width, u16 height, u16 padding, IRect& dst)
 	dst.h = height;
 }
 
-NOINLINE void Demo::UI::Tile::PackAll() {
+FORCEINLINE void Demo::UI::Tile::PackAll() {
 	for (u32 tile_index = 0; tile_index < Tile::Count; ++tile_index) {
 		u16 width  = Dimensions[tile_index][0];
 		u16 height = Dimensions[tile_index][1];
@@ -352,7 +361,7 @@ NOINLINE void Demo::UI::Tile::PackAll() {
 	}
 }
 
-NOINLINE void Demo::UI::Tile::GenerateAll() {
+FORCEINLINE void Demo::UI::Tile::GenerateAll() {
 	for (u32 tile_index = 0; tile_index < Tile::Count; ++tile_index) {
 		Gfx::SetRenderTarget(Texture::Font, nullptr, &rects[tile_index]);
 		Gfx::SetShader(Shaders[tile_index]);
@@ -601,17 +610,24 @@ NOINLINE void Demo::UI::PrintShadowed(const char* text, const vec2& pos, const v
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Demo::UI::DrawLevelshot(const vec2& pos, u32 index) {
-	const auto& src = levelshot_rects[index];
+NOINLINE void Demo::UI::DrawLevelshot(const vec2& pos, u32 index, u32 outline_color) {
+	static constexpr vec2 Scale = 1.f;
 
 	Sys::Font::Glyph glyph;
+
+	const IRect& src = levelshot_rects[index];
 	MemCopy(&glyph, &BaseLevelshotGlyph);
 	glyph.box_min[0] = src.x;
 	glyph.box_min[1] = src.y;
-
-	static constexpr vec2 Scale = 1.f;
-
 	DrawGlyph(pos, Scale, glyph);
+
+	if (outline_color) {
+		const IRect& bg = Tile::rects[Tile::ID::mapselect];
+		MemCopy(&glyph, &Tile::BaseMapSelectGlyph);
+		glyph.box_min[0] = bg.x;
+		glyph.box_min[1] = bg.y;
+		DrawGlyph(pos, Scale, glyph, outline_color);
+	}
 }
 
 ////////////////////////////////////////////////////////////////

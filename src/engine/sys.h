@@ -186,7 +186,7 @@ namespace Sys {
 			};
 
 			u16			box_min[2];
-			u8			box_size[2];
+			u16			box_size[2];
 			i8			anchor[2];
 			u8			advance;
 		};

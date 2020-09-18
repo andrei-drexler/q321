@@ -28,9 +28,9 @@
 	end()\
 	/*Name,							Bg Scale X,			Bg Scale Y*/\
 	begin(NewGame,					6.5f/8.f,			4.f/8.f)\
-		item("choose arena:",		CloseMenu,			0,		128,	Item::Flags::Decoration,	0)\
-		item(" ",					LoadMap,			-128,	-112,	Item::Flags::Levelshot,		Map::ID::q3dm1)\
-		item(" ",					LoadMap,			+128,	-112,	Item::Flags::Levelshot,		Map::ID::q3dm17)\
+		item("choose arena:",		CloseMenu,			0,		144,	Item::Flags::Decoration,	0)\
+		item(" ",					LoadMap,			-128,	-96,	Item::Flags::Levelshot,		Map::ID::q3dm1)\
+		item(" ",					LoadMap,			+128,	-96,	Item::Flags::Levelshot,		Map::ID::q3dm17)\
 	end()\
 
 ////////////////////////////////////////////////////////////////
@@ -447,6 +447,9 @@ FORCEINLINE void Demo::Menu::Draw() {
 	const Menu::State* menu = g_active;
 	const Item::State* items = menu->items;
 
+	u32 glow_alpha = u32(255.f * 2.f * abs(fract(float(g_time) * 2.f) - 0.5f)) << 24;
+	u32 focus_color = (Details::FocusFolor & 0xFF'FF'FFu) | glow_alpha;
+
 	for (u32 item_index = 0; item_index < menu->num_items; ++item_index) {
 		const Item::State& item = items[item_index];
 		const char* text = item.text;
@@ -459,17 +462,15 @@ FORCEINLINE void Demo::Menu::Draw() {
 		if (item.flags & Item::Flags::Levelshot) {
 			static constexpr vec2 LevelshotFontScale = UI::FontScale[UI::LargeFont] * 0.75f;
 			font_scale = &LevelshotFontScale;
-			UI::DrawLevelshot(pos, item.data);
+			UI::DrawLevelshot(pos, item.data, focus_color & -i32(focused)); // focused ? focus_color : 0
 			text = cooked_maps[item.data]->name;
+			focused = false;
 		}
 
 		UI::PrintShadowed(text, pos, *font_scale, color, 0.5f, UI::LargeFont);
 
-		if (focused) {
-			u32 glow_alpha = u32(255.f * 2.f * abs(fract(float(g_time) * 2.f) - 0.5f)) << 24;
-			color = (color & 0xFF'FF'FFu) | glow_alpha;
-			UI::Print(text, pos, *font_scale, color, 0.5f, UI::LargeFontBlurry);
-		}
+		if (focused)
+			UI::Print(text, pos, *font_scale, focus_color, 0.5f, UI::LargeFontBlurry);
 	}
 
 	UI::FlushGeometry();

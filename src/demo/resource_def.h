@@ -138,6 +138,7 @@
 	x(plasma_glo,			FSVertexBits)\
 	x(plasma_glo_m,			ModelVertexBits)\
 	x(armor,				ModelVertexBits)\
+	x(mapselect,			FSVertexBits)\
 	x(icon_health,			FSVertexBits)\
 	x(icon_shard,			FSVertexBits)\
 	x(icon_armor,			FSVertexBits)\
@@ -152,6 +153,7 @@
 
 #define DEMO_TILES(x)\
 	/*Name/Shader,			Width,	Height*/\
+	x(mapselect,			256,	256)\
 	x(icon_health,			64,		64)\
 	x(icon_shard,			64,		64)\
 	x(icon_armor,			64,		64)\
