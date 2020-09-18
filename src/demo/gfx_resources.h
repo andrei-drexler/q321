@@ -575,7 +575,8 @@ NOINLINE void Demo::UI::DrawGlyph(const vec2& pos, const vec2& scale, const Sys:
 		d[1] = i >> 1;		// 0 0 1 1
 		for (u16 j = 0; j < 2; ++j) {
 			v[i].pos[j] = pos[j] + glyph.anchor[j] * scale[j] + (glyph.box_size[j] * d[j]) * scale[j];
-			v[i].uv[j] = (glyph.box_min[j] + (glyph.box_size[j] * d[j])) / float(TexDescriptor.size[j]);
+			v[i].uv[j] = (glyph.box_min[j] + (glyph.box_size[j] * d[j])) / float(TexDescriptor.width);
+			static_assert(TexDescriptor.width == TexDescriptor.height, "UI texture should be square");
 		}
 		v[i].color = color;
 	}
