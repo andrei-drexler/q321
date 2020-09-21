@@ -3,7 +3,6 @@
 struct alignas(u32) RectPacker {
 	using Dimension				= u16;
 	using Index					= u16;
-	static const Index Full		= -1;
 
 	struct Rectangle {
 		Dimension				min[2];
@@ -12,10 +11,12 @@ struct alignas(u32) RectPacker {
 		Dimension				GetWidth() const { return max[0] - min[0]; }
 		Dimension				GetHeight() const { return max[1] - min[1]; }
 	};
+	static constexpr Rectangle*	Full = nullptr;
 
 	void						Init(Dimension width, Dimension height);
 
-	Index						Add(Dimension width, Dimension height);
+	const Rectangle*			Add(Dimension width, Dimension height);
+	Index						GetIndex(const Rectangle* rectangle) const { return rectangle - &m_tiles[0]; }
 	const Rectangle&			GetTile(Index index) const	{ return m_tiles[index]; }
 	Index						GetNumTiles() const			{ return m_numTiles; }
 
@@ -144,13 +145,19 @@ beginning:
 	goto beginning;
 }
 
-NOINLINE RectPacker::Index RectPacker::Add(Dimension width, Dimension height) {
+NOINLINE const RectPacker::Rectangle* RectPacker::Add(Dimension width, Dimension height) {
 	assert(m_numTiles < MaxTiles);
 
 	Dimension wanted[2] = {width, height};
 	Rectangle full{{0, 0}, {m_width, m_height}};
-	if (!DoAdd(0, full, wanted))
-		return Full;
 
-	return Index(m_numTiles - 1);
+	bool added = DoAdd(0, full, wanted);
+
+	// TODO: remove check from release builds?
+	if (!added) {
+		assert(added);
+		return Full;
+	}
+
+	return &m_tiles[m_numTiles - 1];
 }

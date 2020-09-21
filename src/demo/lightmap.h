@@ -132,7 +132,7 @@ FORCEINLINE void Map::Details::PackLightmap() {
 
 		auto tile = lightmap.packer.Add(u16(size.x) + 1, u16(size.y) + 1);
 		assert(tile != lightmap.packer.Full);
-		auto& rect = lightmap.packer.GetTile(tile);
+		auto& rect = *tile;
 
 		for (u16 vtx_index = patches.vertex_start[patch_index], vtx_end = vtx_index + patches.vertex_count[patch_index]; vtx_index < vtx_end; ++vtx_index) {
 			vec2& lightmap_uv = texcoords[vtx_index].zw;
@@ -219,7 +219,7 @@ FORCEINLINE void Map::Details::PackLightmap() {
 
 			auto tile = lightmap.packer.Add(u16(uv_bounds.width()), u16(uv_bounds.height()));
 			assert(tile != lightmap.packer.Full);
-			auto& rect = lightmap.packer.GetTile(tile);
+			auto& rect = *tile;
 
 			vec2& lightmap_offset = brushes.plane_lmap_offset[plane_index];
 			lightmap_offset[0] = uv_bounds.mins[0] - rect.min[0];

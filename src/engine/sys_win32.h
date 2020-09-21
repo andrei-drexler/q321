@@ -535,7 +535,7 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 		if (required > 0) {
 			auto tile = packer.Add(metrics.gmBlackBoxX + padding * 2, metrics.gmBlackBoxY + padding * 2);
 			assert(tile != packer.Full);
-			auto& rect = packer.GetTile(tile);
+			auto& rect = *tile;
 
 			u32 src_pitch = (metrics.gmBlackBoxX + 3) & ~3;
 			u8* src_pixels = buffer + (metrics.gmBlackBoxY - 1) * src_pitch; // flip vertically

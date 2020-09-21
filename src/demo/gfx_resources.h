@@ -346,7 +346,7 @@ namespace Demo {
 ////////////////////////////////////////////////////////////////
 
 NOINLINE void Demo::UI::PackTile(u16 width, u16 height, u16 padding, IRect& dst) {
-	auto& src = atlas.GetTile(atlas.Add(width + padding * 2, height + padding * 2));
+	auto& src = *atlas.Add(width + padding * 2, height + padding * 2);
 	dst.x = src.min[0] + padding;
 	dst.y = src.min[1] + padding;
 	dst.w = width;

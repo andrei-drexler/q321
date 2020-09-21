@@ -1198,3 +1198,4 @@
 63077,added level selection highlight
 63089,tweaked drawglyph
 63055,tweaked rectpacker::doadd
+63025,tweaked rectpacker::add
