@@ -151,13 +151,8 @@ NOINLINE const RectPacker::Rectangle* RectPacker::Add(Dimension width, Dimension
 	Dimension wanted[2] = {width, height};
 	Rectangle full{{0, 0}, {m_width, m_height}};
 
-	bool added = DoAdd(0, full, wanted);
-
-	// TODO: remove check from release builds?
-	if (!added) {
-		assert(added);
-		return Full;
-	}
+	if (!DoAdd(0, full, wanted))
+		Sys::Fatal(Error::Atlas);
 
 	return &m_tiles[m_numTiles - 1];
 }

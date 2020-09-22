@@ -1199,3 +1199,4 @@
 63089,tweaked drawglyph
 63055,tweaked rectpacker::doadd
 63025,tweaked rectpacker::add
+63023,abort on atlas packing error

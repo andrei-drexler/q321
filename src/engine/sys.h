@@ -265,6 +265,7 @@ namespace Error {
 		RenderTarget,
 
 		Font,
+		Atlas,
 
 		Startup,
 
