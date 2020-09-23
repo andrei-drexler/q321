@@ -47,7 +47,7 @@ private:
 		void					MakeInternal(bool axis, Field split_pos, Field child)		{ this->flags = Field((child << AxisBits) | Field(axis)); this->data = split_pos; }
 	};
 
-	bool						DoAdd(u16 node_index, Rectangle node_rect, const Dimension wanted[2]);
+	bool						DoAdd(u16 node_index, Rectangle& node_rect, const Dimension wanted[2]);
 
 	enum {
 		MaxTiles				= 8192,
@@ -72,7 +72,7 @@ void RectPacker::Init(Dimension width, Dimension height) {
 	m_nodes[0].MakeLeaf();
 }
 
-FORCEINLINE bool RectPacker::DoAdd(u16 node_index, Rectangle node_rect, const Dimension wanted[2]) {
+FORCEINLINE bool RectPacker::DoAdd(u16 node_index, Rectangle& node_rect, const Dimension wanted[2]) {
 	struct StackEntry {
 		u16 node_index;
 		Rectangle node_rect;
@@ -97,7 +97,9 @@ beginning:
 	assert(node_index < m_numNodes);
 
 	auto& node = m_nodes[node_index];
-	if (node.IsLeaf()) {
+	auto axis = node.GetAxis();
+
+	if (axis == Node::LeafTag) {
 		if (!node.IsLeafEmpty())
 			goto pop;
 
@@ -117,7 +119,7 @@ beginning:
 			return true;
 		}
 
-		bool axis = delta_y > delta_x;
+		axis = delta_y > delta_x;
 		Node::Field split_pos = node_rect.min[axis] + wanted[axis];
 
 		auto first_child = (Node::Field) m_numNodes;
@@ -129,7 +131,6 @@ beginning:
 		node.MakeInternal(axis, split_pos, first_child);
 	}
 
-	auto axis = node.GetAxis();
 	auto split_pos = node.GetNodeSplitPos();
 	auto first_child = node.GetNodeFirstChild();
 
