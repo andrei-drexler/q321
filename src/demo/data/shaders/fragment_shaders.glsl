@@ -3065,3 +3065,21 @@ void icon_quad() {
 	d = min(d, box(pmod(uv * rot(45.), 4.) - vec2(.45 , .0), vec2(.11, .02)));
 	FCol = vec4(0, .88, .95, 1) * msk(d, .01);
 }
+
+// gfx/2d/crosshaira
+void crosshaira() {
+	float d = length(UV - .5) * 32.;
+	FCol = vec4(.5 * ls(1., .0, abs(d - 14.)) + ls(1., .5, d));
+}
+
+// gfx/2d/crosshairb
+void crosshairb() {
+	vec2 uv = abs(UV - .5) * 32.;
+	FCol = vec4(step(mn(uv), 1.) * step(mx(uv), 6.));
+}
+
+// gfx/2d/crosshairc
+void crosshairc() {
+	vec2 uv = abs(UV - .5) * 32.;
+	FCol = vec4(step(mn(uv), 1.) * step(mx(uv), 6.) * step(3., mx(uv)));
+}

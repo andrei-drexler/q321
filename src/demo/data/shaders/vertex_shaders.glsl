@@ -187,3 +187,6 @@ void icon_rocketl() { FS(); }
 void icon_railgun() { FS(); }
 void icon_plasma() { FS(); }
 void icon_quad() { FS(); }
+void crosshaira() { FS(); }
+void crosshairb() { FS(); }
+void crosshairc() { FS(); }

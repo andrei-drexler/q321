@@ -3,7 +3,7 @@
 // auto-generated, do not modify
 static_assert(0xe391fbbeU == Demo::Material::Version, "Material definition mismatch, please recompile the map compiler & maps");
 static_assert(0x8375b074U == Demo::Entity::Version, "Entity definition mismatch, please recompile the map compiler & maps");
-static_assert(0xf8d03a4cU == Demo::Model::Version, "Model definition mismatch, please recompile the map compiler & maps");
+static_assert(0x1c473abaU == Demo::Model::Version, "Model definition mismatch, please recompile the map compiler & maps");
 
 ////////////////////////////////////////////////////////////////
 // The Longest Yard (q3dm17sample.map)

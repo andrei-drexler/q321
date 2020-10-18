@@ -148,6 +148,9 @@
 	x(icon_railgun,			FSVertexBits)\
 	x(icon_plasma,			FSVertexBits)\
 	x(icon_quad,			FSVertexBits)\
+	x(crosshaira,			FSVertexBits)\
+	x(crosshairb,			FSVertexBits)\
+	x(crosshairc,			FSVertexBits)\
 
 ////////////////////////////////////////////////////////////////
 
@@ -163,6 +166,9 @@
 	x(icon_railgun,			64,		64)\
 	x(icon_plasma,			64,		64)\
 	x(icon_quad,			64,		64)\
+	x(crosshaira,			64,		64)\
+	x(crosshairb,			64,		64)\
+	x(crosshairc,			64,		64)\
 
 ////////////////////////////////////////////////////////////////
 

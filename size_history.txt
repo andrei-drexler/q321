@@ -1201,3 +1201,4 @@
 63025,tweaked rectpacker::add
 63023,abort on atlas packing error
 62996,tweaked rectpacker::doadd some more
+62935,added crosshaira/b/c/
