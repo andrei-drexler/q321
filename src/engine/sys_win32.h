@@ -341,21 +341,22 @@ FORCEINLINE u32 Sys::GetNumCPUThreads() {
 
 NOINLINE void Sys::SpawnThread(Thread& thread) {
 	HANDLE handle = CreateThread(NULL, 0, &Win32::StartThread, &thread, 0, NULL);
+	assert(handle != NULL);
 	assert(handle != INVALID_HANDLE_VALUE);
 	thread.handle = (void*)handle;
 }
 
 NOINLINE void Sys::JoinThread(Thread& thread) {
+	assert((HANDLE)thread.handle != NULL);
 	assert((HANDLE)thread.handle != INVALID_HANDLE_VALUE);
 	DWORD result = WaitForSingleObject((HANDLE)thread.handle, INFINITE);
 	assert(result == WAIT_OBJECT_0);
 	CloseHandle((HANDLE)thread.handle);
-#ifdef DEV
-	thread.handle = (void*)INVALID_HANDLE_VALUE;
-#endif
+	thread.handle = NULL;
 }
 
 FORCEINLINE bool Sys::IsThreadReady(const Thread& thread) {
+	assert((HANDLE)thread.handle != NULL);
 	assert((HANDLE)thread.handle != INVALID_HANDLE_VALUE);
 	DWORD result = WaitForSingleObject((HANDLE)thread.handle, 0);
 	assert(result == WAIT_OBJECT_0 || result == WAIT_TIMEOUT);
