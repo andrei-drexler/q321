@@ -74,6 +74,7 @@ namespace Win32 {
 	i32 g_last_mouse_x;
 	i32 g_last_mouse_y;
 
+	u8 g_key_state[256];
 	WPARAM g_repeat_key;
 	bool g_repeat_flag;
 	u8 g_any_key;
@@ -750,6 +751,10 @@ FORCEINLINE int Sys::RunApplication() {
 	return (int)msg.wParam;
 }
 
+////////////////////////////////////////////////////////////////
+// Mouse and keyboard //////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+
 FORCEINLINE void Sys::UpdateKeyboardState() {
 	using namespace Win32;
 
@@ -778,13 +783,12 @@ FORCEINLINE void Sys::UpdateKeyboardState() {
 	g_any_key = u8(any_key);
 }
 
-FORCEINLINE bool Sys::IsKeyRepeating(u8 key) {
-	return Win32::g_repeat_key == key;
-}
-
-FORCEINLINE u8 Sys::IsAnyKeyFirstDown() {
-	return Win32::g_any_key;
-}
+FORCEINLINE bool Sys::IsKeyDown(u8 key)						{ return Win32::g_key_state[key] & 1; }
+FORCEINLINE bool Sys::IsKeyFirstDown(u8 key)				{ return Win32::g_key_state[key] == 1; }
+FORCEINLINE bool Sys::IsKeyReleased(u8 key)					{ return Win32::g_key_state[key] == 2; }
+FORCEINLINE bool Sys::IsKeyToggled(u8 key, bool new_state)	{ return Win32::g_key_state[key] == (1 << (u8)new_state); }
+FORCEINLINE bool Sys::IsKeyRepeating(u8 key)				{ return Win32::g_repeat_key == key; }
+FORCEINLINE u8 Sys::IsAnyKeyFirstDown()						{ return Win32::g_any_key; }
 
 FORCEINLINE void Sys::UpdateMouseState(vec2& pt, float dt) {
 	using namespace Win32;

@@ -119,12 +119,10 @@ namespace Sys {
 
 	// Mouse and keyboard //////////////////////////////////////////
 
-	u8 g_key_state[256];
-
-	FORCEINLINE bool IsKeyDown(u8 key)								{ return g_key_state[key] & 1; }
-	FORCEINLINE bool IsKeyFirstDown(u8 key)							{ return g_key_state[key] == 1; }
-	FORCEINLINE bool IsKeyReleased(u8 key)							{ return g_key_state[key] == 2; }
-	FORCEINLINE bool IsKeyToggled(u8 key, bool new_state = true)	{ return g_key_state[key] == (1 << (u8)new_state); }
+	bool IsKeyDown(u8 key);
+	bool IsKeyFirstDown(u8 key);
+	bool IsKeyReleased(u8 key);
+	bool IsKeyToggled(u8 key, bool new_state = true);
 	bool IsKeyRepeating(u8 key); // returns true for the initial press, too!
 	u8 IsAnyKeyFirstDown();
 
