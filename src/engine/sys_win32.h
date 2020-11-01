@@ -75,8 +75,8 @@ namespace Win32 {
 	i32 g_last_mouse_y;
 
 	u8 g_key_state[256];
-	WPARAM g_repeat_key;
-	bool g_repeat_flag;
+	u8 g_key_pending[256];
+	u8 g_key_repeat[256];
 	u8 g_any_key;
 
 	Sys::Point GetPoint(LPARAM lParam) {
@@ -157,8 +157,8 @@ namespace Win32 {
 			}
 
 			case WM_KEYDOWN: {
-				g_repeat_key = wParam;
-				g_repeat_flag = true;
+				if (wParam == u8(wParam))
+					g_key_pending[wParam] = true;
 				return 0;
 			}
 
@@ -764,22 +764,19 @@ FORCEINLINE void Sys::UpdateKeyboardState() {
 	else
 		MemSet(current_state, 0, 256);
 
-	if (!g_repeat_flag)
-		g_repeat_key = 0;
+	MemCopy(&g_key_repeat, &g_key_pending);
+	MemSet(&g_key_pending);
+
 	u16 any_key = 0;
 
 	for (u16 i = 0; i < 256; ++i) {
 		u8 down = current_state[i] >> 7;
 		u8 new_state = ((g_key_state[i] & 1) << 1) | down;
 		g_key_state[i] = new_state;
-		// disable auto-repeat when multiple keys are pressed
-		if (down && i != g_repeat_key && g_repeat_key)
-			g_repeat_key = 0;
 		if (new_state == 1)
 			any_key = i;
 	}
 
-	g_repeat_flag = false;
 	g_any_key = u8(any_key);
 }
 
@@ -787,7 +784,7 @@ FORCEINLINE bool Sys::IsKeyDown(u8 key)						{ return Win32::g_key_state[key] & 
 FORCEINLINE bool Sys::IsKeyFirstDown(u8 key)				{ return Win32::g_key_state[key] == 1; }
 FORCEINLINE bool Sys::IsKeyReleased(u8 key)					{ return Win32::g_key_state[key] == 2; }
 FORCEINLINE bool Sys::IsKeyToggled(u8 key, bool new_state)	{ return Win32::g_key_state[key] == (1 << (u8)new_state); }
-FORCEINLINE bool Sys::IsKeyRepeating(u8 key)				{ return Win32::g_repeat_key == key; }
+FORCEINLINE bool Sys::IsKeyRepeating(u8 key)				{ return Win32::g_key_repeat[key]; }
 FORCEINLINE u8 Sys::IsAnyKeyFirstDown()						{ return Win32::g_any_key; }
 
 FORCEINLINE void Sys::UpdateMouseState(vec2& pt, float dt) {

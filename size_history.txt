@@ -1204,3 +1204,4 @@
 62935,added crosshaira/b/c/
 62940,reset thread handle on join
 62936,moved key state array to win32
+62967,more permissive key repeat handling
