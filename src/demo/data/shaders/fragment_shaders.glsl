@@ -2706,7 +2706,7 @@ TEX(menubnr) {
 	p *= p;
 	return vec3(
 		(1. - 1.4 * abs(d)) * ((N(q.x) * p.x + N(q.y) * p.y) / sum(p + .01) * .7 + .3),
-		sat(3. - 6. * arena_sdf(uv, .7)) * FBMT(uv - vec2(N(Time.x), Time.x), vec2(7, 3), .7, 2., 4),
+		sat(3. - 6. * arena_sdf(uv, .7)) * FBMT(uv - vec2(.2 * N(Time.x), Time.x), vec2(7, 3), .7, 2., 4),
 		0
 	);
 }
