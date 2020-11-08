@@ -1206,3 +1206,4 @@
 62936,moved key state array to win32
 62967,more permissive key repeat handling
 62959,reduced main menu arena fire sway
+62958,namespaced gl context creation

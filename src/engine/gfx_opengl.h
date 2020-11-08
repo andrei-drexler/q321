@@ -294,10 +294,10 @@ namespace GL {
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void* CreateSystemRenderer(Sys::Window* window) {
+FORCEINLINE void* Win32::CreateSystemRenderer(Sys::Window* window) {
 	using namespace GL;
-	
-	void* context = CreateGLContext(window);
+
+	void* context = Sys::GL::CreateWindowContext(window);
 
 	if (!CheckVersion()) {
 		Sys::DebugLog("ERROR: OpenGL version check failed.\n");

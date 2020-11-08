@@ -64,6 +64,9 @@ extern "C" size_t __cdecl strlen(const char* str);
 ////////////////////////////////////////////////////////////////
 
 namespace Win32 {
+	void* CreateSystemWindow(Sys::Window* window);
+	void* CreateSystemRenderer(Sys::Window* window);
+
 	LARGE_INTEGER g_start_time;
 	double g_rcp_frequency;
 	HANDLE g_waitable_timer;
@@ -255,9 +258,6 @@ namespace Win32 {
 		return DefWindowProcA(hWnd, msg, wParam, lParam);
 	}
 }
-
-void* CreateSystemWindow(Sys::Window* window);
-void* CreateSystemRenderer(Sys::Window* window);
 
 ////////////////////////////////////////////////////////////////
 
@@ -616,7 +616,7 @@ namespace Win32 {
 	};
 }
 
-FORCEINLINE void* CreateSystemWindow(Sys::Window* window) {
+FORCEINLINE void* Win32::CreateSystemWindow(Sys::Window* window) {
 	const CHAR* ClassName		= window->title;
 
 	HINSTANCE hInstance = GetModuleHandleA(NULL);
@@ -672,8 +672,8 @@ FORCEINLINE void Sys::InitWindow(Window* window, Window::Event::Handler handler,
 	window->on_event		= handler;
 	window->title			= name;
 	window->refresh			= 60;
-	window->handle			= CreateSystemWindow(window);
-	window->render_context	= CreateSystemRenderer(window);
+	window->handle			= Win32::CreateSystemWindow(window);
+	window->render_context	= Win32::CreateSystemRenderer(window);
 }
 
 FORCEINLINE void Sys::RedrawWindow(Window* window) {
@@ -898,6 +898,10 @@ namespace Win32 {
 	}
 }
 
+namespace Sys::GL {
+	void* CreateWindowContext(Sys::Window* window);
+}
+
 ////////////////////////////////////////////////////////////////
 
 #define WGL_CONTEXT_DEBUG_BIT_ARB      0x00000001
@@ -913,7 +917,7 @@ namespace Win32 {
 
 ////////////////////////////////////////////////////////////////
 
-static FORCEINLINE HGLRC CreateGLContext(Sys::Window* window) {
+static FORCEINLINE void* Sys::GL::CreateWindowContext(Sys::Window* window) {
 	HWND hwnd = (HWND)window->handle;
 	HDC dc = GetDC(hwnd);
 
