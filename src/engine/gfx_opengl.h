@@ -163,35 +163,25 @@ namespace GL {
 
 	////////////////////////////////////////////////////////////////
 
-	static constexpr inline GLint GetInternalFormat(Gfx::Texture::Format format) {
-		switch (format) {
-			case Gfx::Texture::Format::BGRA8:	return GL_RGBA8;
-			case Gfx::Texture::Format::RGBA16F:	return GL_RGBA16F;
-			case Gfx::Texture::Format::RGBA32F:	return GL_RGBA32F;
-			case Gfx::Texture::Format::Z32F:	return GL_DEPTH_COMPONENT32F;
-			default:							return GL_INVALID_ENUM;
-		}
-	}
+	struct TextureStorageInfo {
+		GLenum								internal_format;
+		GLenum								format;
+		GLenum								data_type;
+	};
 
-	static constexpr inline GLint GetFormat(Gfx::Texture::Format format) {
+	static constexpr TextureStorageInfo GetTextureStorageInfo(Gfx::Texture::Format format) {
 		switch (format) {
-			case Gfx::Texture::Format::BGRA8:	return GL_BGRA;
-			case Gfx::Texture::Format::RGBA16F:	return GL_RGBA;
-			case Gfx::Texture::Format::RGBA32F:	return GL_RGBA;
-			case Gfx::Texture::Format::Z32F:	return GL_DEPTH_COMPONENT;
-			default:							return GL_INVALID_ENUM;
+			case Gfx::Texture::Format::BGRA8:	return {GL_RGBA8,				GL_BGRA,			GL_UNSIGNED_BYTE};
+			case Gfx::Texture::Format::RGBA16F:	return {GL_RGBA16F,				GL_RGBA,			GL_HALF_FLOAT};
+			case Gfx::Texture::Format::RGBA32F:	return {GL_RGBA32F,				GL_RGBA,			GL_FLOAT};
+			case Gfx::Texture::Format::Z32F:	return {GL_DEPTH_COMPONENT32F,	GL_DEPTH_COMPONENT,	GL_FLOAT};
+			default:							return {GL_INVALID_ENUM,		GL_INVALID_ENUM,	GL_INVALID_ENUM};
 		}
 	}
+	static constexpr auto
+		TextureStorageInfoTable = MakeLookupTable<Gfx::Texture::Format, TextureStorageInfo, Gfx::Texture::Format{}, Gfx::Texture::Format(u32(Gfx::Texture::Format::Count) - 1)>(GetTextureStorageInfo);
 
-	static constexpr inline GLint GetType(Gfx::Texture::Format format) {
-		switch (format) {
-			case Gfx::Texture::Format::BGRA8:	return GL_UNSIGNED_BYTE;
-			case Gfx::Texture::Format::RGBA16F:	return GL_HALF_FLOAT;
-			case Gfx::Texture::Format::RGBA32F:	return GL_FLOAT;
-			case Gfx::Texture::Format::Z32F:	return GL_FLOAT;
-			default:							return GL_INVALID_ENUM;
-		}
-	}
+	////////////////////////////////////////////////////////////////
 
 	struct BlendFactors { GLenum src, dst; };
 
@@ -218,9 +208,7 @@ namespace GL {
 		GLuint								fbo;
 		u16									width;
 		u16									height;
-		GLenum								internal_format;
-		GLenum								format;
-		GLenum								type;
+		TextureStorageInfo					storage;
 	};
 
 	namespace ShaderStage {
@@ -474,13 +462,11 @@ FORCEINLINE void Gfx::RegisterTextures(const Texture::Descriptor* textures, u16 
 		texture.fbo				= 0;
 		texture.width			= descriptor.width  > 0 ? descriptor.width  : Sys::g_window.width;
 		texture.height			= descriptor.height > 0 ? descriptor.height : Sys::g_window.height;
-		texture.internal_format	= GetInternalFormat(descriptor.format);
-		texture.format			= GetFormat(descriptor.format);
-		texture.type			= GetType(descriptor.format);
+		MemCopy(&texture.storage, &TextureStorageInfoTable[descriptor.format]);
 
 		glGenTextures(1, &texture.handle);
 		glBindTexture(GL_TEXTURE_2D, texture.handle);
-		
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		if (descriptor.flags & Texture::Flags::NoMips) {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
@@ -490,7 +476,7 @@ FORCEINLINE void Gfx::RegisterTextures(const Texture::Descriptor* textures, u16 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		}
 
-		glTexImage2D(GL_TEXTURE_2D, 0, texture.internal_format, texture.width, texture.height, 0, texture.format, texture.type, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, texture.storage.internal_format, texture.width, texture.height, 0, texture.storage.format, texture.storage.data_type, nullptr);
 
 		if (descriptor.flags & Texture::Flags::RenderTarget) {
 			glGenFramebuffers(1, &texture.fbo);
@@ -611,7 +597,7 @@ NOINLINE void Gfx::SetTextureContents(Texture::ID id, const void* pixels, const 
 		full.h = texture.height;
 	}
 	glBindTexture(GL_TEXTURE_2D, texture.handle);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, rect->x, rect->y, rect->w, rect->h, texture.format, texture.type, pixels);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, rect->x, rect->y, rect->w, rect->h, texture.storage.format, texture.storage.data_type, pixels);
 }
 
 NOINLINE void Gfx::GenerateMipMaps(Texture::ID id) {
@@ -633,7 +619,7 @@ NOINLINE void Gfx::ReadBack(Texture::ID id, void* pixels) {
 	if (id < g_state.num_textures) {
 		auto& texture = g_state.texture_state[id];
 		glBindTexture(GL_TEXTURE_2D, texture.handle);
-		glGetTexImage(GL_TEXTURE_2D, 0, texture.format, texture.type, pixels);
+		glGetTexImage(GL_TEXTURE_2D, 0, texture.storage.format, texture.storage.data_type, pixels);
 	} else {
 		SetRenderTarget(Backbuffer);
 		glReadPixels(0, 0, Sys::g_window.width, Sys::g_window.height, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
