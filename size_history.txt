@@ -1209,3 +1209,4 @@
 62958,namespaced gl context creation
 62959,added sys::gl::getprocaddress
 62914,table-based gl texture type info init
+62917,removed unused typedef

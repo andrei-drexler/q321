@@ -201,8 +201,6 @@ namespace GL {
 
 	////////////////////////////////////////////////////////////////
 
-	using UniformUpdateFunction				= void(GLint location, const void* data);
-
 	struct TextureState {
 		GLuint								handle;
 		GLuint								fbo;
