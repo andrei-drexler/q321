@@ -1207,3 +1207,4 @@
 62967,more permissive key repeat handling
 62959,reduced main menu arena fire sway
 62958,namespaced gl context creation
+62959,added sys::gl::getprocaddress

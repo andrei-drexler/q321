@@ -857,7 +857,7 @@ namespace Win32 {
 
 	template <typename Function>
 	FORCEINLINE void InitGLFunction(Function*& function, const char* name) {
-		function = (Function*)wglGetProcAddress(name);
+		function = (Function*)Sys::GL::GetProcAddress(name);
 	}
 
 	void InitWGLExtensions(HDC dc) {
@@ -900,6 +900,7 @@ namespace Win32 {
 
 namespace Sys::GL {
 	void* CreateWindowContext(Sys::Window* window);
+	PROC GetProcAddress(const char* name);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -917,7 +918,11 @@ namespace Sys::GL {
 
 ////////////////////////////////////////////////////////////////
 
-static FORCEINLINE void* Sys::GL::CreateWindowContext(Sys::Window* window) {
+FORCEINLINE PROC Sys::GL::GetProcAddress(const char* name) {
+	return wglGetProcAddress(name);
+}
+
+FORCEINLINE void* Sys::GL::CreateWindowContext(Sys::Window* window) {
 	HWND hwnd = (HWND)window->handle;
 	HDC dc = GetDC(hwnd);
 

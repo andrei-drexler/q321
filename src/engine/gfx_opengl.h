@@ -130,7 +130,7 @@ namespace GL {
 	static FORCEINLINE bool LoadFunctions() {
 		const char* name = FunctionNames;
 		for (u32 i = 0; i < NumFunctions; ++i, name = NextAfter(name)) {
-			GLFunctions[i] = wglGetProcAddress(name);
+			GLFunctions[i] = Sys::GL::GetProcAddress(name);
 			if (!GLFunctions[i]) {
 				Sys::DebugStream << "ERROR: Could not locate function " << name << "\n";
 				return false;
