@@ -951,20 +951,13 @@ FORCEINLINE void* Sys::GL::CreateWindowContext(Sys::Window* window) {
 
 	HGLRC rc = NULL;
 	if (Win32::wglCreateContextAttribsARB) {
-		const int MaxNumAttribs = 16;
-		int attribs[MaxNumAttribs * 2];
-		int num_attribs = 0;
-
-		auto set = [&] (int key, int value) {
-			attribs[num_attribs++] = key;
-			attribs[num_attribs++] = value;
+		static const int attribs[] = {
+			WGL_CONTEXT_MAJOR_VERSION_ARB,	3,
+			WGL_CONTEXT_MINOR_VERSION_ARB,	3,
+			WGL_CONTEXT_FLAGS_ARB,			WGL_CONTEXT_DEBUG_BIT_ARB,
+			WGL_CONTEXT_PROFILE_MASK_ARB,	WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+			0
 		};
-		
-		set(WGL_CONTEXT_MAJOR_VERSION_ARB,	3);
-		set(WGL_CONTEXT_MINOR_VERSION_ARB,	3);
-		set(WGL_CONTEXT_FLAGS_ARB,			WGL_CONTEXT_DEBUG_BIT_ARB);
-		set(WGL_CONTEXT_PROFILE_MASK_ARB,	WGL_CONTEXT_CORE_PROFILE_BIT_ARB);
-		attribs[num_attribs++] = 0;
 
 		rc = Win32::wglCreateContextAttribsARB(dc, NULL, attribs);
 	} else {
