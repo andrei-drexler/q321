@@ -460,7 +460,7 @@ FORCEINLINE void Gfx::RegisterTextures(const Texture::Descriptor* textures, u16 
 		texture.fbo				= 0;
 		texture.width			= descriptor.width  > 0 ? descriptor.width  : Sys::g_window.width;
 		texture.height			= descriptor.height > 0 ? descriptor.height : Sys::g_window.height;
-		MemCopy(&texture.storage, &TextureStorageInfoTable[descriptor.format]);
+		MemCopyScalar(&texture.storage, &TextureStorageInfoTable[descriptor.format]);
 
 		glGenTextures(1, &texture.handle);
 		glBindTexture(GL_TEXTURE_2D, texture.handle);

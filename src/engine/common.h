@@ -169,6 +169,22 @@ FORCEINLINE T* MemSet(T* dest, int c = 0, size_t count = 1) {
 	return dest;
 }
 
+template <typename T>
+FORCEINLINE void MemCopyScalar(T* dst, const T* src) {
+	if constexpr (sizeof(T) == 4) {
+		((u32*)dst)[0] = ((const u32*)src)[0];
+	} else if constexpr (sizeof(T) == 8) {
+		((u32*)dst)[0] = ((const u32*)src)[0];
+		((u32*)dst)[1] = ((const u32*)src)[1];
+	} else if constexpr (sizeof(T) == 12) {
+		((u32*)dst)[0] = ((const u32*)src)[0];
+		((u32*)dst)[1] = ((const u32*)src)[1];
+		((u32*)dst)[2] = ((const u32*)src)[2];
+	} else {
+		static_assert(false, "Unsupported object size, use MemCopy");
+	}
+}
+
 #ifdef PP_USE_INLINE_ASM
 __declspec(naked) size_t __fastcall StrLen(const char* text) {
 	__asm {
