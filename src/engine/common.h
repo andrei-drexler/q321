@@ -487,14 +487,14 @@ struct LookupTable {
 	static constexpr size_t		size()						{ return Size; }
 	constexpr Value&			operator[](Key key) {
 		size_t i = size_t(key) - size_t(First);
-		if (i >= Size - 1)
+		if (i > Size - 1)
 			i = Size - 1;
 		return data[i];
 	}
 	
 	constexpr const Value&		operator[](Key key) const {
 		size_t i = size_t(key) - size_t(First);
-		if (i >= Size - 1)
+		if (i > Size - 1)
 			i = Size - 1;
 		return data[i];
 	}

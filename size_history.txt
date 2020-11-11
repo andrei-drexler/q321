@@ -1211,3 +1211,4 @@
 62914,table-based gl texture type info init
 62917,removed unused typedef
 62921,memcopyscalar
+62921,changed lookuptable clamping
