@@ -1254,7 +1254,7 @@ vec3 gkarnarcfnl_inner_gear(vec3 c, vec2 uv, float shadow_bias) {
 	k = ls(.23, .22, abs(v - .25)) + R1(i) * ls(.0, .1, q.y);
 	d -= r = (d * .3 + .005) * k; // extra thickness for top part
 	m = ls(.0, .1, q.y) * msk(abs(d + .015) - .015);
-	c = mix(c, mt, tri(-.005, .01, d)); // highlight
+	c = mix(c, mt, sat(1.5 * tri(-.015, .0, .01 - .003 * k, d))); // highlight
 	c = mix(c, RGB(130, 75, 44) * t, tri(-.02, .005, d) * ls(.0, .1, q.y)); // colored reflection
 	c *= 1.
 		- .3 * ls(.025, .03, -d) // darken interior
