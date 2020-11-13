@@ -159,6 +159,12 @@ float tri(float center, float max_dist, float x) {
 	return 1. - sat(abs(x - center) / max_dist);
 }
 
+// antialiased tent funtion
+float triaa(float c, float s, float x) {
+	float a = max(fwidth(x) * 2. / s, 1.);
+	return tri(c, s * a, x) / a;
+}
+
 // linear step (like smoothstep, but linear)
 float ls(float lo, float hi, float x) {
 	return sat((x - lo) / (hi - lo));
@@ -2506,6 +2512,23 @@ void itemshiny() {
 	FCol = vec4((env(Ref, 15.) * 1.4 + .3) * Time.yzw, 1);
 }
 
+void ammobox() {
+	float
+		d = min(box(Pos.yz - vec2(0, 12), vec2(5, 9)) - 3., box(Pos.xz, vec2(7))),
+		r = env(Ref, 15.) * 1.4 + .3;
+	FCol = vec4(
+		mix(sqrt(triplanar(16.).xyz * ModelLight()), vec3(r), .2 + .8 * sat(-d-d))
+		* Time.yzw
+		* (1. + .5 * triaa(.5, .5, d) - .2 * triaa(0., 1., d)),
+		1
+	);
+}
+
+// models/powerups/ammo/rockammo2.tga
+void ammoboxicon() {
+	FCol = T0((sat((abs(Nor.z) > .5 ? Pos.xy : Pos.xz) / 12. + .5) * Extra.zw + Extra.xy) / 1024.);
+}
+
 void healthsphere() {
 	vec3 r = Ref;
 	float s = 17.;
@@ -2518,11 +2541,6 @@ void healthsphere() {
 	}
 	s = env(r, s);
 	FCol = vec4(sqr(ls(.1, .9, s)) * 1.5 * fract(Time.yzw) + .5 * sqr(ls(.9, 1., s)), 0);
-}
-
-// models/powerups/ammo/rockammo2.tga
-void ammoboxicon() {
-	FCol = T0((sat((abs(Nor.z) > .5 ? Pos.xy : Pos.xz) / 12. + .5) * Extra.zw + Extra.xy) / 1024.);
 }
 
 // models/weapons2/plasma/plasma_glass
@@ -2594,12 +2612,6 @@ void armor() {
 			);
 	FCol = vec4((triplanar(16.).xyz * (n.z * .5 + .5) * (.2 + .8 * ls(4.5, 6.5, length(p))) + e * e) * Time.yzw * 2., 1);
 	//FCol.xyz = mix(FCol.xyz, env(Ref, 3.) * vec3(1), ls(12., 10., d));
-}
-
-// antialiased tent funtion
-float triaa(float c, float s, float x) {
-	float a = max(fwidth(x) * 2. / s, 1.);
-	return tri(c, s * a, x) / a;
 }
 
 // models/mapobjects/storch/storch_tall.tga

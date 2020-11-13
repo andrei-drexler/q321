@@ -130,6 +130,7 @@
 	x(rocketl,				FSVertexBits)\
 	x(item,					ModelVertexBits)\
 	x(itemshiny,			ModelVertexBits)\
+	x(ammobox,				ModelVertexBits)\
 	x(ammoboxicon,			ModelVertexBits)\
 	x(healthsphere,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(plasma_gls,			ModelVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::Premultiplied)\
@@ -348,6 +349,7 @@
 	x("models/mapobjects/gratelamp/gratetorch2b",	gr8torch2b_m,	gr8torch2b,	Solid,		Opaque|NeedsUV,			(0))\
 	x("*item_model",							item,			rocketl,		Solid,		Opaque,					(0))\
 	x("*item_shiny",							itemshiny,		rocketl,		Solid,		Opaque,					(0))\
+	x("models/powerups/ammo/rockammo",			ammobox,		rocketl,		Solid,		Opaque,					(0))\
 	x("models/powerups/ammo/rockammo2",			ammoboxicon,	Font,			Solid,		Opaque,					(0))\
 	x("models/powerups/armor/newred",			armor,			rocketl,		Solid,		Opaque,					(0))\
 	x("models/weapons2/plasma/plasma_glo",		plasma_glo_m,	plasma_glo,		Solid,		Opaque,					(0))\
@@ -397,7 +399,6 @@
 	x("models/powerups/health/red",					"*item_shiny")\
 	x("models/powerups/health/mega2",				"*item_shiny")\
 	x("models/powerups/armor/shard2",				"*item_shiny")\
-	x("models/powerups/ammo/rockammo",				"*item_shiny")\
 
 ////////////////////////////////////////////////////////////////
 

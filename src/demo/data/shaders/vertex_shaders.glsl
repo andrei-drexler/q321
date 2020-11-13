@@ -166,8 +166,9 @@ void item() {
 	Ref = normalize(reflect((World * P - Cam).xyz, WNor));
 }
 void itemshiny() { item(); }
-void healthsphere() { item(); }
+void ammobox() { item(); }
 void ammoboxicon() { item(); }
+void healthsphere() { item(); }
 void plasma_gls() { item(); }
 void shotgun_lzr() { item(); }
 void energy_grn1() {
