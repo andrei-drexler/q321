@@ -1215,3 +1215,4 @@
 62931,tweaked km_arena1archfinald_mid/killblockgeomtrn
 62907,removed menu::g_startmap
 62959,basic ammo box shader
+62955,tweaked ammo box shader

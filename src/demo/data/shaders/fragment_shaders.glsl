@@ -2514,11 +2514,9 @@ void itemshiny() {
 
 void ammobox() {
 	float
-		d = min(box(Pos.yz - vec2(0, 12), vec2(5, 9)) - 3., box(Pos.xz, vec2(7))),
-		r = env(Ref, 15.) * 1.4 + .3;
+		d = min(box(Pos.yz - vec2(0, 12), vec2(5, 9)) - 3., box(Pos.xz, vec2(7)));
 	FCol = vec4(
-		mix(sqrt(triplanar(16.).xyz * ModelLight()), vec3(r), .2 + .8 * sat(-d-d))
-		* Time.yzw
+		mix(vec3(env(Ref, 15.) * .25), 2. * sqrt(triplanar(16.).xyz) * Time.yzw * ModelLight(), .3 + .5 * sat(d + d))
 		* (1. + .5 * triaa(.5, .5, d) - .2 * triaa(0., 1., d)),
 		1
 	);
