@@ -15,8 +15,6 @@
 //#define ENABLE_RADIOSITY
 //#define START_NOCLIP
 
-#define START_MAP					q3dm1
-
 ////////////////////////////////////////////////////////////////
 
 #include "../engine/demo.h"

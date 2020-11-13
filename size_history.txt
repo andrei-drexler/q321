@@ -1213,3 +1213,4 @@
 62921,memcopyscalar
 62921,changed lookuptable clamping
 62931,tweaked km_arena1archfinald_mid/killblockgeomtrn
+62907,removed menu::g_startmap

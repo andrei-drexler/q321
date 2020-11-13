@@ -190,7 +190,6 @@ namespace Demo::Menu {
 		};
 
 		Item::State g_items[Details::ItemCount];
-		Map::ID g_start_map;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -283,8 +282,6 @@ FORCEINLINE void Demo::Menu::Init() {
 		item_index += num_items;
 	} while (++menu_index < Details::MenuCount);
 
-	Details::g_start_map = Map::ID::START_MAP;
-
 	Push(&MainMenu);
 }
 
@@ -345,9 +342,8 @@ NOINLINE bool Demo::Menu::Update(float dt) {
 					break;
 
 				case Action::LoadMap:
-					Details::g_start_map = Map::ID(item.data);
 					CloseAll();
-					LoadMap(Details::g_start_map);
+					LoadMap(Map::ID(item.data));
 					break;
 
 				case Action::NextMap:
