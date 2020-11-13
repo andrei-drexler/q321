@@ -528,7 +528,7 @@ NOINLINE u32 Map::Details::ClampColor(const vec3& accum) {
 ////////////////////////////////////////////////////////////////
 
 NOINLINE void Map::ComputeLighting(LightMode mode) {
-#ifdef DEV
+#if defined(DEV) || defined(DRAFT_LIGHTMAP)
 	if (mode == LightMode::Shadows)
 		mode = LightMode::Draft;
 #endif

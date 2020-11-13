@@ -11,6 +11,7 @@
 //#define SAVE_LIGHTMAP
 //#define SHOW_LIGHTMAP
 //#define FULLBRIGHT
+//#define DRAFT_LIGHTMAP
 //#define ENABLE_RADIOSITY
 //#define START_NOCLIP
 
