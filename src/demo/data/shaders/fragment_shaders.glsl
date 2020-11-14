@@ -67,8 +67,8 @@
 
 ////////////////////////////////////////////////////////////////
 
-uniform vec4 Time, Cam, LightDir, LightColor, Ambient, Extra;
 uniform sampler2D Texture0, Texture1;
+uniform vec4 Cam, Time, Extra, LightColor, Ambient, LightDir;
 
 in vec3 Pos, Nor, WNor, Ref;
 in vec2 UV, LUV;

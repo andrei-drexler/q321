@@ -1,5 +1,5 @@
 uniform mat4 MVP, View, World;
-uniform vec4 Time, Cam;
+uniform vec4 Cam, Time;
 
 layout(location=0) in vec4 P;
 layout(location=1) in vec4 T;
