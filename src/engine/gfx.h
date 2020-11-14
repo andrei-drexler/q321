@@ -107,14 +107,13 @@ namespace Gfx {
 			list(PP_GFX_DECLARE_UNIFORM_VARIABLE)															\
 		}																									\
 		namespace Metadata {																				\
-			static constexpr char Names[] =	list(PP_GFX_UNIFORM_NAME);										\
 			static constexpr Gfx::Uniform::Type Types[] = { list(PP_GFX_UNIFORM_TYPE) };					\
 			static constexpr u8 Sizes[] = { list(PP_GFX_UNIFORM_SIZE) };									\
 			static constexpr void* Addresses[] = { list(PP_GFX_UNIFORM_ADDRESS) };							\
 			enum { Count = size(Addresses) };																\
 		}																									\
 		FORCEINLINE void RegisterAll() {																	\
-			Gfx::RegisterUniforms(Metadata::Names, Metadata::Types, Metadata::Addresses, Metadata::Count);	\
+			Gfx::RegisterUniforms(Metadata::Types, Metadata::Addresses, Metadata::Count);					\
 		}																									\
 
 	////////////////////////////////////////////////////////////////
@@ -255,7 +254,7 @@ namespace Gfx {
 		UploadGeometry((const void*)data, count * sizeof(T), type, offset);
 	}
 
-	void RegisterUniforms(const char* names, const Uniform::Type* types, const void* const* values, u16 count);
+	void RegisterUniforms(const Uniform::Type* types, const void* const* values, u16 count);
 	void RegisterTextures(const Texture::Descriptor* textures, u16 count);
 	void RegisterShaders(const Shader::Flags* flags, u16 count, const char* vertex_shaders, const char* fragment_shaders);
 	void CompileShaders(Shader::ID first, u16 count);

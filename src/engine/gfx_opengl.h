@@ -259,7 +259,6 @@ namespace GL {
 		const void* const*					uniform_values;
 		const Gfx::Uniform::Type*			uniform_types;
 		u8*									uniform_tex_unit;
-		const char*							uniform_names;
 
 		const Gfx::Shader::Flags*			shader_flags;
 		GLint								shader_uniforms[MaxNumUniforms];
@@ -434,8 +433,11 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 
 		glUseProgram(program);
 
-		const char* uniform_name = g_state.uniform_names;
-		for (u16 uniform_index = 0; uniform_index < g_state.num_uniforms; ++uniform_index, uniform_name = NextAfter(uniform_name)) {
+		for (u32 uniform_index = 0; uniform_index < g_state.num_uniforms; ++uniform_index) {
+			char uniform_name[64];
+			uniform_name[0] = 'U';
+			IntToString(uniform_index, &uniform_name[1]);
+
 			auto location = glGetUniformLocation(program, uniform_name);
 			uniforms[uniform_index] = location;
 			if (location != -1 && g_state.uniform_types[uniform_index] == Uniform::Type::Sampler)
@@ -564,13 +566,12 @@ FORCEINLINE void Gfx::UploadGeometry(const void* data, u32 size, Arena::Type typ
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Gfx::RegisterUniforms(const char* names, const Uniform::Type* types, const void* const* values, u16 count) {
+FORCEINLINE void Gfx::RegisterUniforms(const Uniform::Type* types, const void* const* values, u16 count) {
 	using namespace GL;
 
 	g_state.uniform_values		= values;
 	g_state.uniform_types		= types;
 	g_state.uniform_tex_unit	= Mem::Alloc<u8>(count);
-	g_state.uniform_names		= names;
 	g_state.num_uniforms		= count;
 
 	u8 texture_unit = 0;

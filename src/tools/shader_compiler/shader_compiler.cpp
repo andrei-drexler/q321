@@ -55,7 +55,7 @@ static constexpr string_view Keywords[] = {
 	"gl_Position","gl_FragCoord",
 };
 
-static constexpr string_view Uniforms[] = {
+static constexpr string_view UniformNames[] = {
 	#define PP_ADD_UNIFORM(name, ...) #name##sv,
 	DEMO_UNIFORMS(PP_ADD_UNIFORM)
 	#undef PP_ADD_UNIFORM
@@ -181,13 +181,16 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 	for (auto& name : ShaderNames)
 		entry_points[name] = &name - ShaderNames;
 
+	/* map uniform names to integer ids */
+	std::unordered_map<string_view, int> uniforms;
+	for (auto& name : UniformNames)
+		uniforms[name] = &name - UniformNames;
+
 	/* mark untouchable identifiers */
 	std::unordered_set<string_view> untouchable;
-	untouchable.reserve(size(Keywords) + size(Uniforms));
+	untouchable.reserve(size(Keywords));
 	for (auto keyword : Keywords)
 		untouchable.insert(keyword);
-	for (auto uniform : Uniforms)
-		untouchable.insert(uniform);
 
 	/* find inputs/outputs */
 	for (size_t i = 0; i < tokens.size(); ++i) {
@@ -290,9 +293,18 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 				char buf[64];
 				sprintf(buf, "_%d", entry_iter->second);
 				new_name = atoms.Intern(buf);
-			} else {
-				new_name = atoms.Intern(next_name());
+				continue;
 			}
+
+			auto uniform_iter = uniforms.find(name);
+			if (uniform_iter != uniforms.end()) {
+				char buf[64];
+				sprintf(buf, "U%d", uniform_iter->second);
+				new_name = atoms.Intern(buf);
+				continue;
+			}
+
+			new_name = atoms.Intern(next_name());
 		}
 	}
 
