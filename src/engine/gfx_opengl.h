@@ -347,8 +347,7 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 				Sys::Fatal(Error::Shader);
 
 			char entrypoint[64];
-			entrypoint[0] = '_';
-			IntToString(shader_index, entrypoint + 1);
+			IntToString(shader_index, entrypoint);
 
 #ifdef DISABLE_SHADER_CACHE
 			char no_shader_cache[64];
@@ -363,7 +362,7 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 			const char* sources[] = {
 				"#version 330\n",
 				g_state.shader_sources[i],
-				"void main(){", entrypoint, "();}\n",
+				"void main(){_", entrypoint, "();}\n",
 #ifdef DISABLE_SHADER_CACHE
 				no_shader_cache,
 #endif
