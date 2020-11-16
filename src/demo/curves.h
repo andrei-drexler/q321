@@ -67,7 +67,7 @@ namespace DeCasteljau {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const PackedMap::PatchVertex* ctrl, float s, float t, vec3& pos, vec3& nor, vec2& uv) {
+NOINLINE void Demo::Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const PackedMap::PatchVertex* ctrl, float s, float t, vec3& pos, vec3& nor, vec2& uv) {
 	/* determine cell index */
 	{
 		u32 prim_x = patch.width >> 1;
@@ -129,7 +129,7 @@ NOINLINE void Map::Details::EvaluatePatch(const PackedMap::Patch& patch, const P
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Map::Details::LoadPatches(const PackedMap& packed, u8 pass) {
+NOINLINE void Demo::Map::Details::LoadPatches(const PackedMap& packed, u8 pass) {
 	patches.count = 0;
 
 	for (u16 patch_index = 0, current_patch_vertex = 0; patch_index < packed.num_patches; ++patch_index) {

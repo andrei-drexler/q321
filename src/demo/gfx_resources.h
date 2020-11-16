@@ -316,7 +316,7 @@ namespace Demo {
 
 		Texture::GenerateProceduralTextures();
 #ifdef SAVE_TEXTURE
-		Gfx::SaveTGA(PP_STRINGIZE(SAVE_TEXTURE) ".tga", Demo::Texture::SAVE_TEXTURE);
+		Gfx::SaveTGA(PP_STRINGIZE(SAVE_TEXTURE) ".tga", Texture::SAVE_TEXTURE);
 #endif
 	}
 

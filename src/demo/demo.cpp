@@ -36,8 +36,6 @@
 
 namespace Demo {
 	void RenderSprite(const vec3& point, float size) {
-		using namespace Demo;
-
 		vec3 pos[4];
 		vec3 nor[4];
 		vec2 uv[4];
@@ -70,10 +68,10 @@ namespace Demo {
 		mesh.num_vertices = 4;
 		mesh.SetIndices(idx, 6);
 
-		Gfx::SetShader(Demo::Shader::Generic);
+		Gfx::SetShader(Shader::Generic);
 		
 		Uniform::Time.w = 0;
-		Uniform::Texture0 = Demo::Texture::White;
+		Uniform::Texture0 = Texture::White;
 
 		Gfx::UpdateUniforms();
 		Gfx::Draw(mesh);
@@ -150,7 +148,7 @@ namespace Demo {
 		Entity::Type,
 		StaticArray<float, 3>,
 		Entity::Type::WeaponStart,
-		Entity::Type(i16(Entity::Type::WeaponStart) + i16(Demo::Entity::Type::WeaponCount) - 1)
+		Entity::Type(i16(Entity::Type::WeaponStart) + i16(Entity::Type::WeaponCount) - 1)
 	>(GetWeaponModelOffset);
 
 	static constexpr u8 GetAmmoTileID(Entity::Type type) {
@@ -169,21 +167,20 @@ namespace Demo {
 		Entity::Type,
 		u8,
 		Entity::Type::AmmoStart,
-		Entity::Type(i16(Entity::Type::AmmoStart) + i16(Demo::Entity::Type::AmmoCount) - 1)
+		Entity::Type(i16(Entity::Type::AmmoStart) + i16(Entity::Type::AmmoCount) - 1)
 	>(GetAmmoTileID);
 
 	FORCEINLINE void RenderEntities() {
-		Demo::Model::Transform transform;
+		Model::Transform transform;
 
 		for (u32 entity_index = Map::num_brush_entities; entity_index < Map::num_entities; ++entity_index) {
-			using Type = Demo::Entity::Type;
-			const Demo::Entity& ent = Map::entities[entity_index];
+			const Entity& ent = Map::entities[entity_index];
 
-			float spawn = 1.f - ent.respawn / Demo::Entity::RespawnAnimTime;
+			float spawn = 1.f - ent.respawn / Entity::RespawnAnimTime;
 			if (spawn <= 0.f)
 				continue;
 
-			MemCopy(&transform, &Demo::Model::TransformIdentity);
+			MemCopy(&transform, &Model::TransformIdentity);
 			for (u32 i = 0; i < 3; ++i)
 				transform.position[i] = ent.origin[i];
 			float phase = (transform.position[0] + transform.position[1]) / 1024.f;
@@ -200,7 +197,7 @@ namespace Demo {
 			u32 model_color = EntityModelColors[(u32)ent.type];
 			if (model_id != -1) {
 				for (u32 i = 0; i < 3; ++i, model_color >>= 8)
-					Demo::Uniform::Time[i + 1] = (model_color & 255) / 255.f;
+					Uniform::Time[i + 1] = (model_color & 255) / 255.f;
 
 				i32 tile_id = AmmoTileIDs[ent.type] - 1;
 				if (u32(tile_id) < UI::Tile::Count) {
@@ -210,21 +207,21 @@ namespace Demo {
 					Uniform::Extra.z = float(r.w);
 					Uniform::Extra.w = float(r.h);
 				}
-				Map::DrawLitModel(Demo::Model::ID(model_id), transform);
+				Map::DrawLitModel(Model::ID(model_id), transform);
 
 				if (ent.IsHealth()) {
 					MemSet(&transform.angles);
-					if (ent.type == Type::item_health) {
+					if (ent.type == Entity::Type::item_health) {
 						// HACK: color >1.0 = sharper, stationary reflection
 						MemCopy(&Uniform::Time[1], vec3{1.25f, 1.25f, 1.25f}.data, 3);
 					}
-					Map::DrawLitModel(Demo::Model::ID::large_sphere, transform);
+					Map::DrawLitModel(Model::ID::large_sphere, transform);
 				}
 
 				if (ent.type == Entity::Type::item_quad) {
 					transform.angles[0] *= -2.f;
 					transform.position[2] += 12.f;
-					Map::DrawLitModel(Demo::Model::ID::quad_ring, transform);
+					Map::DrawLitModel(Model::ID::quad_ring, transform);
 				}
 			}
 		}
@@ -233,8 +230,8 @@ namespace Demo {
 	vec3 g_weapon_offset;
 
 	FORCEINLINE void RenderViewModel() {
-		Demo::Model::Transform transform;
-		MemCopy(&transform, &Demo::Model::TransformIdentity);
+		Model::Transform transform;
+		MemCopy(&transform, &Model::TransformIdentity);
 		transform.angles = g_player.angles;
 
 		const float DefaultVerticalFov = 58.75f; // approximation
@@ -245,7 +242,7 @@ namespace Demo {
 		mat4 rotation = MakeRotation(transform.angles * Math::DEG2RAD);
 		transform.position = g_player.position;
 		transform.position.z -= g_player.step;
-		mix_into(transform.position, Demo::Uniform::Cam.xyz, 17.f/16.f);
+		mix_into(transform.position, Uniform::Cam.xyz, 17.f/16.f);
 
 		const float WeaponScale = 0.5f;
 		const float WeaponSway = 0.125f;
@@ -376,9 +373,9 @@ namespace Demo {
 
 	FORCEINLINE void RenderLoadingScreen() {
 		Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
-		Gfx::SetShader(Demo::Shader::Loading);
-		Demo::Uniform::Texture0 = Map::source->levelshot.texture;
-		Demo::Uniform::Time.x = (float)g_time;
+		Gfx::SetShader(Shader::Loading);
+		Uniform::Texture0 = Map::source->levelshot.texture;
+		Uniform::Time.x = (float)g_time;
 		Gfx::UpdateUniforms();
 		Gfx::DrawFullScreen();
 
@@ -547,24 +544,24 @@ namespace Demo {
 		Sys::Printf("%s", "Starting up...\n");
 
 		Mem::Init();
-		Demo::Console::Init();
+		Console::Init();
 		Sys::InitWindow(&Sys::g_window, nullptr, "Q321");
 		Sys::SetFPSMode(&Sys::g_window);
 		Gfx::InitMemory(GPUPoolSizes);
-		Demo::InitGfxResources();
+		InitGfxResources();
 		Map::AllocLightmap();
-		Demo::UpdateWindowIcon();
-		Demo::Model::LoadAll(cooked_models);
-		Demo::UI::Tile::GenerateAll();
-		Demo::GenerateLevelShots();
-		Demo::Menu::Init();
+		UpdateWindowIcon();
+		Model::LoadAll(cooked_models);
+		UI::Tile::GenerateAll();
+		GenerateLevelShots();
+		Menu::Init();
 
 #ifdef SHOW_LIGHTMAP
-		Demo::r_lightmap.Set(1);
+		r_lightmap.Set(1);
 #endif
 
 #ifdef FULLBRIGHT
-		Demo::r_fullbright.Set(1);
+		r_fullbright.Set(1);
 #endif
 
 		[[maybe_unused]] auto touch = [](auto& src) { MemCopy(Mem::Alloc(sizeof(src)), &src, sizeof(src)); };

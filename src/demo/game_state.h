@@ -34,10 +34,10 @@ namespace Demo {
 		if (!g_first_update)
 			g_first_update = true;
 		else
-			Sys::JoinThread(Demo::g_loading_thread); // avoid leak
-		Sys::SpawnThread(Demo::g_loading_thread);
+			Sys::JoinThread(g_loading_thread); // avoid leak
+		Sys::SpawnThread(g_loading_thread);
 
-		Demo::g_player.Spawn();
+		g_player.Spawn();
 	}
 
 	FORCEINLINE void LoadNextMap() {
@@ -51,7 +51,7 @@ namespace Demo {
 			g_level_time += dt;
 
 			for (u32 entity_index = Map::num_brush_entities; entity_index < Map::num_entities; ++entity_index) {
-				Demo::Entity& entity = Map::entities[entity_index];
+				Entity& entity = Map::entities[entity_index];
 				entity.respawn -= dt;
 				if (entity.respawn < 0.f)
 					entity.respawn = 0.f;

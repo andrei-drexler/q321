@@ -2,19 +2,19 @@
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Map::TraceInfo::SetBullet(const vec3& a, const vec3& b) {
+FORCEINLINE void Demo::Map::TraceInfo::SetBullet(const vec3& a, const vec3& b) {
 	start = a;
 	delta = b - a;
 	type = Type::Bullet;
 }
 
-FORCEINLINE void Map::TraceInfo::SetLightmap(const vec3& a, const vec3& b) {
+FORCEINLINE void Demo::Map::TraceInfo::SetLightmap(const vec3& a, const vec3& b) {
 	start = a;
 	delta = b - a;
 	type = Type::Lightmap;
 }
 
-FORCEINLINE void Map::TraceInfo::SetCollision(const vec3& a, const vec3& travel, const vec3& box) {
+FORCEINLINE void Demo::Map::TraceInfo::SetCollision(const vec3& a, const vec3& travel, const vec3& box) {
 	MemCopy(&start, &a);
 	MemCopy(&delta, &travel);
 	MemCopy(&box_half_size, &box);
@@ -23,7 +23,7 @@ FORCEINLINE void Map::TraceInfo::SetCollision(const vec3& a, const vec3& travel,
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Map::Details::DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid) {
+FORCEINLINE void Demo::Map::Details::DoSplit(u16 node, const i16 bounds[2][3], u8 axis, i16 clip[2], i16& mid) {
 	Partition::Node& parent = partition.nodes[node];
 	assert(parent.IsLeaf());
 
@@ -57,7 +57,7 @@ FORCEINLINE void Map::Details::DoSplit(u16 node, const i16 bounds[2][3], u8 axis
 	mid = left_cursor;
 }
 
-NOINLINE void Map::Details::SplitNode(u16 index, i16 bounds[2][3]) {
+NOINLINE void Demo::Map::Details::SplitNode(u16 index, i16 bounds[2][3]) {
 	if (partition.num_nodes + 2 >= MAX_NUM_NODES)
 		return;
 
@@ -108,7 +108,7 @@ NOINLINE void Map::Details::SplitNode(u16 index, i16 bounds[2][3]) {
 	bounds[0][best_axis] = tmp;
 }
 
-NOINLINE void Map::Details::CreatePartition() {
+NOINLINE void Demo::Map::Details::CreatePartition() {
 	for (u16 i = 0, count = brushes.count; i < count; ++i)
 		partition.brushes[i] = i;
 
@@ -125,7 +125,7 @@ NOINLINE void Map::Details::CreatePartition() {
 #endif
 }
 
-FORCEINLINE bool Map::Details::TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax) {
+FORCEINLINE bool Demo::Map::Details::TraceRayStep(TraceInfo& trace, u16 node_index, float tmin, float tmax) {
 	bool hit = false;
 
 	struct StackEntry {
@@ -188,8 +188,6 @@ beginning:
 			}
 			
 			if (best_brush_plane != -1 && t_exit > max(t_enter, 0.f) && t_enter < trace.fraction) {
-				using namespace Demo;
-
 				assert(best_brush_plane < (i32)brushes.plane_count);
 
 				auto material = brushes.GetPlaneMaterial(best_brush_plane);
@@ -284,7 +282,7 @@ pop:
 	goto pop;
 }
 
-NOINLINE bool Map::TraceRay(TraceInfo& trace) {
+NOINLINE bool Demo::Map::TraceRay(TraceInfo& trace) {
 	trace.fraction = 1.f;
 	trace.plane = -1;
 

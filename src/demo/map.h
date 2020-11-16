@@ -2,7 +2,7 @@
 
 ////////////////////////////////////////////////////////////////
 
-namespace Map {
+namespace Demo::Map {
 	enum class ID : i8 {
 		#define PP_ADD_MAP_ID(name,...) name,
 		DEMO_MAPS(PP_ADD_MAP_ID)
@@ -145,7 +145,7 @@ namespace Map {
 
 	/* Entity data */
 
-	using EntityList				= Array<Demo::Entity, MAX_NUM_ENTITIES>;
+	using EntityList				= Array<Entity, MAX_NUM_ENTITIES>;
 	using EntityBrushOffsets		= Array<u16, MAX_NUM_ENTITIES + 1>;
 
 	u8								num_entities;
@@ -154,7 +154,7 @@ namespace Map {
 	EntityBrushOffsets				entity_brush_start;
 
 	bool							IsWorldspawnBrush(u16 index) { return index < entity_brush_start[1]; }
-	Demo::Entity*					GetTargetEntity(i16 target);
+	Entity*							GetTargetEntity(i16 target);
 
 	/* Renderable geometry */
 
@@ -256,7 +256,7 @@ namespace Map {
 	void							AllocLightmap();
 	void							ComputeLighting(LightMode mode = LightMode::Shadows);
 	void							UpdateLightmapTexture();
-	void							DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform& transform = Demo::Model::TransformIdentity);
+	void							DrawLitModel(Model::ID id, const Model::Transform& transform = Model::TransformIdentity);
 
 	/* Internal functions */
 	namespace Details {
@@ -295,13 +295,11 @@ namespace Map {
 // The first 6 brush planes correspond to the 6 sides of the bounding box.
 // In order to maintain this order for mirrored brushes we need to swap
 // the min/max planes for the symmetry axis
-FORCEINLINE u16 Map::Details::MirrorPlaneIndex(u16 brush_plane, u8 axis) {
+FORCEINLINE u16 Demo::Map::Details::MirrorPlaneIndex(u16 brush_plane, u8 axis) {
 	return brush_plane ^ ((brush_plane - (axis << 1)) < 2);
 }
 
-FORCEINLINE void Map::Details::InitLights() {
-	using namespace Demo;
-
+FORCEINLINE void Demo::Map::Details::InitLights() {
 	// light 0 is the sun, always present
 	assert(source->num_lights > 0);
 
@@ -352,7 +350,7 @@ FORCEINLINE void Map::Details::InitLights() {
 
 ////////////////////////////////////////////////////////////////
 
-Demo::Entity* Map::GetTargetEntity(i16 target) {
+Demo::Entity* Demo::Map::GetTargetEntity(i16 target) {
 	if (target) {
 		for (auto *entity = &entities[num_brush_entities], *end = &entities[num_entities]; entity != end; ++entity)
 			if (entity->targetname == target)
@@ -362,7 +360,7 @@ Demo::Entity* Map::GetTargetEntity(i16 target) {
 	return nullptr;
 }
 
-FORCEINLINE void Map::Details::InitEntities() {
+FORCEINLINE void Demo::Map::Details::InitEntities() {
 	num_brush_entities = source->num_brush_entities;
 	num_entities = source->num_entities;
 	MemSet(&entities);
@@ -375,24 +373,22 @@ FORCEINLINE void Map::Details::InitEntities() {
 	entity_brush_start[num_brush_entities] = brush_offset;
 
 	const i16* src_data = source->entity_data;
-	for (u32 field = 0; field < Demo::Entity::NumRawFields; ++field, src_data += num_entities) {
+	for (u32 field = 0; field < Entity::NumRawFields; ++field, src_data += num_entities) {
 		u8* dst_data = (u8*)&entities[0] + field * sizeof(i16);
-		for (u16 entity_index = 0; entity_index < num_entities; ++entity_index, dst_data += sizeof(Demo::Entity)) {
+		for (u16 entity_index = 0; entity_index < num_entities; ++entity_index, dst_data += sizeof(Entity)) {
 			*(i16*)dst_data = src_data[entity_index];
 		}
 	}
 
-	for (Demo::Entity *entity = &entities[0], *end = &entities[0] + num_entities; entity != end; ++entity) {
-		if (entity->type == Demo::Entity::Type::item_quad)
+	for (Entity *entity = &entities[0], *end = &entities[0] + num_entities; entity != end; ++entity) {
+		if (entity->type == Entity::Type::item_quad)
 			entity->respawn = 45.f; // "wait" property
 	}
 }
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Map::Details::LoadModels(u8 pass) {
-	using namespace Demo;
-
+FORCEINLINE void Demo::Map::Details::LoadModels(u8 pass) {
 	Map::num_model_vertices = 0;
 
 	for (const Entity *entity = &entities[num_brush_entities], *entity_end = &entities[num_entities]; entity != entity_end; ++entity) {
@@ -465,15 +461,15 @@ FORCEINLINE void Map::Details::LoadModels(u8 pass) {
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE bool Map::IsUnpacked() {
+FORCEINLINE bool Demo::Map::IsUnpacked() {
 	return source != nullptr;
 }
 
-FORCEINLINE Map::ID Map::NextAfter(Map::ID id) {
+FORCEINLINE Demo::Map::ID Demo::Map::NextAfter(Map::ID id) {
 	return Map::ID((u8(id) + 1) % u8(Map::ID::Count));
 }
 
-NOINLINE void Map::Unpack(ID id) {
+NOINLINE void Demo::Map::Unpack(ID id) {
 	u8 index = (u8)id;
 	if (index >= size(cooked_maps)) {
 		source = nullptr;
@@ -502,7 +498,7 @@ NOINLINE void Map::Unpack(ID id) {
 		if (pass == 1) {
 			num_total_vertices = 0;
 			num_total_indices = 0;
-			for (u32 mat = 0; mat < Demo::Material::Count; ++mat) {
+			for (u32 mat = 0; mat < Material::Count; ++mat) {
 				mat_vertex_offset[mat] = num_total_vertices;
 				num_total_vertices += num_mat_verts[mat];
 				num_mat_verts[mat] = 0;
@@ -645,7 +641,7 @@ NOINLINE void Map::Unpack(ID id) {
 				material >>= 2;
 
 				bool needs_uv =
-					(Demo::Material::Properties[material] & Demo::Material::NeedsUV) |
+					(Material::Properties[material] & Material::NeedsUV) |
 					(brush_flags & PackedMap::BrushFlagKeepUVs);
 
 				vec3 center = 0.f;
@@ -689,9 +685,9 @@ NOINLINE void Map::Unpack(ID id) {
 				/* Set up UV mapping */
 
 				vec2 texture_size{256.f, 256.f};
-				u32 texture = Demo::MaterialTextures[material];
-				if (texture < size(Demo::Texture::Descriptors)) {
-					auto& descriptor = Demo::Texture::Descriptors[texture];
+				u32 texture = MaterialTextures[material];
+				if (texture < size(Texture::Descriptors)) {
+					auto& descriptor = Texture::Descriptors[texture];
 					texture_size.x = descriptor.width;
 					texture_size.y = descriptor.height;
 				}
@@ -806,7 +802,7 @@ NOINLINE void Map::Unpack(ID id) {
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Map::Details::ComputeWorldBounds() {
+FORCEINLINE void Demo::Map::Details::ComputeWorldBounds() {
 	/* Recompute world bounds (including mirrored brushes) */
 
 	for (u32 axis = 0; axis < 3; ++axis) {
@@ -825,9 +821,9 @@ FORCEINLINE void Map::Details::ComputeWorldBounds() {
 	}
 }
 
-FORCEINLINE void Map::Details::ComputeNormals() {
-	for (u8 material = 0; material < Demo::Material::Count; ++material) {
-		if (Demo::Material::Properties[material] & Demo::Material::Sprite)
+FORCEINLINE void Demo::Map::Details::ComputeNormals() {
+	for (u8 material = 0; material < Material::Count; ++material) {
+		if (Material::Properties[material] & Material::Sprite)
 			continue;
 
 		vec3* pos = positions + mat_vertex_offset[material];
@@ -841,22 +837,19 @@ FORCEINLINE void Map::Details::ComputeNormals() {
 	for (u32 i = 0; i < num_model_vertices; ++i) {
 		u32 index = model_vertex_indices[i];
 		u32 source = model_vertex_sources[i];
-		using namespace Demo;
 		Model::PackNormalOffset(Map::normals[index], Model::Storage::vertices[source]);
 	}
 }
 
 ////////////////////////////////////////////////////////////////
 
-void Map::Render() {
-	using namespace Demo;
-
+void Demo::Map::Render() {
 	Gfx::Mesh mesh;
 	memset(&mesh, 0, sizeof(mesh));
 
 	mesh.vertices[Attrib::Color].normalized = true;
 
-	auto num_materials = Demo::Material::Count;
+	auto num_materials = Material::Count;
 	for (u8 material = 0; material < num_materials; ++material) {
 		auto visibility = Material::Properties[material] & Material::MaskVisibility;
 
@@ -890,7 +883,7 @@ void Map::Render() {
 		if (r_fullbright.integer)
 			Uniform::Texture1 = Texture::Grey;
 
-		Demo::AddDrawCall(Material::ID(material), mesh);
+		AddDrawCall(Material::ID(material), mesh);
 	}
 
 #if 0
@@ -936,7 +929,7 @@ void Map::Render() {
 #endif
 }
 
-NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform& transform) {
+NOINLINE void Demo::Map::DrawLitModel(Model::ID id, const Model::Transform& transform) {
 	struct {
 		vec3 color, ambient, dir;
 		float weight;
@@ -997,11 +990,11 @@ NOINLINE void Map::DrawLitModel(Demo::Model::ID id, const Demo::Model::Transform
 		accum.ambient /= accum.weight;
 	}
 
-	Demo::Uniform::LightColor.xyz = accum.color;
-	Demo::Uniform::LightColor.w   = 1.f;
-	Demo::Uniform::Ambient.xyz    = accum.ambient;
-	Demo::Uniform::Ambient.w      = 1.f;
-	Demo::Uniform::LightDir.xyz   = accum.dir;
+	Uniform::LightColor.xyz = accum.color;
+	Uniform::LightColor.w   = 1.f;
+	Uniform::Ambient.xyz    = accum.ambient;
+	Uniform::Ambient.w      = 1.f;
+	Uniform::LightDir.xyz   = accum.dir;
 
-	Demo::Model::Draw(id, transform);
+	Model::Draw(id, transform);
 }

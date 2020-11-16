@@ -2,75 +2,71 @@
 
 ////////////////////////////////////////////////////////////////
 
-namespace Demo {
-	namespace Lightmap {
-		/* Lighting parameters */
-		constexpr u16
-			TexelSize			= 16,
-			Dilate				= true,
-			JitterOccluded		= false,
-			NumEnvSamples		= 12,
-			NumEnvSamplesGrid	= 6
-		;
+namespace Demo::Lightmap {
+	/* Lighting parameters */
+	constexpr u16
+		TexelSize			= 16,
+		Dilate				= true,
+		JitterOccluded		= false,
+		NumEnvSamples		= 12,
+		NumEnvSamplesGrid	= 6
+	;
 
-		static constexpr vec3 Ambient = {
-			2.f * 6.25f,
-			2.f * 6.25f,
-			2.f * 7.f,
-		};
+	static constexpr vec3 Ambient = {
+		2.f * 6.25f,
+		2.f * 6.25f,
+		2.f * 7.f,
+	};
 
-		/* Debugging */
-		enum class DebugMode {
-			Off,
-			Tiles,
-			Checker,
-			Positions,
-			Normals,
-		};
-		constexpr DebugMode Debug = DebugMode::Off;
+	/* Debugging */
+	enum class DebugMode {
+		Off,
+		Tiles,
+		Checker,
+		Positions,
+		Normals,
+	};
+	constexpr DebugMode Debug = DebugMode::Off;
 
-		constexpr float
-			PointScale		= 7500.f * 2.f,
-			BounceScale		= 16.f,
-			Threshold		= 2.f,
-			ThresholdGrid	= 8.f,
-			SurfaceBias		= 4.f,
-			EnvRayLength	= 8192.f
-		;
+	constexpr float
+		PointScale		= 7500.f * 2.f,
+		BounceScale		= 16.f,
+		Threshold		= 2.f,
+		ThresholdGrid	= 8.f,
+		SurfaceBias		= 4.f,
+		EnvRayLength	= 8192.f
+	;
 
-		/* Metadata */
-		constexpr auto
-			Descriptor		= Texture::Descriptors[Texture::Lightmap];
+	/* Metadata */
+	constexpr auto
+		Descriptor		= Texture::Descriptors[Texture::Lightmap];
 
-		constexpr u16
-			Width			= Descriptor.width,
-			Height			= Descriptor.height;
+	constexpr u16
+		Width			= Descriptor.width,
+		Height			= Descriptor.height;
 
-		constexpr u32
-			TexelCount		= Width * Height;
+	constexpr u32
+		TexelCount		= Width * Height;
 
-		////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
 
-		u32 PackVec3(const vec3& v) {
-			return 
-				clamp((i32)floor(v.x * 255.f + 0.5f), 0, 255) << 16 |
-				clamp((i32)floor(v.y * 255.f + 0.5f), 0, 255) <<  8 |
-				clamp((i32)floor(v.z * 255.f + 0.5f), 0, 255) <<  0 ;
-		}
+	u32 PackVec3(const vec3& v) {
+		return 
+			clamp((i32)floor(v.x * 255.f + 0.5f), 0, 255) << 16 |
+			clamp((i32)floor(v.y * 255.f + 0.5f), 0, 255) <<  8 |
+			clamp((i32)floor(v.z * 255.f + 0.5f), 0, 255) <<  0 ;
+	}
 
-		void UnpackVec3(vec3& v, u32 u) {
-			v.x = float((u >> 16) & 255);
-			v.y = float((u >>  8) & 255);
-			v.z = float((u >>  0) & 255);
-		}
-	} // namespace Lightmap
-} // namespace Demo
+	void UnpackVec3(vec3& v, u32 u) {
+		v.x = float((u >> 16) & 255);
+		v.y = float((u >>  8) & 255);
+		v.z = float((u >>  0) & 255);
+	}
+} // namespace Demo::Lightmap
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Map::AllocLightmap() {
-	using namespace Demo;
-
+FORCEINLINE void Demo::Map::AllocLightmap() {
 	lightmap.data = Mem::Alloc<u32>(Lightmap::TexelCount);
 #ifdef ENABLE_RADIOSITY
 	lightmap.bounce_data = Mem::Alloc<u32>(Lightmap::TexelCount);
@@ -81,9 +77,7 @@ FORCEINLINE void Map::AllocLightmap() {
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Map::Details::PackLightmap() {
-	using namespace Demo;
-
+FORCEINLINE void Demo::Map::Details::PackLightmap() {
 	MemSet(lightmap.pos, 0, Lightmap::TexelCount);
 	MemSet(lightmap.nor, 0, Lightmap::TexelCount);
 
@@ -362,9 +356,7 @@ namespace R2 {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace, vec3& accum, LightGrid::InfluenceList* influences, LightMode mode) {
-	using namespace Demo;
-
+NOINLINE void Demo::Map::Details::SampleLighting(const vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace, vec3& accum, LightGrid::InfluenceList* influences, LightMode mode) {
 	if (mode != LightMode::Bounce) {
 		for (u16 light_index = 0; light_index < Map::lights.count; ++light_index) {
 			const auto& light = Map::lights.data[light_index];
@@ -429,8 +421,7 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 
 				bool hit = Map::TraceRay(trace);
 				if (light_index == 0) {
-					using namespace Demo::Material;
-					if (!hit || GetVisibility(brushes.GetPlaneMaterial(trace.plane)) != Sky)
+					if (!hit || Material::GetVisibility(brushes.GetPlaneMaterial(trace.plane)) != Material::Sky)
 						continue;
 				} else if (hit) {
 					continue;
@@ -465,11 +456,10 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 			if (!Map::TraceRay(trace))
 				continue;
 
-			using namespace Demo::Material;
-			auto vis = GetVisibility(brushes.GetPlaneMaterial(trace.plane));
+			auto vis = Material::GetVisibility(brushes.GetPlaneMaterial(trace.plane));
 
 			if (mode == LightMode::Shadows) {
-				if (vis == Sky) {
+				if (vis == Material::Sky) {
 					accum += skylight;
 					if (influences && influences->count < size(influences->data)) {
 						LightGrid::Influence& inf = influences->data[influences->count++];
@@ -504,14 +494,14 @@ NOINLINE void Map::Details::SampleLighting(const vec3& pos, const vec3& nor, con
 	}
 }
 
-NOINLINE void Map::Details::InitLightTrace(TraceInfo& trace) {
+NOINLINE void Demo::Map::Details::InitLightTrace(TraceInfo& trace) {
 	MemSet(&trace);
 	trace.type = TraceInfo::Type::Lightmap;
 	trace.box_half_size = 1.f/32.f;
 }
 
 // Maintains hue instead of clamping to white
-NOINLINE u32 Map::Details::ClampColor(const vec3& accum) {
+NOINLINE u32 Demo::Map::Details::ClampColor(const vec3& accum) {
 	float max_value = 255.f;
 	for (u8 i = 0; i < 3; ++i)
 		if (max_value < accum[i])
@@ -527,7 +517,7 @@ NOINLINE u32 Map::Details::ClampColor(const vec3& accum) {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Map::ComputeLighting(LightMode mode) {
+NOINLINE void Demo::Map::ComputeLighting(LightMode mode) {
 #if defined(DEV) || defined(DRAFT_LIGHTMAP)
 	if (mode == LightMode::Shadows)
 		mode = LightMode::Draft;
@@ -538,9 +528,7 @@ NOINLINE void Map::ComputeLighting(LightMode mode) {
 	Details::ComputeLightGrid(mode);
 }
 
-FORCEINLINE void Map::Details::ComputeLightmap(LightMode mode) {
-	using namespace Demo;
-
+FORCEINLINE void Demo::Map::Details::ComputeLightmap(LightMode mode) {
 	if constexpr (Lightmap::Debug == Lightmap::DebugMode::Off) {
 #ifdef ENABLE_RADIOSITY
 		if (mode == LightMode::Bounce) {
@@ -636,7 +624,7 @@ FORCEINLINE void Map::Details::ComputeLightmap(LightMode mode) {
 	}
 }
 
-FORCEINLINE void Map::Details::ComputeVertexColors(LightMode mode) {
+FORCEINLINE void Demo::Map::Details::ComputeVertexColors(LightMode mode) {
 	/* compute vertex lighting (for misc_models) */
 
 	if (mode != LightMode::Bounce) {
@@ -672,7 +660,7 @@ FORCEINLINE void Map::Details::ComputeVertexColors(LightMode mode) {
 	}
 }
 
-FORCEINLINE void Map::Details::ComputeLightGrid(LightMode mode) {
+FORCEINLINE void Demo::Map::Details::ComputeLightGrid(LightMode mode) {
 	/* compute model light grid */
 
 	MemSet(&lightgrid);
@@ -788,9 +776,7 @@ FORCEINLINE void Map::Details::ComputeLightGrid(LightMode mode) {
 //
 // Trace needs to be pre-filled (at least type = Lightmap)
 ////////////////////////////////////////////////////////////////
-FORCEINLINE void Map::Details::GetUnoccludedPos(vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace) {
-	using namespace Demo;
-
+FORCEINLINE void Demo::Map::Details::GetUnoccludedPos(vec3& pos, const vec3& nor, const vec3& x_axis, const vec3& y_axis, TraceInfo& trace) {
 	trace.start = pos + nor;
 	trace.delta = nor;
 
@@ -826,9 +812,7 @@ FORCEINLINE void Map::Details::GetUnoccludedPos(vec3& pos, const vec3& nor, cons
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Map::Details::DebugFillLightmap() {
-	using namespace Demo;
-
+FORCEINLINE void Demo::Map::Details::DebugFillLightmap() {
 	for (u16 tile_index = 0, tile_count = lightmap.packer.GetNumTiles(); tile_index < tile_count; ++tile_index) {
 		auto& rect = lightmap.packer.GetTile(tile_index);
 
@@ -870,10 +854,10 @@ FORCEINLINE void Map::Details::DebugFillLightmap() {
 
 ////////////////////////////////////////////////////////////////
 
-NOINLINE void Map::UpdateLightmapTexture() {
-	Gfx::SetTextureContents(Demo::Texture::Lightmap, lightmap.data);
+NOINLINE void Demo::Map::UpdateLightmapTexture() {
+	Gfx::SetTextureContents(Texture::Lightmap, lightmap.data);
 	Gfx::UploadGeometry(&Map::colors[0], Map::num_total_vertices, Gfx::Arena::Level, Map::gpu_addr.colors);
 #ifdef SAVE_LIGHTMAP
-	Gfx::SaveTGA("lightmap.tga", Demo::Texture::Lightmap);
+	Gfx::SaveTGA("lightmap.tga", Texture::Lightmap);
 #endif
 }

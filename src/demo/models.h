@@ -168,10 +168,10 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			dst_part.ofs_verts   = dst_ofs_verts;
 			dst_part.ofs_idx     = dst_ofs_idx;
 
-			bool is_sprite = Demo::Material::Properties[src_part.material] & Demo::Material::Sprite;
+			bool is_sprite = Material::Properties[src_part.material] & Material::Sprite;
 
 #ifdef DEV
-			const char* path = Demo::Material::Paths[src_part.material];
+			const char* path = Material::Paths[src_part.material];
 #endif
 
 #if DEMO_MODELS_USE_DELTA_ENCODING
@@ -229,7 +229,7 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 			u32*  idx = Storage::indices  + dst_part.ofs_idx;
 
 			if (!is_sprite) {
-				Demo::ComputeNormals(pos, idx, dst_part.num_verts, dst_part.num_indices, nor);
+				ComputeNormals(pos, idx, dst_part.num_verts, dst_part.num_indices, nor);
 			} else {
 				vec3 center;
 				MemSet(&center);
@@ -267,7 +267,7 @@ FORCEINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 		mul(model_matrix.GetAxis(i), transform.scale);
 	model_matrix.SetPosition(transform.position);
 
-	Demo::Uniform::SetModelMatrix(model_matrix);
+	Uniform::SetModelMatrix(model_matrix);
 
 	const u16
 		part_begin = Model::Storage::first_model_part[id],
@@ -290,11 +290,11 @@ FORCEINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 		mesh.num_vertices		= part.num_verts;
 		mesh.num_indices		= part.num_indices;
 
-		Uniform::Texture0 = Demo::MaterialTextures[material];
+		Uniform::Texture0 = MaterialTextures[material];
 		if (r_lightmap.integer)
 			Uniform::Texture0 = Texture::Grey;
 
-		Demo::AddDrawCall(Material::ID(material), mesh);
+		AddDrawCall(Material::ID(material), mesh);
 	}
 }
 

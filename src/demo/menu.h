@@ -416,7 +416,7 @@ FORCEINLINE void Demo::Menu::Draw() {
 
 	if (main_menu) {
 		// QUAKE III banner
-		Uniform::Texture0 = Demo::Texture::menubnr;
+		Uniform::Texture0 = Texture::menubnr;
 		Gfx::SetShader(Shader::menubnr_m);
 		Gfx::DrawFullScreen();
 
