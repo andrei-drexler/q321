@@ -322,7 +322,7 @@ namespace Gfx {
 			}
 
 			template <typename T>
-			FORCEINLINE VertexStream& SetType() {
+			FORCEINLINE constexpr VertexStream& SetType() {
 				type = Gfx::Vertex::TypeToEnum<T>;
 				return *this;
 			}
