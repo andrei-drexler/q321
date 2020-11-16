@@ -1,189 +1,191 @@
 #pragma once
 
-struct PackedMap {
-	enum {
-		EnableSpotlights = true,
-	};
+namespace Demo {
+	struct PackedMap {
+		enum {
+			EnableSpotlights = true,
+		};
 
-	u16					num_brushes;
-	u16					num_unaligned_planes;
-	u16					num_planes;
-	u16					num_patches;
-	u16					num_patch_verts;
-	u8					num_entities;
-	u8					num_brush_entities;
-	u8					num_uvs;
-	u8					num_lights;
-	u8					num_spotlights;
-	u32					skylight;
+		u16					num_brushes;
+		u16					num_unaligned_planes;
+		u16					num_planes;
+		u16					num_patches;
+		u16					num_patch_verts;
+		u8					num_entities;
+		u8					num_brush_entities;
+		u8					num_uvs;
+		u8					num_lights;
+		u8					num_spotlights;
+		u32					skylight;
 
-	const u16*			entity_brushes;
-	const i16*			entity_data;
-	const i16*			world_bounds; // min[3], size[3]
-	const i16*			brush_bounds;
-	const i32*			plane_data;
-	const u8*			nonaxial_counts;
-	const u16*			plane_materials;
-	const float*		uv_data;
-	const u8*			plane_uvs;
-	const u32*			patches;
-	const i16*			patch_vertices;
-	const i16*			light_data;
+		const u16*			entity_brushes;
+		const i16*			entity_data;
+		const i16*			world_bounds; // min[3], size[3]
+		const i16*			brush_bounds;
+		const i32*			plane_data;
+		const u8*			nonaxial_counts;
+		const u16*			plane_materials;
+		const float*		uv_data;
+		const u8*			plane_uvs;
+		const u32*			patches;
+		const i16*			patch_vertices;
+		const i16*			light_data;
 
-	const u8*			brush_flags;
-	i8					symmetry_axis;
-	i16					symmetry_level;
+		const u8*			brush_flags;
+		i8					symmetry_axis;
+		i16					symmetry_level;
 
 #ifdef DEV
-	u16					num_plane_entries;
+		u16					num_plane_entries;
 #endif
 
-	struct {
-		i16				position[3] = {};
-		i16				angles[2] = {};
-		i16				texture = {};
-	}					levelshot;
-	const char*			name;
-	const char*			message;
-
-	template
-	<
-		int NumBrushEntities, int NumEntityDataEntries,
-		int NumBrushBoundEntries, int NumPlaneEntries, int NumNonaxialEntries,
-		int NumUVEntries, int NumPlaneUVEntries, int NumMaterialEntries,
-		int NumPatches, int NumPatchVertEntries,
-		int NumLightEntries,
-		int NumBrushFlagsEntries
-	>
-	constexpr PackedMap
-	(
-		const char*						name,
-		const char*						message,
-		i8								symmetry_axis,
-		i16								symmetry_level,
-		const u16	(&entity_brushes)	[NumBrushEntities],
-		const i16	(&entity_data)		[NumEntityDataEntries],
-		const i16	(&world_bounds)		[6],
-		const i16	(&brush_bounds)		[NumBrushBoundEntries],
-		u16								num_unaligned_planes,
-		const i32	(&plane_data)		[NumPlaneEntries],
-		const u8	(&nonaxial_counts)	[NumNonaxialEntries],
-		const u8	(&brush_flags)		[NumBrushFlagsEntries],
-		const u16	(&plane_materials)	[NumMaterialEntries],
-		const float (&uv_data)			[NumUVEntries],
-		const u8	(&plane_uvs)		[NumPlaneUVEntries],
-		const u32	(&patches)			[NumPatches],
-		const i16	(&patch_verts)		[NumPatchVertEntries],
-		const i16	(&light_data)		[NumLightEntries],
-		u8								num_spotlights,
-		u32								skylight,
-		i16								levelshot_x,
-		i16								levelshot_y,
-		i16								levelshot_z,
-		i16								levelshot_yaw,
-		i16								levelshot_pitch,
-		i16								levelshot_texture
-	) :
-		num_brushes				(NumBrushBoundEntries / 6),
-		num_unaligned_planes	(num_unaligned_planes),
-		num_planes				(NumMaterialEntries),
-		num_patches				(NumPatches),
-		num_patch_verts			(NumPatchVertEntries / 5),
-		num_entities			(NumEntityDataEntries / Demo::Entity::NumRawFields),
-		num_brush_entities		(NumBrushEntities),
-		num_uvs					(NumUVEntries / 5),
-		num_lights				((NumLightEntries - num_spotlights * 3) / 5),
-		num_spotlights			(num_spotlights),
-		skylight				(skylight),
-		entity_brushes			(entity_brushes),
-		entity_data				(entity_data),
-		world_bounds			(world_bounds),
-		brush_bounds			(brush_bounds),
-		plane_data				(plane_data),
-		nonaxial_counts			(nonaxial_counts),
-		plane_materials			(plane_materials),
-		uv_data					(uv_data),
-		plane_uvs				(plane_uvs),
-		patches					(patches),
-		patch_vertices			(patch_verts),
-		light_data				(light_data),
-		brush_flags				(brush_flags),
-		symmetry_axis			(symmetry_axis),
-		symmetry_level			(symmetry_level),
-#ifdef DEV
-		num_plane_entries		(NumPlaneEntries),
-#endif
-		name					(name),
-		message					(message)
-	{
-		static_assert(NumPlaneUVEntries == NumMaterialEntries);
-		static_assert(NumBrushBoundEntries / 6 == NumNonaxialEntries);
-		
-		levelshot.position[0] = levelshot_x;
-		levelshot.position[1] = levelshot_y;
-		levelshot.position[2] = levelshot_z;
-		levelshot.angles[0] = levelshot_yaw;
-		levelshot.angles[1] = levelshot_pitch;
-		levelshot.texture = levelshot_texture;
-	}
-
-	enum {
-		BrushFlagKeepUVs		= 1 << 0,
-		BrushFlagAsymmetric		= 1 << 1,
-	};
-
-	struct UV {
-		vec2	offset;
-		vec2	scale;
-		float	angle;
-	};
-
-	struct Patch {
-		u16		width;
-		u16		height;
-		u16		divx;
-		u16		divy;
-		u8		material;
-		bool	asymmetric;
-
-		/* used for delta decoding */
-		i16 delta[5];
-	};
-
-	union PatchVertex {
 		struct {
-			vec3	pos;
-			vec2	uv;
+			i16				position[3] = {};
+			i16				angles[2] = {};
+			i16				texture = {};
+		}					levelshot;
+		const char*			name;
+		const char*			message;
+
+		template
+		<
+			int NumBrushEntities, int NumEntityDataEntries,
+			int NumBrushBoundEntries, int NumPlaneEntries, int NumNonaxialEntries,
+			int NumUVEntries, int NumPlaneUVEntries, int NumMaterialEntries,
+			int NumPatches, int NumPatchVertEntries,
+			int NumLightEntries,
+			int NumBrushFlagsEntries
+		>
+		constexpr PackedMap
+		(
+			const char*						name,
+			const char*						message,
+			i8								symmetry_axis,
+			i16								symmetry_level,
+			const u16	(&entity_brushes)	[NumBrushEntities],
+			const i16	(&entity_data)		[NumEntityDataEntries],
+			const i16	(&world_bounds)		[6],
+			const i16	(&brush_bounds)		[NumBrushBoundEntries],
+			u16								num_unaligned_planes,
+			const i32	(&plane_data)		[NumPlaneEntries],
+			const u8	(&nonaxial_counts)	[NumNonaxialEntries],
+			const u8	(&brush_flags)		[NumBrushFlagsEntries],
+			const u16	(&plane_materials)	[NumMaterialEntries],
+			const float (&uv_data)			[NumUVEntries],
+			const u8	(&plane_uvs)		[NumPlaneUVEntries],
+			const u32	(&patches)			[NumPatches],
+			const i16	(&patch_verts)		[NumPatchVertEntries],
+			const i16	(&light_data)		[NumLightEntries],
+			u8								num_spotlights,
+			u32								skylight,
+			i16								levelshot_x,
+			i16								levelshot_y,
+			i16								levelshot_z,
+			i16								levelshot_yaw,
+			i16								levelshot_pitch,
+			i16								levelshot_texture
+		) :
+			num_brushes				(NumBrushBoundEntries / 6),
+			num_unaligned_planes	(num_unaligned_planes),
+			num_planes				(NumMaterialEntries),
+			num_patches				(NumPatches),
+			num_patch_verts			(NumPatchVertEntries / 5),
+			num_entities			(NumEntityDataEntries / Demo::Entity::NumRawFields),
+			num_brush_entities		(NumBrushEntities),
+			num_uvs					(NumUVEntries / 5),
+			num_lights				((NumLightEntries - num_spotlights * 3) / 5),
+			num_spotlights			(num_spotlights),
+			skylight				(skylight),
+			entity_brushes			(entity_brushes),
+			entity_data				(entity_data),
+			world_bounds			(world_bounds),
+			brush_bounds			(brush_bounds),
+			plane_data				(plane_data),
+			nonaxial_counts			(nonaxial_counts),
+			plane_materials			(plane_materials),
+			uv_data					(uv_data),
+			plane_uvs				(plane_uvs),
+			patches					(patches),
+			patch_vertices			(patch_verts),
+			light_data				(light_data),
+			brush_flags				(brush_flags),
+			symmetry_axis			(symmetry_axis),
+			symmetry_level			(symmetry_level),
+#ifdef DEV
+			num_plane_entries		(NumPlaneEntries),
+#endif
+			name					(name),
+			message					(message)
+		{
+			static_assert(NumPlaneUVEntries == NumMaterialEntries);
+			static_assert(NumBrushBoundEntries / 6 == NumNonaxialEntries);
+		
+			levelshot.position[0] = levelshot_x;
+			levelshot.position[1] = levelshot_y;
+			levelshot.position[2] = levelshot_z;
+			levelshot.angles[0] = levelshot_yaw;
+			levelshot.angles[1] = levelshot_pitch;
+			levelshot.texture = levelshot_texture;
+		}
+
+		enum {
+			BrushFlagKeepUVs		= 1 << 0,
+			BrushFlagAsymmetric		= 1 << 1,
 		};
-		float data[5];
 
-		PatchVertex() = default;
-		PatchVertex(const PatchVertex& copy) { MemCopy(&data, &copy.data); }
-		PatchVertex& operator=(const PatchVertex& copy) { MemCopy(&data, &copy.data); return *this; }
-	};
-
-	struct Light {
-		enum Flags {
-			IsSpotlight			= 1 << 0,
+		struct UV {
+			vec2	offset;
+			vec2	scale;
+			float	angle;
 		};
 
-		vec3	position;
-		float	intensity;
-		u32		flags;
-		vec3	color;
-		vec4	spot;
-	};
+		struct Patch {
+			u16		width;
+			u16		height;
+			u16		divx;
+			u16		divy;
+			u8		material;
+			bool	asymmetric;
 
-	UV							GetPlaneUV(u32 plane_index) const;
-	void						GetPatch(Patch& patch, u32 patch_index) const;
-	void						GetPatchVertex(PatchVertex& v, Patch& patch, u32 vertex_index) const;
-	void						GetLight(u32 light_index, Light& light) const;
-	void						GetPlane(const i32*& plane_data, const i16 brush_bounds[2][3], vec4& plane) const;
-};
+			/* used for delta decoding */
+			i16 delta[5];
+		};
+
+		union PatchVertex {
+			struct {
+				vec3	pos;
+				vec2	uv;
+			};
+			float data[5];
+
+			PatchVertex() = default;
+			PatchVertex(const PatchVertex& copy) { MemCopy(&data, &copy.data); }
+			PatchVertex& operator=(const PatchVertex& copy) { MemCopy(&data, &copy.data); return *this; }
+		};
+
+		struct Light {
+			enum Flags {
+				IsSpotlight			= 1 << 0,
+			};
+
+			vec3	position;
+			float	intensity;
+			u32		flags;
+			vec3	color;
+			vec4	spot;
+		};
+
+		UV							GetPlaneUV(u32 plane_index) const;
+		void						GetPatch(Patch& patch, u32 patch_index) const;
+		void						GetPatchVertex(PatchVertex& v, Patch& patch, u32 vertex_index) const;
+		void						GetLight(u32 light_index, Light& light) const;
+		void						GetPlane(const i32*& plane_data, const i16 brush_bounds[2][3], vec4& plane) const;
+	};
+} // namespace Demo
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE PackedMap::UV PackedMap::GetPlaneUV(u32 plane_index) const {
+FORCEINLINE Demo::PackedMap::UV Demo::PackedMap::GetPlaneUV(u32 plane_index) const {
 	const float* data = uv_data + plane_uvs[plane_index];
 
 	UV uv;
@@ -198,7 +200,7 @@ FORCEINLINE PackedMap::UV PackedMap::GetPlaneUV(u32 plane_index) const {
 	return uv;
 }
 
-NOINLINE void PackedMap::GetPatch(Patch& patch, u32 patch_index) const {
+NOINLINE void Demo::PackedMap::GetPatch(Patch& patch, u32 patch_index) const {
 	u32 data = patches[patch_index];
 
 	MemSet(&patch);
@@ -211,7 +213,7 @@ NOINLINE void PackedMap::GetPatch(Patch& patch, u32 patch_index) const {
 	patch.asymmetric	= (data >> 20) & 1;
 }
 
-NOINLINE void PackedMap::GetPatchVertex(PatchVertex& v, Patch& patch, u32 vertex_index) const {
+NOINLINE void Demo::PackedMap::GetPatchVertex(PatchVertex& v, Patch& patch, u32 vertex_index) const {
 	const i16* data = patch_vertices + vertex_index;
 
 	for (u8 i = 0; i < 5; ++i, data += num_patch_verts) {
@@ -223,7 +225,7 @@ NOINLINE void PackedMap::GetPatchVertex(PatchVertex& v, Patch& patch, u32 vertex
 	v.uv[1] /= -256.f; // flip upside-down
 }
 
-FORCEINLINE void PackedMap::GetLight(u32 light_index, Light& light) const {
+FORCEINLINE void Demo::PackedMap::GetLight(u32 light_index, Light& light) const {
 	const i16* data = light_data + light_index * 5;
 
 	light.position.x	= data[0];
@@ -255,7 +257,7 @@ FORCEINLINE void PackedMap::GetLight(u32 light_index, Light& light) const {
 	}
 }
 
-FORCEINLINE void PackedMap::GetPlane(const i32*& plane_data, const i16 brush_bounds[2][3], vec4& plane) const {
+FORCEINLINE void Demo::PackedMap::GetPlane(const i32*& plane_data, const i16 brush_bounds[2][3], vec4& plane) const {
 	u32 value = *plane_data++;
 	u8 axis0 = value & 3;
 	if (axis0 != 3) {

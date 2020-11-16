@@ -2100,7 +2100,7 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 
 	fprintf(out,
 		"\n"
-		"static constexpr PackedMap map{\n"
+		"static constexpr Demo::PackedMap map{\n"
 		"    \"%s\", \"%s\",\n"
 		"    %d, %d, // symmetry axis, level\n"
 		"    entity_brushes, entity_data,\n"
@@ -2197,7 +2197,7 @@ int main() {
 		"\n"
 		"////////////////////////////////////////////////////////////////\n"
 		"\n"
-		"static constexpr const PackedMap* cooked_maps[] = {\n"
+		"static constexpr const Demo::PackedMap* cooked_maps[] = {\n"
 		"	#define PP_ADD_MAP_ENTRY(name,...) &name::map,\n"
 		"	DEMO_MAPS(PP_ADD_MAP_ENTRY)\n"
 		"	#undef PP_ADD_MAP_ENTRY\n"

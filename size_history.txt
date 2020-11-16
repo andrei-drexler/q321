@@ -1220,3 +1220,4 @@
 62869,reordered uniforms
 62867,tweaked gfx::compileshaders
 62866,moved map to demo namespace
+62866,moved packedmap to demo namespace

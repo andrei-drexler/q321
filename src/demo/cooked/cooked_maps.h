@@ -269,7 +269,7 @@ const i16 light_data[] = {0,0,1<<13,32,32767,-632,-1208,656,75,32767,-664,-1176,
 720,1000,32767,-48,-892,472,250,19263,0,120,-120,};
 const u8 num_spotlights = 1;
 
-static constexpr PackedMap map{
+static constexpr Demo::PackedMap map{
     "q3dm17", "the longest yard",
     1, 64, // symmetry axis, level
     entity_brushes, entity_data,
@@ -750,7 +750,7 @@ const i16 light_data[] = {1981,-1981,7698,80,25375,634,394,-52,128,2224,529,221,
 1286,292,40,22463,572,1462,292,40,22463,572,1590,292,40,22463,2,2,-356,2,2,-360,56,0,168,56,0,168,56,0,168,};
 const u8 num_spotlights = 5;
 
-static constexpr PackedMap map{
+static constexpr Demo::PackedMap map{
     "q3dm1", "arena gate",
     0, 672, // symmetry axis, level
     entity_brushes, entity_data,
@@ -770,7 +770,7 @@ static constexpr PackedMap map{
 
 ////////////////////////////////////////////////////////////////
 
-static constexpr const PackedMap* cooked_maps[] = {
+static constexpr const Demo::PackedMap* cooked_maps[] = {
 	#define PP_ADD_MAP_ENTRY(name,...) &name::map,
 	DEMO_MAPS(PP_ADD_MAP_ENTRY)
 	#undef PP_ADD_MAP_ENTRY
