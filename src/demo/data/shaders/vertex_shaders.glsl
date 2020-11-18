@@ -100,6 +100,7 @@ void gwdclg1a() { FS(); }
 void gwdclg1bd() { FS(); }
 void gsltrfc() { FS(); }
 void gmtlbg6() { FS(); }
+void gmtlbg6brk() { FS(); }
 void glrgbk3b() { FS(); }
 void glrgbk3bow() { FS(); }
 void glrgbk3bow_m() { Generic(); }

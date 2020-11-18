@@ -79,6 +79,7 @@
 	x(gwdclg1bd,			FSVertexBits)\
 	x(gsltrfc,				FSVertexBits)\
 	x(gmtlbg6,				FSVertexBits)\
+	x(gmtlbg6brk,			FSVertexBits)\
 	x(glrgbk3b,				FSVertexBits)\
 	x(glrgbk3bow,			FSVertexBits)\
 	x(glrgbk3bow_m,			MapVertexBits)\
@@ -219,6 +220,7 @@
 	x(gwdclg1bd,		Texture::gwdclg1a,	Shader::gwdclg1bd,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gsltrfc,			Texture::White,		Shader::gsltrfc,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gmtlbg6,			Texture::White,		Shader::gmtlbg6,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gmtlbg6brk,		Texture::gmtlbg6,	Shader::gmtlbg6brk,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* Note: original gothic_floor/largerblock3b_ow texture was 256x256, with just a section of the source*/\
 	/* Note: original gothic_block/largerblock3blood texture was 256x256, with just a section of the source*/\
 	x(glrgbk3b,			Texture::White,		Shader::glrgbk3b,		512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -297,6 +299,7 @@
 	x("sfx/launchpad_diamond",					lpdmnd_m,		lpdmnd,			Solid,		Opaque|NeedsUV,			(0))\
 	x("base_wall/main_q3abanner",				q3bnr_m,		q3bnr,			Solid,		Opaque|NeedsUV,			(20,2,0,0))\
 	x("gothic_floor/metalbridge06",				Lmapped,		gmtlbg6,		Solid,		Opaque,					(0))\
+	x("gothic_floor/metalbridge06broke",		Lmapped,		gmtlbg6brk,		Solid,		Opaque,					(0))\
 	x("gothic_floor/largerblock3b",				Lmapped,		glrgbk3b,		Solid,		Opaque,					(0))\
 	x("gothic_floor/largerblock3b_ow",			glrgbk3bow_m,	glrgbk3bow,		Solid,		Opaque,					(0))\
 	x("gothic_block/largerblock3blood",			glrgbk3bbld_m,	glrgbk3bbld,	Solid,		Opaque,					(0))\

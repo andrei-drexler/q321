@@ -1142,6 +1142,25 @@ TEX(gmtlbg6) {
 	return c;
 }
 
+// gothic_floor/metalbridge06broke
+TEX(gmtlbg6brk) {
+	vec3 c = T0(uv).xyz; // base texture
+	uv = fract(uv * 2. + .5); // hack: repeat 2x + offset
+	float
+		b = FBMT(uv, vec2(7), .7, 2., 4), // base FBM
+		d = circ(uv - vec2(.7, .5), .13); // big right disk
+	d = min(d, circ(uv - vec2(.44, .66), .06)); // add smaller center disk
+	d = min(d, circ(uv - vec2(.3, .44), .05)); // add smaller left disk
+	d += .1 * (b - .5); // distortion
+	c += b * b * tri(.0, .015, d); // bright edges
+	c *= 1.
+		- b * tri(.02, .01, d) // outer edge shadow
+		- b * tri(-.04, .03, d) * .5 // inner edge shadow
+		- b * ls(.0, .02, -d) // interior shadow
+	;
+	return c;
+}
+
 vec3 gblks17f2_layer(vec3 c, vec3 k, vec2 uv, int w, int h) {
 	float b = FBMT(uv, vec2(w, h), .5, 2., 2);
 	c *= 1. - .15 * sqr(ls(.15, .1, abs(b - .5)));
