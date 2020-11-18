@@ -34,8 +34,13 @@ namespace Demo {
 	}
 
 	////////////////////////////////////////////////////////////////
-	
-	bool SlideMove(Player& player, float dt) {
+
+	enum class MoveResult {
+		Ok,
+		Blocked,
+	};
+
+	MoveResult SlideMove(Player& player, float dt) {
 		// apply gravity if airborne or on a very steep slope
 		bool gravity = !player.ground || player.ground->z < 0.5f;
 
@@ -94,7 +99,7 @@ namespace Demo {
 			if (num_planes >= MaxClipPlanes) {
 				// this shouldn't really happen
 				MemSet(&player.velocity);
-				return true;
+				return MoveResult::Blocked;
 			}
 
 			// if this is the same plane we hit before, nudge velocity
@@ -114,7 +119,7 @@ namespace Demo {
 			if (num_planes == MaxClipPlanes) {
 				// this shouldn't really happen
 				MemSet(&player.velocity);
-				return true;
+				return MoveResult::Blocked;
 			}
 
 			//
@@ -172,7 +177,7 @@ namespace Demo {
 
 						// stop dead at a triple plane interaction
 						MemSet(&player.velocity);
-						return true;
+						return MoveResult::Blocked;
 					}
 				}
 
@@ -186,7 +191,7 @@ namespace Demo {
 		if (gravity)
 			player.velocity = end_velocity;
 
-		return bump != 0;
+		return bump != 0 ? MoveResult::Blocked : MoveResult::Ok;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -199,7 +204,7 @@ namespace Demo {
 		vec3 pos = player.position;
 		vec3 vel = player.velocity;
 
-		if (!SlideMove(player, dt))
+		if (SlideMove(player, dt) == MoveResult::Ok)
 			return;
 
 		const float StepSize = 18.f;
@@ -213,11 +218,12 @@ namespace Demo {
 		trace.box_half_size = Player::CollisionBounds;
 		trace.type = Map::TraceInfo::Type::Collision;
 		Map::TraceRay(trace);
-		
+
 		// never step up when you still have up velocity
 		if (player.velocity.z > 0.f && (trace.fraction == 1.f || trace.hit_normal.z < 0.71875f)) // 0.7
 			return;
 
+		// test the player position if they were a stepheight higher
 		trace.delta.z = StepSize;
 		Map::TraceRay(trace);
 		if (trace.fraction < 1.f)
@@ -227,6 +233,7 @@ namespace Demo {
 		player.velocity = vel;
 		SlideMove(player, dt);
 
+		// push down the final amount
 		trace.start = player.position;
 		trace.delta.z = -StepSize;
 		Map::TraceRay(trace);
