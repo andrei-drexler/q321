@@ -1473,6 +1473,14 @@ TEX(gkblkgmtrn) {
 	return c;
 }
 
+// gothic_block/demon_block15fx
+TEX(gdmnblk15fx) {
+	vec3 c = T0(uv).xyz;
+	uv -= vec2(.5, .6);
+	c = gkarnarcfnl_inner_gear(c, uv * 1.25, .02);
+	return c;
+}
+
 // (384 x 384) Combination of:
 // - gothic_door/skull_door_a ( 64 x 256 - bottom right)
 // - gothic_door/skull_door_b (256 x 256 - bottom mid)

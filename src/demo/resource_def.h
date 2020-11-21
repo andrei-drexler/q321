@@ -72,6 +72,7 @@
 	x(gkarnarcfnlmd,		FSVertexBits)\
 	x(gkarnarcfnlbt,		FSVertexBits)\
 	x(gkblkgmtrn,			FSVertexBits)\
+	x(gdmnblk15fx,			FSVertexBits)\
 	x(giron01e,				FSVertexBits)\
 	x(giron01nt3,			FSVertexBits)\
 	x(gxstrtop4,			FSVertexBits)\
@@ -209,6 +210,7 @@
 	x(gklblki,			Texture::gblks15,	Shader::gklblki,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gklblki4,			Texture::gblks15,	Shader::gklblki4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkblkgmtrn,		Texture::gblks15,	Shader::gkblkgmtrn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gdmnblk15fx,		Texture::gblks15,	Shader::gdmnblk15fx,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(scmpblk17,		Texture::gblks15,	Shader::scmpblk17,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr_a,			Texture::gblks15,	Shader::gskdr_a,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr_b,			Texture::gblks15,	Shader::gskdr_b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -318,6 +320,7 @@
 	x("gothic_door/km_arena1archfinald_mid",	Lmapped,		gkarnarcfnlmd,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_door/km_arena1archfinald_bot",	Lmapped,		gkarnarcfnlbt,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_block/killblockgeomtrn",			Lmapped,		gkblkgmtrn,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_block/demon_block15fx",			Lmapped,		gdmnblk15fx,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/iron01_e",					Lmapped,		giron01e,		Solid,		Opaque,					(0))\
 	x("gothic_wall/iron01_ntech3",				Lmapped,		giron01nt3,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_floor/xstairtop4",				Lmapped,		gxstrtop4,		Solid,		Opaque|NeedsUV,			(0))\
@@ -384,8 +387,7 @@
 	x("gothic_block/blocks11b",						"gothic_block/blocks15")\
 	x("gothic_block/blocks17",						"gothic_block/blocks15")\
 	x("gothic_block/blocks1",						"gothic_block/blocks15")\
-	x("gothic_block/demon_block15fx",				"gothic_block/blocks15")\
-	x("gothic_trim/metaldemonkillblock",			"gothic_block/blocks15")\
+	x("gothic_trim/metaldemonkillblock",			"gothic_block/demon_block15fx")\
 	x("gothic_door/skullarch_a",					"gothic_door/km_arena1archfinalc_top")\
 	x("gothic_door/skullarch_b",					"gothic_door/km_arena1archfinald_mid")\
 	x("gothic_door/skullarch_c",					"gothic_door/km_arena1archfinald_bot")\
