@@ -1225,3 +1225,4 @@
 62883,asymmetric metalbridge06broke brush
 62891,tweaked metalbridge06broke
 62891,changed slidemove return type to enum
+62904,keep demon_block15fx/metaldemonkillblock & co brush uvs
