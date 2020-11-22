@@ -1227,3 +1227,4 @@
 62891,changed slidemove return type to enum
 62904,keep demon_block15fx/metaldemonkillblock & co brush uvs
 62967,added demon_block15fx/metaldemonkillblock stub
+63200,slightly more detailed demon_block15fx/metaldemonkillblock

@@ -39,6 +39,24 @@
 
 ////////////////////////////////////////////////////////////////
 
+// Computes a SDF and a top light/shadow value
+//
+// Arguments:
+// - uv = 2d point where function is to be evaluated
+// - s  = shadow size
+// - d  = name of float distance output variable
+// - l  = name of float light output variable
+
+#define EVAL_TOP_LIGHT(uv,s,d,l,code)	\
+	{									\
+		vec2 p = uv;					\
+		d = code;						\
+		p.y -= s;						\
+		l = (d - code) / s;				\
+	}
+
+////////////////////////////////////////////////////////////////
+
 // Voronoi diagram
 // xy = offset; z = edge distance
 #define VORO_FUNC(name, norm)										\
@@ -1250,9 +1268,14 @@ vec3 gkarnarcfnl_layer(vec3 c, vec2 p, float s, float m) {
 	return c;
 }
 
+vec3 gothic_metal(float b) {
+	return RGB(133, 100, 100. - 12. * b) * (.8 + .8 * b * b);
+}
+
 // Used by
 // - gothic_door/km_arena1archfinald_mid
 // - gothic_block/killblockgeomtrn
+// - gothic_block/demon_block15fx
 vec3 gkarnarcfnl_inner_gear(vec3 c, vec2 uv, float shadow_bias) {
 	float
 		b = FBMT(uv, vec2(4, 9), .9, 3., 4), // base FBM
@@ -1263,7 +1286,7 @@ vec3 gkarnarcfnl_inner_gear(vec3 c, vec2 uv, float shadow_bias) {
 		s, // segment
 		k, i, v, r, z; // ugh...
 	vec3
-		mt = mix(RGB(133, 100, 88), RGB(133, 100, 100), b) * t; // metal color
+		mt = gothic_metal(b); // metal color
 	vec2
 		p, q;
 
@@ -1325,7 +1348,7 @@ vec3 gkarnarcfnl(vec2 uv) {
 		s, // segment
 		k, i, v, r, z; // ugh...
 	vec3
-		mt = mix(RGB(133, 100, 88), RGB(133, 100, 100), b) * t, // metal color
+		mt = gothic_metal(b), // metal color
 		c = vec3(.1 * t); // base color
 	vec2
 		p, q;
@@ -1473,11 +1496,71 @@ TEX(gkblkgmtrn) {
 	return c;
 }
 
+// Simple skull shape
+// x = light intensity
+// y = SDF
+vec2 skull(vec2 p) {
+	p.x = abs(p.x); // symmetry
+	vec2 q = p, v;
+	q.y -= .5;
+	float
+		d = circ(q, .35),
+		e, // secondary sdf
+		c; // light intensity
+	v = q / .35;
+	q.y += .25;
+	q.x -= .15; // eye offset
+	d = min(d, box(q, vec2(.09, .05)) - .1); // cheekbones
+	e = elips(q, vec2(.15, .1)) / 5e1; // eye socket sdf
+	c = .1 + dot(vec2(v.y, sqrt(sat(1. - lsq(v)))), vec2(.3)); // base intensity
+	q.y += .2;
+	q.x = p.x; // recenter
+	c = max(c, sat(.4 - length(q))); // brigten up bottom
+	c +=
+		.15 * tri(.0, .1, e) // highlight eye socket edge
+		- .1 * msk(e + .12, .15) // darken eye socket interior
+		;
+	d = min(d, box(q, vec2(.15 - ls(-.15, .15, q.y) * .07, .03)) - .09); // nose
+	c *= 1. - ls(.05, .25, q.x) * ls(.2, .1, abs(q.y + .12)); // maxilla gradient
+	q.y -= .06;
+	c -= .5 * msk(elips(q, vec2(.05 - ls(-.1, .1, q.y) * .03, .06)) / 1e3 + .03, .05); // darken nose
+	//q.y += .15;
+	//d = min(d, box(q, vec2(.1 - sqr(ls(.1, -.1, q.y)) * .03, .05)) - .05);
+	return vec2(sat(c), d);
+}
+
 // gothic_block/demon_block15fx
 TEX(gdmnblk15fx) {
 	vec3 c = T0(uv).xyz;
-	uv -= vec2(.5, .6);
-	c = gkarnarcfnl_inner_gear(c, uv * 1.25, .02);
+
+	uv -= vec2(.5, .66);
+	float
+		b = FBMT(uv, vec2(5), .5, 3., 4),
+		t = .8 + .8 * b * b,
+		k = sqr(1. - tri(-.35, .2, uv.y)),
+		d, l;
+
+	EVAL_TOP_LIGHT(uv, .02, d, l, min(seg(p, vec2(0), vec2(0, -.44), .12), circ(p, .25)));
+	c = mix(c, mix(RGB(188, 133, 66), RGB(133, 127, 119), ls(.6, .2, -uv.y)) * t, msk(d, .01)); // base metal color
+	c *= 1.
+		+ .6 * (l * .6 - .4) * sat(1.5 * tri(.2 + .1 * k, -.1 * k, -.2 * k - .03, d * 10.)) // outer bevel
+		+ 1.5 * tri(.0, .08, uv.x) * tri(.02, .01, -d) // lower edge highlight
+	;
+
+	vec2
+		p = uv * 8. + vec2(0, 2.5),
+		q = skull(p);
+	l = (skull(p + vec2(0, .2)).y - q.y) / .2;
+	c *= 1.
+		- (l * .6 + .2) * tri(.05, .1, q.y)
+		- (.5 - 2. * q.x) * msk(q.y, .05)
+	;
+
+	c = mix(c, gkarnarcfnl_inner_gear(c, uv * 1.4, .05), msk(.15 - q.y, .05));
+	p.x = abs(uv.x);
+	p.y = repeat(uv.y + .33, .06, -1., 1.);
+	c = add_rivet(c, p - vec2(.095, .015), .011, .2, .4); // knobs
+
 	return c;
 }
 
@@ -1621,39 +1704,6 @@ TEX(gklblki) {
 	return c;
 }
 
-// Simple skull shape
-// x = light intensity
-// y = alpha
-vec2 skull(vec2 p) {
-	p.x = abs(p.x); // symmetry
-	vec2 q = p, v;
-	q.y -= .5;
-	float
-		d = circ(q, .35),
-		e, // secondary sdf
-		c; // light intensity
-	v = q / .35;
-	q.y += .25;
-	q.x -= .15; // eye offset
-	d = min(d, box(q, vec2(.09, .05)) - .1); // cheekbones
-	e = elips(q, vec2(.15, .1)) / 5e1; // eye socket sdf
-	c = .1 + dot(vec2(v.y, sqrt(sat(1. - lsq(v)))), vec2(.3, .3)); // base intensity
-	q.y += .2;
-	q.x = p.x; // recenter
-	c = max(c, sat(.4 - length(q))); // brigten up bottom
-	c +=
-		.15 * tri(.0, .1, e) // highlight eye socket edge
-		- .1 * msk(e + .12, .15) // darken eye socket interior
-		;
-	d = min(d, box(q, vec2(.15 - ls(-.15, .15, q.y) * .07, .03)) - .09); // nose
-	c *= 1. - ls(.05, .25, q.x) * ls(.2, .1, abs(q.y + .12)); // maxilla gradient
-	q.y -= .06;
-	c -= .5 * msk(elips(q, vec2(.05 - ls(-.1, .1, q.y) * .03, .06)) / 1e3 + .03, .05); // darken nose
-	//q.y += .15;
-	//d = min(d, box(q, vec2(.1 - sqr(ls(.1, -.1, q.y)) * .03, .05)) - .05);
-	return vec2(sat(c), msk(d, .02));
-}
-
 // gothic_block/killblock_i4
 TEX(gklblki4) {
 	float
@@ -1664,7 +1714,7 @@ TEX(gklblki4) {
 	p.x = mod(p.x, .2); // repeat x5 horizontally
 	p -= .1;
 	s = skull(p * 5.);
-	return mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, s.y);
+	return mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, msk(s.y, .02));
 }
 
 // gothic_floor/largerblock3b 
