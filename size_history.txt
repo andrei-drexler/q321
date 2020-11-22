@@ -1229,3 +1229,4 @@
 62967,added demon_block15fx/metaldemonkillblock stub
 63200,slightly more detailed demon_block15fx/metaldemonkillblock
 63141,removed icon pixel data mem alloc
+63179,more demon_block15fx work

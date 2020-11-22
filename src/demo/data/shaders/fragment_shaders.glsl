@@ -1538,7 +1538,7 @@ TEX(gdmnblk15fx) {
 		b = FBMT(uv, vec2(5), .5, 3., 4),
 		t = .8 + .8 * b * b,
 		k = sqr(1. - tri(-.35, .2, uv.y)),
-		d, l;
+		r, d, l;
 
 	EVAL_TOP_LIGHT(uv, .02, d, l, min(seg(p, vec2(0), vec2(0, -.44), .12), circ(p, .25)));
 	c = mix(c, mix(RGB(188, 133, 66), RGB(133, 127, 119), ls(.6, .2, -uv.y)) * t, msk(d, .01)); // base metal color
@@ -1546,19 +1546,26 @@ TEX(gdmnblk15fx) {
 		+ .6 * (l * .6 - .4) * sat(1.5 * tri(.2 + .1 * k, -.1 * k, -.2 * k - .03, d * 10.)) // outer bevel
 		+ 1.5 * tri(.0, .08, uv.x) * tri(.02, .01, -d) // lower edge highlight
 	;
+	//c = mix(c, vec3(.27), tri(.0, .15, uv.x) * tri(.0, .01, d) * sat(-l)); // grey bottom edge reflection; too subtle?
 
+	/* skull */
 	vec2
 		p = uv * 8. + vec2(0, 2.5),
 		q = skull(p);
 	l = (skull(p + vec2(0, .2)).y - q.y) / .2;
 	c *= 1.
-		- (l * .6 + .2) * tri(.05, .1, q.y)
-		- (.5 - 2. * q.x) * msk(q.y, .05)
+		- (l * .6 + .2) * tri(.05, .1, q.y) // skull bevel
+		- (.5 - 2. * q.x) * msk(q.y, .05) // skull interior
 	;
 
+	/* crescent under skull */
+	EVAL_TOP_LIGHT(uv, .01, r, l, exclude(circ(p + vec2(0, .26), .09), circ(p, .255)));
+	c *= 1. - (l * .6 + .2) * tri(.0, .01, r) * msk(.1 - q.y, .1);
+
 	c = mix(c, gkarnarcfnl_inner_gear(c, uv * 1.4, .05), msk(.15 - q.y, .05));
+
 	p.x = abs(uv.x);
-	p.y = repeat(uv.y + .33, .06, -1., 1.);
+	p.y = repeat(uv.y + .37, .06, -1., 1.);
 	c = add_rivet(c, p - vec2(.095, .015), .011, .2, .4); // knobs
 
 	return c;
