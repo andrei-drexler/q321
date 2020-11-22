@@ -527,15 +527,14 @@ namespace Demo {
 
 	static constexpr auto IconDescriptor = Texture::Descriptors[Texture::icon];
 	static_assert(IconDescriptor.width == IconDescriptor.height, "Icon texture must be square");
+	static u32 g_icon_data[IconDescriptor.width * IconDescriptor.height];
 
 	FORCEINLINE void UpdateWindowIcon() {
-		u32* pixels = Sys::Alloc<u32>(IconDescriptor.width * IconDescriptor.height);
-		Gfx::ReadBack(Texture::icon, pixels);
-		Sys::SetWindowIcon(&Sys::g_window, pixels, IconDescriptor.width);
+		Gfx::ReadBack(Texture::icon, g_icon_data);
+		Sys::SetWindowIcon(&Sys::g_window, g_icon_data, IconDescriptor.width);
 #ifdef SAVE_ICON
-		Gfx::SaveTGA("icon.tga", pixels, IconDescriptor.width, IconDescriptor.height);
+		Gfx::SaveTGA("icon.tga", g_icon_data, IconDescriptor.width, IconDescriptor.height);
 #endif
-		Sys::Free(pixels);
 	}
 
 	////////////////////////////////////////////////////////////////
