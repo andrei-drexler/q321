@@ -57,34 +57,6 @@
 
 ////////////////////////////////////////////////////////////////
 
-// Voronoi diagram
-// xy = offset; z = edge distance
-#define VORO_FUNC(name, norm)										\
-	vec3 name(vec2 p, vec2 grid) {									\
-		p *= grid;													\
-		vec2 n = floor(p), f = p - n, mr, g, o, r;					\
-																	\
-		float md = 8., sd = md, d;									\
-		for (int i = 0; i < 9; ++i) {								\
-			g = vec2(i % 3 - 1, i / 3 - 1);							\
-			o = H2(mod(n + g, grid));								\
-			r = g + o - f;											\
-			d = norm;												\
-																	\
-			if (d < md) {											\
-				sd = md;											\
-				md = d;												\
-				mr = r;												\
-			} else if (d < sd) {									\
-				sd = d;												\
-			}														\
-		}															\
-																	\
-		return vec3(mr, sd - md);									\
-	}
-
-////////////////////////////////////////////////////////////////
-
 uniform sampler2D Texture0, Texture1;
 uniform vec4 Cam, Time, Extra, LightColor, Ambient, LightDir;
 
@@ -542,6 +514,30 @@ float FBMT_ridged(vec2 p, vec2 scale, float gain, float lac, int lyrs) {
 	return acc / tw;
 }
 
+// Env mapping /////////////////////////////////////////////////
+
+// s = detail scale (integral values only)
+// 45.0 is very shiny, 9.0 less so
+float env(vec3 p, float s) {
+	p = normalize(p);
+	vec3 a = fract(degrees(atan(p, p.yzx)) / 360.);
+	return NT(a.x * s, s) * ls(.9, .0, abs(p.z)) + NT(a.y * s, s) * ls(.7, .0, abs(p.x));
+}
+
+float env(vec3 p) {
+	return env(p, 45.);
+}
+
+////////////////////////////////////////////////////////////////
+
+vec3 Light() {
+	vec3 d = Cam.xyz - Pos;
+	float
+		b = FBMT(d.xy/256.*rot(Cam.w), vec2(3), .7, 3., 4),
+		l = 1. - ls(14., -6., length(d.xy) - b * 8.) * ls(128., 48., d.z) * step(.1, Nor.z);
+	return texture(Texture1, LUV).xyz * 2. * l;
+}
+
 ////////////////////////////////////////////////////////////////
 
 vec2 seg(vec2 p, vec2 a, vec2 b) {
@@ -634,6 +630,26 @@ vec3 add_rivet(vec3 c, vec2 uv, float s) {
 
 ////////////////////////////////////////////////////////////////
 
+float star(vec2 p, vec2 c, float s) {
+	p -= c;
+	float a = ls(.3, .5, abs(fract(nang(p /= s) * 8. + H(c)) - .5));
+	return ls(.9, .6, pow(lsq(p), .0625) - a * a * .006);
+}
+
+// uv in [-0.5..0.5]
+float pentagram(vec2 uv, float s) {
+	float d = 1e6, i = 0.;
+	for (/**/; i < 5.; ++i) {
+		vec2 p = vec2(0, -s) * rot(i * 72.);
+		d = min(d, length(uv - seg(uv, p, p * rot(144.))));
+	}
+	return d;
+}
+
+////////////////////////////////////////////////////////////////
+#pragma section patterns
+////////////////////////////////////////////////////////////////
+
 // Quake 3 logo SDF
 // t = 0.0 : app icon (chunky)
 // t = 1.0 : background logo (slim)
@@ -720,53 +736,40 @@ vec3 pattern(vec2 p, float sc, float bv) {
 	return r;
 }
 
+////////////////////////////////////////////////////////////////
+
+// Voronoi diagram
+// xy = offset; z = edge distance
+#define VORO_FUNC(name, norm)										\
+	vec3 name(vec2 p, vec2 grid) {									\
+		p *= grid;													\
+		vec2 n = floor(p), f = p - n, mr, g, o, r;					\
+																	\
+		float md = 8., sd = md, d;									\
+		for (int i = 0; i < 9; ++i) {								\
+			g = vec2(i % 3 - 1, i / 3 - 1);							\
+			o = H2(mod(n + g, grid));								\
+			r = g + o - f;											\
+			d = norm;												\
+																	\
+			if (d < md) {											\
+				sd = md;											\
+				md = d;												\
+				mr = r;												\
+			} else if (d < sd) {									\
+				sd = d;												\
+			}														\
+		}															\
+																	\
+		return vec3(mr, sd - md);									\
+	}
+
 VORO_FUNC(voro1, sum(abs(r))) // L1 (Manhattan) norm
 VORO_FUNC(voro, length(r)) // L2 norm
 
-// s = detail scale (integral values only)
-// 45.0 is very shiny, 9.0 less so
-float env(vec3 p, float s) {
-	p = normalize(p);
-	vec3 a = fract(degrees(atan(p, p.yzx)) / 360.);
-	return NT(a.x * s, s) * ls(.9, .0, abs(p.z)) + NT(a.y * s, s) * ls(.7, .0, abs(p.x));
-}
-
-float env(vec3 p) {
-	return env(p, 45);
-}
-
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
-
-vec2 uvmap(vec3 p, int ax) {
-	return (ax==0) ? p.yz : (ax==1) ? p.xz : p.xy;
-}
-
-int dom(vec3 n) {
-	n = abs(n) + vec3(.01, .02, .03);
-	float m = mx(n);
-	return (m==n.x) ? 0 : (m==n.y) ? 1 : 2;
-}
-
-// https://www.shadertoy.com/view/MsS3Wc
-vec3 hsv(vec3 c) {
-	vec3 rgb = sat(abs(mod(c.x * 6. + vec3(0, 4, 2), 6.) - 3.) - 1.);
-	rgb *= rgb * (3. - 2. * rgb); // cubic smoothing
-	return c.z * mix(vec3(1.), rgb, c.y);
-}
-
-vec3 Light() {
-	vec3 d = Cam.xyz - Pos;
-	float
-		b = FBMT(d.xy/256.*rot(Cam.w), vec2(3), .7, 3., 4),
-		l = 1. - ls(14., -6., length(d.xy) - b * 8.) * ls(128., 48., d.z) * step(.1, Nor.z);
-	return texture(Texture1, LUV).xyz * 2. * l;
-}
-
-vec3 ModelLight() {
-	return mix(Ambient.xyz, LightColor.xyz, sat(dot(LightDir.xyz, WNor)));
-}
 
 // base_wall/c_met5_2
 TEX(cmet52) {
@@ -781,6 +784,10 @@ TEX(ptrshn) {
 	vec3 c = mix(RGB(49, 45, 43), RGB(81, 75, 78), b * b);
 	return c;
 }
+
+////////////////////////////////////////////////////////////////
+#pragma section diamond2c
+////////////////////////////////////////////////////////////////
 
 // base_floor/diamond2c
 TEX(dmnd2c) {
@@ -821,16 +828,6 @@ void dmnd2cow_m() {
 	b *= 1. + .5 * tri(.5, .05, b);
 	vec4 c = T0(UV);
 	FCol = vec4(mix(RGB(66, 111, 155) * (.8 + 2. * b * b), c.xyz * Light(), c.w), 1);
-}
-
-// uv in [-0.5..0.5]
-float pentagram(vec2 uv, float s) {
-	float d = 1e6, i = 0.;
-	for (/**/; i < 5.; ++i) {
-		vec2 p = vec2(0, -s) * rot(i * 72.);
-		d = min(d, length(uv - seg(uv, p, p * rot(144.))));
-	}
-	return d;
 }
 
 // sfx/diamond2cjumppad (texture)
@@ -916,10 +913,14 @@ void lpdmnd_m() {
 		t = fract(-Time.x),
 		r = length(uv - vec2(0, .4)),
 		l = t * pow(max(0., 1. - r), 4.) * c.w;
-   	if (t > .75)
+	if (t > .75)
 		l += ls(.03, .01, abs(fract(uv.y + uv.x * .5 + t * 2.) - .45)) * ls(.1, .08, uv.x);
 	FCol = vec4(c.xyz * Light() + RGB(180, 150, 5) * l, 1);
 }
+
+////////////////////////////////////////////////////////////////
+#pragma section metal : patterns
+////////////////////////////////////////////////////////////////
 
 // base_wall/metalfloor_wall_10
 TEX(mtlfw10) {
@@ -1202,6 +1203,10 @@ TEX(gblks17f2) {
 	return c;
 }
 
+////////////////////////////////////////////////////////////////
+#pragma section arena : patterns
+////////////////////////////////////////////////////////////////
+
 vec3 gkarnclma2r_layer(vec3 c, vec3 k, vec2 uv, int w, int h) {
 	float b = FBMT(uv, vec2(w, h), .5, 2., 1);
 	c *= .9 - .3 * sqr(ls(.15, .1, abs(b - .5)));
@@ -1462,6 +1467,10 @@ TEX(gkarnarcfnlbt) {
 	uv.y = uv.y * 4. / 9.;
 	return gkarnarcfnl(uv);
 }
+
+////////////////////////////////////////////////////////////////
+#pragma section blocks : arena
+////////////////////////////////////////////////////////////////
 
 // gothic_block/blocks15
 TEX(gblks15) {
@@ -1724,6 +1733,10 @@ TEX(gklblki4) {
 	return mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, msk(s.y, .02));
 }
 
+////////////////////////////////////////////////////////////////
+#pragma section largerblock
+////////////////////////////////////////////////////////////////
+
 // gothic_floor/largerblock3b 
 TEX(glrgbk3b) {
 	uv.y -= 1./32.; // hack to avoid storing UV offsets for this texture in the map...
@@ -1813,6 +1826,10 @@ void glrgbk3bbld_m() {
 	c.xyz = mix(b * RGB(99, 9, 5) + ls(.78, 1.5, b), c.xyz, c.w);
 	FCol = vec4((c.xyz + (1. - c.w) * env(Ref) * .2) * Light() , 1);
 }
+
+////////////////////////////////////////////////////////////////
+#pragma section center2trn
+////////////////////////////////////////////////////////////////
 
 // gothic_floor/center2trn (texture)
 TEXA(gcntr2trn) {
@@ -1921,6 +1938,10 @@ TEXA(gcntr2trn_m) {
 	c.xyz = mix(c.xyz, c2.xyz, c2.w) * Light();
 	return c;
 }
+
+////////////////////////////////////////////////////////////////
+#pragma section computer_blocks17 : patterns
+////////////////////////////////////////////////////////////////
 
 float scmpblk17_sdf(vec2 p) {
 	p = pmod(p, 8.);
@@ -2045,24 +2066,9 @@ void scmpblk17_m() {
 	FCol = vec4(c + msk(d, .02) * fract(-t) * vec3(.5, .05, .05), 1);
 }
 
-// gothic_trim/pitted_rust3
-TEX(gtprst3) {
-	float
-		b = FBMT(uv, vec2(13), .9, 3., 4),
-		n = FBMT(uv, vec2(7), .9, 3., 4);
-	vec3
-		c = mix(RGB(60, 50, 50), RGB(87, 47, 37), sqr(ls(.7, .25, n))) * (.7 + .8 * b * b),
-		g;
-
-	uv = wavy(uv, 31., .003);
-	EVAL_GRAD(
-		g, uv,
-		sqrt(ls(.0, .9, NT(p[i], vec2(93))))
-	);
-
-	c *= 1. - (g.y + .4) * sqr(b * g.z) * g.z;
-	return c;
-}
+////////////////////////////////////////////////////////////////
+#pragma section organic : patterns
+////////////////////////////////////////////////////////////////
 
 // gothic_trim/skullsvertgray02b
 TEX(gsklvtg02b) {
@@ -2202,6 +2208,25 @@ TEX(gskull4) {
 	n = ridged(FBMT(wavy(uv, 13., .01), vec2(23, 43), .5, 2., 3)); // stretched, wavy noise
 	c *= 1. + (1. - m) * tri(.4, .4, n); // light variation between skulls (simulating bones)
 
+	return c;
+}
+
+// gothic_trim/pitted_rust3
+TEX(gtprst3) {
+	float
+		b = FBMT(uv, vec2(13), .9, 3., 4),
+		n = FBMT(uv, vec2(7), .9, 3., 4);
+	vec3
+		c = mix(RGB(60, 50, 50), RGB(87, 47, 37), sqr(ls(.7, .25, n))) * (.7 + .8 * b * b),
+		g;
+
+	uv = wavy(uv, 31., .003);
+	EVAL_GRAD(
+		g, uv,
+		sqrt(ls(.0, .9, NT(p[i], vec2(93))))
+	);
+
+	c *= 1. - (g.y + .4) * sqr(b * g.z) * g.z;
 	return c;
 }
 
@@ -2394,6 +2419,10 @@ TEX(brdr11b) {
 	return c * l;
 }
 
+////////////////////////////////////////////////////////////////
+#pragma section lights
+////////////////////////////////////////////////////////////////
+
 // base_light/baslt4_1_4k
 TEXA(blt414k) {
 	float b = FBMT(uv, vec2(1, 5), .4, 3., 4); // base FBM
@@ -2454,69 +2483,9 @@ TEXA(gpntgmlt1k) {
 	return vec4(c + 1.*vec3(1, 1, .3) * a, a);
 }
 
-// Window icon
-TEXA(icon) {
-	uv -= vec2(.48, .5);
-	float
-		d = icon_sdf(uv, 0.),
-		b = length(uv) - .47;
-	vec3 c = 1. - vec3(.5, 1, 1) * msk(max(.007 - d, b + .04));
-	return vec4(c, 1) * msk(b);
-}
-
-// sfx/logo512
-TEX(bglogo) {
-	uv -= .5;
-
-	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
-	uv /= r / mx(r); // correct aspect ratio
-	uv *= .8; // scale up a bit
-	uv.y -= .03; // move up a bit
-
-	float
-		x = abs(uv.x),
-		b = FBMT(uv, vec2(31, 5), .7, 2., 3), // base FBM - mostly vertical noise
-		t = .8 + .8 * b * b, // intensity variation (remapped FBM)
-		d = icon_sdf(uv, 1.), // logo SDF
-		e = icon_sdf(uv + vec2(0, .002), 1.), // offset logo SDF, for lighting
-		l = (e - d) * 5e2 + .5 // lighting
-		;
-	vec3 c = vec3(.3 * t, 0, 0) * msk(d, .004); // base color
-	c *= 1.
-		- sqr(ls(.0, .3, x)) // horizontal gradient
-		- .5 * ls(.1, .3, abs(uv.y - .1)) // vertical gradient
-		;
-	c +=
-		+ t * .2 * tri(.0, .01 - .01 * x, d) * tri(.1, .2, uv.y) * ls(.3, .2, x) * l // top light
-		+ t * .5 * ls(.004, .0, d) * ls(.07, .1, uv.y) * tri(.23, .1, x) * vec3(.9, .9, 1) // back light
-		+ t * .4 * tri(.005, .005, d) * ls(.2, -.1, uv.y) * ls(.3, .2, x) * sat(-l) // bottom light
-		;
-
-	return c;
-}
-
-// menu/art/addbotframe.tga
-void uiframe() {
-	vec2 uv = UV - .5;
-	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
-	uv /= r / mx(r); // correct aspect ratio
-	uv /= Time.yz;
-
-	float
-		n = NT(uv, vec2(7)) * .8 + .6,
-		d = circ(uv, .48),
-		m = msk(d, .005),
-		i = msk(elips(uv, vec2(.42, .47)), .03);
-	vec3 c = RGB(144, 88, 66) * n;
-	m *= 1. - i * .5;
-	c *= 1. - i;
-	c *= 1.
-		- 2. * sqrt(tri(.0, .45, uv.y))
-		+ 4. * (uv.y + .5)
-		+ .5 * tri(.0, .01, d) * uv.x
-		;
-	FCol = vec4(c * m, m);
-}
+////////////////////////////////////////////////////////////////
+#pragma section banner : patterns
+////////////////////////////////////////////////////////////////
 
 float banner_fold(vec2 uv, float s, float i, float amp) {
 	i = (uv.y - sqr(abs(uv.x - .5)) * amp) * s - i;
@@ -2540,7 +2509,7 @@ TEXA(bwprtbnr) {
 		;
 	// TODO: eliminate loop
 	for (float f = 6.; f < 9.; ++f)
-	   	c *= 1. + tri(.8, .5, uv.y) * tri(.2, .3, x) * banner_fold(uv, 12., f, 1.); // top fold
+		c *= 1. + tri(.8, .5, uv.y) * tri(.2, .3, x) * banner_fold(uv, 12., f, 1.); // top fold
 	d = uv.y - .81 - sqr(sat(x * 4.)) * .09;
 	c = mix(c, RGB(82, 66, 60) * t, ls(.0, .01, d));
 	c *= 1.
@@ -2561,6 +2530,247 @@ TEXA(bwprtbnr_m) {
 	return c;
 }
 
+// QUAKE III sdf
+float quakeiii_sdf(vec2 uv) {
+	uv *= vec2(256, 64);
+	// Q
+	float d = circ(uv - vec2(81, 30), 11.);
+	d = max(d, uv.x - 80.);
+	d = max(d, -circ(uv - vec2(84, 26), 9.));
+	d = min(d, box(uv - vec2(73, 37), vec2(4, 9)) - 4.);
+	d = max(d, -box(uv - vec2(73, 37), vec2(0, 7)) + 1.);
+	// U
+	d = min(d, box(uv - vec2(91.5, 47), vec2(4, 19)) - 4.);
+	d = max(d, -box(uv - vec2(91.5, 47), vec2(0, 17.5)) + 1.);
+	// A
+	d = min(d, box1(mirr(uv, 111.) - vec2(105. + ls(23., 50., uv.y) * 3., 43), vec2(3.5, 19)));
+	d = min(d, box1(uv - vec2(111, 32), vec2(6, 3)));
+	// K
+	d = min(d, box1(uv - vec2(126, 37), vec2(3, 13)));
+	d = min(d, box1(uv - vec2(125.5 + ls(23., 50., uv.y) * 10., 44), vec2(3.5, 6)));
+	d = min(d, box1(uv - vec2(136.5 - ls(23., 50., uv.y) * 9., 32), vec2(3.5, 8)));
+	// E
+	d = min(d, box1(uv - vec2(148.5, 37), vec2(7, 13)));
+	d = max(d, -box1(uv - vec2(155, 33), vec2(6, 3)));
+	d = max(d, -box1(uv - vec2(155, 43), vec2(6, 2)));
+	// III
+	d = min(d, box1(uv - vec2(168, 37), vec2(3.5, 13)));
+	d = min(d, box1(uv - vec2(178, 37), vec2(3.5, 13)));
+	d = min(d, box1(uv - vec2(188, 37), vec2(3.5, 13)));
+
+	return max(d, uv.y - 50.);
+}
+
+// ARENA sdf
+// s = scale
+float arena_sdf(vec2 uv, float s) {
+	uv *= vec2(256. * s, 64);
+	float d = 1e6;
+	// R
+	uv.x -= s * 106.;
+	d = min(d, max(-uv.x - 1., onion(box(uv - vec2(-.5, 19.25), vec2(2, .5)) - .75, .5)));
+	d = min(d, box1(uv - vec2(1. + (18. - uv.y) * .5, 16.5), vec2(.5, 1.5)));
+	d = min(d, box1(uv - vec2(-1, 18), vec2(.5, 3)));
+	// E
+	uv.x -= s * 24.;
+	d = min(d, box1(uv - vec2(0, 18), vec2(2, 3)));
+	d = max(d, -box1(uv - vec2(1.5, 19.5), vec2(2.5, 1)));
+	d = max(d, -box1(uv - vec2(1.5, 17), vec2(2.5, 1)));
+	// N
+	uv.x -= s * 24.;
+	d = min(d, box1(uv - vec2(-2, 18), vec2(.5, 3)));
+	d = min(d, box1(uv - vec2(2, 18), vec2(.5, 3)));
+	d = min(d, box1(uv - vec2((18. - uv.y) * .5, 18), vec2(.7, 3)));
+	// A
+	uv.x = mirr(uv.x + s * 68., s * 46.);
+	d = min(d, box1(mirr(uv, 0.) - vec2((uv.y - 21.) * .33, 18), vec2(.5, 3)));
+	d = min(d, box1(uv - vec2(0, 16.5), vec2(1, .25)));
+	return d;
+}
+
+// base_wall/main_q3abanner
+TEXA(q3bnr) {
+	return vec4(msk(min(quakeiii_sdf(uv), arena_sdf(uv, 1.)), .8), 0, 0, H(uv * 511.));
+}
+
+// base_wall/main_q3abanner (map shader)
+void q3bnr_m() {
+	vec3 c = T0(UV * 2.).xyz * step(.5, fract(Time.x * .5));
+	c = mix(c * Light(), vec3(.5, 0, 0), tri(fract(Time.x * 2.), 1./64., fract(UV.y)));
+	FCol = vec4(c + env(Ref) * .25 + T0(UV + H(Time.xx)).w * .1, 1);
+}
+
+// main menu banner (texture)
+TEX(menubnr) {
+	float d = quakeiii_sdf(uv);
+	vec2 p = grad(d) * rot(90.);
+	vec2 q = sign(p) * uv * vec2(133, 33) + Time.x * 4.;
+	p *= p;
+	return vec3(
+		(1. - 1.4 * abs(d)) * ((N(q.x) * p.x + N(q.y) * p.y) / sum(p + .01) * .7 + .3),
+		sat(3. - 6. * arena_sdf(uv, .7)) * FBMT(uv - vec2(.2 * N(Time.x), Time.x), vec2(7, 3), .7, 2., 4),
+		0
+	);
+}
+
+// main menu banner (menu shader)
+void menubnr_m() {
+	vec2 uv = UV - .5;
+	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
+	uv /= r / mx(r); // correct aspect ratio
+	uv *= .5;
+
+	uv.y = (uv.y - .16) * 7.;
+	FCol = mx(abs(uv + vec2(0, .23)) / vec2(.55, .2)) > .4 ?
+			vec4(0) :
+			T0(uv + .51).y
+			* vec4(2, 1, .3, 0)
+	;
+	if (mx(abs(uv - vec2(0, .15)) / vec2(.77, 1)) > .4)
+		return; // out of bounds
+
+	float
+		n = H(uv * 133.7 + Time.x),
+		k = 1./48.,
+		s = pow(1.2, k),
+		i = n * k
+	;
+	uv /= mix(1., s, n);
+	for (; i < 1.; i += k) {
+		uv.x += (N(Time.x * .37) - .5) * k / 48.;
+		uv.y += (N(Time.x * .21) - .5) * k / 32.;
+		r = uv /= s;
+		r.y -= i * .15;
+		r.x *= 1. + r.y * .15;
+		vec4 c = T0(r + .5);
+		FCol += c.x * (1. - i) * k * vec4(32, 16, 4, 0);
+	}
+}
+
+vec2 uvmap(vec3 p, int ax) {
+	return (ax==0) ? p.yz : (ax==1) ? p.xz : p.xy;
+}
+
+int dom(vec3 n) {
+	n = abs(n) + vec3(.01, .02, .03);
+	float m = mx(n);
+	return (m==n.x) ? 0 : (m==n.y) ? 1 : 2;
+}
+
+// https://www.shadertoy.com/view/MsS3Wc
+vec3 hsv(vec3 c) {
+	vec3 rgb = sat(abs(mod(c.x * 6. + vec3(0, 4, 2), 6.) - 3.) - 1.);
+	rgb *= rgb * (3. - 2. * rgb); // cubic smoothing
+	return c.z * mix(vec3(1.), rgb, c.y);
+}
+
+void Generic() {
+	float l = dot(Nor, normalize(vec3(2,0,8)));
+	l = l * .4 + .7;
+	vec2 uv = uvmap(Pos, dom(Nor));
+	vec3 c = vec3(.5);
+	c *= hsv(vec3(fract(PHI * Time.w + .25), 1., 1.));
+	FCol = vec4(c * l, 1);
+}
+
+void fixture() {
+	vec4 c = T0(UV);
+	FCol = vec4(c.xyz * mix(Light(), vec3(1), c.w), 1);
+}
+
+// sfx/diamond2cjumppad (map shader)
+void dmnd2cjp_m() {
+	vec4 c = T0(UV);
+	float r = length(fract(UV) - .5);
+	float s = mix(.4, 8., fract(Time.x * 1.5));
+	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.37, .32, r), 1);
+}
+
+void Lmapped() {
+	vec3 c = T0(UV).xyz;
+	FCol = vec4(c * Light(), 1);
+}
+
+////////////////////////////////////////////////////////////////
+#pragma section elemental
+////////////////////////////////////////////////////////////////
+
+// sfx/beam
+void beam() {
+	vec2 uv = fract(UV);
+	uv.x += Time.x / 13.;
+	float b = FBMT(uv, vec2(3, 7), .9, 2., 4), f = uv.y;
+	FCol = vec4(2. * RGB(95, 85, 80) * f*f*f*f * mix(1., b, .5), 0.);
+}
+
+// Single-speed flame layer (s = speed)
+float simple_flame(vec2 uv, float s) {
+	vec2 p = uv;
+	p.y += p.y - Time.x * s;
+	uv.x += (N(p.y * 5.) - .5) * 1.5 * sqr(uv.y);
+	float
+		n = FBMT(wavy(p, 7., .02), vec2(9), .7, 2., 4),
+		h = ls(.9, .03, uv.y),
+		b = box(uv - vec2(.5, .15), vec2(0, .3));
+	return sqr(msk(b + n * sqr(1.2 - h) - .13, .15));
+}
+
+void complex_flame(float s) {
+	vec2 uv = fract(UV);
+	FCol = (simple_flame(uv, s * .6) + simple_flame(uv, s)) * vec4(2.5, 1, .35, 0);
+}
+
+void flame() {
+	complex_flame(2.5);
+}
+
+void flame_large() {
+	complex_flame(1.);
+}
+
+void shiny() {
+	vec4 c = T0(UV);
+	c.xyz *= 1. + c.w * env(Ref);
+	FCol = vec4(c.xyz * Light(), 1);
+}
+
+// skies/blacksky
+void blacksky() {
+	FCol = vec4(0);
+}
+
+// skies/tim_hell
+void timhel() {
+	vec3 d = normalize(Pos - Cam.xyz);
+	d.z = d.z * 4. + 2.;
+	vec2 uv = normalize(d).xy * 2.;
+	float b = ls(.2, 1., FBMT(uv - Time.x * vec2(.1, .2), vec2(5), .5, 2., 6));
+	uv.y *= 1.5;
+	float s = ls(.3, 1., FBMT(uv - Time.x * vec2(.1, .18), vec2(5), .6, 2., 6));
+	FCol = vec4(vec3(b, 0, 0) + RGB(80, 30, 8) * s * s * 2., 1);
+}
+
+void lava() {
+	vec2 uv = wavy(UV / 8., Time.x * .5, 2., .05);
+	float b = FBMT(uv, vec2(7), .9, 2., 4);
+	vec3 c = RGB(91, 22, 14) * (.2 + 1.6 * b);
+	c = mix(c, RGB(144, 44, 0), tri(.6, .2, FBMT(uv, vec2(3), .7, 3., 4)));
+	c = mix(c, RGB(244, 144, 66) * b * 2., sqr(tri(.55, .25, FBMT(uv, vec2(11), .5, 2., 4))));
+	FCol = vec4(c * sat(mx(Light())), 1);
+}
+
+void lavaf() {
+	lava();
+}
+
+////////////////////////////////////////////////////////////////
+#pragma section models
+////////////////////////////////////////////////////////////////
+
+vec3 ModelLight() {
+	return mix(Ambient.xyz, LightColor.xyz, sat(dot(LightDir.xyz, WNor)));
+}
+
 vec4 triplanar(vec3 p, vec3 n, float s) {
 	p *= s / float(textureSize(Texture0, 0).x);
 	n *= n;
@@ -2576,6 +2786,16 @@ vec4 triplanar(vec3 p, float s) {
 
 vec4 triplanar(float s) {
 	return triplanar(Pos, s);
+}
+
+// models/mapobjects/kmlamp_white
+void kmlampwt() {
+	FCol = vec4(env(Ref) * RGB(133, 111, 111), 0);
+}
+
+// models/mapobjects/lamps/flare03
+void flare03() {
+	FCol = vec4(2, 2, 2, 0) * pow(star(UV, vec2(.5), 1.), 2.);
 }
 
 void miscmodel() {
@@ -2723,242 +2943,6 @@ void storchtl() {
 		;
 }
 
-// QUAKE III sdf
-float quakeiii_sdf(vec2 uv) {
-	uv *= vec2(256, 64);
-	// Q
-	float d = circ(uv - vec2(81, 30), 11.);
-	d = max(d, uv.x - 80.);
-	d = max(d, -circ(uv - vec2(84, 26), 9.));
-	d = min(d, box(uv - vec2(73, 37), vec2(4, 9)) - 4.);
-	d = max(d, -box(uv - vec2(73, 37), vec2(0, 7)) + 1.);
-	// U
-	d = min(d, box(uv - vec2(91.5, 47), vec2(4, 19)) - 4.);
-	d = max(d, -box(uv - vec2(91.5, 47), vec2(0, 17.5)) + 1.);
-	// A
-	d = min(d, box1(mirr(uv, 111.) - vec2(105. + ls(23., 50., uv.y) * 3., 43), vec2(3.5, 19)));
-	d = min(d, box1(uv - vec2(111, 32), vec2(6, 3)));
-	// K
-	d = min(d, box1(uv - vec2(126, 37), vec2(3, 13)));
-	d = min(d, box1(uv - vec2(125.5 + ls(23., 50., uv.y) * 10., 44), vec2(3.5, 6)));
-	d = min(d, box1(uv - vec2(136.5 - ls(23., 50., uv.y) * 9., 32), vec2(3.5, 8)));
-	// E
-	d = min(d, box1(uv - vec2(148.5, 37), vec2(7, 13)));
-	d = max(d, -box1(uv - vec2(155, 33), vec2(6, 3)));
-	d = max(d, -box1(uv - vec2(155, 43), vec2(6, 2)));
-	// III
-	d = min(d, box1(uv - vec2(168, 37), vec2(3.5, 13)));
-	d = min(d, box1(uv - vec2(178, 37), vec2(3.5, 13)));
-	d = min(d, box1(uv - vec2(188, 37), vec2(3.5, 13)));
-
-	return max(d, uv.y - 50.);
-}
-
-// ARENA sdf
-// s = scale
-float arena_sdf(vec2 uv, float s) {
-	uv *= vec2(256. * s, 64);
-	float d = 1e6;
-	// R
-	uv.x -= s * 106.;
-	d = min(d, max(-uv.x - 1., onion(box(uv - vec2(-.5, 19.25), vec2(2, .5)) - .75, .5)));
-	d = min(d, box1(uv - vec2(1. + (18. - uv.y) * .5, 16.5), vec2(.5, 1.5)));
-	d = min(d, box1(uv - vec2(-1, 18), vec2(.5, 3)));
-	// E
-	uv.x -= s * 24.;
-	d = min(d, box1(uv - vec2(0, 18), vec2(2, 3)));
-	d = max(d, -box1(uv - vec2(1.5, 19.5), vec2(2.5, 1)));
-	d = max(d, -box1(uv - vec2(1.5, 17), vec2(2.5, 1)));
-	// N
-	uv.x -= s * 24.;
-	d = min(d, box1(uv - vec2(-2, 18), vec2(.5, 3)));
-	d = min(d, box1(uv - vec2(2, 18), vec2(.5, 3)));
-	d = min(d, box1(uv - vec2((18. - uv.y) * .5, 18), vec2(.7, 3)));
-	// A
-	uv.x = mirr(uv.x + s * 68., s * 46.);
-	d = min(d, box1(mirr(uv, 0.) - vec2((uv.y - 21.) * .33, 18), vec2(.5, 3)));
-	d = min(d, box1(uv - vec2(0, 16.5), vec2(1, .25)));
-	return d;
-}
-
-// base_wall/main_q3abanner
-TEXA(q3bnr) {
-	return vec4(msk(min(quakeiii_sdf(uv), arena_sdf(uv, 1.)), .8), 0, 0, H(uv * 511.));
-}
-
-// base_wall/main_q3abanner (map shader)
-void q3bnr_m() {
-	vec3 c = T0(UV * 2.).xyz * step(.5, fract(Time.x * .5));
-	c = mix(c * Light(), vec3(.5, 0, 0), tri(fract(Time.x * 2.), 1./64., fract(UV.y)));
-	FCol = vec4(c + env(Ref) * .25 + T0(UV + H(Time.xx)).w * .1, 1);
-}
-
-// main menu banner (texture)
-TEX(menubnr) {
-	float d = quakeiii_sdf(uv);
-	vec2 p = grad(d) * rot(90.);
-	vec2 q = sign(p) * uv * vec2(133, 33) + Time.x * 4.;
-	p *= p;
-	return vec3(
-		(1. - 1.4 * abs(d)) * ((N(q.x) * p.x + N(q.y) * p.y) / sum(p + .01) * .7 + .3),
-		sat(3. - 6. * arena_sdf(uv, .7)) * FBMT(uv - vec2(.2 * N(Time.x), Time.x), vec2(7, 3), .7, 2., 4),
-		0
-	);
-}
-
-// main menu banner (menu shader)
-void menubnr_m() {
-	vec2 uv = UV - .5;
-	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
-	uv /= r / mx(r); // correct aspect ratio
-	uv *= .5;
-
-	uv.y = (uv.y - .16) * 7.;
-	FCol = mx(abs(uv + vec2(0, .23)) / vec2(.55, .2)) > .4 ?
-			vec4(0) :
-			T0(uv + .51).y
-			* vec4(2, 1, .3, 0)
-	;
-	if (mx(abs(uv - vec2(0, .15)) / vec2(.77, 1)) > .4)
-		return; // out of bounds
-
-	float
-		n = H(uv * 133.7 + Time.x),
-		k = 1./48.,
-		s = pow(1.2, k),
-		i = n * k
-	;
-	uv /= mix(1., s, n);
-	for (; i < 1.; i += k) {
-		uv.x += (N(Time.x * .37) - .5) * k / 48.;
-		uv.y += (N(Time.x * .21) - .5) * k / 32.;
-		r = uv /= s;
-		r.y -= i * .15;
-		r.x *= 1. + r.y * .15;
-		vec4 c = T0(r + .5);
-		FCol += c.x * (1. - i) * k * vec4(32, 16, 4, 0);
-	}
-}
-
-// sfx/beam
-void beam() {
-	vec2 uv = fract(UV);
-	uv.x += Time.x / 13.;
-	float b = FBMT(uv, vec2(3, 7), .9, 2., 4), f = uv.y;
-	FCol = vec4(2. * RGB(95, 85, 80) * f*f*f*f * mix(1., b, .5), 0.);
-}
-
-// models/mapobjects/kmlamp_white
-void kmlampwt() {
-	FCol = vec4(env(Ref) * RGB(133, 111, 111), 0);
-}
-
-float star(vec2 p, vec2 c, float s) {
-	p -= c;
-	float a = ls(.3, .5, abs(fract(nang(p /= s) * 8. + H(c)) - .5));
-	return ls(.9, .6, pow(lsq(p), .0625) - a * a * .006);
-}
-
-// models/mapobjects/lamps/flare03
-void flare03() {
-	FCol = vec4(2, 2, 2, 0) * pow(star(UV, vec2(.5), 1.), 2.);
-}
-
-// Single-speed flame layer (s = speed)
-float simple_flame(vec2 uv, float s) {
-	vec2 p = uv;
-	p.y += p.y - Time.x * s;
-	uv.x += (N(p.y * 5.) - .5) * 1.5 * sqr(uv.y);
-	float
-		n = FBMT(wavy(p, 7., .02), vec2(9), .7, 2., 4),
-		h = ls(.9, .03, uv.y),
-		b = box(uv - vec2(.5, .15), vec2(0, .3));
-	return sqr(msk(b + n * sqr(1.2 - h) - .13, .15));
-}
-
-void complex_flame(float s) {
-	vec2 uv = fract(UV);
-	FCol = (simple_flame(uv, s * .6) + simple_flame(uv, s)) * vec4(2.5, 1, .35, 0);
-}
-
-void flame() {
-	complex_flame(2.5);
-}
-
-void flame_large() {
-	complex_flame(1.);
-}
-
-void Generic() {
-	float l = dot(Nor, normalize(vec3(2,0,8)));
-	l = l * .4 + .7;
-	vec2 uv = uvmap(Pos, dom(Nor));
-	vec3 c = vec3(.5);
-	c *= hsv(vec3(fract(PHI * Time.w + .25), 1., 1.));
-	FCol = vec4(c * l, 1);
-}
-
-void fixture() {
-	vec4 c = T0(UV);
-	FCol = vec4(c.xyz * mix(Light(), vec3(1), c.w), 1);
-}
-
-// sfx/diamond2cjumppad (map shader)
-void dmnd2cjp_m() {
-	vec4 c = T0(UV);
-	float r = length(fract(UV) - .5);
-	float s = mix(.4, 8., fract(Time.x * 1.5));
-	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.37, .32, r), 1);
-}
-
-void Lmapped() {
-	vec3 c = T0(UV).xyz;
-	FCol = vec4(c * Light(), 1);
-}
-
-void shiny() {
-	vec4 c = T0(UV);
-	c.xyz *= 1. + c.w * env(Ref);
-	FCol = vec4(c.xyz * Light(), 1);
-}
-
-// skies/blacksky
-void blacksky() {
-	FCol = vec4(0);
-}
-
-// skies/tim_hell
-void timhel() {
-	vec3 d = normalize(Pos - Cam.xyz);
-	d.z = d.z * 4. + 2.;
-	vec2 uv = normalize(d).xy * 2.;
-	float b = ls(.2, 1., FBMT(uv - Time.x * vec2(.1, .2), vec2(5), .5, 2., 6));
-	uv.y *= 1.5;
-	float s = ls(.3, 1., FBMT(uv - Time.x * vec2(.1, .18), vec2(5), .6, 2., 6));
-	FCol = vec4(vec3(b, 0, 0) + RGB(80, 30, 8) * s * s * 2., 1);
-}
-
-void lava() {
-	vec2 uv = wavy(UV / 8., Time.x * .5, 2., .05);
-	float b = FBMT(uv, vec2(7), .9, 2., 4);
-	vec3 c = RGB(91, 22, 14) * (.2 + 1.6 * b);
-	c = mix(c, RGB(144, 44, 0), tri(.6, .2, FBMT(uv, vec2(3), .7, 3., 4)));
-	c = mix(c, RGB(244, 144, 66) * b * 2., sqr(tri(.55, .25, FBMT(uv, vec2(11), .5, 2., 4))));
-	FCol = vec4(c * sat(mx(Light())), 1);
-}
-
-void lavaf() {
-	lava();
-}
-
-void Loading() {
-	FCol = vec4(textureLod(Texture0, (.5 + UV * 127.) / 128., 1.5).xyz * (.7 + .3 * NT(UV, .5/fwidth(UV))), 1);
-}
-
-void UI() {
-	FCol = T0(UV) * Clr;
-}
-
 // models/mapobjects/gratelamp/gratetorch2b.tga (texture)
 TEXA(gr8torch2b) {
 	uv.y *= 2.;
@@ -3055,6 +3039,82 @@ TEX(rocketl) {
 		- .2 * tri(.3, .1, m)
 		;
 	return c;
+}
+
+////////////////////////////////////////////////////////////////
+#pragma section ui : patterns
+////////////////////////////////////////////////////////////////
+
+// Window icon
+TEXA(icon) {
+	uv -= vec2(.48, .5);
+	float
+		d = icon_sdf(uv, 0.),
+		b = length(uv) - .47;
+	vec3 c = 1. - vec3(.5, 1, 1) * msk(max(.007 - d, b + .04));
+	return vec4(c, 1) * msk(b);
+}
+
+// sfx/logo512
+TEX(bglogo) {
+	uv -= .5;
+
+	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
+	uv /= r / mx(r); // correct aspect ratio
+	uv *= .8; // scale up a bit
+	uv.y -= .03; // move up a bit
+
+	float
+		x = abs(uv.x),
+		b = FBMT(uv, vec2(31, 5), .7, 2., 3), // base FBM - mostly vertical noise
+		t = .8 + .8 * b * b, // intensity variation (remapped FBM)
+		d = icon_sdf(uv, 1.), // logo SDF
+		e = icon_sdf(uv + vec2(0, .002), 1.), // offset logo SDF, for lighting
+		l = (e - d) * 5e2 + .5 // lighting
+		;
+	vec3 c = vec3(.3 * t, 0, 0) * msk(d, .004); // base color
+	c *= 1.
+		- sqr(ls(.0, .3, x)) // horizontal gradient
+		- .5 * ls(.1, .3, abs(uv.y - .1)) // vertical gradient
+		;
+	c +=
+		+ t * .2 * tri(.0, .01 - .01 * x, d) * tri(.1, .2, uv.y) * ls(.3, .2, x) * l // top light
+		+ t * .5 * ls(.004, .0, d) * ls(.07, .1, uv.y) * tri(.23, .1, x) * vec3(.9, .9, 1) // back light
+		+ t * .4 * tri(.005, .005, d) * ls(.2, -.1, uv.y) * ls(.3, .2, x) * sat(-l) // bottom light
+		;
+
+	return c;
+}
+
+// menu/art/addbotframe.tga
+void uiframe() {
+	vec2 uv = UV - .5;
+	vec2 r = vec2(dFdx(uv.x), dFdy(uv.y));
+	uv /= r / mx(r); // correct aspect ratio
+	uv /= Time.yz;
+
+	float
+		n = NT(uv, vec2(7)) * .8 + .6,
+		d = circ(uv, .48),
+		m = msk(d, .005),
+		i = msk(elips(uv, vec2(.42, .47)), .03);
+	vec3 c = RGB(144, 88, 66) * n;
+	m *= 1. - i * .5;
+	c *= 1. - i;
+	c *= 1.
+		- 2. * sqrt(tri(.0, .45, uv.y))
+		+ 4. * (uv.y + .5)
+		+ .5 * tri(.0, .01, d) * uv.x
+		;
+	FCol = vec4(c * m, m);
+}
+
+void Loading() {
+	FCol = vec4(textureLod(Texture0, (.5 + UV * 127.) / 128., 1.5).xyz * (.7 + .3 * NT(UV, .5/fwidth(UV))), 1);
+}
+
+void UI() {
+	FCol = T0(UV) * Clr;
 }
 
 // menu/art/maps_select.tga

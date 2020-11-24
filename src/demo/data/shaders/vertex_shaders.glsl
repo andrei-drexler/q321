@@ -41,16 +41,17 @@ void misc_model() {
 	float a = T.z, c = cos(a), s = sin(a);
 	Nor.xy *= mat2(c, s, -s, c);
 }
-void icon() { FS(); }
-void bglogo() { FS(); }
-void uiframe() { FS(); }
-void Loading() { FS(); }
 void UI() {
 	gl_Position = vec4(P.xy, 1, 1);
 	UV = T.xy;
 	Clr = C;
 	Clr.xyz *= Clr.w; // convert to premultiplied alpha
 }
+#pragma section
+void icon() { FS(); }
+void bglogo() { FS(); }
+void uiframe() { FS(); }
+void Loading() { FS(); }
 void Lmapped() { Generic(); }
 void fixture() { Generic(); }
 void shiny() { Generic(); }
@@ -118,6 +119,7 @@ void gmtlsp4b() { FS(); }
 void gsklvtg02b() { FS(); }
 void bmtsprt() { FS(); }
 void cable() { FS(); }
+#pragma section
 void brdr11b() { FS(); }
 void blt414k() { FS(); }
 void lt2() { FS(); }

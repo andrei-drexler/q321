@@ -217,7 +217,10 @@ namespace GL {
 		};
 
 		static constexpr const char*		Names[Type::Count] = {"Vertex", "Fragment"};
-		static constexpr GLenum				Enums[Type::Count] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
+		static constexpr GLenum				GetEnum(Type type) { return GL_VERTEX_SHADER - type; } // GL_FRAGMENT_SHADER == GL_VERTEX_SHADER - 1
+
+		static_assert(GetEnum(Vertex) == GL_VERTEX_SHADER);
+		static_assert(GetEnum(Fragment) == GL_FRAGMENT_SHADER);
 	}
 
 	struct State {
@@ -263,16 +266,26 @@ namespace GL {
 		const Gfx::Shader::Flags*			shader_flags;
 		GLint								shader_uniforms[MaxNumUniforms];
 		GLuint								shader_programs[MaxNumShaders];
-		const char*							shader_names[MaxNumShaders];
-		const char*							shader_sources[ShaderStage::Count];
+		const Gfx::Shader::Module*			shader_modules[ShaderStage::Count];
 
 		TextureState						texture_state[MaxNumTextures];
 		const Gfx::Texture::Descriptor*		texture_descriptors;
-
 	} g_state;
+
+	namespace Stitch {
+		enum {
+			MAX_NUM_SOURCES = 32,
+			MAX_ENTRYPOINT_LENGTH = 8,
+		};
+
+		Array<const char*, MAX_NUM_SOURCES>			g_sources;
+		Array<GLint,       MAX_NUM_SOURCES>			g_lengths;
+		Array<char,        MAX_ENTRYPOINT_LENGTH>	g_entrypoint;
+	}
 
 	void SetState(u32 bits, u32 force_change = 0);
 	void SetViewportAndScissor(GLsizei x, GLsizei y, GLsizei width, GLsizei height);
+	GLuint StitchAndCompileShader(u16 shader_index, u32 stage);
 
 	void TrimLog(char* buf, int lines = 8);
 }
@@ -315,16 +328,78 @@ void GL::TrimLog(char* buf, int lines) {
 	}
 }
 
-FORCEINLINE void Gfx::RegisterShaders(const Shader::Flags* flags, u16 count, const char* vertex_shaders, const char* fragment_shaders) {
+FORCEINLINE void Gfx::RegisterShaders(u16 count, const Shader::Flags* flags, const Shader::Module& vertex_shaders, const Shader::Module& fragment_shaders) {
 	using namespace GL;
 
 	g_state.shader_flags		= flags;
 	g_state.num_shaders			= count;
-	g_state.shader_sources[0]	= vertex_shaders;
-	g_state.shader_sources[1]	= fragment_shaders;
+	g_state.shader_modules[0]	= &vertex_shaders;
+	g_state.shader_modules[1]	= &fragment_shaders;
 
 	assert(g_state.num_shaders <= size(g_state.shader_programs));
 	assert(u32(g_state.num_shaders * g_state.num_uniforms) <= size(g_state.shader_uniforms));
+}
+
+FORCEINLINE GLuint GL::StitchAndCompileShader(u16 shader_index, u32 stage) {
+	const Gfx::Shader::Module* module = g_state.shader_modules[stage];
+
+	MemSet(&Stitch::g_lengths, -1);
+	Stitch::g_sources[0] = "#version 330\n";
+	GLsizei num_sources = 1;
+
+	for (u32 section_index = 0, offset = 0; section_index < module->num_sections; ++section_index) {
+		GLint section_size = module->section_sizes[section_index];
+
+		if (module->shader_deps[shader_index] & (1 << section_index)) {
+			const char* section_code = module->code + offset;
+			Stitch::g_sources[num_sources] = section_code;
+			Stitch::g_lengths[num_sources] = section_size;
+			++num_sources;
+		}
+
+		offset += section_size;
+	}
+
+	Stitch::g_sources[num_sources++] = "void main(){_";
+	IntToString(shader_index, &Stitch::g_entrypoint[0]);
+	Stitch::g_sources[num_sources++] = &Stitch::g_entrypoint[0];
+	Stitch::g_sources[num_sources++] = "();}\n";
+
+#ifdef DISABLE_SHADER_CACHE
+	char no_shader_cache[64];
+	{
+		no_shader_cache[0] = '/';
+		no_shader_cache[1] = '/';
+		char* p = IntToString(Random(), no_shader_cache + 2);
+		p[0] = '\n';
+		p[1] = 0;
+	}
+	Stitch::g_sources[num_sources++] = no_shader_cache;
+#endif
+
+	GLuint shader = glCreateShader(ShaderStage::GetEnum((ShaderStage::Type)stage));
+	if (!shader)
+		Sys::Fatal(Error::Shader);
+	glShaderSource(shader, num_sources, &Stitch::g_sources[0], &Stitch::g_lengths[0]);
+	glCompileShader(shader);
+
+#ifdef DEV
+	GLint is_compiled = 0;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &is_compiled);
+	if (!is_compiled) {
+		GLint max_length = 0;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &max_length);
+		char* buf = Mem::Alloc<char>(max_length);
+		glGetShaderInfoLog(shader, max_length, &max_length, buf);
+		auto stage_name = ShaderStage::Names[stage];
+		Sys::Printf("%s shader compilation failed (shader #%d):\n%s\n", stage_name, shader_index, buf);
+		TrimLog(buf, 8);
+		MessageBoxA(0, buf, "Shader compilation failed", MB_OK);
+		Sys::Fatal(Error::Shader);
+	}
+#endif
+
+	return shader;
 }
 
 NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
@@ -338,56 +413,16 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 		if (!program)
 			Sys::Fatal(Error::Shader);
 
-		int shaders[ShaderStage::Count];
-
-		for (u32 i = 0; i < ShaderStage::Count; ++i) {
-			auto& shader = shaders[i];
-			shader = glCreateShader(ShaderStage::Enums[i]);
-			if (!shader)
-				Sys::Fatal(Error::Shader);
-
-			char entrypoint[64];
-			IntToString(shader_index, entrypoint);
-
-#ifdef DISABLE_SHADER_CACHE
-			char no_shader_cache[64];
-			{
-				no_shader_cache[0] = '/';
-				no_shader_cache[1] = '/';
-				char* p = IntToString(Random(), no_shader_cache + 2);
-				p[0] = '\n';
-				p[1] = 0;
-			}
-#endif
-			const char* sources[] = {
-				"#version 330\n",
-				g_state.shader_sources[i],
-				"void main(){_", entrypoint, "();}\n",
-#ifdef DISABLE_SHADER_CACHE
-				no_shader_cache,
-#endif
-			};
-
-			glShaderSource(shader, size(sources), sources, nullptr);
-			glCompileShader(shader);
-
 #ifdef DEV
-			GLint is_compiled = 0;
-			glGetShaderiv(shader, GL_COMPILE_STATUS, &is_compiled);
-			if (!is_compiled) {
-				GLint max_length = 0;
-				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &max_length);
-				char* buf = Mem::Alloc<char>(max_length);
-				glGetShaderInfoLog(shader, max_length, &max_length, buf);
-				auto stage_name = ShaderStage::Names[i];
-				Sys::Printf("%s shader compilation failed (shader #%d):\n%s\n", stage_name, shader_index, buf);
-				TrimLog(buf, 8);
-				MessageBoxA(0, buf, "Shader compilation failed", MB_OK);
-				Sys::Fatal(Error::Shader);
-			}
+		GLuint shaders[ShaderStage::Count];
 #endif
 
+		for (u32 stage = 0; stage< ShaderStage::Count; ++stage) {
+			GLuint shader = StitchAndCompileShader(shader_index, stage);
 			glAttachShader(program, shader);
+#ifdef DEV
+			shaders[stage] = shader;
+#endif
 		}
 
 #if 0
@@ -404,14 +439,14 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 		glLinkProgram(program);
 
 #ifdef DEV
-		for (u32 i = 0; i < ShaderStage::Count; ++i) {
-			glDetachShader(program, shaders[i]);
-			glDeleteShader(shaders[i]);
+		for (u32 stage = 0; stage< ShaderStage::Count; ++stage) {
+			glDetachShader(program, shaders[stage]);
+			glDeleteShader(shaders[stage]);
 		}
 #endif
 	}
 
-	auto uniforms = g_state.shader_uniforms + first * g_state.num_uniforms;
+	GLint* uniforms = g_state.shader_uniforms + first * g_state.num_uniforms;
 	for (u16 shader_index = first, end = first + count; shader_index < end; ++shader_index, uniforms += g_state.num_uniforms) {
 		auto& program = g_state.shader_programs[shader_index];
 

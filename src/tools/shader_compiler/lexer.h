@@ -21,7 +21,7 @@ struct Lexer {
 	using Atom			= const char*;
 
 	struct Token {
-		enum class Type {
+		enum Type {
 			Invalid = -1,
 			EndOfStream = 0,
 
@@ -54,6 +54,7 @@ struct Lexer {
 			SquareBracketClose = ']',
 			Comma = ',',
 			Semicolon = ';',
+			Colon = ':',
 
 			Constant = 256,
 			Identifier,

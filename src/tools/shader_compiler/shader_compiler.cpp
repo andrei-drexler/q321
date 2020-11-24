@@ -3,13 +3,24 @@
 #include "../../demo/resource_def.h"
 #include <filesystem>
 #include <chrono>
+#include <stdexcept>
 
 using Token = Lexer::Token;
 namespace fs = std::filesystem;
 
 #define INDENT "   "
 
+// Debug options ///////////////////////////////////////////////
+
+const bool
+	Verbose					= false,
+	InsertSectionMarkers	= false,
+	OutputTranslationMap	= false
+;
+
 ////////////////////////////////////////////////////////////////
+
+const size_t MaxLineLength = 124;
 
 struct Options {
 	std::string output_path;
@@ -43,6 +54,21 @@ bool GatherOptions(Options& options, int argc, const char** argv) {
 
 ////////////////////////////////////////////////////////////////
 
+void Error(const char* format, ...) {
+	char message[8192];
+	va_list args;
+	va_start(args, format);
+	vsprintf_s(message, format, args);
+	va_end(args);
+
+	printf("ERROR: %s.\n", message);
+	MessageBoxA(0, message, "Error", MB_OK | MB_ICONERROR);
+
+	throw std::runtime_error(message);
+}
+
+////////////////////////////////////////////////////////////////
+
 static constexpr string_view Keywords[] = {
 	"void","float","int","uint","bool","vec2","ivec2","uvec2","bvec2","vec3","ivec3","uvec3","bvec3","vec4","ivec4","uvec4","bvec4",
 	"struct","mat2","mat3","mat4","mat2x2","mat2x3","mat2x4","mat3x2","mat3x3","mat3x4","mat4x2","mat4x3","mat4x4","sampler2D",
@@ -65,6 +91,11 @@ static constexpr string_view ShaderNames[] = {
 	#define PP_ADD_SHADER_NAME(name, ...) #name,
 	DEMO_SHADERS(PP_ADD_SHADER_NAME)
 	#undef PP_ADD_SHADER_NAME
+};
+
+static constexpr string_view ShaderStages[] = {
+	"vertex",
+	"fragment",
 };
 
 ////////////////////////////////////////////////////////////////
@@ -126,8 +157,8 @@ struct NameGenerator {
 void Tokenize(string_view code, Lexer& lexer, std::vector<Lexer::Token>& tokens) {
 	printf("Generating token stream...");
 
-	if (tokens.empty())
-		tokens.reserve(code.size() / 2);
+	tokens.clear();
+	tokens.reserve(code.size() / 2);
 
 	lexer.SetSource(code);
 	while (!lexer.IsDone()) {
@@ -136,6 +167,23 @@ void Tokenize(string_view code, Lexer& lexer, std::vector<Lexer::Token>& tokens)
 	}
 
 	printf(" %zd tokens\n", tokens.size());
+}
+
+////////////////////////////////////////////////////////////////
+
+bool SkipPragma(const std::vector<Token>& tokens, size_t& i) {
+	if (tokens[i].type != '#' ||
+		i == tokens.size() - 1 ||
+		tokens[i + 1].type != Token::Type::Identifier ||
+		tokens[i + 1].value != "pragma"sv)
+		return false;
+
+	i += 2; // skip past "pragma"
+
+	while (i < tokens.size() && tokens[i].type != Token::Type::EndOfLine)
+		++i;
+
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -173,7 +221,7 @@ enum class Preserve {
 	InputsAndOtputs,
 };
 
-void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Preserve mode = Preserve::InputsAndOtputs) {
+void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Preserve mode, std::unordered_map<string_view, const char*>& rename) {
 	printf("Renaming identifiers...\n");
 
 	/* map shader names to integer ids */
@@ -195,6 +243,9 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 	/* find inputs/outputs */
 	for (size_t i = 0; i < tokens.size(); ++i) {
 		Token& token = tokens[i];
+		if (SkipPragma(tokens, i))
+			continue;
+
 		if (token.type != Token::Type::Identifier)
 			continue;
 
@@ -223,7 +274,7 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 	std::unordered_set<string_view> existing_macros;
 	for (size_t i = 0; i + 2 < tokens.size(); ++i) {
 		Token& token = tokens[i];
-		if (tokens[i+0].type != Token::Type::Directive ||
+		if (tokens[i+0].type != '#' ||
 			tokens[i+1].type != Token::Type::Identifier ||
 			tokens[i+2].type != Token::Type::Identifier ||
 			tokens[i+1].value != "define"sv)
@@ -238,9 +289,14 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 	/* sort identifiers by number of occurrences */
 	std::unordered_map<const char*, size_t> ident_usage;
 	ident_usage.reserve(tokens.size());
-	for (Token& token : tokens)
+	for (size_t i = 0; i < tokens.size(); ++i) {
+		if (SkipPragma(tokens, i))
+			continue;
+
+		Token& token = tokens[i];
 		if (token.type == Token::Type::Identifier)
 			ident_usage[token.value]++;
+	}
 
 	struct Identifier {
 		const char* name;
@@ -257,7 +313,7 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 
 	/* generate new identifier names */
 	NameGenerator name_generator;
-	std::unordered_map<string_view, const char*> rename;
+	rename.clear();
 	rename.reserve(identifiers.size());
 	std::vector<string_view> new_macros;
 	new_macros.reserve(identifiers.size());
@@ -326,6 +382,9 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 
 	/* perform the actual token renaming */
 	for (size_t i = num_macro_tokens; i < tokens.size(); ++i) {
+		if (SkipPragma(tokens, i))
+			continue;
+
 		Token& token = tokens[i];
 		if (token.type != Token::Type::Identifier)
 			continue;
@@ -337,55 +396,241 @@ void RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 
 ////////////////////////////////////////////////////////////////
 
-void GenerateCode(const std::vector<Lexer::Token>& tokens, std::vector<char>& out) {
-	printf("Generating code...");
+struct Section {
+	std::string		name;
+	u32				dependencies = 0;
+	u32				offset = 0;
+};
 
-	out.reserve(tokens.size() * 2);
+using SectionList = std::vector<Section>;
 
-	Token::Type last_type = Token::Type::Invalid;
-	for (auto& token : tokens) {
-		if (token.type == Token::Type::Directive && last_type != Token::Type::EndOfLine && last_type != Token::Type::Invalid)
-			out.push_back('\n');
+template <typename Data>
+size_t GetSectionEnd(const SectionList& sections, size_t index, const Data& data) {
+	return index + 1 < sections.size() ? sections[index + 1].offset : data.size();
+}
 
-		// constants and identifiers need whitespace between them, otherwise they can end up merged
-		if (token.type == Token::Type::Identifier || token.type == Token::Type::Constant) {
-			if (last_type == Token::Type::Identifier || last_type == Token::Type::Constant)
-				out.push_back(' ');
+void SplitIntoSections(std::vector<Lexer::Token>& tokens, SectionList& sections) {
+	sections.clear();
+
+	/* add global section (always present) */
+	Section& core = sections.emplace_back();
+	core.name = "@global";
+
+	for (size_t i = 0; i + 2 < tokens.size(); ++i) {
+		if (tokens[i + 0].type != '#' ||
+			tokens[i + 1].type != Token::Type::Identifier || tokens[i + 1].value != "pragma"sv ||
+			tokens[i + 2].type != Token::Type::Identifier || tokens[i + 2].value != "section"sv)
+			continue;
+
+		Section& section = sections.emplace_back();
+		section.offset = i;
+		section.dependencies = 1 << 0; // add dependency on global section
+
+		i += 3; // skip past "section"
+
+		/* determine section name */
+		if (i < tokens.size() && tokens[i].type == Token::Type::Identifier) {
+			section.name = tokens[i].value;
+			++i;
+		} else {
+			char generated_name[32];
+			sprintf(generated_name, "@section%zd", sections.size() - 1);
+			section.name = generated_name;
 		}
 
-		auto s = token.ToString();
-		out.insert(out.end(), s.begin(), s.end());
-		last_type = token.type;
+		/* skip colon */
+		if (i + 1 < tokens.size() && tokens[i].type == ':')
+			++i;
+
+		/* read dependencies */
+		while (i < tokens.size()) {
+			if (tokens[i].type == Token::Type::EndOfLine) {
+				++i;
+				break;
+			}
+
+			if (tokens[i].type == ',') {
+				++i;
+				continue;
+			}
+
+			if (tokens[i].type == Token::Type::Identifier) {
+				ptrdiff_t dependency = -1;
+
+				for (size_t j = 1; j < sections.size() - 1; ++j) {
+					if (sections[j].name == tokens[i].value) {
+						dependency = j;
+						break;
+					}
+				}
+
+				if (dependency == -1)
+					Error("Section '%s' (required by '%s') not found", tokens[i].value, section.name.c_str());
+
+				section.dependencies |= (1 << dependency) | sections[dependency].dependencies;
+
+				++i;
+				continue;
+			}
+		}
+
+		/* remove pragma directive from token stream */
+		tokens.erase(tokens.begin() + section.offset, tokens.begin() + i);
 	}
-
-	printf(" %zd chars\n", out.size());
-
-	out.push_back(0);
 }
 
 ////////////////////////////////////////////////////////////////
 
-void Print(FILE* out, string_view code) {
-	while (!code.empty()) {
-		auto eol = code.find('\n');
-		string_view line = code.substr(0, eol);
-		if (eol == code.npos)
-			code = {};
-		else
-			code.remove_prefix(eol + 1);
+struct ShaderDependencies {
+	i32 data[std::size(ShaderNames)];
 
-		const size_t MaxLineLength = 8192;
-		while (!line.empty()) {
-			size_t length = std::min(line.size(), MaxLineLength);
-			bool last_part = length == line.size();
-			bool add_newline = last_part && !code.empty();
-			const char* format = add_newline ? "\"%.*s\\n\"\n" : "\"%.*s\"\n";
-			fprintf(out, format, int(length), line.data());
-			line.remove_prefix(length);
+	static constexpr size_t		size()		{ return std::size(ShaderNames); }
+	void						clear()		{ memset(&data, 0, sizeof(data)); }
+};
+
+void Link(const std::vector<Lexer::Token>& tokens, const SectionList& sections, ShaderDependencies& shader_deps) {
+	shader_deps.clear();
+
+	size_t section_index = 0;
+	for (size_t token_index = 0; token_index < tokens.size(); ++token_index) {
+		if (section_index < sections.size() - 1 && token_index == sections[section_index + 1].offset)
+			++section_index;
+
+		const Token& token = tokens[token_index];
+		if (token.type != Token::Type::Identifier || token.value[0] != '_')
+			continue;
+
+		int shader_index = -1;
+		sscanf(token.value + 1, "%d", &shader_index);
+
+		assert(shader_index >= 0);
+		assert(shader_index < std::size(ShaderNames));
+
+		if (shader_deps.data[shader_index] == 0) {
+			shader_deps.data[shader_index] = sections[section_index].dependencies | (1 << section_index);
+
+			if (Verbose)
+				printf("Found %s in section %s\n", ShaderNames[shader_index].data(), sections[section_index].name.c_str());
 		}
 	}
 }
 
+////////////////////////////////////////////////////////////////
+
+void GenerateCode(const std::vector<Lexer::Token>& tokens, SectionList& sections, std::vector<char>& out) {
+	printf("Generating code...");
+
+	out.clear();
+	out.reserve(tokens.size() * 2);
+
+	Token::Type last_type = Token::Type::Invalid;
+
+	/* generate code for each section */
+	for (size_t section_index = 0; section_index < sections.size(); ++section_index) {
+		Section& section = sections[section_index];
+		size_t num_tokens = GetSectionEnd(sections, section_index, tokens) - section.offset;
+		size_t code_start = out.size();
+
+		auto append_string = [&] (string_view str) {
+			out.insert(out.end(), str.begin(), str.end());
+		};
+
+		if (InsertSectionMarkers) {
+			append_string("/*");
+			append_string(section.name);
+			append_string("*/\n");
+		}
+
+		for (size_t token_index = section.offset, end_token_index = section.offset + num_tokens; token_index < end_token_index; ++token_index) {
+			const Token& token = tokens[token_index];
+			if (token.type == Token::Type::Directive && last_type != Token::Type::EndOfLine && last_type != Token::Type::Invalid)
+				out.push_back('\n');
+
+			/* prevent constants and identifiers from being merged by inserting a space between them */
+			if (token.type == Token::Type::Identifier || token.type == Token::Type::Constant) {
+				if (last_type == Token::Type::Identifier || last_type == Token::Type::Constant)
+					out.push_back(' ');
+			}
+
+			append_string(token.ToString());
+			last_type = token.type;
+		}
+
+		/* mark section offset in generated code */
+		section.offset = code_start;
+	}
+
+	printf(" %zd chars\n", out.size());
+}
+
+////////////////////////////////////////////////////////////////
+
+void PrintCode(FILE* out, string_view code, const SectionList& sections) {
+	for (size_t section_index = 0; section_index < sections.size(); ++section_index) {
+		const Section& section = sections[section_index];
+
+		size_t section_end = GetSectionEnd(sections, section_index, code);
+		size_t section_size = section_end - section.offset;
+		string_view section_code = code.substr(section.offset, section_size);
+
+		fprintf(out, "/* ---- %s: %zd chars (%.1f%%) ---- */\n",
+			section.name.c_str(), section_size, 100.f * section_size / code.size());
+
+		while (!section_code.empty()) {
+			string_view line = section_code.substr(0, MaxLineLength - 2); // exclude start/end quotation marks
+			auto eol = line.find('\n');
+			if (eol != string_view::npos) {
+				section_code.remove_prefix(eol + 1);
+				fprintf(out, "\"%.*s\\n\"\n", int(eol), line.data());
+			} else {
+				section_code.remove_prefix(line.size());
+				bool last = section_code.empty() && section_index == sections.size() - 1;
+				fprintf(out, "\"%.*s\"%s\n", int(line.size()), line.data(), last ? ";" : "");
+			}
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////
+
+void PrintTranslationMap(FILE* out, const std::unordered_map<string_view, const char*>& translation) {
+	fprintf(out,
+		"/*\n"
+		"Identifier map:\n"
+		"----------------\n"
+	);
+
+	for (const auto& entry : translation)
+		if (entry.second)
+			fprintf(out, "%.*s = %s\n", int(entry.first.size()), entry.first.data(), entry.second);
+
+	fprintf(out, "*/\n");
+}
+
+////////////////////////////////////////////////////////////////
+
+void PrintSections(FILE* out, string_view generated_code, const SectionList& sections, const ShaderDependencies& shader_deps) {
+	ArrayPrinter print(out, MaxLineLength);
+
+	print << "static constexpr u32 section_sizes[] = {"sv;
+	for (size_t section_index = 0; section_index < sections.size(); ++section_index) {
+		const Section& section = sections[section_index];
+		size_t section_size = GetSectionEnd(sections, section_index, generated_code) - section.offset;
+		print << "/*"sv << section.name << "*/"sv << i32(section_size) << ","sv;
+	}
+	print << "};"sv;
+	print.Flush();
+
+	print << "static constexpr u32 shader_deps[] = {"sv;
+	for (i32 shader_dependency_mask : shader_deps.data) {
+		print << shader_dependency_mask << ","sv;
+	}
+	print << "};"sv;
+	print.Flush();
+}
+
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
 int main(int argc, const char** argv) {
@@ -395,7 +640,11 @@ int main(int argc, const char** argv) {
 
 	std::vector<char> source_code;
 	std::vector<Lexer::Token> tokens;
+	std::unordered_map<string_view, const char*> translation;
+	SectionList sections;
+	ShaderDependencies shader_deps;
 	std::vector<char> generated_code;
+	std::vector<std::string> modules;
 	Lexer lexer;
 
 	FILE* out = fopen(options.output_path.c_str(), "w");
@@ -414,61 +663,63 @@ int main(int argc, const char** argv) {
 		Demo::Shader::Version
 	);
 
-	/* list all .glsl files */
-	std::error_code file_list_error = {};
-	fs::directory_iterator file_list{options.source_path, file_list_error};
-	if (file_list_error) {
-		printf("ERROR: Could not list files in %s\n", options.source_path.c_str());
-		return 1;
-	}
-
-	for (auto& item : file_list) {
-		auto path = item.path();
-		if (path.extension() != L".glsl"sv)
-			continue;
+	for (std::string_view stage : ShaderStages) {
+		std::string file_name_no_extension = std::string(stage) + "_shaders";
+		std::string file_name              = file_name_no_extension + ".glsl";
+		std::string full_path              = options.source_path + "/" + file_name;
 
 		using clock = std::chrono::high_resolution_clock;
 		auto time_begin = clock::now();
-
-		auto full_path = path.generic_string();
-		auto file_name = path.filename().string();
-		auto file_name_no_extension = path.filename().replace_extension().string();
 
 		Preserve mode = file_name_no_extension.find("vertex") != std::string::npos ? Preserve::InputsAndOtputs : Preserve::Inputs;
 
 		printf("--- Compiling %s ---\n", file_name.c_str());
 
 		printf("Reading file...");
-		if (!ReadFile(path.string().c_str(), source_code)) {
+		if (!ReadFile(full_path.c_str(), source_code)) {
 			return 1;
 		}
 		printf(" %zd bytes\n", source_code.size());
 
-		tokens.clear();
 		Tokenize({source_code.data(), source_code.size()}, lexer, tokens);
-
 		RenameVectorFields(tokens, lexer.GetAtoms());
-		RenameIdentifiers(tokens, lexer.GetAtoms(), mode);
-
-		generated_code.clear();
-		GenerateCode(tokens, generated_code);
+		RenameIdentifiers(tokens, lexer.GetAtoms(), mode, translation);
+		SplitIntoSections(tokens, sections);
+		Link(tokens, sections, shader_deps);
+		GenerateCode(tokens, sections, generated_code);
 
 		/* file header */
 		fprintf(out,
 			"\n"
 			"// %s: %zd => %zd (%.1f%%)\n"
-			"static constexpr char g_%s[] =\n",
+			"namespace cooked::%s {\n"
+			"static constexpr char code[] =\n",
 			full_path.c_str(), source_code.size(), generated_code.size(), (float)generated_code.size() / (float)source_code.size() * 100.f,
 			file_name_no_extension.c_str()
 		);
 
-		Print(out, {generated_code.data(), generated_code.size()});
+		PrintCode(out, {generated_code.data(), generated_code.size()}, sections);
+		if (OutputTranslationMap)
+			PrintTranslationMap(out, translation);
+		PrintSections(out, {generated_code.data(), generated_code.size()}, sections, shader_deps);
 
-		fprintf(out, ";\n");
+		/* footer */
+		fprintf(out, "} // namespace cooked::%s\n", file_name_no_extension.c_str());
 
 		auto msec_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - time_begin);
 		printf("%lld msec elapsed\n\n", msec_elapsed.count());
+
+		modules.push_back("cooked::" + file_name_no_extension);
 	}
+
+	/* global footer */
+	fprintf(out, "\nstatic constexpr Gfx::Shader::Module shader_modules[] = {\n");
+	for (std::string& module : modules) {
+		fprintf(out, "\t{ size(%s::section_sizes), %s::code, %s::section_sizes, %s::shader_deps },\n",
+			module.c_str(), module.c_str(), module.c_str(), module.c_str()
+		);
+	}
+	fprintf(out, "};\n");
 
 	return 0;
 }

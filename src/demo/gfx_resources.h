@@ -285,7 +285,7 @@ namespace Demo {
 		Texture::GenerateSolidTextures();
 		Texture::GenerateFont();
 		Uniform::RegisterAll();
-		Shader::RegisterAll(g_vertex_shaders, g_fragment_shaders);
+		Shader::RegisterAll(shader_modules);
 		Gfx::CompileShaders(0, Shader::UI + 1);
 
 		/* show a basic loading screen while compiling shaders */

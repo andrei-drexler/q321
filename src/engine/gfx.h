@@ -178,27 +178,34 @@ namespace Gfx {
 			NumStateBits		= 5 + Vertex::MaxNumAttributes,
 			MaskState			= (1 << NumStateBits) - 1,
 		};
+
+		struct Module {
+			u32					num_sections;
+			const char*			code;
+			const u32*			section_sizes;
+			const u32*			shader_deps;
+		};
 	}
 
 	#define PP_GFX_SHADER_ID(name, flags)		name,
 	#define PP_GFX_SHADER_NAME(name, flags)		#name "\0"
 	#define PP_GFX_SHADER_FLAGS(name, flags)	(Gfx::Shader::Flags)(flags),
 
-	#define GFX_DECLARE_SHADERS(list)																\
-		enum : Gfx::Shader::ID {																	\
-			list(PP_GFX_SHADER_ID)																	\
-			Count,																					\
-		};																							\
-		namespace Metadata {																		\
-			static constexpr char Names[] =	list(PP_GFX_SHADER_NAME);								\
-			static constexpr Gfx::Shader::Flags Properties[] = {									\
-				list(PP_GFX_SHADER_FLAGS)															\
-			};																						\
-		}																							\
-		FORCEINLINE void RegisterAll(const char* vertex_shaders, const char* fragment_shaders) {	\
-			using namespace Metadata;																\
-			Gfx::RegisterShaders(Properties, Count, vertex_shaders, fragment_shaders);				\
-		}																							\
+	#define GFX_DECLARE_SHADERS(list)											\
+		enum : Gfx::Shader::ID {												\
+			list(PP_GFX_SHADER_ID)												\
+			Count,																\
+		};																		\
+		namespace Metadata {													\
+			static constexpr char Names[] =	list(PP_GFX_SHADER_NAME);			\
+			static constexpr Gfx::Shader::Flags Properties[] = {				\
+				list(PP_GFX_SHADER_FLAGS)										\
+			};																	\
+		}																		\
+		FORCEINLINE void RegisterAll(const Gfx::Shader::Module* modules) {		\
+			using namespace Metadata;											\
+			Gfx::RegisterShaders(Count, Properties, modules[0], modules[1]);	\
+		}																		\
 
 	////////////////////////////////////////////////////////////////
 
@@ -256,7 +263,7 @@ namespace Gfx {
 
 	void RegisterUniforms(const Uniform::Type* types, const void* const* values, u16 count);
 	void RegisterTextures(const Texture::Descriptor* textures, u16 count);
-	void RegisterShaders(const Shader::Flags* flags, u16 count, const char* vertex_shaders, const char* fragment_shaders);
+	void RegisterShaders(u16 count, const Shader::Flags* flags, const Shader::Module& vertex_shaders, const Shader::Module& fragment_shaders);
 	void CompileShaders(Shader::ID first, u16 count);
 
 	template <int Size>
