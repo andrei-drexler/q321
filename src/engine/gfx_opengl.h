@@ -272,16 +272,7 @@ namespace GL {
 		const Gfx::Texture::Descriptor*		texture_descriptors;
 	} g_state;
 
-	namespace Stitch {
-		enum {
-			MAX_NUM_SOURCES = 32,
-			MAX_ENTRYPOINT_LENGTH = 8,
-		};
-
-		Array<const char*, MAX_NUM_SOURCES>			g_sources;
-		Array<GLint,       MAX_NUM_SOURCES>			g_lengths;
-		Array<char,        MAX_ENTRYPOINT_LENGTH>	g_entrypoint;
-	}
+	char g_stitch_buffer[256 * 1024];
 
 	void SetState(u32 bits, u32 force_change = 0);
 	void SetViewportAndScissor(GLsizei x, GLsizei y, GLsizei width, GLsizei height);
@@ -343,44 +334,38 @@ FORCEINLINE void Gfx::RegisterShaders(u16 count, const Shader::Flags* flags, con
 FORCEINLINE GLuint GL::StitchAndCompileShader(u16 shader_index, u32 stage) {
 	const Gfx::Shader::Module* module = g_state.shader_modules[stage];
 
-	MemSet(&Stitch::g_lengths, -1);
-	Stitch::g_sources[0] = "#version 330\n";
-	GLsizei num_sources = 1;
+	char* source = &g_stitch_buffer[0];
+	source += CopyString(source, "#version 330\n");
 
 	for (u32 section_index = 0, offset = 0; section_index < module->num_sections; ++section_index) {
 		GLint section_size = module->section_sizes[section_index];
 
 		if (module->shader_deps[shader_index] & (1 << section_index)) {
 			const char* section_code = module->code + offset;
-			Stitch::g_sources[num_sources] = section_code;
-			Stitch::g_lengths[num_sources] = section_size;
-			++num_sources;
+			MemCopy(source, section_code, section_size);
+			source += section_size;
 		}
 
 		offset += section_size;
 	}
 
-	Stitch::g_sources[num_sources++] = "void main(){_";
-	IntToString(shader_index, &Stitch::g_entrypoint[0]);
-	Stitch::g_sources[num_sources++] = &Stitch::g_entrypoint[0];
-	Stitch::g_sources[num_sources++] = "();}\n";
+	source += CopyString(source, "void main(){_");
+	source = IntToString(shader_index, source);
+	source += CopyString(source, "();}\n");
 
 #ifdef DISABLE_SHADER_CACHE
-	char no_shader_cache[64];
-	{
-		no_shader_cache[0] = '/';
-		no_shader_cache[1] = '/';
-		char* p = IntToString(Random(), no_shader_cache + 2);
-		p[0] = '\n';
-		p[1] = 0;
-	}
-	Stitch::g_sources[num_sources++] = no_shader_cache;
+	*source++ = '/';
+	*source++ = '/';
+	source = IntToString(Random(), source);
+	*source++ = '\n';
+	*source = '\0';
 #endif
 
 	GLuint shader = glCreateShader(ShaderStage::GetEnum((ShaderStage::Type)stage));
 	if (!shader)
 		Sys::Fatal(Error::Shader);
-	glShaderSource(shader, num_sources, &Stitch::g_sources[0], &Stitch::g_lengths[0]);
+	source = &g_stitch_buffer[0];
+	glShaderSource(shader, 1, &source, nullptr);
 	glCompileShader(shader);
 
 #ifdef DEV
