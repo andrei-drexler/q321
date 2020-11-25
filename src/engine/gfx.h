@@ -180,10 +180,14 @@ namespace Gfx {
 		};
 
 		struct Module {
+#ifdef DISABLE_SHADER_STITCHING
+			const char*			code;
+#else
 			u32					num_sections;
 			const char*			code;
 			const u32*			section_sizes;
 			const u32*			shader_deps;
+#endif
 		};
 	}
 

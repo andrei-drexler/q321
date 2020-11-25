@@ -630,6 +630,29 @@ void PrintSections(FILE* out, string_view generated_code, const SectionList& sec
 }
 
 ////////////////////////////////////////////////////////////////
+
+void PrintModules(FILE* out, const std::vector<std::string>& module_names) {
+	fprintf(out,
+		"\n"
+		"static constexpr Gfx::Shader::Module shader_modules[] = {\n"
+		"#ifdef DISABLE_SHADER_STITCHING\n"
+	);
+	for (const std::string& module : module_names) {
+		fprintf(out, "\t{ %s::code },\n", module.c_str());
+	}
+	fprintf(out, "#else\n");
+	for (const std::string& module : module_names) {
+		fprintf(out, "\t{ size(%s::section_sizes), %s::code, %s::section_sizes, %s::shader_deps },\n",
+			module.c_str(), module.c_str(), module.c_str(), module.c_str()
+		);
+	}
+	fprintf(out,
+		"#endif\n"
+		"};\n"
+	);
+}
+
+////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
@@ -712,14 +735,7 @@ int main(int argc, const char** argv) {
 		modules.push_back("cooked::" + file_name_no_extension);
 	}
 
-	/* global footer */
-	fprintf(out, "\nstatic constexpr Gfx::Shader::Module shader_modules[] = {\n");
-	for (std::string& module : modules) {
-		fprintf(out, "\t{ size(%s::section_sizes), %s::code, %s::section_sizes, %s::shader_deps },\n",
-			module.c_str(), module.c_str(), module.c_str(), module.c_str()
-		);
-	}
-	fprintf(out, "};\n");
+	PrintModules(out, modules);
 
 	return 0;
 }

@@ -418,6 +418,11 @@ static constexpr u32 shader_deps[] = {2051,16387,16387,16387,16387,16387,2051,20
 } // namespace cooked::fragment_shaders
 
 static constexpr Gfx::Shader::Module shader_modules[] = {
+#ifdef DISABLE_SHADER_STITCHING
+	{ cooked::vertex_shaders::code },
+	{ cooked::fragment_shaders::code },
+#else
 	{ size(cooked::vertex_shaders::section_sizes), cooked::vertex_shaders::code, cooked::vertex_shaders::section_sizes, cooked::vertex_shaders::shader_deps },
 	{ size(cooked::fragment_shaders::section_sizes), cooked::fragment_shaders::code, cooked::fragment_shaders::section_sizes, cooked::fragment_shaders::shader_deps },
+#endif
 };
