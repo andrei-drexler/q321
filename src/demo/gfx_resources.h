@@ -312,7 +312,16 @@ namespace Demo {
 		}
 
 		/* compile remaining shaders */
+#ifdef DISABLE_SHADER_CACHE
+		Sys::Time start = Sys::GetTime();
 		Gfx::CompileShaders(Shader::UI + 1, Shader::Count - Shader::UI - 1);
+		Sys::Printf("Compiled %d shaders in %d msec\n",
+			Shader::Count - Shader::UI,
+			int(1000.f * float(Sys::GetTime() - start))
+		);
+#else
+		Gfx::CompileShaders(Shader::UI + 1, Shader::Count - Shader::UI - 1);
+#endif
 
 		Texture::GenerateProceduralTextures();
 #ifdef SAVE_TEXTURE
