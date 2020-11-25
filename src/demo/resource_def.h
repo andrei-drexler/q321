@@ -76,6 +76,8 @@
 	x(giron01e,				FSVertexBits)\
 	x(giron01nt3,			FSVertexBits)\
 	x(gxstrtop4,			FSVertexBits)\
+	x(gxstrtop4bbrn,		FSVertexBits)\
+	x(gxstpbrdr3brn,		FSVertexBits)\
 	x(gwdclg1a,				FSVertexBits)\
 	x(gwdclg1bd,			FSVertexBits)\
 	x(gsltrfc,				FSVertexBits)\
@@ -246,6 +248,8 @@
 	x(giron01nt3,		Texture::White,		Shader::giron01nt3,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bwprtbnr,			Texture::White,		Shader::bwprtbnr,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gxstrtop4,		Texture::White,		Shader::gxstrtop4,		256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gxstrtop4bbrn,	Texture::White,		Shader::gxstrtop4bbrn,	256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gxstpbrdr3brn,	Texture::White,		Shader::gxstpbrdr3brn,	256,	16,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bmtsprt,			Texture::White,		Shader::bmtsprt,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(cable,			Texture::White,		Shader::cable,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(brdr11b,			Texture::White,		Shader::brdr11b,		64,		32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -324,6 +328,8 @@
 	x("gothic_wall/iron01_e",					Lmapped,		giron01e,		Solid,		Opaque,					(0))\
 	x("gothic_wall/iron01_ntech3",				Lmapped,		giron01nt3,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_floor/xstairtop4",				Lmapped,		gxstrtop4,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_floor/xstairtop4bbrn",			Lmapped,		gxstrtop4bbrn,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_floor/xstepborder3brn",			Lmapped,		gxstpbrdr3brn,	Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahellflat_400",				lavaf,			White,			Solid,		Opaque,					(400,16,5,2))\
 	x("gothic_ceiling/woodceiling1a",			Lmapped,		gwdclg1a,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_ceiling/woodceiling1b_dark",		Lmapped,		gwdclg1bd,		Solid,		Opaque|NeedsUV,			(0))\

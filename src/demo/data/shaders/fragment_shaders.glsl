@@ -2308,6 +2308,31 @@ TEX(gxstrtop4) {
 	return c;
 }
 
+// gothic_floor/xstairtop4bbrn
+TEX(gxstrtop4bbrn) {
+	float
+		e = step(.25, uv.y),
+		b = FBMT(uv, vec2(40, 5), .7 + .2 * e, 2. + e, 4);
+	vec3 c = (RGB(96, 64, 44) - e * RGB(8, 4, 4)) * mix(.5, 1.5, b);
+	c *= 1.
+		+ 1.5 * ls(.03, .01, uv.y) // highlight
+		- .7 * sqr(tri(.24, .25, .35, uv.y)) // shadow
+	;
+	return c;
+}
+
+// gothic_floor/xstepborder3brn
+TEX(gxstpbrdr3brn) {
+	float b = FBMT(uv, vec2(40, 5), .7, 2., 4);
+	vec3 c = RGB(88, 60, 40) * mix(.5, 1.5, b);
+	c *= 1.
+		+ 3. * sqr(ls(.9, .99, uv.y)) // strong top highlight
+		+ .2 * tri(.04, .02, uv.y) // subtle bottom highlight
+		- .3 * ls(.03, .0, uv.y) // bottom shadow
+	;
+	return c;
+}
+
 // gothic_ceiling/woodceiling1a
 TEX(gwdclg1a) {
 	vec2 p = uv, q;

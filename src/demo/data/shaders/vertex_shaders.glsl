@@ -98,6 +98,8 @@ void gdmnblk15fx() { FS(); }
 void giron01e() { FS(); }
 void giron01nt3() { FS(); }
 void gxstrtop4() { FS(); }
+void gxstrtop4bbrn() { FS(); }
+void gxstpbrdr3brn () { FS(); }
 void gwdclg1a() { FS(); }
 void gwdclg1bd() { FS(); }
 void gsltrfc() { FS(); }
