@@ -491,6 +491,7 @@ struct ShaderDependencies {
 void Link(const std::vector<Lexer::Token>& tokens, const SectionList& sections, ShaderDependencies& shader_deps) {
 	shader_deps.clear();
 
+	size_t missing_shaders = shader_deps.size();
 	size_t section_index = 0;
 	for (size_t token_index = 0; token_index < tokens.size(); ++token_index) {
 		if (section_index < sections.size() - 1 && token_index == sections[section_index + 1].offset)
@@ -508,10 +509,27 @@ void Link(const std::vector<Lexer::Token>& tokens, const SectionList& sections, 
 
 		if (shader_deps.data[shader_index] == 0) {
 			shader_deps.data[shader_index] = sections[section_index].dependencies | (1 << section_index);
+			--missing_shaders;
 
 			if (Verbose)
-				printf("Found %s in section %s\n", ShaderNames[shader_index].data(), sections[section_index].name.c_str());
+				printf("Found shader %s in section %s\n", ShaderNames[shader_index].data(), sections[section_index].name.c_str());
 		}
+	}
+
+	if (missing_shaders) {
+		std::string message = std::to_string(missing_shaders) + " missing shader";
+		if (missing_shaders != 1)
+			message += "s";
+		message += ":";
+
+		for (size_t i = 0; i < shader_deps.size(); ++i) {
+			if (shader_deps.data[i] == 0) {
+				message += "\n";
+				message += ShaderNames[i];
+			}
+		}
+
+		Error("%s", message.c_str());
 	}
 }
 
