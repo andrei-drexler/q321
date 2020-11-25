@@ -220,7 +220,7 @@ FORCEINLINE size_t CopyStaticString(char* dst, const char (&src)[Size]) {
 	return Size - 1; // exclude the NUL terminator
 }
 
-FORCEINLINE size_t CopyString(char* dst, const char* src) {
+NOINLINE size_t CopyString(char* dst, const char* src) {
 	size_t result = StrLen(src);
 	MemCopy(dst, src, result + 1);
 	return result;

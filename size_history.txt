@@ -1231,3 +1231,4 @@
 63141,removed icon pixel data mem alloc
 63179,more demon_block15fx work
 63579,added shader sections
+63572,noinline copystring
