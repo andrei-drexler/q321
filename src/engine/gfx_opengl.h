@@ -337,6 +337,9 @@ FORCEINLINE GLuint GL::StitchAndCompileShader(u16 shader_index, u32 stage) {
 	char* source = &g_stitch_buffer[0];
 	source += CopyString(source, "#version 330\n");
 
+#ifdef DISABLE_SHADER_STITCHING
+	source += CopyString(source, module->code);
+#else
 	for (u32 section_index = 0, offset = 0; section_index < module->num_sections; ++section_index) {
 		GLint section_size = module->section_sizes[section_index];
 
@@ -348,6 +351,7 @@ FORCEINLINE GLuint GL::StitchAndCompileShader(u16 shader_index, u32 stage) {
 
 		offset += section_size;
 	}
+#endif
 
 	source += CopyString(source, "void main(){_");
 	source = IntToString(shader_index, source);
