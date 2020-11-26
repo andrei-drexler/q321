@@ -1237,3 +1237,4 @@
 63691,sharper reflection for main_q3abanner
 63715,tweaked killblock_i4
 63711,vertex shader attrib macro
+63712,moved dmnd2cjp_m and fixture

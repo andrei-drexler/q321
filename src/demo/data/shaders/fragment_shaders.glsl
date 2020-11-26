@@ -852,6 +852,14 @@ TEX(dmnd2cjp) {
 	return c;
 }
 
+// sfx/diamond2cjumppad (map shader)
+void dmnd2cjp_m() {
+	vec4 c = T0(UV);
+	float r = length(fract(UV) - .5);
+	float s = mix(.4, 8., fract(Time.x * 1.5));
+	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.37, .32, r), 1);
+}
+
 // textures/sfx/pentfloor_diamond2c (texture)
 TEXA(dmnd2pnt) {
 	vec3 c = dmnd2cjp(uv);
@@ -2452,6 +2460,11 @@ TEX(brdr11b) {
 #pragma section lights
 ////////////////////////////////////////////////////////////////
 
+void fixture() {
+	vec4 c = T0(UV);
+	FCol = vec4(c.xyz * mix(Light(), vec3(1), c.w), 1);
+}
+
 // base_light/baslt4_1_4k
 TEXA(blt414k) {
 	float b = FBMT(uv, vec2(1, 5), .4, 3., 4); // base FBM
@@ -2700,19 +2713,6 @@ void Generic() {
 	vec3 c = vec3(.5);
 	c *= hsv(vec3(fract(PHI * Time.w + .25), 1., 1.));
 	FCol = vec4(c * l, 1);
-}
-
-void fixture() {
-	vec4 c = T0(UV);
-	FCol = vec4(c.xyz * mix(Light(), vec3(1), c.w), 1);
-}
-
-// sfx/diamond2cjumppad (map shader)
-void dmnd2cjp_m() {
-	vec4 c = T0(UV);
-	float r = length(fract(UV) - .5);
-	float s = mix(.4, 8., fract(Time.x * 1.5));
-	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.37, .32, r), 1);
 }
 
 void Lmapped() {
