@@ -1483,25 +1483,36 @@ TEX(gkarnarcfnlbt) {
 // gothic_block/blocks15
 TEX(gblks15) {
 	float
-		b = FBMT(uv, vec2(5), .9, 3., 4),
-		t = FBMT_ridged(wavy(uv, 4., .01), vec2(7), .5, 3., 5),
-		n = NT(wavy(uv, 4., .05), vec2(9)),
+		b = FBMT(uv, vec2(5), .9, 3., 4), // base FBM
+		t = FBMT_ridged(wavy(uv, 4., .01), vec2(7), .5, 3., 5), // ridged FBM
+		n = NT(wavy(uv, 4., .05), vec2(9)), // smooth noise
 		id, e;
 	vec3
-		pt = pattern(uv, 4., .1 + n * t * .05),
-		c;
+		c = RGB(74, 65, 62) * (.8 + .8 * b * b), // base color
+		pt = pattern(uv, 4., .07 + b * .04); // asymmetric block pattern
 	vec2 d = grad(pt.x);
-	id = H(fract(pt.yz));
-	c = RGB(74, 65, 62) * (.8 + .8 * b * b);
-	c += tri(.6, .3, n) * ls(.3, .9, b * t) * .2;
-	c *= 1. - tri(.5, .4, n) * ls(.5, .7, t) * .1;
-	c = mix(c, RGB(86, 74, 78), tri(.5, .1, b) * tri(.7, .3, id) * .7);
-	c = mix(c, RGB(105, 90, 70), tri(.3, .1, t) * tri(.3, .3, id) * .3);
-	e = tri(.015, .005 + .015 * n, pt.x) + tri(.4, .1, n * t) * .4;
-	c *= 1. - b * ls(.015, .05, pt.x) * .7;
-	c *= 1. + e * b * (d.y - .5) * .7;
-	c *= .9 + .2 * id;
-	c *= .9 + .2 * ridged(NT(uv - pt.yx, vec2(5)));
+	id = H(fract(pt.yz)); // tile id
+	c += tri(.6, .3, n) * ls(.3, .9, b * t) * .2; // bright splotches
+	c *= 1. - tri(.5, .4, n) * ls(.5, .7, t) * .1; // some medium-frequency variation
+	c = mix(c, RGB(86, 74, 78), tri(.5, .1, b) * tri(.7, .3, id) * .7); // subtle splash of color
+	c = mix(c, RGB(105, 90, 70), tri(.3, .1, t) * tri(.3, .3, id) * .3); // another subtle splash of color
+	e = tri(.015, .015 * b, pt.x) + tri(.4, .1, n * t) * .4; // edge size
+	c *= 1. - .2 * t * ls(.015, .017, pt.x); // mortar
+	c *= 1. + e * b * (d.y - .3); // bevel
+	c *= .9 + .2 * id; // per-tile brightness variation
+	c *= .9 + .2 * ridged(NT(uv - pt.yx, vec2(5))); // some medium-frequency variation
+
+	vec3 g;
+	EVAL_GRAD(
+		g, uv,
+		tri(.7, .5, NT(p[i], vec2(23))) *
+		sat(tri(.7, .4, NT(p[i], vec2(53))) * 4.);
+	);
+	c *= 1.
+		+ g.y * g.z * b * b * (.8 - id) // scratches
+		- pow(ls(.5, .0, b), 3.) // dirt/mold
+	;
+
 	return c;
 }
 
