@@ -2622,7 +2622,7 @@ TEXA(q3bnr) {
 void q3bnr_m() {
 	vec3 c = T0(UV * 2.).xyz * step(.5, fract(Time.x * .5));
 	c = mix(c * Light(), vec3(.5, 0, 0), tri(fract(Time.x * 2.), 1./64., fract(UV.y)));
-	FCol = vec4(c + env(Ref) * .25 + T0(UV + H(Time.xx)).w * .1, 1);
+	FCol = vec4(c + env(Ref, 90.) * .25 + T0(UV + H(Time.xx)).w * .1, 1);
 }
 
 // main menu banner (texture)

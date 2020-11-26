@@ -41,7 +41,7 @@ static constexpr u32 shader_deps[] = {1,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,};
 } // namespace cooked::vertex_shaders
 
-// src/demo/data/shaders//fragment_shaders.glsl: 94545 => 38996 (41.2%)
+// src/demo/data/shaders//fragment_shaders.glsl: 94550 => 39000 (41.2%)
 namespace cooked::fragment_shaders {
 static constexpr char code[] =
 /* ---- @global: 4842 chars (12.4%) ---- */
@@ -325,7 +325,7 @@ static constexpr char code[] =
 " b=ah(c,d(5),.9,3.,4),f=di(d2(c-=.5,.35),ad(a6(c,.4)),.02),a=pow(al(f-.02,.15),8.),bf=an(a2(a3(c,d(.46)),-a6(c,.51)),ad(a6"
 "(c,.44)));k e=n(76,62,47)*(.8+.8*b*b);e*=1.+(b+.5)*al(ad(bf)-.01,.01);e*=1.-j(.1,.05,f)*al(a6(c,.4));l af(e+1.*k(1,1,.3)*a"
 ",a);}"
-/* ---- banner: 3191 chars (8.2%) ---- */
+/* ---- banner: 3195 chars (8.2%) ---- */
 "h ej(d c,h s,h m,h fe){m=(c.g-ai(ad(c.r-.5))*fe)*s-m;l 2.*i(.5,.4,m)*(aj(m)-.5);}bk(_88){h b=ah(c,d(5,9),.9,3.,4),t=.8+.8*"
 "b*b,u=ah(c,d(5,9),.9,3.,2),x=ad(c.r-.5),f;k e=n(77,60,44)*t;d p=c*d(1,2)-d(.5,.7);e*=1.-.55*al(bv(a6(p,.3),cw(bh(45.)*p*.8"
 ",0.)-.01));e*=1.+ai(j(.6,.9,b))+i(.2,.5,c.g)*i(.2,.3,x)*ej(c,4.,.2,4.);for(h a9=6.;a9<9.;++a9)e*=1.+i(.8,.5,c.g)*i(.2,.3,x"
@@ -342,17 +342,17 @@ static constexpr char code[] =
 "c-d(1.5,17),d(2.5,1)));c.r-=s*24.;f=an(f,be(c-d(-2,18),d(.5,3)));f=an(f,be(c-d(2,18),d(.5,3)));f=an(f,be(c-d((18.-c.g)*.5,"
 "18),d(.7,3)));c.r=ct(c.r+s*68.,s*46.);f=an(f,be(ct(c,0.)-d((c.g-21.)*.33,18),d(.5,3)));f=an(f,be(c-d(0,16.5),d(1,.25)));l "
 "f;}bk(_93){l af(al(an(ek(c),el(c,1.)),.8),0,0,bj(c*511.));}am _94(){k e=a5(UV*2.).a0*b2(.5,aj(U6.r*.5));e=o(e*bo(),k(.5,0,"
-"0),i(aj(U6.r*2.),1./64.,aj(UV.g)));ak=af(e+b9(Ref)*.25+a5(UV+bj(U6.rr)).a*.1,1);}av(_95){h f=ek(c);d p=dc(f)*bh(90.);d q=s"
-"ign(p)*c*d(133,33)+U6.r*4.;p*=p;l k((1.-1.4*ad(f))*((cu(q.r)*p.r+cu(q.g)*p.g)/co(p+.01)*.7+.3),a7(3.-6.*el(c,.7))*ah(c-d(."
-"2*cu(U6.r),U6.r),d(7,3),.7,2.,4),0);}am _96(){d c=UV-.5;d r=d(dFdx(c.r),dFdy(c.g));c/=r/b1(r);c*=.5;c.g=(c.g-.16)*7.;ak=b1"
-"(ad(c+d(0,.23))/d(.55,.2))>.4?af(0):a5(c+.51).g*af(2,1,.3,0);if(b1(ad(c-d(0,.15))/d(.77,1))>.4)l;h u=bj(c*133.7+U6.r),ao=1"
-"./48.,s=pow(1.2,ao),m=u*ao;c/=o(1.,s,u);for(;m<1.;m+=ao){c.r+=(cu(U6.r*.37)-.5)*ao/48.;c.g+=(cu(U6.r*.21)-.5)*ao/32.;r=c/="
-"s;r.g-=m*.15;r.r*=1.+r.g*.15;af e=a5(r+.5);ak+=e.r*(1.-m)*ao*af(32,16,4,0);}}d ff(k p,bd ax){l(ax==0)?p.gb:(ax==1)?p.rb:p."
-"rg;}bd fg(k u){u=ad(u)+k(.01,.02,.03);h ac=b1(u);l(ac==u.r)?0:(ac==u.g)?1:2;}k fh(k e){k a0=a7(ad(mod(e.r*6.+k(0,4,2),6.)-"
-"3.)-1.);a0*=a0*(3.-2.*a0);l e.b*o(k(1.),a0,e.g);}am _0(){h v=dot(Nor,ci(k(2,0,8)));v=v*.4+.7;d c=ff(Pos,fg(Nor));k e=k(.5)"
-";e*=fh(k(aj(cq*U6.a+.25),1.,1.));ak=af(e*v,1);}am _7(){af e=a5(UV);ak=af(e.a0*o(bo(),k(1),e.a),1);}am _81(){af e=a5(UV);h "
-"r=a1(aj(UV)-.5);h s=o(.4,8.,aj(U6.r*1.5));ak=af(e.a0*bo()+n(240,130,5)*i(.1,.05,r/s)*j(.37,.32,r),1);}am _6(){k e=a5(UV).a"
-"0;ak=af(e*bo(),1);}"
+"0),i(aj(U6.r*2.),1./64.,aj(UV.g)));ak=af(e+b9(Ref,90.)*.25+a5(UV+bj(U6.rr)).a*.1,1);}av(_95){h f=ek(c);d p=dc(f)*bh(90.);d"
+" q=sign(p)*c*d(133,33)+U6.r*4.;p*=p;l k((1.-1.4*ad(f))*((cu(q.r)*p.r+cu(q.g)*p.g)/co(p+.01)*.7+.3),a7(3.-6.*el(c,.7))*ah(c"
+"-d(.2*cu(U6.r),U6.r),d(7,3),.7,2.,4),0);}am _96(){d c=UV-.5;d r=d(dFdx(c.r),dFdy(c.g));c/=r/b1(r);c*=.5;c.g=(c.g-.16)*7.;a"
+"k=b1(ad(c+d(0,.23))/d(.55,.2))>.4?af(0):a5(c+.51).g*af(2,1,.3,0);if(b1(ad(c-d(0,.15))/d(.77,1))>.4)l;h u=bj(c*133.7+U6.r),"
+"ao=1./48.,s=pow(1.2,ao),m=u*ao;c/=o(1.,s,u);for(;m<1.;m+=ao){c.r+=(cu(U6.r*.37)-.5)*ao/48.;c.g+=(cu(U6.r*.21)-.5)*ao/32.;r"
+"=c/=s;r.g-=m*.15;r.r*=1.+r.g*.15;af e=a5(r+.5);ak+=e.r*(1.-m)*ao*af(32,16,4,0);}}d ff(k p,bd ax){l(ax==0)?p.gb:(ax==1)?p.r"
+"b:p.rg;}bd fg(k u){u=ad(u)+k(.01,.02,.03);h ac=b1(u);l(ac==u.r)?0:(ac==u.g)?1:2;}k fh(k e){k a0=a7(ad(mod(e.r*6.+k(0,4,2),"
+"6.)-3.)-1.);a0*=a0*(3.-2.*a0);l e.b*o(k(1.),a0,e.g);}am _0(){h v=dot(Nor,ci(k(2,0,8)));v=v*.4+.7;d c=ff(Pos,fg(Nor));k e=k"
+"(.5);e*=fh(k(aj(cq*U6.a+.25),1.,1.));ak=af(e*v,1);}am _7(){af e=a5(UV);ak=af(e.a0*o(bo(),k(1),e.a),1);}am _81(){af e=a5(UV"
+");h r=a1(aj(UV)-.5);h s=o(.4,8.,aj(U6.r*1.5));ak=af(e.a0*bo()+n(240,130,5)*i(.1,.05,r/s)*j(.37,.32,r),1);}am _6(){k e=a5(U"
+"V).a0;ak=af(e*bo(),1);}"
 /* ---- elemental: 908 chars (2.3%) ---- */
 "am _97(){d c=aj(UV);c.r+=U6.r/13.;h b=ah(c,d(3,7),.9,2.,4),a9=c.g;ak=af(2.*n(95,85,80)*a9*a9*a9*a9*o(1.,b,.5),0.);}h em(d "
 "c,h s){d p=c;p.g+=p.g-U6.r*s;c.r+=(cu(p.g*5.)-.5)*1.5*ai(c.g);h u=ah(bc(p,7.,.02),d(9),.7,2.,4),a4=j(.9,.03,c.g),b=a3(c-d("
@@ -411,7 +411,7 @@ static constexpr char code[] =
 ")*al(f,.01);}am _129(){h f=a1(UV-.5)*32.;ak=af(.5*j(1.,.0,ad(f-14.))+j(1.,.5,f));}am _130(){d c=ad(UV-.5)*32.;ak=af(b2(cr("
 "c),1.)*b2(b1(c),6.));}am _131(){d c=ad(UV-.5)*32.;ak=af(b2(cr(c),1.)*b2(b1(c),6.)*b2(3.,b1(c)));}";
 static constexpr u32 section_sizes[] = {/*@global*/4842,/*patterns*/1700,/*diamond2c*/2125,/*metal*/4247,/*arena*/3192,/*
-blocks*/3194,/*largerblock*/1214,/*center2trn*/1704,/*computer_blocks17*/1586,/*organic*/4536,/*lights*/981,/*banner*/3191,
+blocks*/3194,/*largerblock*/1214,/*center2trn*/1704,/*computer_blocks17*/1586,/*organic*/4536,/*lights*/981,/*banner*/3195,
 /*elemental*/908,/*models*/3039,/*ui*/2537,};
 static constexpr u32 shader_deps[] = {2051,16387,16387,16387,16387,16387,2051,2051,4097,3,3,5,5,5,5,5,11,11,11,11,11,11,11,
 11,515,515,515,515,515,515,129,129,259,259,51,51,51,51,51,51,515,515,515,19,19,19,19,51,51,11,11,515,515,515,515,515,515,11,
