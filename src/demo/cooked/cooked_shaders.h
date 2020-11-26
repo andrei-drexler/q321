@@ -3,21 +3,21 @@
 // auto-generated, do not modify
 static_assert(0x11e1a947U == Demo::Shader::Version, "Shader definition mismatch, please recompile the shader compiler & shaders");
 
-// src/demo/data/shaders//vertex_shaders.glsl: 5296 => 2536 (47.9%)
+// src/demo/data/shaders//vertex_shaders.glsl: 5283 => 2512 (47.5%)
 namespace cooked::vertex_shaders {
 static constexpr char code[] =
-/* ---- @global: 635 chars (25.0%) ---- */
+/* ---- @global: 611 chars (24.3%) ---- */
 "#define c void\n"
 "#define f vec4\n"
 "#define j gl_Position\n"
-"#define l location\n"
 "#define n normalize\n"
-"uniform mat4 U2,U3,U4;uniform f U5,U6;layout(l=0)in f e;layout(l=1)in f k;layout(l=2)in vec3 h;layout(l=3)in f o;out vec3 "
-"Pos,Nor,WNor,Ref;out vec2 UV,LUV;out f Clr;c d(){j=e;UV=e.rg*.5+.5;}c m(float v,float ac,float ad){j+=ac*U2*f(h,0)*sin(6.2"
-"8*(U6.r*ad+dot(e.rgb/v,vec3(1))));}c _0(){j=U2*e;Pos=e.rgb;Nor=h;UV=k.rg;LUV=k.ba;Clr=o;Ref=n(reflect((e-U5).rgb,h));}c i("
-"){_0();Pos=floor(h)/4.;Nor=fract(h)*4.-2.;Ref=n(reflect((e-U5).rgb,Nor));float a=k.b,u=cos(a),s=sin(a);Nor.rg*=mat2(u,s,-s"
-",u);}c _5(){j=f(e.rg,1,1);UV=k.rg;Clr=o;Clr.rgb*=Clr.a;}"
-/* ---- @section1: 952 chars (37.5%) ---- */
+"#define k(v)layout(location=v)in\n"
+"uniform mat4 U2,U3,U4;uniform f U5,U6;k(0)f e;k(1)f l;k(2)vec3 h;k(3)f o;out vec3 Pos,Nor,WNor,Ref;out vec2 UV,LUV;out f C"
+"lr;c d(){j=e;UV=e.rg*.5+.5;}c m(float ac,float ad,float ae){j+=ad*U2*f(h,0)*sin(6.28*(U6.r*ae+dot(e.rgb/ac,vec3(1))));}c _"
+"0(){j=U2*e;Pos=e.rgb;Nor=h;UV=l.rg;LUV=l.ba;Clr=o;Ref=n(reflect((e-U5).rgb,h));}c i(){_0();Pos=floor(h)/4.;Nor=fract(h)*4."
+"-2.;Ref=n(reflect((e-U5).rgb,Nor));float a=l.b,u=cos(a),s=sin(a);Nor.rg*=mat2(u,s,-s,u);}c _5(){j=f(e.rg,1,1);UV=l.rg;Clr="
+"o;Clr.rgb*=Clr.a;}"
+/* ---- @section1: 952 chars (37.9%) ---- */
 "c _1(){d();}c _2(){d();}c _3(){d();}c _4(){d();}c _6(){_0();}c _7(){_0();}c _8(){_0();}c _9(){d();}c _10(){d();}c _11(){d("
 ");}c _12(){d();}c _13(){_0();}c _14(){d();}c _15(){_0();}c _16(){d();}c _17(){d();}c _18(){d();}c _19(){_0();}c _20(){d();"
 "}c _21(){d();}c _22(){d();}c _23(){d();}c _24(){d();}c _25(){d();}c _26(){_0();}c _27(){d();}c _28(){d();}c _29(){d();}c _"
@@ -26,7 +26,7 @@ static constexpr char code[] =
 ";}c _49(){d();}c _50(){d();}c _51(){d();}c _52(){d();}c _53(){d();}c _54(){d();}c _55(){d();}c _56(){d();}c _57(){d();}c _"
 "58(){d();}c _59(){d();}c _60(){d();}c _61(){_0();}c _62(){d();}c _63(){_0();}c _64(){d();}c _65(){d();}c _66(){d();}c _67("
 "){d();}c _68(){d();}c _69(){d();}c _70(){d();}c _71(){d();}c _72(){d();}c _73(){d();}c _74(){d();}"
-/* ---- @section2: 949 chars (37.4%) ---- */
+/* ---- @section2: 949 chars (37.8%) ---- */
 "c _75(){d();}c _76(){d();}c _77(){d();}c _78(){d();}c _79(){d();}c _80(){d();}c _81(){_0();}c _82(){d();}c _83(){_0();}c _"
 "84(){_0();}c _85(){_0();}c _86(){_0();m(100.,3.,.1);}c _87(){_0();}c _88(){d();}c _89(){_0();m(30.,3.,.2);m(100.,3.,.7);}c"
 " _90(){i();}c _91(){i();}c _92(){i();}c _93(){d();}c _94(){_0();}c _95(){d();}c _96(){d();}c _97(){_0();}c _98(){i();}c _9"
@@ -35,7 +35,7 @@ static constexpr char code[] =
 "{_108();}c _111(){_108();}c _112(){_108();}c _113(){_108();}c _114(){_108();}c _115(){_108();j+=U2*f(h+h,0);}c _116(){d();"
 "}c _117(){_108();}c _118(){_108();}c _119(){d();}c _120(){d();}c _121(){d();}c _122(){d();}c _123(){d();}c _124(){d();}c _"
 "125(){d();}c _126(){d();}c _127(){d();}c _128(){d();}c _129(){d();}c _130(){d();}c _131(){d();}";
-static constexpr u32 section_sizes[] = {/*@global*/635,/*@section1*/952,/*@section2*/949,};
+static constexpr u32 section_sizes[] = {/*@global*/611,/*@section1*/952,/*@section2*/949,};
 static constexpr u32 shader_deps[] = {1,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,};

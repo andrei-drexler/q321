@@ -1236,3 +1236,4 @@
 63690,added xstairtop4bbrn and xstepborder3brn
 63691,sharper reflection for main_q3abanner
 63715,tweaked killblock_i4
+63711,vertex shader attrib macro

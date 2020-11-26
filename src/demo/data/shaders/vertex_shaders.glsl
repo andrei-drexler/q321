@@ -1,10 +1,12 @@
+#define ATTR(l) layout(location = l) in
+
 uniform mat4 MVP, View, World;
 uniform vec4 Cam, Time;
 
-layout(location=0) in vec4 P;
-layout(location=1) in vec4 T;
-layout(location=2) in vec3 N;
-layout(location=3) in vec4 C;
+ATTR(0) vec4 P;
+ATTR(1) vec4 T;
+ATTR(2) vec3 N;
+ATTR(3) vec4 C;
 
 out vec3 Pos, Nor, WNor, Ref;
 out vec2 UV, LUV;
