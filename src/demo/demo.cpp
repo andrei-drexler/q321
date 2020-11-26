@@ -14,7 +14,6 @@
 //#define FULLBRIGHT
 //#define DRAFT_LIGHTMAP
 //#define ENABLE_RADIOSITY
-//#define START_NOCLIP
 
 ////////////////////////////////////////////////////////////////
 

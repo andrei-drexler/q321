@@ -360,7 +360,4 @@ NOINLINE void Demo::Player::Spawn() {
 	health		= 100;
 	weapon		= Entity::Type::weapon_rocketlauncher;
 	flags		= Flag::NoJump;
-#ifdef START_NOCLIP
-	flags		|= Flag::NoClip;
-#endif
 }
