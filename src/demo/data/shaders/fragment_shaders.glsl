@@ -1724,13 +1724,17 @@ TEX(gklblki) {
 TEX(gklblki4) {
 	float
 		b = FBMT(uv, vec2(9), .7, 2., 4), // base FBM
-		t = .75 + b * b; // base texture intensity (remapped FBM)
+		t = .75 + b * b, // base texture intensity (remapped FBM)
+		l;
 	vec3 c = gklblki_base(uv, vec2(4, .3));
 	vec2 p = uv, s;
 	p.x = mod(p.x, .2); // repeat x5 horizontally
 	p -= .1;
-	s = skull(p * 5.);
-	return mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, msk(s.y, .02));
+	s = skull(p * 5.); // skull grayscale intensity + SDF
+	l = (skull(p * 5. + vec2(0, .1)) - s).y / .1; // skull light/shadow
+	c = mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, msk(s.y, .02)); // skulls
+	c *= 1. - (.5 - l * .3) * tri(.03, .07 + .13 * sat(-l), s.y); // skull shadows, larger below
+	return c;
 }
 
 ////////////////////////////////////////////////////////////////
