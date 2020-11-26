@@ -1240,3 +1240,4 @@
 63712,moved dmnd2cjp_m and fixture
 63740,slightly more detailed gblks15
 63738,fixed statue pedestal
+63738,tweaked pedestal brushwork
