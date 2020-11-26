@@ -469,7 +469,7 @@ NOINLINE void Demo::Map::Details::SampleLighting(const vec3& pos, const vec3& no
 				}
 #ifdef ENABLE_RADIOSITY
 			} else {
-				if (vis != Opaque)
+				if (vis != Material::Opaque)
 					continue;
 
 				u8 uv_axis = brushes.GetPlaneUVAxis(trace.plane);
