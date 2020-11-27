@@ -1,24 +1,25 @@
 #pragma once
 
 namespace Demo {
+	NOINLINE void SetupCollisionTrace(Map::TraceInfo& trace) {
+		MemSet(&trace);
+		trace.type = Map::TraceType::Collision;
+		trace.z_offset = Player::EyeCenterOffset;
+		trace.box_half_size = Player::CollisionBounds;
+	}
+
 	NOINLINE void ClipVelocity(vec3& velocity, const vec3& normal) {
 		const float Overclip = -513.f/512.f;
 		float into = dot(velocity, normal);
 		if (into < 0.f)
-			into *= Overclip;
-		else
-			into /= Overclip;
-		mad(velocity, normal, into);
+			mad(velocity, normal, into * Overclip);
 	}
 
 	bool GroundTrace(Player& player) {
 		Map::TraceInfo trace;
-		MemSet(&trace);
+		SetupCollisionTrace(trace);
 		trace.start = player.position;
-		trace.z_offset = Player::EyeCenterOffset;
 		trace.delta.z = -0.5f;
-		trace.box_half_size = Player::CollisionBounds;
-		trace.type = Map::TraceType::Collision;
 		trace.max_touch_ents = Player::MaxTouchEnts;
 		trace.touch_ents = player.touch_ents;
 
@@ -41,157 +42,34 @@ namespace Demo {
 	};
 
 	MoveResult SlideMove(Player& player, float dt) {
-		// apply gravity if airborne or on a very steep slope
-		bool gravity = !player.ground || player.ground->z < 0.5f;
+		MoveResult result = MoveResult::Ok;
 
-		const u8 MaxClipPlanes = 5;
-		vec3 planes[MaxClipPlanes], end_velocity;
-		u8 num_planes, bump, i;
+		if (!player.ground || player.ground->z < 0.5f)
+			player.velocity.z -= g_gravity.value * dt;
+		else
+			ClipVelocity(player.velocity, player.ground->xyz);
 
-		end_velocity = player.velocity;
-		if (gravity) {
-			float delta = g_gravity.value * dt;
-			player.velocity.z -= delta * 0.5f;
-			end_velocity.z -= delta;
-		}
-
-		// never turn against the ground plane
-		if (player.ground) {
-			num_planes = 1;
-			planes[0] = player.ground->xyz;
-		} else {
-			num_planes = 0;
-		}
-
-		// never turn against original velocity
-		safe_normalize(player.velocity, planes[num_planes++]);
-
-		const float
-			ThreshIgnore	= 1./16.f,		// ~ 0.1
-			ThreshSame		= 0.984375f;	// ~ 0.99
-
-		for (bump = 0; bump < 4; ++bump) {
-			vec3 advance = player.velocity * dt;
-
+		for (int bump = 0; bump < 3; ++bump) {
 			Map::TraceInfo trace;
-			MemSet(&trace);
-			trace.SetCollision(player.position, advance, Player::CollisionBounds);
-			trace.z_offset = Player::EyeCenterOffset;
+			SetupCollisionTrace(trace);
 
+			trace.start = player.position;
+			trace.delta = player.velocity * dt;
 			Map::TraceRay(trace);
 
-			if (trace.fraction > 0.f) {
-				// actually covered some distance
-				player.position = trace.hit_point;
-			}
-			
-			if (trace.start_solid) {
-				//return true;
-			}
+			if (trace.plane != -1)
+				ClipVelocity(player.velocity, trace.hit_normal);
 
-			if (trace.fraction == 1.f) {
-				// moved the entire distance
+			player.position = trace.hit_point;
+
+			if (trace.fraction == 1.f)
 				break;
-			}
 
 			dt *= 1.f - trace.fraction;
-
-			if (num_planes >= MaxClipPlanes) {
-				// this shouldn't really happen
-				MemSet(&player.velocity);
-				return MoveResult::Blocked;
-			}
-
-			// if this is the same plane we hit before, nudge velocity
-			// out along it, which fixes some epsilon issues with
-			// non-axial planes
-			for (i = 0; i<num_planes; ++i) {
-				if (dot(trace.hit_normal, planes[i]) > ThreshSame) {
-					player.velocity += trace.hit_normal;
-					break;
-				}
-			}
-
-			if (i < num_planes)
-				continue;
-
-			planes[num_planes++] = trace.hit_normal;
-			if (num_planes == MaxClipPlanes) {
-				// this shouldn't really happen
-				MemSet(&player.velocity);
-				return MoveResult::Blocked;
-			}
-
-			//
-			// modify velocity so it parallels all of the clip planes
-			//
-
-			// find a plane that it enters
-			for (i = 0; i < num_planes; ++i) {
-				if (dot(player.velocity, planes[i]) >= ThreshIgnore) {
-					// move doesn't interact with the plane
-					continue;
-				}
-
-				vec3 clip_velocity = player.velocity;
-				vec3 end_clip_velocity = end_velocity;
-
-				// slide along the plane
-				ClipVelocity(clip_velocity, planes[i]);
-				ClipVelocity(end_clip_velocity, planes[i]);
-
-				// see if there is a second plane that the new move enters
-				for (u8 j = 0; j < num_planes; ++j) {
-					if (j == i)
-						continue;
-
-					if (dot(clip_velocity, planes[j]) >= ThreshIgnore) {
-						// move doesn't interact with the plane
-						continue;
-					}
-
-					// try clipping the move to the plane
-					ClipVelocity(clip_velocity, planes[j]);
-					ClipVelocity(end_clip_velocity, planes[j]);
-
-					// see if it goes back into the first clip plane
-					if (dot(clip_velocity, planes[i]) >= 0.f)
-						continue;
-
-					// slide the original velocity along the crease
-					safe_normalize(cross(planes[i], planes[j]), clip_velocity);
-					end_clip_velocity = clip_velocity;
-
-					clip_velocity *= dot(clip_velocity, player.velocity);
-					end_clip_velocity *= dot(end_clip_velocity, end_velocity);
-
-					// see if there is a third plane that the new move enters
-					for (u8 k = 0; k < num_planes; ++k) {
-						if (k == i || k == j)
-							continue;
-					
-						if (dot(clip_velocity, planes[k]) >= ThreshIgnore) {
-							// move doesn't interact with the plane
-							continue;
-						}
-
-						// stop dead at a triple plane interaction
-						MemSet(&player.velocity);
-						return MoveResult::Blocked;
-					}
-				}
-
-				// if we have fixed all interactions, try another move
-				player.velocity = clip_velocity;
-				end_velocity = end_clip_velocity;
-				break;
-			}
+			result = MoveResult::Blocked;
 		}
 
-		if (gravity)
-			player.velocity = end_velocity;
-
-		return bump != 0 ? MoveResult::Blocked : MoveResult::Ok;
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
