@@ -49,6 +49,11 @@ namespace Demo {
 		else
 			ClipVelocity(player.velocity, player.ground->xyz);
 
+		// Corner clipping: bumping into a corner with enough speed
+		// that you completely slide off the wall in the same frame
+		// allows you to keep the initial velocity
+		vec3 unclipped_velocity = player.velocity;
+
 		for (int bump = 0; bump < 3; ++bump) {
 			Map::TraceInfo trace;
 			SetupCollisionTrace(trace);
@@ -62,8 +67,13 @@ namespace Demo {
 
 			player.position = trace.hit_point;
 
-			if (trace.fraction == 1.f)
+			if (trace.fraction == 1.f) {
+				player.velocity = unclipped_velocity;
 				break;
+			} else if (trace.fraction == 0.f) {
+				// hit the wall too hard, disable corner clipping
+				unclipped_velocity = player.velocity;
+			}
 
 			dt *= 1.f - trace.fraction;
 			result = MoveResult::Blocked;

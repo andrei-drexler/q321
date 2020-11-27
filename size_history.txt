@@ -1242,3 +1242,4 @@
 63738,fixed statue pedestal
 63738,tweaked pedestal brushwork
 63455,simplified movement code
+63460,added corner clipping
