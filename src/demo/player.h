@@ -134,7 +134,7 @@ namespace Demo {
 
 ////////////////////////////////////////////////////////////////
 
-#include "player_move.h"
+#include "movement.h"
 
 void Demo::Player::Update(float dt) {
 	/* read inputs */

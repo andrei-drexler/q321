@@ -54,9 +54,6 @@
     <ClInclude Include="src\demo\material.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\player_move.h">
-      <Filter>Demo</Filter>
-    </ClInclude>
     <ClInclude Include="src\demo\player.h">
       <Filter>Demo</Filter>
     </ClInclude>
@@ -94,6 +91,9 @@
       <Filter>Demo</Filter>
     </ClInclude>
     <ClInclude Include="src\demo\curves.h">
+      <Filter>Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\demo\movement.h">
       <Filter>Demo</Filter>
     </ClInclude>
   </ItemGroup>

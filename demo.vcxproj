@@ -34,7 +34,7 @@
     <ClInclude Include="src\demo\models.h" />
     <ClInclude Include="src\demo\packed_map.h" />
     <ClInclude Include="src\demo\player.h" />
-    <ClInclude Include="src\demo\player_move.h" />
+    <ClInclude Include="src\demo\movement.h" />
     <ClInclude Include="src\demo\resource_def.h" />
     <ClInclude Include="src\demo\menu.h" />
     <ClInclude Include="src\engine\aabb.h" />
