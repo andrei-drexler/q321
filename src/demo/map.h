@@ -545,10 +545,10 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 
 			/* first 6 planes - one for each bounding box side */
 			MemSet(brush_planes, 0, 6);
-			for (u32 i = 0; i < 6; ++i) {
-				u32 axis = i >> 1;
-				bool max_side = i & 1;
-				u32 sign = i << 31;	// (i & 1) << 31
+			for (u32 face_index = 0; face_index < 6; ++face_index) {
+				u32 axis = face_index >> 1;
+				bool max_side = face_index & 1;
+				u32 sign = face_index << 31;	// (face_index & 1) << 31
 				float value = brush_bounds[max_side][axis];
 				vec4& plane = brush_planes[num_brush_planes++];
 				//plane.data[axis] = max_side ? 1.f : -1.f;
@@ -559,22 +559,22 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 
 			/* non-axial planes, if any */
 			{
-				auto num_extra_planes = *nonaxial_offset++;
-				assert(brushes.plane_count + 6  + num_extra_planes <= MAX_NUM_PLANES);
+				auto num_unaligned_planes = *nonaxial_offset++;
+				assert(brushes.plane_count + 6  + num_unaligned_planes <= MAX_NUM_PLANES);
 
-				for (u32 i = 0; i < num_extra_planes; ++i)
+				for (u32 face_index = 0; face_index < num_unaligned_planes; ++face_index)
 					packed.GetPlane(plane_data, brush_bounds, brush_planes[num_brush_planes++]);
 			}
 
 			brushes.plane_count += num_brush_planes;
 			if (mirrored) {
 				brushes.start[brushes.count] = brushes.plane_count;
-				
+
 				auto& dst_bounds = brushes.bounds[brushes.count];
 				MemCopy(&dst_bounds, &brush_bounds);
 				dst_bounds[0][symmetry_axis] = 2 * symmetry_level - brush_bounds[1][symmetry_axis];
 				dst_bounds[1][symmetry_axis] = 2 * symmetry_level - brush_bounds[0][symmetry_axis];
-				
+
 				for (u16 i = 0; i < num_brush_planes; ++i) {
 					auto& dst_plane = brush_planes[i + num_brush_planes];
 					auto& src_plane = brush_planes[Details::MirrorPlaneIndex(i, symmetry_axis)];
@@ -582,54 +582,54 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 					dst_plane[symmetry_axis] = -dst_plane[symmetry_axis];
 					dst_plane.w = src_plane.w + 2.f * src_plane[symmetry_axis] * symmetry_level;
 				}
-				
+
 				brushes.plane_count += num_brush_planes;
-				
+
 				++brushes.count;
 			}
 
 			/* iterate through all brush planes */
-			for (u32 i = 0; i < num_brush_planes; ++i) {
+			for (u32 face_index = 0; face_index < num_brush_planes; ++face_index) {
 				const u32 MAX_NUM_EDGES = 16;
 
 				BrushEdge	face_edges[MAX_NUM_EDGES];
 				u32			edge_order[MAX_NUM_EDGES];
 				float		edge_angle[MAX_NUM_EDGES];
 
-				u32 num_face_edges = EnumerateBrushFaceEdges(brush_planes, num_brush_planes, i, face_edges, MAX_NUM_EDGES, 1.f/16.f);
+				u32 num_face_edges = EnumerateBrushFaceEdges(brush_planes, num_brush_planes, face_index, face_edges, MAX_NUM_EDGES, 1.f/16.f);
 				assert(num_face_edges <= MAX_NUM_EDGES);
 
 				if constexpr (SnapVertices) {
 					u32 num_snapped_edges = 0;
-					for (u32 j = 0; j < num_face_edges; ++j) {
-						BrushEdge& e = face_edges[j];
-						for (u32 k = 0; k < 3; ++k) {
-							e.first_point [k] = floor(0.5f + e.first_point [k]);
-							e.second_point[k] = floor(0.5f + e.second_point[k]);
+					for (u32 edge_index = 0; edge_index < num_face_edges; ++edge_index) {
+						BrushEdge& e = face_edges[edge_index];
+						for (u32 axis = 0; axis < 3; ++axis) {
+							e.first_point [axis] = floor(0.5f + e.first_point [axis]);
+							e.second_point[axis] = floor(0.5f + e.second_point[axis]);
 						}
 						if (length_squared(e.first_point - e.second_point) > 0.25f)
-							edge_order[num_snapped_edges++] = j;
+							edge_order[num_snapped_edges++] = edge_index;
 					}
 					num_face_edges = num_snapped_edges;
 				} else {
-					for (u32 j = 0; j < num_face_edges; ++j)
-						edge_order[j] = j;
+					for (u32 edge_index = 0; edge_index < num_face_edges; ++edge_index)
+						edge_order[edge_index] = edge_index;
 				}
 
 				auto uv = packed.GetPlaneUV(src_plane_index);
 				auto material = packed.plane_materials[src_plane_index]; // bits 0..1 = dominant axis; bits 2+ = material
 				// optimization: for the first 6 planes of a brush the dominant axis is not filled in by the map compiler
-				if (i < 6)
-					material |= i >> 1;
+				if (face_index < 6)
+					material |= face_index >> 1;
 				++src_plane_index;
 
-				brushes.plane_mat_uv_axis[brush_start + i] = material;
+				brushes.plane_mat_uv_axis[brush_start + face_index] = material;
 				if (mirrored)
-					brushes.plane_mat_uv_axis[brush_start + Details::MirrorPlaneIndex(i, symmetry_axis) + num_brush_planes] = material;
+					brushes.plane_mat_uv_axis[brush_start + Details::MirrorPlaneIndex(face_index, symmetry_axis) + num_brush_planes] = material;
 
 				if (num_face_edges < 3)
 					continue;
-				
+
 				u32 uv_axis = material & 3;
 				material >>= 2;
 
@@ -638,23 +638,23 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 					(brush_flags & PackedMap::BrushFlagKeepUVs);
 
 				vec3 centerx2 = 0.f;
-				for (u32 j = 0; j < num_face_edges; ++j) {
-					auto& e = face_edges[edge_order[j]];
+				for (u32 edge_index = 0; edge_index < num_face_edges; ++edge_index) {
+					auto& e = face_edges[edge_order[edge_index]];
 					centerx2 += e.first_point;
 					centerx2 += e.second_point;
 				}
 				centerx2 /= float(num_face_edges);
 				auto& ref_edge = face_edges[edge_order[0]];
-				auto& plane = brush_planes[i];
+				auto& plane = brush_planes[face_index];
 				
 				vec3 x_axis = ref_edge.first_point + ref_edge.second_point - centerx2;
 				vec3 y_axis = cross(x_axis, plane.xyz);
 
-				for (u32 j = 0; j < num_face_edges; ++j) {
-					auto edge_index = edge_order[j];
-					auto& edge = face_edges[edge_index];
+				for (u32 edge_index = 0; edge_index < num_face_edges; ++edge_index) {
+					auto ordered_edge_index = edge_order[edge_index];
+					auto& edge = face_edges[ordered_edge_index];
 					vec3 delta = edge.first_point + edge.second_point - centerx2;
-					edge_angle[edge_index] = Math::atan2(dot(delta, y_axis), dot(delta, x_axis));
+					edge_angle[ordered_edge_index] = Math::atan2(dot(delta, y_axis), dot(delta, x_axis));
 				}
 
 				SimpleSort(edge_order, num_face_edges, [&](u32 a, u32 b) {
@@ -692,32 +692,32 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 				};
 
 				u32 first_vertex = num_mat_verts[material];
-				for (u32 j = 0; j < num_face_edges; ++j) {
-					auto& edge = face_edges[edge_order[j]];
+				for (u32 edge_index = 0; edge_index < num_face_edges; ++edge_index) {
+					auto& edge = face_edges[edge_order[edge_index]];
 					u32 index = mat_vertex_offset[material] + num_mat_verts[material]++;
-					positions[index] = (i == edge.first_plane) ? edge.first_point : edge.second_point;
+					positions[index] = (face_index == edge.first_plane) ? edge.first_point : edge.second_point;
 					texcoords[index].xy = uv_map(positions[index]);
 					normals[index] = plane.xyz;
 				}
 
-				brushes.plane_vertex_range[brush_start + i].Set(mat_vertex_offset[material] + first_vertex, num_face_edges);
+				brushes.plane_vertex_range[brush_start + face_index].Set(mat_vertex_offset[material] + first_vertex, num_face_edges);
 				if (mirrored) {
 					brushes
-						.plane_vertex_range[brush_start + Details::MirrorPlaneIndex(i, symmetry_axis) + num_brush_planes]
+						.plane_vertex_range[brush_start + Details::MirrorPlaneIndex(face_index, symmetry_axis) + num_brush_planes]
 						.Set(mat_vertex_offset[material] + first_vertex + num_face_edges, num_face_edges);
 				}
 
 				u32 index_offset = mat_index_offset[material];
-				for (u32 j = 2; j < num_face_edges; ++j) {
+				for (u32 edge_index = 2; edge_index < num_face_edges; ++edge_index) {
 					indices[index_offset + num_mat_indices[material]++] = first_vertex;
-					indices[index_offset + num_mat_indices[material]++] = first_vertex + j - 1;
-					indices[index_offset + num_mat_indices[material]++] = first_vertex + j;
+					indices[index_offset + num_mat_indices[material]++] = first_vertex + edge_index - 1;
+					indices[index_offset + num_mat_indices[material]++] = first_vertex + edge_index;
 				}
 
 				if (mirrored) {
-					for (u32 j = 0; j < num_face_edges; ++j) {
-						u32 dst_index = mat_vertex_offset[material] + j + num_mat_verts[material];
-						u32 src_index = mat_vertex_offset[material] + j + first_vertex;
+					for (u32 edge_index= 0; edge_index < num_face_edges; ++edge_index) {
+						u32 dst_index = mat_vertex_offset[material] + edge_index + num_mat_verts[material];
+						u32 src_index = mat_vertex_offset[material] + edge_index + first_vertex;
 						vec3& dst_pos = positions[dst_index];
 						vec3& src_pos = positions[src_index];
 						dst_pos = src_pos;
@@ -729,10 +729,10 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 					}
 					num_mat_verts[material] += num_face_edges;
 					first_vertex += num_face_edges;
-					for (u32 j = 2; j < num_face_edges; ++j) {
+					for (u32 edge_index = 2; edge_index < num_face_edges; ++edge_index) {
 						indices[index_offset + num_mat_indices[material]++] = first_vertex;
-						indices[index_offset + num_mat_indices[material]++] = first_vertex + j;
-						indices[index_offset + num_mat_indices[material]++] = first_vertex + j - 1;
+						indices[index_offset + num_mat_indices[material]++] = first_vertex + edge_index;
+						indices[index_offset + num_mat_indices[material]++] = first_vertex + edge_index - 1;
 					}
 				} // mirrored
 			} // planes
