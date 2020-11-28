@@ -655,12 +655,13 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 				vec3 y_axis = cross(x_axis, plane.xyz);
 
 				for (u32 j = 0; j < num_face_edges; ++j) {
-					auto& edge = face_edges[edge_order[j]];
+					auto edge_index = edge_order[j];
+					auto& edge = face_edges[edge_index];
 					vec3 delta;
 					delta.x = (edge.first_point.x + edge.second_point.x) * 0.5f - center.x;
 					delta.y = (edge.first_point.y + edge.second_point.y) * 0.5f - center.y;
 					delta.z = (edge.first_point.z + edge.second_point.z) * 0.5f - center.z;
-					edge_angle[j] = Math::atan2(dot(delta, y_axis), dot(delta, x_axis));
+					edge_angle[edge_index] = Math::atan2(dot(delta, y_axis), dot(delta, x_axis));
 				}
 
 				SimpleSort(edge_order, num_face_edges, [&](u32 a, u32 b) {
