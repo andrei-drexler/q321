@@ -588,39 +588,32 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 				++brushes.count;
 			}
 
-			const u32 MAX_NUM_EDGES = 48;
-			BrushEdge brush_edges[MAX_NUM_EDGES];
-		
-			u32 num_brush_edges = EnumerateBrushEdges(brush_planes, num_brush_planes, brush_edges, MAX_NUM_EDGES, 1.f/16.f);
-
-			assert(num_brush_edges <= MAX_NUM_EDGES);
-			assert(num_brush_planes <= 32);
-
-			u32 edge_mask[MAX_NUM_EDGES];
-			for (u32 i = 0; i < num_brush_edges; ++i) {
-				auto& e = brush_edges[i];
-				edge_mask[i] = (1 << e.first_plane) | (1 << e.second_plane);
-			
-				if (SnapVertices) {
-					for (u32 j = 0; j < 3; ++j) {
-						e.first_point [j] = floor(0.5f + e.first_point [j]);
-						e.second_point[j] = floor(0.5f + e.second_point[j]);
-					}
-					if (length_squared(e.first_point - e.second_point) < 0.25f)
-						edge_mask[i] = 0;
-				}
-			}
-
 			/* iterate through all brush planes */
 			for (u32 i = 0; i < num_brush_planes; ++i) {
-				const u32 MAX_FACE_EDGES = 32;
-				u8 face_edges[MAX_FACE_EDGES];
-				u32 num_face_edges = 0;
+				const u32 MAX_NUM_EDGES = 16;
 
-				u32 face_mask = 1 << i;
-				for (u32 j = 0; j < num_brush_edges; ++j) {
-					if (edge_mask[j] & face_mask)
-						face_edges[num_face_edges++] = j;
+				BrushEdge	face_edges[MAX_NUM_EDGES];
+				u32			edge_order[MAX_NUM_EDGES];
+				float		edge_angle[MAX_NUM_EDGES];
+
+				u32 num_face_edges = EnumerateBrushFaceEdges(brush_planes, num_brush_planes, i, face_edges, MAX_NUM_EDGES, 1.f/16.f);
+				assert(num_face_edges <= MAX_NUM_EDGES);
+
+				if constexpr (SnapVertices) {
+					u32 num_snapped_edges = 0;
+					for (u32 j = 0; j < num_face_edges; ++j) {
+						BrushEdge& e = face_edges[j];
+						for (u32 k = 0; k < 3; ++k) {
+							e.first_point [k] = floor(0.5f + e.first_point [k]);
+							e.second_point[k] = floor(0.5f + e.second_point[k]);
+						}
+						if (length_squared(e.first_point - e.second_point) > 0.25f)
+							edge_order[num_snapped_edges++] = j;
+					}
+					num_face_edges = num_snapped_edges;
+				} else {
+					for (u32 j = 0; j < num_face_edges; ++j)
+						edge_order[j] = j;
 				}
 
 				auto uv = packed.GetPlaneUV(src_plane_index);
@@ -646,12 +639,12 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 
 				vec3 center = 0.f;
 				for (u32 j = 0; j < num_face_edges; ++j) {
-					auto& e = brush_edges[face_edges[j]];
+					auto& e = face_edges[edge_order[j]];
 					center += e.first_point;
 					center += e.second_point;
 				}
 				center /= float(2 * num_face_edges);
-				auto& ref_edge = brush_edges[face_edges[0]];
+				auto& ref_edge = face_edges[edge_order[0]];
 				auto& plane = brush_planes[i];
 				
 				vec3 x_axis = ref_edge.first_point;
@@ -661,18 +654,16 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 				
 				vec3 y_axis = cross(x_axis, plane.xyz);
 
-				float edge_angle[MAX_FACE_EDGES];
 				for (u32 j = 0; j < num_face_edges; ++j) {
-					auto edge_index = face_edges[j];
-					auto& edge = brush_edges[edge_index];
+					auto& edge = face_edges[edge_order[j]];
 					vec3 delta;
 					delta.x = (edge.first_point.x + edge.second_point.x) * 0.5f - center.x;
 					delta.y = (edge.first_point.y + edge.second_point.y) * 0.5f - center.y;
 					delta.z = (edge.first_point.z + edge.second_point.z) * 0.5f - center.z;
-					edge_angle[edge_index] = Math::atan2(dot(delta, y_axis), dot(delta, x_axis));
+					edge_angle[j] = Math::atan2(dot(delta, y_axis), dot(delta, x_axis));
 				}
 
-				SimpleSort(face_edges, num_face_edges, [&] (u8 a, u8 b) {
+				SimpleSort(edge_order, num_face_edges, [&](u32 a, u32 b) {
 					return edge_angle[a] > edge_angle[b];
 				});
 
@@ -708,7 +699,7 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 
 				u32 first_vertex = num_mat_verts[material];
 				for (u32 j = 0; j < num_face_edges; ++j) {
-					auto& edge = brush_edges[face_edges[j]];
+					auto& edge = face_edges[edge_order[j]];
 					u32 index = mat_vertex_offset[material] + num_mat_verts[material]++;
 					positions[index] = (i == edge.first_plane) ? edge.first_point : edge.second_point;
 					texcoords[index].xy = uv_map(positions[index]);

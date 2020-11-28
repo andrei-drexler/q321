@@ -1244,3 +1244,4 @@
 63455,simplified movement code
 63460,added corner clipping
 63460,renamed player_move.h to movement.h
+63408,per-face edge enumeration

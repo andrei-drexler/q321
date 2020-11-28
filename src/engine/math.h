@@ -904,14 +904,66 @@ struct BrushEdge {
 
 // Template, because we want it to work not only with arrays of vec4's, but also Map::Planes (derived from vec4's) without slicing
 template <typename Plane>
+FORCEINLINE u32 EnumerateBrushFaceEdges(const Plane* planes, u32 num_planes, u32 face, BrushEdge* edges, u32 max_num_edges, float epsilon = (1.f/32.f)) {
+	u32 num_edges = 0;
+
+	const Plane& p0 = planes[face];
+
+	for (u32 i = 0; i < num_planes; ++i) {
+		if (i == face)
+			continue;
+
+		const Plane& p1 = planes[i];
+		float align = Math::abs(dot(p0.xyz, p1.xyz));
+		if (align > 1.f - 0x1p-10f)
+			continue;
+		
+		vec3 origin, dir;
+		IntersectPlanes(p0, p1, origin, dir);
+
+		float d0 = dot(origin, p0.xyz) + p0.w;
+		float d1 = dot(origin, p1.xyz) + p1.w;
+		assert(Math::abs(d0) < .1f);
+		assert(Math::abs(d1) < .1f);
+
+		float tmin = -FLT_MAX;
+		float tmax =  FLT_MAX;
+		for (u32 j = 0; j < num_planes; ++j) {
+			if (j == face || j == i)
+				continue;
+			ClipSegmentByPlane(origin, dir, planes[j], tmin, tmax, epsilon);
+			if (tmax <= tmin + epsilon)
+				break;
+		}
+	
+		if (tmax <= tmin + epsilon)
+			continue;
+
+		if (edges) {
+			BrushEdge& edge = edges[num_edges++];
+			assert(num_edges <= max_num_edges);
+			edge.first_point	= origin + dir * tmin;
+			edge.first_plane	= face;
+			edge.second_point	= origin + dir * tmax;
+			edge.second_plane	= i;
+		} else {
+			++num_edges;
+		}
+	}
+
+	return num_edges;
+}
+
+// Template, because we want it to work not only with arrays of vec4's, but also Map::Planes (derived from vec4's) without slicing
+template <typename Plane>
 FORCEINLINE u32 EnumerateBrushEdges(const Plane* planes, u32 num_planes, BrushEdge* edges, u32 max_num_edges, float epsilon = (1.f/32.f)) {
 	u32 num_edges = 0;
 
 	for (u32 i = 0; i < num_planes - 1; ++i) {
-		auto& p0 = planes[i];
+		const Plane& p0 = planes[i];
 		
 		for (u32 j = i + 1; j < num_planes; ++j) {
-			auto& p1 = planes[j];
+			const Plane& p1 = planes[j];
 
 			float align = Math::abs(dot(p0.xyz, p1.xyz));
 			if (align > 1.f - 0x1p-10f)
@@ -939,7 +991,7 @@ FORCEINLINE u32 EnumerateBrushEdges(const Plane* planes, u32 num_planes, BrushEd
 				continue;
 
 			if (edges) {
-				auto& edge = edges[num_edges++];
+				BrushEdge& edge = edges[num_edges++];
 				assert(num_edges <= max_num_edges);
 				edge.first_point	= origin + dir * tmin;
 				edge.first_plane	= i;
