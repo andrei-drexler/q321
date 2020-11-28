@@ -439,8 +439,8 @@ constexpr NOINLINE float dot(const vec2& a, const vec2& b)	{ return a.x*b.x + a.
 constexpr NOINLINE float dot(const vec3& a, const vec3& b)	{ return a.x*b.x + a.y*b.y + a.z*b.z; }
 constexpr NOINLINE float dot(const vec4& a, const vec4& b)	{ return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w; }
 
-constexpr NOINLINE float length_squared(const vec2& v)		{ return dot(v, v); }
-constexpr NOINLINE float length_squared(const vec3& v)		{ return dot(v, v); }
+constexpr FORCEINLINE float length_squared(const vec2& v)	{ return dot(v, v); }
+constexpr FORCEINLINE float length_squared(const vec3& v)	{ return dot(v, v); }
 NOINLINE float length(const vec2& v)						{ return Math::sqrt(dot(v, v)); }
 NOINLINE float length(const vec3& v)						{ return Math::sqrt(dot(v, v)); }
 NOINLINE vec2 normalize(const vec2& p)						{ return p / length(p); }
