@@ -1246,3 +1246,4 @@
 63460,renamed player_move.h to movement.h
 63408,per-face edge enumeration
 63405,forceinline length_squared
+63371,tweaked samplelighting

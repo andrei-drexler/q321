@@ -365,23 +365,23 @@ NOINLINE void Demo::Map::Details::SampleLighting(const vec3& pos, const vec3& no
 				light_pos += pos;
 
 			vec3 light_dir = pos - light_pos;
-			float dist = length(light_dir);
+			float dist_squared = length_squared(light_dir);
 			float angle_atten;
 			if (!influences) {
 				angle_atten = -dot(nor, light_dir);
 				if (angle_atten < 0.f)
 					continue;
-				if (dist > 0.f)
-					angle_atten /= dist;
+				if (dist_squared > 0.f)
+					angle_atten /= sqrt(dist_squared);
 			} else {
 				angle_atten = 1.f;
 			}
 
-			assign_max(dist, 16.f);
+			assign_max(dist_squared, 16.f * 16.f);
 
 			float scale = light.intensity * angle_atten;
 			if (light_index != 0)
-				scale *= Lightmap::PointScale / (dist * dist);
+				scale *= Lightmap::PointScale / dist_squared;
 
 			float threshold = influences ? Lightmap::ThresholdGrid : Lightmap::Threshold;
 			if (scale < threshold)
