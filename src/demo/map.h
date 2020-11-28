@@ -637,30 +637,23 @@ NOINLINE void Demo::Map::Unpack(ID id) {
 					(Material::Properties[material] & Material::NeedsUV) |
 					(brush_flags & PackedMap::BrushFlagKeepUVs);
 
-				vec3 center = 0.f;
+				vec3 centerx2 = 0.f;
 				for (u32 j = 0; j < num_face_edges; ++j) {
 					auto& e = face_edges[edge_order[j]];
-					center += e.first_point;
-					center += e.second_point;
+					centerx2 += e.first_point;
+					centerx2 += e.second_point;
 				}
-				center /= float(2 * num_face_edges);
+				centerx2 /= float(num_face_edges);
 				auto& ref_edge = face_edges[edge_order[0]];
 				auto& plane = brush_planes[i];
 				
-				vec3 x_axis = ref_edge.first_point;
-				x_axis += ref_edge.second_point;
-				x_axis *= 0.5f;
-				x_axis -= center;
-				
+				vec3 x_axis = ref_edge.first_point + ref_edge.second_point - centerx2;
 				vec3 y_axis = cross(x_axis, plane.xyz);
 
 				for (u32 j = 0; j < num_face_edges; ++j) {
 					auto edge_index = edge_order[j];
 					auto& edge = face_edges[edge_index];
-					vec3 delta;
-					delta.x = (edge.first_point.x + edge.second_point.x) * 0.5f - center.x;
-					delta.y = (edge.first_point.y + edge.second_point.y) * 0.5f - center.y;
-					delta.z = (edge.first_point.z + edge.second_point.z) * 0.5f - center.z;
+					vec3 delta = edge.first_point + edge.second_point - centerx2;
 					edge_angle[edge_index] = Math::atan2(dot(delta, y_axis), dot(delta, x_axis));
 				}
 
