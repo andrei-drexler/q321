@@ -1153,7 +1153,7 @@ TEX(giron01nt3) {
 
 	// top part - we also fill in the bottom row to avoid bilinear artifacts
 	// (even if the original texture doesn't)
-	c = mix(c, giron01e(uv), ls(.85, .9, t) + step(uv.y, 1./256.));
+	c = mix(c, T0(uv).xyz, ls(.85, .9, t) + step(uv.y, 1./256.));
 	c *= 1. + tri(.88, .015, t) - sqr(tri(.87, .03, t));
 
 	return mix(c, c2, ls(1., .1, r));

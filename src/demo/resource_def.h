@@ -249,7 +249,7 @@
 	x(gkarnarcfnlmd,	Texture::White,		Shader::gkarnarcfnlmd,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkarnarcfnlbt,	Texture::White,		Shader::gkarnarcfnlbt,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(giron01e,			Texture::White,		Shader::giron01e,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(giron01nt3,		Texture::White,		Shader::giron01nt3,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(giron01nt3,		Texture::giron01e,	Shader::giron01nt3,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bwprtbnr,			Texture::White,		Shader::bwprtbnr,		128,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gxstrtop4,		Texture::White,		Shader::gxstrtop4,		256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gxstrtop4bbrn,	Texture::White,		Shader::gxstrtop4bbrn,	256,	32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
