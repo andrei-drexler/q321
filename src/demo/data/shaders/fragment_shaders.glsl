@@ -1543,11 +1543,15 @@ vec2 skull(vec2 p) {
 		e, // secondary sdf
 		c; // light intensity
 	v = q / .35;
-	q.y += .25;
+	q.y += .22;
 	q.x -= .15; // eye offset
 	d = min(d, box(q, vec2(.09, .05)) - .1); // cheekbones
 	e = elips(q, vec2(.15, .1)) / 5e1; // eye socket sdf
-	c = .1 + dot(vec2(v.y, sqrt(sat(1. - lsq(v)))), vec2(.3)); // base intensity
+	c = .1
+		+ dot(vec2(v.y, sqrt(sat(1. - lsq(v)))), vec2(.3))  // base intensity
+		- .05 * tri(.44, .1, p.y) // slight eyebrow indentation
+		- .1 * smoothstep(.3, .22, length(p - .5)) // darken temples
+	;
 	q.y += .2;
 	q.x = p.x; // recenter
 	c = max(c, sat(.4 - length(q))); // brigten up bottom
@@ -1640,11 +1644,18 @@ TEX(gtbsbrd09e) {
 		t = .75 + b * b, // base texture intensity (remapped noisy FBM)
 		l, m;
 	vec3 c = mix(RGB(48, 44, 44), RGB(77, 55, 44), ls(.3, .7, n)) * t;
-	vec2 p, s;
+	vec2 p, q, s;
 
-	// vents
 	p.x = mod(uv.x + .14, .28) - .22;
 	p.y = uv.y * .4 - .09;
+
+	// top slots
+	q.x = mod(uv.x - .014, .14);
+	q.y = uv.y;
+	c = mix(c, RGB(133, 122, 122) * t, tri(.9, .91, 1., uv.y) * ls(.03, .033, abs(q.x - .07)));
+	c = mix(c, RGB(88, 73, 70) * t * ls(1., .96, uv.y), ls(.86, .87, uv.y) * ls(.033, .03, abs(q.x - .07)));
+
+	// stadium-shaped vents between skulls
 	c = gklblki_vent(c, p * 1.2, b);
 
 	// cables
@@ -1654,11 +1665,11 @@ TEX(gtbsbrd09e) {
 	// skulls
 	t = .8 + .8 * n * n; // smoother base texture intensity
 	p.x += .133;
-	p.y -= .07;
+	p.y = p.y * 1.1 - .09;
 	m = step(abs(uv.x - .5), .4); // 3 skull limit
 	s = skull(p * 5.); // skull grayscale intensity + SDF
 	l = (skull(p * 5. + vec2(0, .1)) - s).y / .1; // skull light/shadow
-	c = mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, msk(s.y, .02) * m); // skulls
+	c = mix(c, 2.5 * mix(RGB(122, 99, 95), RGB(99, 66, 50), b) * t * s.x, msk(s.y, .02) * m); // skulls
 	c *= 1. - (.5 - l * .3) * tri(.03, .07 + .13 * sat(-l), s.y) * m; // skull shadows, larger below
 
 	return c;
