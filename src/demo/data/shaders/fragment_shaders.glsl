@@ -1064,6 +1064,39 @@ vec3 add_techpipe(vec3 c, vec3 b, vec2 uv, float h, float s) {
 	return c;
 }
 
+vec3 add_all_techpipes(vec3 c, vec2 uv, float b) {
+	vec2 p = uv, q = p;
+
+	q.y += tri(.1, .01, mod(q.x, .33)) / 2e2;
+	c = add_techpipe(c, 2. * b * RGB(93, 84, 79), uv, .185, .015);
+	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), uv, .13, .025);
+	c = add_techpipe(c, 2. * b * RGB(112, 71, 51), uv, .09, .015);
+	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), q, .05, .015);
+
+	// rectangular gizmos on top of cables
+	p.x = abs(fract(uv.x * 6. - .5) - .5) / 6.;
+	c *= 1.+ .5 * ls(.04, .03, p.x) * tri(.18, .03, p.y);
+	float r = box1(p - vec2(0, .12), vec2(.03, .01));
+	r = exclude(r, box1(p - vec2(0, .11), vec2(.01)));
+	c *= 1. - sqr(tri(.0, .04, r));
+	c = mix(c, RGB(166, 99, 77) * 2. * b * (.75 + .5 * sqr(tri(.125, .01, uv.y))), msk(r, .004));
+
+	// transformer coils?
+	q = p;
+	q.y -= .07;
+	r = circ(q, .03);
+	c *= 1. - sqr(tri(.0, .07, r)); // outer shadow
+	c = mix(c, RGB(127, 83, 72) * b * 2. * ls(.01, -.005, r), ls(.005, .0, r));
+	q.y -= .004;
+	r = circ(q, .015);
+	c *= sqr(ls(-.01, .01, r)); // inner shadow
+	q.y += .013;
+	r = circ(q, .05);
+	c += RGB(67, 38, 30) * 4. * sqrt(b) * sqr(tri(-.02, .015, r) * tri(.023, .02, uv.y)); // specular?
+
+	return c;
+}
+
 // TODO: PCB/chips?
 vec3 techno(vec2 uv, float n) {
 	return vec3(n * n * .4);
@@ -1104,33 +1137,7 @@ TEX(giron01nt3) {
 	// bottom part - cables?
 	if (uv.y < .1)
 		c *= .0;
-	q = uv;
-	q.y += tri(.1, .01, mod(q.x, .33)) / 2e2;
-	c = add_techpipe(c, 2. * b * RGB(93, 84, 79), uv, .185, .015);
-	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), uv, .13, .025);
-	c = add_techpipe(c, 2. * b * RGB(112, 71, 51), uv, .09, .015);
-	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), q, .05, .015);
-
-	// rectangular gizmos on top of cables
-	p.x = abs(fract(uv.x * 6. - .5) - .5) / 6.;
-	c *= 1.+ .5 * ls(.04, .03, p.x) * tri(.18, .03, p.y);
-	r = box1(p - vec2(0, .12), vec2(.03, .01));
-	r = exclude(r, box1(p - vec2(0, .11), vec2(.01)));
-	c *= 1. - sqr(tri(.0, .04, r));
-	c = mix(c, RGB(166, 99, 77) * 2. * b * (.75 + .5 * sqr(tri(.125, .01, uv.y))), msk(r));
-
-	// transformer coils?
-	q = p;
-	q.y -= .07;
-	r = circ(q, .03);
-	c *= 1. - sqr(tri(.0, .07, r)); // outer shadow
-	c = mix(c, RGB(127, 83, 72) * b * 2. * ls(.01, -.005, r), ls(.005, .0, r));
-	q.y -= .004;
-	r = circ(q, .015);
-	c *= sqr(ls(-.01, .01, r)); // inner shadow
-	q.y += .013;
-	r = circ(q, .05);
-	c += RGB(67, 38, 30) * 4. * sqrt(b) * sqr(tri(-.02, .015, r) * tri(.023, .02, uv.y)); // specular?
+	c = add_all_techpipes(c, uv, b);
 
 	// fender?
 	r = exclude(f1, f2);
@@ -1477,7 +1484,7 @@ TEX(gkarnarcfnlbt) {
 }
 
 ////////////////////////////////////////////////////////////////
-#pragma section blocks : arena
+#pragma section blocks : arena metal
 ////////////////////////////////////////////////////////////////
 
 // gothic_block/blocks15
@@ -1599,6 +1606,69 @@ TEX(gdmnblk15fx) {
 	return c;
 }
 
+vec3 gklblki_vent(vec3 c, vec2 uv, float b) {
+	float
+		t = .75 + b * b, // base texture intensity (remapped FBM)
+		d, o, i;
+
+	vec2 p = uv;
+	p.y -= .21;
+
+	d = circ(vec2(.75 * p.x, elongate(p.y, .1)), .033);
+	o = msk(d, .005); // outer part
+	d = circ(vec2(.75 * p.x, elongate(p.y + .005, .09)), .033);
+	i = msk(d + .015, .004); // inner part
+	c = mix(c, RGB(83, 81, 66) * t, (o - i) * ls(.1, .3, uv.y)); // base metallic color
+	c *= 1. - ls(.17, .25, uv.y) * i; // inner shadow
+	c += sqr(tri(.0, .015, d)) * tri(.32, .03, uv.y); // top specular
+	c *= 1. + 3. * pow(tri(-.01, .03, d), 4.) * tri(.09, .03, uv.y); // bottom specular
+
+	d = circ(vec2(.75 * p.x, elongate(p.y + .03, .1)), .033); // shadow distance
+	c *= 1. - msk(d + .01, .02) * (1. - o); // outer shadow
+
+	if (uv.y > .09 && uv.y < .3)
+		c = add_rivet(c, vec2((abs(p.x) - .035) * 36., fract(uv.y * 36.) - .5), .1);
+
+	return c;
+}
+
+// gothic_trim/baseboard09_e
+TEX(gtbsbrd09e) {
+	float
+		b = FBMT(uv, vec2(9, 3), .9, 3., 4), // base FBM
+		n = FBMT(uv, vec2(11, 5), .5, 3., 4), // slightly smoother FBM
+		t = .75 + b * b, // base texture intensity (remapped noisy FBM)
+		l, m;
+	vec3 c = mix(RGB(48, 44, 44), RGB(77, 55, 44), ls(.3, .7, n)) * t;
+	vec2 p, s;
+
+	// vents
+	p.x = mod(uv.x + .14, .28) - .22;
+	p.y = uv.y * .4 - .09;
+	c = gklblki_vent(c, p * 1.2, b);
+
+	// cables
+	c *= ls(.2, .3, uv.y);
+	c = add_all_techpipes(c, uv * vec2(1.5, .75), b);
+
+	// skulls
+	t = .8 + .8 * n * n; // smoother base texture intensity
+	p.x += .133;
+	p.y -= .07;
+	m = step(abs(uv.x - .5), .4); // 3 skull limit
+	s = skull(p * 5.); // skull grayscale intensity + SDF
+	l = (skull(p * 5. + vec2(0, .1)) - s).y / .1; // skull light/shadow
+	c = mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, msk(s.y, .02) * m); // skulls
+	c *= 1. - (.5 - l * .3) * tri(.03, .07 + .13 * sat(-l), s.y) * m; // skull shadows, larger below
+
+	return c;
+}
+
+// gothic_trim/baseboard09_e2
+TEXA(gtbsbrd09e2) {
+	return T0(uv);
+}
+
 // (384 x 384) Combination of:
 // - gothic_door/skull_door_a ( 64 x 256 - bottom right)
 // - gothic_door/skull_door_b (256 x 256 - bottom mid)
@@ -1709,34 +1779,10 @@ vec3 gklblki_base(vec2 uv, vec2 s) {
 
 // gothic_block/killblock_i
 TEX(gklblki) {
-	float
-		b = FBMT(uv, vec2(5), .9, 3., 4), // base FBM
-		t = .75 + b * b, // base texture intensity (remapped FBM)
-		d, o, i;
-
-	vec2 p = uv;
+	float b = FBMT(uv, vec2(5), .9, 3., 4); // base FBM
 	vec3 c = gklblki_base(uv, vec2(1));
-
-	// thingmajigs
-	p.x = mod(p.x, 1./7.) - .07; // repeat 7x horizontally
-	p.y -= .21;
-
-	d = circ(vec2(.75 * p.x, elongate(p.y, .1)), .033);
-	o = msk(d, .005); // outer part
-	d = circ(vec2(.75 * p.x, elongate(p.y + .005, .09)), .033);
-	i = msk(d + .015); // inner part
-	c = mix(c, RGB(83, 81, 66) * t, (o - i) * ls(.1, .3, uv.y)); // base metallic color
-	c *= 1. - ls(.17, .25, uv.y) * i; // inner shadow
-	c += sqr(tri(.0, .015, d)) * tri(.32, .03, uv.y); // top specular
-	c *= 1. + 3. * pow(tri(-.01, .03, d), 4.) * tri(.09, .03, uv.y); // bottom specular
-
-	d = circ(vec2(.75 * p.x, elongate(p.y + .03, .1)), .033); // shadow distance
-	c *= 1. - msk(d + .01, .02) * (1. - o); // outer shadow
-
-	if (uv.y > .09 && uv.y < .3)
-		c = add_rivet(c, vec2((abs(p.x) - .035) * 36., fract(uv.y * 36.) - .5), .1);
-
-	return c;
+	uv.x = mod(uv.x, 1./7.) - .07; // repeat 7x horizontally
+	return gklblki_vent(c, uv, b);
 }
 
 // gothic_block/killblock_i4

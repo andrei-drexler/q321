@@ -97,6 +97,8 @@ void gkarnarcfnlmd() { FS(); }
 void gkarnarcfnlbt() { FS(); }
 void gkblkgmtrn() { FS(); }
 void gdmnblk15fx() { FS(); }
+void gtbsbrd09e() { FS(); }
+void gtbsbrd09e2() { FS(); }
 void giron01e() { FS(); }
 void giron01nt3() { FS(); }
 void gxstrtop4() { FS(); }

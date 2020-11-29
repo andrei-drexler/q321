@@ -73,6 +73,8 @@
 	x(gkarnarcfnlbt,		FSVertexBits)\
 	x(gkblkgmtrn,			FSVertexBits)\
 	x(gdmnblk15fx,			FSVertexBits)\
+	x(gtbsbrd09e,			FSVertexBits)\
+	x(gtbsbrd09e2,			FSVertexBits)\
 	x(giron01e,				FSVertexBits)\
 	x(giron01nt3,			FSVertexBits)\
 	x(gxstrtop4,			FSVertexBits)\
@@ -213,6 +215,8 @@
 	x(gklblki4,			Texture::gblks15,	Shader::gklblki4,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gkblkgmtrn,		Texture::gblks15,	Shader::gkblkgmtrn,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gdmnblk15fx,		Texture::gblks15,	Shader::gdmnblk15fx,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gtbsbrd09e,		Texture::White,		Shader::gtbsbrd09e,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gtbsbrd09e2,		Texture::gtbsbrd09e,Shader::gtbsbrd09e2,	128,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(scmpblk17,		Texture::gblks15,	Shader::scmpblk17,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr_a,			Texture::gblks15,	Shader::gskdr_a,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr_b,			Texture::gblks15,	Shader::gskdr_b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -325,6 +329,8 @@
 	x("gothic_door/km_arena1archfinald_bot",	Lmapped,		gkarnarcfnlbt,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_block/killblockgeomtrn",			Lmapped,		gkblkgmtrn,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_block/demon_block15fx",			Lmapped,		gdmnblk15fx,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_trim/baseboard09_e",				Lmapped,		gtbsbrd09e,		Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_trim/baseboard09_e2",				Lmapped,		gtbsbrd09e2,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/iron01_e",					Lmapped,		giron01e,		Solid,		Opaque,					(0))\
 	x("gothic_wall/iron01_ntech3",				Lmapped,		giron01nt3,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_floor/xstairtop4",				Lmapped,		gxstrtop4,		Solid,		Opaque|NeedsUV,			(0))\
