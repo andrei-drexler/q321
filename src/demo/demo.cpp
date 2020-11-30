@@ -502,7 +502,7 @@ namespace Demo {
 		if (Map::IsUnpacked()) {
 			if (IsMapReady()) {
 				if (!g_updated_lightmap) {
-					if (Map::lightmap.abort) {
+					if (Sys::AtomicLoad(&Map::lightmap.abort)) {
 						Menu::ShowMainMenu();
 					} else {
 						Map::UpdateLightmapTexture();
@@ -515,7 +515,7 @@ namespace Demo {
 					UpdateGameState(dt, mouse_delta);
 			} else { // map is still loading
 				if (Sys::IsKeyFirstDown(Key::Escape))
-					Map::lightmap.abort = true;
+					Sys::AtomicStore(&Map::lightmap.abort, true);
 				return;
 			}
 		} else { // no map loaded

@@ -9,15 +9,21 @@ struct RectPacker;
 namespace Sys {
 	using Time = double;
 	Time						GetTime();
-	
+
 	void*						Alloc(size_t size);
 	template <typename T>
 	T*							Alloc(size_t count) { return (T*)Alloc(sizeof(T) * count); }
 	void						Free(void* alloc);
 
+	using atomic_int			= volatile i32;
+	i32							AtomicLoad(atomic_int* addr);
+	void						AtomicStore(atomic_int* addr, i32 value);
+	i32							AtomicInc(atomic_int* addr);
+	i32							AtomicExchangeAdd(atomic_int* addr, i32 value);
+
 	[[noreturn]] void			Fatal(int code);
 	[[noreturn]] void			Exit(int code = 0);
-	
+
 	void						Log(const char* text);
 	void						DebugLog(const char* text);
 

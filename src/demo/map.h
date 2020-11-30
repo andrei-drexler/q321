@@ -188,7 +188,7 @@ namespace Demo::Map {
 	ID								current_id;
 
 	struct {
-		bool						abort;
+		Sys::atomic_int				abort;
 		u32*						data;
 #ifdef ENABLE_RADIOSITY
 		u32*						bounce_data;

@@ -280,6 +280,28 @@ FORCEINLINE void Sys::Free(void* alloc) {
 	VirtualFree(alloc, 0, MEM_RELEASE);
 }
 
+////////////////////////////////////////////////////////////////
+
+FORCEINLINE i32 Sys::AtomicLoad(atomic_int* addr) {
+	i32 value = *addr;
+	_ReadWriteBarrier();
+	return value;
+}
+
+FORCEINLINE void Sys::AtomicStore(atomic_int* addr, i32 value) {
+	_InterlockedExchange((volatile long*)addr, (long)value);
+}
+
+FORCEINLINE i32 Sys::AtomicInc(atomic_int* addr) {
+	return (i32)_InterlockedIncrement((volatile long*)addr);
+}
+
+FORCEINLINE i32 Sys::AtomicExchangeAdd(atomic_int* addr, i32 value) {
+	return (i32)_InterlockedExchangeAdd((volatile long*)addr, (long)value);
+}
+
+////////////////////////////////////////////////////////////////
+
 [[noreturn]] FORCEINLINE void Sys::Exit(int code) {
 	ExitProcess(code);
 }
