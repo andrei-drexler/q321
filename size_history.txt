@@ -1255,3 +1255,4 @@
 63722,more detailed baseboard09_e
 63679,hide window on error
 63679,minor baseboard09_e/killblock_i4 tweak
+63769,added basic models/mapobjects/lamps/bot_flare2

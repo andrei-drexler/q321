@@ -19,7 +19,7 @@ void FS() {
 }
 
 void wave(float div, float amp, float freq) {
-	gl_Position += amp * MVP * vec4(N, 0) * sin(6.28 * (Time.x * freq + dot(P.xyz/div, vec3(1))));
+	gl_Position += amp * MVP * vec4(Nor, 0) * sin(6.28 * (Time.x * freq + dot(P.xyz/div, vec3(1))));
 }
 
 ////////////////////////////////////////////////////////////////
@@ -157,6 +157,11 @@ void menubnr() { FS(); }
 void menubnr_m() { FS(); }
 void beam() { Generic(); }
 void kmlampwt() { misc_model(); }
+void botflare2() { FS(); }
+void botflare2_m() {
+	misc_model();
+	wave(100., 1., 9.);
+}
 void flare03() {
 	Generic();
 	// extract rotation from view matrix, transpose and multiply with sprite offset

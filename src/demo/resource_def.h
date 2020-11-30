@@ -125,6 +125,8 @@
 	x(menubnr_m,			FSVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(beam,					MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(kmlampwt,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::Premultiplied)\
+	x(botflare2,			FSVertexBits)\
+	x(botflare2_m,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flare03,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flame,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flame_large,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
@@ -265,6 +267,7 @@
 	x(q3bnr,			Texture::White,		Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(menubnr,			Texture::White,		Shader::menubnr,		1024,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget|Gfx::Texture::Flags::NoMips)\
 	x(gr8torch2b,		Texture::White,		Shader::gr8torch2b,		32,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(botflare2,		Texture::White,		Shader::botflare2,		32,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(tlptrns,			Texture::White,		Shader::tlptrns,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(rocketl,			Texture::White,		Shader::rocketl,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
@@ -377,6 +380,7 @@
 	x("models/powerups/armor/energy_grn1",		energy_grn1,	White,			NonSolid,	Translucent,			(0))\
 	x("models/mapobjects/kmlamp_white",			kmlampwt,		White,			NonSolid,	Translucent,			(0))\
 	x("models/powerups/health/red_sphere",		healthsphere,	White,			NonSolid,	Translucent,			(0))\
+	x("models/mapobjects/lamps/bot_flare2",		botflare2_m,	botflare2,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("models/mapobjects/lamps/flare03",		flare03,		White,			NonSolid,	Translucent|NeedsUV|Sprite,	(200,6,5,4))\
 	x("sfx/flame1_hell",						flame_large,	_128x256,		NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
 	x("sfx/flame2",								flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(5500,8,6,1))\

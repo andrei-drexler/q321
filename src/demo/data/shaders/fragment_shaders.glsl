@@ -2890,6 +2890,21 @@ void kmlampwt() {
 	FCol = vec4(env(Ref) * RGB(133, 111, 111), 0);
 }
 
+// models/mapobjects/lamps/bot_flare2.tga (texture)
+TEXA(botflare2) {
+	float
+		b = FBMT(uv, vec2(3, 4), .5, 2., 4),
+		d;
+	uv.x = abs(uv.x - .5) * 1.7;
+	d = lsq(uv - vec2(0, 1)) + b * .13;
+	return vec4(.44, .3, .3, 0) / (66. * d * d + .1) * ls(.5, .4, d);
+}
+
+// models/mapobjects/lamps/bot_flare2.tga (model shader)
+TEXA(botflare2_m) {
+	return T0(uv);
+}
+
 // models/mapobjects/lamps/flare03
 void flare03() {
 	FCol = vec4(2, 2, 2, 0) * pow(star(UV, vec2(.5), 1.), 2.);
