@@ -1253,3 +1253,4 @@
 63648,added basic gothic_trim/baseboard09_e
 63648,tweaked giron01nt3
 63722,more detailed baseboard09_e
+63679,hide window on error

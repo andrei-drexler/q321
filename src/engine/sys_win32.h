@@ -300,7 +300,9 @@ namespace Win32::FatalError {
 	p += CopyStaticString(p, Win32::FatalError::Prefix);
 	IntToString(code, p);
 
-	MessageBoxA(0, Win32::FatalError::g_buffer, Win32::FatalError::Title, MB_OK | MB_ICONERROR | MB_APPLMODAL);
+	if (g_window.handle)
+		ShowWindow((HWND)g_window.handle, SW_HIDE);
+	MessageBoxA(0, Win32::FatalError::g_buffer, Win32::FatalError::Title, MB_OK | MB_ICONERROR | MB_TASKMODAL);
 	Sys::Exit(code);
 }
 
