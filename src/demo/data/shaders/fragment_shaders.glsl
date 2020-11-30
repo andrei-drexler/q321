@@ -1670,7 +1670,7 @@ TEX(gtbsbrd09e) {
 	s = skull(p * 5.); // skull grayscale intensity + SDF
 	l = (skull(p * 5. + vec2(0, .1)) - s).y / .1; // skull light/shadow
 	c = mix(c, 2.5 * mix(RGB(122, 99, 95), RGB(99, 66, 50), b) * t * s.x, msk(s.y, .02) * m); // skulls
-	c *= 1. - (.5 - l * .3) * tri(.03, .07 + .13 * sat(-l), s.y) * m; // skull shadows, larger below
+	c *= 1. - (.5 - l * .3) * tri(.02, .07 + .13 * sat(-l), s.y) * m; // skull shadows, larger below
 
 	return c;
 }
@@ -1809,7 +1809,7 @@ TEX(gklblki4) {
 	s = skull(p * 5.); // skull grayscale intensity + SDF
 	l = (skull(p * 5. + vec2(0, .1)) - s).y / .1; // skull light/shadow
 	c = mix(c, mix(vec3(.5, .4, .3), vec3(.95, .8, .55), t) * t * s.x, msk(s.y, .02)); // skulls
-	c *= 1. - (.5 - l * .3) * tri(.03, .07 + .13 * sat(-l), s.y); // skull shadows, larger below
+	c *= 1. - (.5 - l * .3) * tri(.02, .07 + .13 * sat(-l), s.y); // skull shadows, larger below
 	return c;
 }
 

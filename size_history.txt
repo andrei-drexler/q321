@@ -1254,3 +1254,4 @@
 63648,tweaked giron01nt3
 63722,more detailed baseboard09_e
 63679,hide window on error
+63679,minor baseboard09_e/killblock_i4 tweak
