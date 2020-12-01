@@ -128,6 +128,7 @@
 	x(botflare2,			FSVertexBits)\
 	x(botflare2_m,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flare03,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(botflare,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flame,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(flame_large,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(gr8torch2b,			FSVertexBits)\
@@ -382,6 +383,7 @@
 	x("models/powerups/health/red_sphere",		healthsphere,	White,			NonSolid,	Translucent,			(0))\
 	x("models/mapobjects/lamps/bot_flare2",		botflare2_m,	botflare2,		NonSolid,	Translucent|NeedsUV,	(0))\
 	x("models/mapobjects/lamps/flare03",		flare03,		White,			NonSolid,	Translucent|NeedsUV|Sprite,	(200,6,5,4))\
+	x("models/mapobjects/lamps/bot_flare",		botflare,		White,			NonSolid,	Translucent|NeedsUV|Sprite,	(0))\
 	x("sfx/flame1_hell",						flame_large,	_128x256,		NonSolid,	Translucent|NeedsUV,	(600,8,6,1))\
 	x("sfx/flame2",								flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(5500,8,6,1))\
 	x("sfx/flame1side",							flame,			_128x256,		NonSolid,	Translucent|NeedsUV,	(0))\
@@ -414,7 +416,6 @@
 	x("gothic_trim/km_arena1tower4",				"gothic_wall/supportborder_blue_b")\
 	x("models/mapobjects/teleporter/transparency",	"models/mapobjects/teleporter/widget")\
 	x("models/mapobjects/spotlamp/beam",			"sfx/beam")\
-	x("models/mapobjects/lamps/bot_flare",			"models/mapobjects/lamps/flare03")\
 	x("models/powerups/armor/energy_red1",			"common/nodrawnonsolid")\
 	x("models/powerups/instant/quad",				"*item_shiny")\
 	x("models/powerups/health/red",					"*item_shiny")\

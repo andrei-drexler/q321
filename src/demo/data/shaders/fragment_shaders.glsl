@@ -478,7 +478,7 @@ vec3 add_rivet(vec3 c, vec2 uv, float s) {
 // i = core intensity
 float flare(vec2 p, vec2 c, float s, float i) {
 	p -= c;
-	float a = ls(.2, .5, abs(fract(nang(p /= s) * 8. + H(fract(c))) - .5));
+	float a = ls(.3, .5, abs(fract(nang(p /= s) * 8. + H(fract(c))) - .5));
 	return ls(.9, i, pow(lsq(p), .0625) - a * a * .006);
 }
 
@@ -2761,6 +2761,15 @@ TEXA(botflare2_m) {
 // models/mapobjects/lamps/flare03
 void flare03() {
 	FCol = vec4(2, 2, 2, 0) * pow(flare(UV, vec2(.5), 1., .6), 2.);
+}
+
+// models/mapobjects/lamps/bot_flare
+void botflare() {
+	vec2 uv = (UV - .5) * rot(20. * Time.x);
+	float
+		b = NT(uv, vec2(256)),
+		k = 2.2 - length(uv) * 3.;
+	FCol = vec4(k, k, 2, 0) * pow(flare(uv, vec2(0), 1.5, .4) + b * .01, 2.2);
 }
 
 void miscmodel() {

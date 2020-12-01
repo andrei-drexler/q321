@@ -167,6 +167,7 @@ void flare03() {
 	// extract rotation from view matrix, transpose and multiply with sprite offset
 	gl_Position += MVP * vec4(Nor * mat3(View), 0);
 }
+void botflare() { flare03(); }
 void flame() { Generic(); }
 void flame_large() { Generic(); }
 void gr8torch2b() { FS(); }
