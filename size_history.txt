@@ -1258,3 +1258,4 @@
 63769,added basic models/mapobjects/lamps/bot_flare2
 63893,basic atomic i32 support
 63886,minor bot_flare2 tweak
+63880,minor hash/noise function tweaks

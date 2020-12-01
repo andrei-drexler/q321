@@ -289,24 +289,25 @@ vec4 H4(vec2 p) {
 	return fract((p4.xxyz+p4.yzzw)*p4.zywx);
 }
 
-float HT(float x, float p) {
-	return H(mod(x, p));
-}
-
-// FIXME: 1D noise should take a normalized value, like its 2D counterpart!
-float N(float x) {
-	float i;
-	return mix(H(i = floor(x)), H(i + 1.), smoothen(x - i));
-}
-
-// FIXME: 1D noise should take a normalized value, like its 2D counterpart!
-float NT(float x, float p) {
-	float i;
-	return mix(HT(i = floor(x), p), HT(i + 1., p), x - i);
+float HT(float p, float s) {
+	return H(mod(p, s));
 }
 
 float HT(vec2 p, vec2 s) {
 	return H(mod(p, s));
+}
+
+// FIXME: 1D noise should take a normalized value, like its 2D counterpart!
+float N(float p) {
+	float i;
+	return mix(H(i = floor(p)), H(i + 1.), smoothen(p - i));
+}
+
+// FIXME: 1D noise should take a normalized value, like its 2D counterpart!
+float NT(float p, float s) {
+	float i;
+	// FIXME: linear, not smooth
+	return mix(HT(i = floor(p), s), HT(i + 1., s), p - i);
 }
 
 float NT(vec2 p, vec2 s) {

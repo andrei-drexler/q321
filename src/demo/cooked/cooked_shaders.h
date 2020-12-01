@@ -43,7 +43,7 @@ static constexpr u32 shader_deps[] = {1,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,};
 } // namespace cooked::vertex_shaders
 
-// src/demo/data/shaders//fragment_shaders.glsl: 92862 => 40072 (43.2%)
+// src/demo/data/shaders//fragment_shaders.glsl: 92893 => 40072 (43.1%)
 namespace cooked::fragment_shaders {
 static constexpr char code[] =
 /* ---- @global: 4842 chars (12.1%) ---- */
@@ -93,8 +93,8 @@ static constexpr char code[] =
 "1031,.1030,.0973));b3+=dot(b3,b3.gbr+33.33);l aj((b3.rrg+b3.gbb)*b3.bgr);}d dy(d p){k b3=aj(k(p.rgr)*k(.1031,.1030,.0973))"
 ";b3+=dot(b3,b3.gbr+33.33);l aj((b3.rr+b3.gb)*b3.bg);}ae ex(h p){ae b4=aj(ae(p)*ae(.1031,.1030,.0973,.1099));b4+=dot(b4,b4."
 "abrg+33.33);l aj((b4.rrgb+b4.gbba)*b4.bgar);}ae ex(d p){ae b4=aj(ae(p.rgrg)*ae(.1031,.1030,.0973,.1099));b4+=dot(b4,b4.abr"
-"g+33.33);l aj((b4.rrgb+b4.gbba)*b4.bgar);}h bn(h x,h p){l bk(mod(x,p));}h cv(h x){h m;l o(bk(m=bj(x)),bk(m+1.),dp(x-m));}h"
-" a8(h x,h p){h m;l o(bn(m=bj(x),p),bn(m+1.,p),x-m);}h bn(d p,d s){l bk(mod(p,s));}h a8(d p,d s){p*=s;d m=bj(p);p-=m;p*=p*("
+"g+33.33);l aj((b4.rrgb+b4.gbba)*b4.bgar);}h bn(h p,h s){l bk(mod(p,s));}h bn(d p,d s){l bk(mod(p,s));}h cv(h p){h m;l o(bk"
+"(m=bj(p)),bk(m+1.),dp(p-m));}h a8(h p,h s){h m;l o(bn(m=bj(p),s),bn(m+1.,s),p-m);}h a8(d p,d s){p*=s;d m=bj(p);p-=m;p*=p*("
 "3.-2.*p);h ey=bn(m+d(0,0),s);h ez=bn(m+d(0,1),s);h e0=bn(m+d(1,1),s);h e1=bn(m+d(1,0),s);l o(o(ey,e1,p.r),o(ez,e0,p.r),p.g"
 ");}h af(d p,d b5,h c5,h c6,bd c7){h ck=a8(p,b5),cc=1.,tw=1.;for(bd m=0;m<c7;++m){p=aj(p+cr);b5*=c6;cc*=c5;ck+=a8(p,b5)*cc;"
 "tw+=cc;}l ck/tw;}h af(h p,h b5,h c5,h c6,bd c7){h ck=a8(p*b5,b5),cc=1.,tw=1.;for(bd m=0;m<c7;++m){p=aj(p+cr);b5*=c6;cc*=c5"
