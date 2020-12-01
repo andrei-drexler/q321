@@ -43,7 +43,7 @@ static constexpr u32 shader_deps[] = {1,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,};
 } // namespace cooked::vertex_shaders
 
-// src/demo/data/shaders//fragment_shaders.glsl: 97424 => 40072 (41.1%)
+// src/demo/data/shaders//fragment_shaders.glsl: 92862 => 40072 (43.2%)
 namespace cooked::fragment_shaders {
 static constexpr char code[] =
 /* ---- @global: 4842 chars (12.1%) ---- */
