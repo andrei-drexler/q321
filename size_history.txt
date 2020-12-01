@@ -1262,3 +1262,4 @@
 63916,more fleshed out teleporter/energy
 63963,added lamps/bot_flare
 63915,added basic spawn/teleport effect
+63974,tweaked spawn/teleport effect

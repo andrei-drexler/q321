@@ -3099,7 +3099,7 @@ void UI() {
 }
 
 void teleport() {
-	FCol = .125 * smoothen(tri(Time.y, 1., 1. - UV.y)) * vec4(1, 1, .5, 0);
+	FCol = Time.y * .25 * smoothen(tri(.5, .1 + .7 * Time.y, fract(UV.y + Time.y))) * vec4(1, 1, .5, 0);
 }
 
 // menu/art/maps_select.tga

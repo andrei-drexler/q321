@@ -21,7 +21,7 @@ namespace Demo {
 			LandReturnTime	= 0.3125f,		// 0.3
 			LandTime		= LandDeflectTime + LandReturnTime,
 
-			TeleportTime	= 1.5f / 16.f,
+			TeleportTime	= 1.f / 4.f,
 
 			Height			= 56.f,
 			HalfHeight		= Height * 0.5f,
