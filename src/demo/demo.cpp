@@ -450,6 +450,13 @@ namespace Demo {
 			Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
 		}
 
+		/* spawn/teleport effect */
+		if (g_player.teleport > 0.f) {
+			Gfx::SetShader(Shader::teleport);
+			Uniform::Time.y = g_player.teleport;
+			Gfx::DrawFullScreen();
+		}
+
 		Menu::Draw();
 	}
 

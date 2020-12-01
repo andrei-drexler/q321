@@ -21,6 +21,8 @@ namespace Demo {
 			LandReturnTime	= 0.3125f,		// 0.3
 			LandTime		= LandDeflectTime + LandReturnTime,
 
+			TeleportTime	= 1.5f / 16.f,
+
 			Height			= 56.f,
 			HalfHeight		= Height * 0.5f,
 			HalfWidth		= 15.f,
@@ -79,6 +81,7 @@ namespace Demo {
 		float				land_time;
 		float				shadow_angle;
 		float				zoom;
+		float				teleport;
 		const vec4*			ground;
 		vec3				angles;
 		u32					flags;
@@ -239,9 +242,10 @@ void Demo::Player::Update(float dt) {
 		}
 	}
 
-	/* animate stair-stepping & landing */
+	/* animate stair-stepping, landing & teleportation */
 	step = max(0.f, step - step * dt * 8.f);
 	land_time = max(0.f, land_time - dt);
+	teleport = max(0.f, teleport - dt / TeleportTime);
 	
 	/* move */
 	float prev_z_speed = velocity.z;
@@ -296,6 +300,7 @@ void Demo::Player::Update(float dt) {
 					velocity.y = sin(yaw) * TeleportSpeed;
 					velocity.z = 0.f;
 					step = 0.f;
+					teleport = 1.f;
 				}
 				break;
 			}
@@ -360,4 +365,5 @@ NOINLINE void Demo::Player::Spawn() {
 	health		= 100;
 	weapon		= Entity::Type::weapon_rocketlauncher;
 	flags		= Flag::NoJump;
+	teleport	= 1.f;
 }

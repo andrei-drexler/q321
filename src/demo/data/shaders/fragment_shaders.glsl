@@ -3098,6 +3098,10 @@ void UI() {
 	FCol = T0(UV) * Clr;
 }
 
+void teleport() {
+	FCol = .125 * smoothen(tri(Time.y, 1., 1. - UV.y)) * vec4(1, 1, .5, 0);
+}
+
 // menu/art/maps_select.tga
 void mapselect() {
 	float d = box((UV - .5) * 256., vec2(98));

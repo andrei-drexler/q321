@@ -49,6 +49,7 @@ void UI() {
 	Clr = C;
 	Clr.xyz *= Clr.w; // convert to premultiplied alpha
 }
+void teleport() { FS(); }
 #pragma section
 void icon() { FS(); }
 void bglogo() { FS(); }

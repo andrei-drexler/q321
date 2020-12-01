@@ -148,6 +148,7 @@
 	x(plasma_glo,			FSVertexBits)\
 	x(plasma_glo_m,			ModelVertexBits)\
 	x(armor,				ModelVertexBits)\
+	x(teleport,				FSVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(mapselect,			FSVertexBits)\
 	x(icon_health,			FSVertexBits)\
 	x(icon_shard,			FSVertexBits)\
