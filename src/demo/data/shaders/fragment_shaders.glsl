@@ -2896,8 +2896,8 @@ TEXA(botflare2) {
 		b = FBMT(uv, vec2(3, 4), .5, 2., 4),
 		d;
 	uv.x = abs(uv.x - .5) * 1.7;
-	d = lsq(uv - vec2(0, 1)) + b * .13;
-	return vec4(.44, .3, .3, 0) / (66. * d * d + .1) * ls(.5, .4, d);
+	d = lsq(uv - vec2(0, 1)) + b * .3;
+	return vec4(.44, .3, .3, 0) / (333. * d * d * d + .1) * ls(.5, .4, d);
 }
 
 // models/mapobjects/lamps/bot_flare2.tga (model shader)
