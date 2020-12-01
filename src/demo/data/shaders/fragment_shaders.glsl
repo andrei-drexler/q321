@@ -472,10 +472,21 @@ vec3 add_rivet(vec3 c, vec2 uv, float s) {
 
 ////////////////////////////////////////////////////////////////
 
-float star(vec2 p, vec2 c, float s) {
+// p = point where function is to be evaluated
+// c = flare center
+// s = flare size
+// i = core intensity
+float flare(vec2 p, vec2 c, float s, float i) {
 	p -= c;
-	float a = ls(.3, .5, abs(fract(nang(p /= s) * 8. + H(c)) - .5));
-	return ls(.9, .6, pow(lsq(p), .0625) - a * a * .006);
+	float a = ls(.2, .5, abs(fract(nang(p /= s) * 8. + H(fract(c))) - .5));
+	return ls(.9, i, pow(lsq(p), .0625) - a * a * .006);
+}
+
+// horizontally-wrapped flare
+float wrapped_flare(vec2 p, vec2 c, float s, float i) {
+	float d = flare(p, c, s, i);
+	c.x += p.x < c.x ? -1. : 1.;
+	return d + flare(p, c, s, i);
 }
 
 // uv in [-0.5..0.5]
@@ -2749,7 +2760,7 @@ TEXA(botflare2_m) {
 
 // models/mapobjects/lamps/flare03
 void flare03() {
-	FCol = vec4(2, 2, 2, 0) * pow(star(UV, vec2(.5), 1.), 2.);
+	FCol = vec4(2, 2, 2, 0) * pow(flare(UV, vec2(.5), 1., .6), 2.);
 }
 
 void miscmodel() {
@@ -2949,18 +2960,25 @@ void gr8torch2b_m() {
 
 // models/mapobjects/teleporter/energy.tga
 void tlpnrg() {
-	vec2 uv = vec2(nang(Pos.xy), ls(8., 128., Pos.z));
+	vec2 uv = vec2(2. * nang(Pos.xy), 3. * ls(8., 128., Pos.z));
 
-	uv.x = fract(uv.x * 3. - Time.x * 2.2);
-	uv.y *= 4.;
+	vec2 p = uv;
+	p.x = fract(uv.x - Time.x * 3.);
 	float f =
-		star(uv, vec2(0, .3), 1.) +
-		star(uv, vec2(1, .3), 1.) +
-		star(uv, vec2(.5, .4), 1.5) 
-		;
-	f *= f;
+		(wrapped_flare(p, vec2(0, .3), 1., .6) + flare(p, vec2(.5, .4), 2., .66))
+		* ls(.1, .2, uv.y) * (.5 + abs(fract(Time.x * 5.3) - .5))
+	;
+	FCol = f * f * vec4(.9, .77, .77, 0);
 
-	FCol = vec4(f, f, f, 0);
+	p.x = fract(uv.x * .5 - Time.x * 4.4);
+	p.y = mod(uv.y * .5 - Time.x * 2.6, 3.);
+	f = wrapped_flare(p, vec2(0, .5), 1.1, .5) + flare(p, vec2(.5, .6), 1., .6);
+	FCol += f * f * vec4(.9, .77, .77, 0);
+
+	p.x = fract(uv.x * .5 + Time.x * 2.);
+	p.y = mod(uv.y * .5 - Time.x * 2., 3.);
+	f = wrapped_flare(p, vec2(0, .5), 1.1, .5) + flare(p, vec2(.5, .6), 1., .6);
+	FCol += f * f * vec4(.9, .77, .77, 0);
 }
 
 // models/mapobjects/teleporter/transparency.tga (texture)
