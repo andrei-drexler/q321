@@ -1266,3 +1266,4 @@
 64069,added sfx/launchpad_diamond clamps
 64106,more sfx/launchpad_diamond tweaks
 64115,only draw teleport effect when a map is loaded
+64082,improved fov scaling for ultrawide monitors

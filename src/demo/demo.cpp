@@ -293,9 +293,9 @@ namespace Demo {
 		translation = i4x4;
 		translation.GetPosition() -= frame.pos;
 
-		vec2 res = Gfx::GetResolution();
-		g_fov.x = frame.fov * DEG2RAD;
-		g_fov.y = ScaleFov(g_fov.x, res.y/res.x);
+		float aspect = Gfx::GetAspectRatio();
+		g_fov.x = ScaleFov(frame.fov * DEG2RAD, aspect * (9.f/16.f));
+		g_fov.y = ScaleFov(g_fov.x, 1.f / aspect);
 
 		MakePerspective(g_fov, 2.f, 8192.f, projection);
 		Uniform::World = i4x4;
