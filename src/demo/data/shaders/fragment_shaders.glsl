@@ -759,12 +759,9 @@ TEXA(lpdmnd) {
 	o = max(o, uv.y - .96);
 	c = mix(c, vec3(1, 1, .9) - uv.y * .55, tri(-.01, .01, o)); // inner edge highlight
 	c = mix(c, vec3(.2 * b + .1), msk(t, .01)); // interior color
-	//k = .2 - .05 * ls(.8, .5, uv.y) - .15 * ls(.5, .3, uv.y);
-	//c *= 1. - .5 * tri(0., .01, box(vec2(u.x, uv.y) - vec2(.25, .6), vec2(k, .2))) * msk(t);
 	c *= 1. - .2 * tri(.0, .05, t) * msk(o, .004);
 	v = knob(u = uv - vec2(.5, .4), .02);
 	c *= 1. + RGB(111, 80, 70) * tri(.03, .01, length(u)); // knob exterior bevel highlight
-	//c *= 1. - ls(.04, .02, length(u)) * clamp(u.y / .02, -1., 1.);
 	c *= 1. - .5 * tri(.02, .01, d = length(u)); // sunken knob exterior
 	c = mix(c, RGB(111, 66, 44) * (v.x * 1.5 + .2), v.y); // knob interior
 
@@ -776,7 +773,6 @@ TEXA(lpdmnd) {
 	c = mix(c, vec3(.6, .55, .55) * (1. + .4 * b - .5 * h), msk(r, .007) * ls(.23, .21, d)); // base clamp color
 	c *= 1. - .5 * h * tri(.02, .004, .0, r); // clamp shadow
 
-	//return vec4(c, msk(exclude(t, r - .04) - .02, .03));
 	return vec4(c, msk(t - .022, .03));
 }
 
