@@ -733,11 +733,35 @@ vec2 knob(vec2 uv, float s) {
 
 // sfx/launchpad_diamond (texture)
 TEXA(lpdmnd) {
+	vec3 c = T0(uv).xyz; // base texture
 	float
-		b = FBMT(uv, vec2(5), .9, 3., 4),
+		b = FBMT(uv, vec2(5), .9, 3., 4), // base FBM
 		t, o, k, r, h, d;
-	vec3 c = T0(uv).xyz;
 	vec2 u, v;
+	u.x = abs(uv.x - .5);
+	u.y = uv.y;
+
+	// large middle panel underneath
+	c = mix(c, vec3(.2 + .3 * b * b), r = msk(k = box(u - vec2(0, .5), vec2(.33 - uv.y * .1, .15)) - .05, .004)); // base color
+	c *= 1.
+		- .5 * tri(.0, .01, k) // outer edge shadow
+		+ .2 * tri(-.01, .01, k) // outer edge highlight
+	;
+
+	// bottom attachment
+	c = mix(c, vec3(.22 + .22 * b * b), r = msk(k = box(u, vec2(.2)), .004)); // base color
+	c *= 1.
+		+ .3 * tri(.0, .01, k) // outer edge highlight
+		+ .5 * sqr(tri(.05, .03, uv.y)) * r // crease highlight
+	;
+
+	// bottom slots
+	u = mirr(u, .11);
+	c *= 1.
+		- .3 * msk(k = box(u - vec2(.07, -.03), vec2(0, .05)) - .015, .004) // darken interior
+		- .3 * tri(.0, .007, k) // darken edges
+	;
+
 	u.x = abs(uv.x - .5);
 	u.y = min(uv.y, .4);
 	r = length(u - vec2(0, .4)) - (.18 - .06 * ls(.4, 1., uv.y));
@@ -757,23 +781,38 @@ TEXA(lpdmnd) {
 	o = abs(t - .02) - .03;
 	o = max(o, uv.y - 1. + u.x * .5);
 	o = max(o, uv.y - .96);
-	c = mix(c, vec3(1, 1, .9) - uv.y * .55, tri(-.01, .01, o)); // inner edge highlight
-	c = mix(c, vec3(.2 * b + .1), msk(t, .01)); // interior color
-	c *= 1. - .2 * tri(.0, .05, t) * msk(o, .004);
-	v = knob(u = uv - vec2(.5, .4), .02);
-	c *= 1. + RGB(111, 80, 70) * tri(.03, .01, length(u)); // knob exterior bevel highlight
-	c *= 1. - .5 * tri(.02, .01, d = length(u)); // sunken knob exterior
+	c = mix(c, vec3(1, 1, .9) - uv.y * .55, tri(-.01, .01, o)); // lane edge highlight
+	c = mix(c, vec3(.2 * b + .1), msk(t, .01)); // inner lane color
+
+	// lane traces
+	k = .2 - .05 * ls(.8, .5, uv.y) - .15 * ls(.5, .3, uv.y);
+	d = msk(t, .004);
+	r = box(vec2(u.x, uv.y) - vec2(.25, .6), vec2(k, .2));
+	r = min(r, box(uv - vec2(.5, .21), vec2(.02, .05)) - .09);
+	c *= 1.
+		+ .3 * d * tri(.01, .01, r) // light interior line
+		- .3 * d * tri(.0, .01, r) // dark interior line
+	;
+	c *= 1. - .2 * tri(.0, .05, t) * msk(o, .004); // inner lane shadow
+	
+	// central knob
+	v = knob(u = uv - vec2(.5, .37), .02);
+	d = length(u);
+	c = mix(c, RGB(222, 155, 144) * (b * .4 + .3), tri(.03, .01, d)); // knob exterior bevel highlight
+	//c *= 1. - .5 * tri(.04, .03, .0, d) * clamp(u.y / .02, -1., 1.);
+	c *= 1. - .5 * tri(.02, .01, d); // sunken knob exterior
 	c = mix(c, RGB(111, 66, 44) * (v.x * 1.5 + .2), v.y); // knob interior
 
 	// metal clamps
 	u.x = abs(uv.x - .5);
 	u.y = uv.y - .3;
-	r = box(u = u.x > .06 ? u * rot(50.) - vec2(.08, -.11) : u + vec2(0, .07), vec2(.03 - .01 * u.y * 30., .04)) - .01;
-	h = sat(u.y / .08 + .5); // vertical clamp coordinate, normalized [0..1]
-	c = mix(c, vec3(.6, .55, .55) * (1. + .4 * b - .5 * h), msk(r, .007) * ls(.23, .21, d)); // base clamp color
-	c *= 1. - .5 * h * tri(.02, .004, .0, r); // clamp shadow
+	u = u.x > .06 ? u * rot(50.) - vec2(.08, -.11) : u + vec2(0, .07);
+	h = sat(u.y / .09 + .5); // vertical clamp coordinate, normalized [0..1]
+	r = box(u, vec2(.04 - .02 * h, .04)) - .01;
+	c = mix(c, vec3(.6, .55, .55) * (1. + .4 * b - .5 * h), msk(r, .007) * ls(.21, .18, d)); // base clamp color
+	c *= 1. - .5 * h * tri(.02, .008, .0, r); // clamp shadow
 
-	return vec4(c, msk(t - .022, .03));
+	return vec4(c, msk(t - .025, .03));
 }
 
 // sfx/launchpad_diamond (map shader)
