@@ -1272,7 +1272,7 @@ vec3 gkarnarcfnl(vec2 uv) {
 		k, i, v, r, z; // ugh...
 	vec3
 		mt = gothic_metal(b), // metal color
-		c = vec3(.1 * t); // base color
+		c = vec3(.3 * b); // base color
 	vec2
 		p, q;
 
