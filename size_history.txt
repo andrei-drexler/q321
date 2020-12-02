@@ -1263,3 +1263,4 @@
 63963,added lamps/bot_flare
 63915,added basic spawn/teleport effect
 63974,tweaked spawn/teleport effect
+64069,added sfx/launchpad_diamond clamps
