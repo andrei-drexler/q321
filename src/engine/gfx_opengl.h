@@ -499,6 +499,11 @@ FORCEINLINE void Gfx::RegisterTextures(const Texture::Descriptor* textures, u16 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		}
 
+#ifdef DISABLE_TEXTURE_FILTERING
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+#endif
+
 		glTexImage2D(GL_TEXTURE_2D, 0, texture.storage.internal_format, texture.width, texture.height, 0, texture.storage.format, texture.storage.data_type, nullptr);
 
 		if (descriptor.flags & Texture::Flags::RenderTarget) {
