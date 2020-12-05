@@ -324,9 +324,6 @@ namespace Demo {
 #endif
 
 		Texture::GenerateProceduralTextures();
-#ifdef SAVE_TEXTURE
-		Gfx::SaveTGA(PP_STRINGIZE(SAVE_TEXTURE) ".tga", Texture::SAVE_TEXTURE);
-#endif
 	}
 
 	NOINLINE void ComputeNormals(const vec3* positions, const u32* indices, u32 num_verts, u32 num_indices, vec3* normals) {

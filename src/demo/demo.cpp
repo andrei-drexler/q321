@@ -563,6 +563,10 @@ namespace Demo {
 		GenerateLevelShots();
 		Menu::Init();
 
+#ifdef SAVE_TEXTURE
+		Gfx::SaveTGA(PP_STRINGIZE(SAVE_TEXTURE) ".tga", Texture::SAVE_TEXTURE);
+#endif
+
 #ifdef SHOW_LIGHTMAP
 		r_lightmap.Set(1);
 #endif
