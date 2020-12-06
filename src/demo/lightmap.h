@@ -822,29 +822,31 @@ FORCEINLINE void Demo::Map::Details::DebugFillLightmap() {
 
 		for (u16 y = rect.min[1]; y < rect.max[1]; ++y, texel += Lightmap::Width, texel_pos += Lightmap::Width, texel_nor += Lightmap::Width) {
 			for (u16 x = rect.min[0]; x < rect.max[0]; ++x) {
+				u32 alpha = length_squared(texel_nor[x]) > 0.f ? 0xFF'00'00'00 : 0;
+
 				switch (Lightmap::Debug) {
 					case Lightmap::DebugMode::Tiles:
-						texel[x] = tile_index * 0x45d9f3b;
+						texel[x] = SelectBits(0xff'ff'ff, tile_index * 0x45d9f3b, alpha);
 						break;
 
 					case Lightmap::DebugMode::Checker:
-						texel[x] = (x ^ y) & 1 ? 0xffff'ffff : 0x3f3f'3f3f;
+						texel[x] = SelectBits(0xff'ff'ff, (x ^ y) & 1 ? 0xffff'ffff : 0x3f3f'3f3f, alpha);
 						break;
 
 					case Lightmap::DebugMode::Positions:
-						texel[x] = Lightmap::PackVec3({
+						texel[x] = SelectBits(0xff'ff'ff, Lightmap::PackVec3({
 							fract(texel_pos[x].x / 64.f),
 							fract(texel_pos[x].y / 64.f),
 							fract(texel_pos[x].z / 64.f)
-						});
+						}), alpha);
 						break;
 
 					case Lightmap::DebugMode::Normals:
-						texel[x] = Lightmap::PackVec3(texel_nor[x] * 0.5f + 0.5f);
+						texel[x] = SelectBits(0xff'ff'ff, Lightmap::PackVec3(texel_nor[x] * 0.5f + 0.5f), alpha);
 						break;
 
 					default:
-						texel[x] = 0xFF00FF;
+						texel[x] = alpha;
 						break;
 				}
 			}
