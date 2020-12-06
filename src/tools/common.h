@@ -21,7 +21,7 @@ using std::string_view;
 
 ////////////////////////////////////////////////////////////////
 
-#include "../../engine/common.h"
+#include "../../engine/core.h"
 #include "../../engine/math.h"
 #include "../../engine/aabb.h"
 

@@ -18,7 +18,7 @@
 	#endif // ndef NDEBUG
 #endif
 
-#include "common.h"
+#include "core.h"
 #include "math.h"
 #include "aabb.h"
 using namespace Math::CRT;

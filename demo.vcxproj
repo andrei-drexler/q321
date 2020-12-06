@@ -45,7 +45,7 @@
     <ClInclude Include="src\engine\sys.h" />
     <ClInclude Include="src\engine\sys_win32.h" />
     <ClInclude Include="src\engine\math.h" />
-    <ClInclude Include="src\engine\common.h" />
+    <ClInclude Include="src\engine\core.h" />
     <ClInclude Include="src\engine\keys_win32.h" />
   </ItemGroup>
   <ItemGroup>
