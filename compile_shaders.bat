@@ -1,5 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
+pushd %~dp0
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -17,8 +18,11 @@ for /f "usebackq delims=" %%a in (`echo %cmdcmdline% ^| find /i /c /v "%~dpn0"`)
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+call src\scripts\setup_env.bat
+if NOT ERRORLEVEL 1 msbuild /nologo /v:quiet src\tools\shader_compiler\shader_compiler.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:SolutionDir=%~dp0
+
 if exist "%compiler%" goto has_compiler
-echo ERROR: Compiler not found.
+echo ERROR: Shader compiler not found.
 goto end
 
 :has_compiler
