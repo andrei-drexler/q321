@@ -30,26 +30,8 @@ set isodate=%ts:~0,4%-%ts:~4,2%-%ts:~6,2%T%ts:~8,2%:%ts:~10,2%
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-set check_cl=where cl.exe ^>nul 2^>nul
-%check_cl% && goto work
-
-:: Not running from a VS Developer Command Prompt, need to set up environment manually
-
-:: VS2017 or newer
-set vs2017_where="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
-if exist %vs2017_where% goto try_vs2017
-goto no_env
-
-:try_vs2017
-for /f "usebackq delims=#" %%a in (`%vs2017_where% -latest -property installationPath`) do call "%%a\Common7\Tools\VsDevCmd.bat" >nul
-
-%check_cl% && goto work
-
-:no_env
-echo ERROR: Could not setup Visual C++ environment.
-echo Please run this script from a VS Developer Command Prompt.
-
-goto end
+call %~dp0src\scripts\setup_env.bat
+if ERRORLEVEL 1 exit /b 1
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
