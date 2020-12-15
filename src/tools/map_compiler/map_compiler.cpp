@@ -888,7 +888,7 @@ void WriteEntities(ArrayPrinter& print, const Map& map, const Options& options, 
 	}
 
 	/* write entity properties (for all entities) */
-	print << "\nconst i16 "sv << entity_data_name << "[] = {"sv;
+	print << "const i16 "sv << entity_data_name << "[] = {"sv;
 	const size_t NumRawFields = Demo::Entity::NumRawFields;
 	i16* raw_data = (i16*)compiled_entities.data();
 	for (size_t field = 0; field < NumRawFields; ++field) {
@@ -930,7 +930,7 @@ void WriteBrushBounds(ArrayPrinter& print, const Map& map, const Options& option
 	AABB world_bounds;
 	world_bounds.mins = floor(world.bounds.mins / 8.f) * 8.f;
 	world_bounds.maxs = ceil (world.bounds.maxs / 8.f) * 8.f;
-	print << "\nconst i16 "sv << bounds_name << "[6] = {"sv;
+	print << "const i16 "sv << bounds_name << "[6] = {"sv;
 	for (u32 i=0; i<6; ++i)
 		print << i16(world_bounds.v[i/3].data[i%3]) << ","sv;
 	print << "}; // xmin/ymin/zmin/xmax/ymax/zmax"sv;
@@ -938,7 +938,7 @@ void WriteBrushBounds(ArrayPrinter& print, const Map& map, const Options& option
 
 	float lightmap_area = 0.f;
 	
-	print << "\nconst i16 "sv << array_name << "[] = {"sv;
+	print << "const i16 "sv << array_name << "[] = {"sv;
 	for (auto& brush : world.brushes) {
 		vec3 offset, size;
 		if (true) {
@@ -986,7 +986,7 @@ void WriteUnalignedPlanes
 	size_t num_planes = 0;
 	size_t num_compact_planes = 0;
 
-	print << "\nconst i32 "sv << data_array_name << "[] = {"sv;
+	print << "const i32 "sv << data_array_name << "[] = {"sv;
 	for (size_t brush_index = 0; brush_index < world.brushes.size(); ++brush_index) {
 		auto& brush = world.brushes[brush_index];
 		size_t num_unaligned_brush_planes = 0;
@@ -1104,13 +1104,13 @@ void WriteUnalignedPlanes
 	print << "};"sv;
 	print.Flush();
 	
-	print << "\nconst u8 "sv << count_array_name << "[] = {"sv;
+	print << "const u8 "sv << count_array_name << "[] = {"sv;
 	for (auto count : nonaxial_counts)
 		print << count << ","sv;
 	print << "};"sv;
 	print.Flush();
 
-	print << "\nconst u16 "sv << plane_count_name << " = "sv << i32(num_unaligned_planes) << ";"sv;
+	print << "const u16 "sv << plane_count_name << " = "sv << i32(num_unaligned_planes) << ";"sv;
 	print.Flush();
 
 	printf(INDENT "%zd unaligned planes, %zd of which compact (%.1f%%)\n",
@@ -1197,7 +1197,7 @@ void WriteMaterials(ArrayPrinter& print, const Map& map, const Options& options,
 
 	/* write plane materials + uv axes */
 	print
-		<< "\nconst u16 "sv << array_name << "[] = {"sv;
+		<< "const u16 "sv << array_name << "[] = {"sv;
 	for (auto& brush : world.brushes) {
 		for (auto& plane : brush.planes) {
 			i32 index = shader_props[plane.material].map_material;
@@ -1273,7 +1273,7 @@ void WriteBrushUVs(ArrayPrinter& print, const Map& map, const Options& options, 
 	for (size_t i = 0; i < order.size(); ++i)
 		remap[order[i]] = i;
 
-	print << "\nconst float "sv << uv_set_name << "[] = {"sv;
+	print << "const float "sv << uv_set_name << "[] = {"sv;
 	for (int i=0; i<5; ++i) {
 		//for (auto& uv : plane_uvs.items) {
 		for (auto uv_index : order) {
@@ -1296,7 +1296,7 @@ void WriteBrushUVs(ArrayPrinter& print, const Map& map, const Options& options, 
 	assert(plane_uvs.items.size() <= 256);
 
 	i32 last_index = 0;
-	print << "\nconst u8 "sv << plane_map_name << "[] = {"sv;
+	print << "const u8 "sv << plane_map_name << "[] = {"sv;
 	for (auto& brush : world.brushes) {
 		for (auto& plane : brush.planes) {
 			i32 index = plane_uvs.FindIndex(plane);
@@ -1320,7 +1320,7 @@ void WriteBrushFlags(ArrayPrinter& print, const Map& map, const Options& options
 
 	auto& world = map.World();
 
-	print << "\nconst u8 "sv << array_name << "[] = {"sv;
+	print << "const u8 "sv << array_name << "[] = {"sv;
 	for (auto& brush : world.brushes)
 		print << (i32(brush.extra.keep_uvs) | (i32(brush.extra.asymmetric) << 1)) << ","sv;
 	print << "};"sv;
@@ -1379,7 +1379,7 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 		});
 	}
 
-	print << "\nconst u32 "sv << patch_array_name << "[] = {"sv;
+	print << "const u32 "sv << patch_array_name << "[] = {"sv;
 	for (auto patch_index : order) {
 		auto& patch = world.patches[patch_index];
 		vec2 max_dist = 0.f;
@@ -1443,7 +1443,7 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 	print << "};"sv;
 	print.Flush();
 
-	print << "\nconst i16 "sv << vert_array_name << "[] = {"sv;
+	print << "const i16 "sv << vert_array_name << "[] = {"sv;
 	for (int i=0; i<5; ++i) {
 		for (auto patch_index : order) {
 			auto& patch = world.patches[patch_index];
@@ -1811,7 +1811,7 @@ void WriteLights
 		std::sort(lights.begin() + 1, lights.end(), by_member(&Light::key));
 	}
 	
-	print << "\nconst i16 "sv << array_name << "[] = {"sv;
+	print << "const i16 "sv << array_name << "[] = {"sv;
 	for (auto& light : lights) {
 		u16 ldr =
 			(std::clamp<u16>(u16(light.color.x * 31.f + 0.5f), 0, 31) << 0) |
@@ -1962,7 +1962,7 @@ void WriteLightmap(ArrayPrinter& print, const Map& map, const Options& options, 
 		Math::assign_max(max_ofs[1], r.min[1] - surf.y - base_ofs[1]);
 	}
 
-	print << "\nconst u16 "sv << array_name << "[] = {"sv;
+	print << "const u16 "sv << array_name << "[] = {"sv;
 	i32 last_value = 0;
 	for (int pass = 0; pass < 2; ++pass) {
 		size_t surface_index = 0;
@@ -2070,7 +2070,6 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 		"////////////////////////////////////////////////////////////////\n"
 		"// %.*s (%s)\n"
 		"////////////////////////////////////////////////////////////////\n"
-		"\n"
 		"namespace %s {\n",
 		int(description.size()), description.c_str(), source_name,
 		name
@@ -2099,7 +2098,6 @@ bool CompileMap(Map& map, const char* name, const char* source_name, const Optio
 	ReplaceAll(description, "\"",  "\\\"");
 
 	fprintf(out,
-		"\n"
 		"static constexpr Demo::PackedMap map{\n"
 		"    \"%s\", \"%s\",\n"
 		"    %d, %d, // symmetry axis, level\n"
