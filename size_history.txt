@@ -1268,3 +1268,4 @@
 64115,only draw teleport effect when a map is loaded
 64082,improved fov scaling for ultrawide monitors
 64081,tweaked km_arena1archfinalc* background
+63420,--- public release ---
