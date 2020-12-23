@@ -3,7 +3,7 @@
 // auto-generated, do not modify
 static_assert(0xa89f1b22U == Demo::Model::Version, "Model definition mismatch, please recompile the model compiler & models");
 
-// demo/data/models/mapobjects/kmlamp1.md3
+// data/models/mapobjects/kmlamp1.md3
 namespace kmlamp1 {
 const u8 vertices[] = {72,21,9,45,60,17,8,53,0,0,43,9,21,10,18,9,62,7,6,119,7,0,6,112,103,202,1,31,0,143,1,0,31,202,1,125,23,68,
 69,90,23,22,69,106,0,0,165,1,0,0,0,164,1,0,0,0,0,118,35,0,0,0,85,0,0,83,0,82,0,0,0,0,83,35,34,0,50,9,28,71,43,9,23,12,118,17,8,
@@ -21,7 +21,7 @@ const Demo::PackedModel::Part parts[] = {{75,16,66,},{91,8,36,},{75,24,108,},{94
 const u16 stream_lengths[] = {5,9,15,4,1,};
 } // namespace kmlamp1
 
-// demo/data/models/mapobjects/storch/tall_torch.md3
+// data/models/mapobjects/storch/tall_torch.md3
 namespace tall_torch {
 const u8 vertices[] = {85,142,1,32,0,143,1,33,32,110,35,0,9,31,30,31,30,25,24,25,0,0,70,43,42,43,44,41,0,40,12,13,25,4,49,0,44,
 24,21,28,14,15,43,0,50,9,0,103,0,19,9,8,7,63,0,144,1,0,145,1,144,1,145,1,144,1,86,35,34,173,1,138,1,139,1,34,0,30,44,11,10,35,11
@@ -38,7 +38,7 @@ const Demo::PackedModel::Part parts[] = {{78,51,252,},{98,8,12,},};
 const u16 stream_lengths[] = {7,7,9,0,0,};
 } // namespace tall_torch
 
-// demo/data/models/mapobjects/gratelamp/gratetorch.md3
+// data/models/mapobjects/gratelamp/gratetorch.md3
 namespace gratetorch {
 const u8 vertices[] = {47,94,103,110,101,88,97,104,37,38,19,36,37,36,18,149,1,110,0,17,95,0,0,33,32,45,19,16,0,14,31,18,44,0,0,
 34,35,46,18,19,0,13,30,19,47,0,48,95,98,103,0,100,107,112,0,0,33,0,64,0,33,35,50,33,16,32,33,46,15,36,21,49,0,0,33,32,49,21,24,0
@@ -52,7 +52,7 @@ const Demo::PackedModel::Part parts[] = {{97,8,12,},{75,13,36,},{80,24,48,},};
 const u16 stream_lengths[] = {1,0,13,0,10,};
 } // namespace gratetorch
 
-// demo/data/models/mapobjects/gratelamp/gratetorchbig.md3
+// data/models/mapobjects/gratelamp/gratetorchbig.md3
 namespace gratetorchbig {
 const u8 vertices[] = {67,146,1,157,1,168,1,155,1,136,1,147,1,156,1,49,56,29,56,57,56,30,227,1,166,1,0,25,143,1,0,6,51,52,69,29,
 24,0,20,45,28,68,3,0,50,49,66,28,25,0,23,46,29,67,3,72,143,1,150,1,157,1,0,152,1,161,1,168,1,0,0,49,0,96,0,49,51,74,49,24,50,51,
@@ -66,7 +66,7 @@ const Demo::PackedModel::Part parts[] = {{97,8,12,},{75,13,36,},{80,24,48,},};
 const u16 stream_lengths[] = {10,6,14,0,10,};
 } // namespace gratetorchbig
 
-// demo/data/models/mapobjects/teleporter/teleporter.md3
+// data/models/mapobjects/teleporter/teleporter.md3
 namespace teleporter {
 const u8 vertices[] = {165,1,39,38,60,99,76,120,3,98,24,74,41,0,40,99,24,121,3,97,23,53,16,155,1,208,1,209,1,68,0,56,0,134,1,0,
 54,63,125,25,172,1,106,69,68,149,1,79,17,139,1,208,1,24,148,1,0,69,0,55,0,135,1,0,57,0,182,1,24,173,1,24,127,18,55,155,1,252,2,
@@ -97,7 +97,7 @@ const Demo::PackedModel::Part parts[] = {{99,20,60,},{75,40,180,},{75,16,36,},{7
 const u16 stream_lengths[] = {36,38,63,0,0,};
 } // namespace teleporter
 
-// demo/data/models/mapobjects/spotlamp/spotlamp.md3
+// data/models/mapobjects/spotlamp/spotlamp.md3
 namespace spotlamp {
 const u8 vertices[] = {3,0,204,1,0,0,205,1,204,1,205,1,184,3,97,69,97,19,21,20,21,188,2,213,1,162,1,211,1,55,96,82,96,239,1,164,
 1,69,164,1,26,31,195,1,31,59,188,1,107,188,1,215,1,0,119,156,1,157,1,156,1,143,1,0,196,1,143,1,64,116,0,117,78,143,1,32,170,1,16
@@ -136,7 +136,7 @@ const Demo::PackedModel::Part parts[] = {{77,84,252,},{79,24,54,},{89,75,144,},}
 const u16 stream_lengths[] = {94,59,91,16,3,};
 } // namespace spotlamp
 
-// demo/data/models/mapobjects/wallhead/lion.md3
+// data/models/mapobjects/wallhead/lion.md3
 namespace lion {
 const u8 vertices[] = {58,57,0,0,62,63,60,61,84,25,61,62,63,56,57,0,86,2,89,0,122,35,89,86,62,57,4,48,22,23,62,41,71,28,20,12,7,
 24,6,28,25,35,27,32,13,30,6,28,113,0,5,56,54,17,12,40,9,16,3,2,14,15,8,57,13,43,22,23,22,40,32,8,3,15,232,1,16,81,43,20,102,91,
@@ -157,7 +157,7 @@ const Demo::PackedModel::Part parts[] = {{75,74,369,},{75,14,39,},};
 const u16 stream_lengths[] = {1,1,3,0,0,};
 } // namespace lion
 
-// demo/data/models/mapobjects/wallhead/wallhead02.md3
+// data/models/mapobjects/wallhead/wallhead02.md3
 namespace wallhead02 {
 const u8 vertices[] = {3,90,91,0,84,87,2,56,14,71,78,79,74,19,59,2,96,4,26,5,17,36,7,26,49,70,29,68,61,24,63,17,58,29,10,10,25,
 31,16,53,92,23,57,87,2,56,57,78,79,74,19,59,98,2,24,23,26,36,19,27,9,58,43,62,25,60,69,43,70,0,2,42,89,11,29,21,73,64,17,24,11,
@@ -176,7 +176,7 @@ const Demo::PackedModel::Part parts[] = {{75,69,366,},};
 const u16 stream_lengths[] = {0,0,2,0,0,};
 } // namespace wallhead02
 
-// demo/data/models/mapobjects/statue_major.md3
+// data/models/mapobjects/statue_major.md3
 namespace statue_major {
 const u8 vertices[] = {34,23,31,88,23,52,20,75,76,21,77,11,5,35,19,7,56,44,50,2,37,79,22,64,52,13,45,75,61,8,33,5,28,45,12,32,60
 ,26,44,23,59,22,70,6,35,30,7,32,22,29,14,16,5,6,29,40,13,14,22,9,17,11,26,12,31,5,12,9,9,129,1,38,29,17,58,40,20,3,5,21,20,27,2,
@@ -266,7 +266,7 @@ const Demo::PackedModel::Part parts[] = {{75,106,576,},{75,52,288,},{75,51,282,}
 const u16 stream_lengths[] = {4,3,30,0,0,};
 } // namespace statue_major
 
-// demo/data/models/mapobjects/visor_posed.md3
+// data/models/mapobjects/visor_posed.md3
 namespace visor_posed {
 const u8 vertices[] = {105,16,18,17,21,20,5,18,34,18,15,0,26,13,19,50,29,0,28,47,30,39,43,26,2,22,32,53,14,6,49,26,2,16,19,41,3,
 49,50,0,51,9,0,19,9,6,40,34,34,3,4,37,35,39,0,11,140,1,22,21,21,24,18,129,2,13,73,16,27,102,142,2,26,46,63,92,53,109,58,53,118,
@@ -347,7 +347,7 @@ const Demo::PackedModel::Part parts[] = {{75,56,288,},{75,202,1062,},{75,183,106
 const u16 stream_lengths[] = {25,11,26,0,0,};
 } // namespace visor_posed
 
-// demo/data/models/mapobjects/lamps/bot_lamp2.md3
+// data/models/mapobjects/lamps/bot_lamp2.md3
 namespace bot_lamp2 {
 const u8 vertices[] = {208,1,51,0,52,123,0,122,40,43,171,1,86,87,170,1,85,16,143,1,0,142,1,100,52,53,0,24,25,123,147,1,119,0,31,
 122,198,1,27,147,1,149,1,24,98,0,94,77,77,112,72,97,64,77,36,113,184,1,97,34,132,2,133,2,53,184,2,185,2,132,2,195,1,0,222,1,0,29
@@ -371,7 +371,7 @@ const Demo::PackedModel::Part parts[] = {{75,37,210,},{75,24,108,},{93,16,24,},{
 const u16 stream_lengths[] = {36,34,28,3,1,};
 } // namespace bot_lamp2
 
-// demo/data/models/powerups/ammo/rocketam.md3
+// data/models/powerups/ammo/rocketam.md3
 namespace rocketam {
 const u8 vertices[] = {46,6,7,97,102,103,7,0,126,0,145,1,0,25,42,108,103,7,6,96,6,7,46,0,0,0,23,145,1,144,1,145,1,25,0,0,42,0,
 108,0,7,97,96,97,46,97,96,97,96,0,97,0,96,97,96,97,49,100,5,0,103,6,7,106,64,233,1,0,232,1,0,0,0,13,12,13,0,12,13,12,0,233,1,0,
@@ -386,7 +386,7 @@ const Demo::PackedModel::Part parts[] = {{83,40,210,},{84,12,18,},};
 const u16 stream_lengths[] = {4,8,0,0,0,};
 } // namespace rocketam
 
-// demo/data/models/powerups/armor/armor_red.md3
+// data/models/powerups/armor/armor_red.md3
 namespace armor_red {
 const u8 vertices[] = {10,35,5,15,78,7,14,12,20,18,7,21,35,31,65,15,20,12,19,37,14,54,56,56,12,15,17,39,33,47,19,11,106,33,65,15
 ,32,22,32,33,4,34,26,7,26,38,19,43,7,40,16,19,16,11,10,10,23,43,10,20,22,13,24,23,10,23,21,0,3,26,22,13,12,23,27,0,14,151,1,34,
@@ -412,7 +412,7 @@ const Demo::PackedModel::Part parts[] = {{85,111,630,},};
 const u16 stream_lengths[] = {2,2,2,0,0,};
 } // namespace armor_red
 
-// demo/data/models/powerups/armor/shard.md3
+// data/models/powerups/armor/shard.md3
 namespace shard {
 const u8 vertices[] = {9,14,3,15,4,14,3,17,14,13,18,17,5,2,12,2,17,16,3,13,2,14,9,16,3,17,4,16,3,19,16,15,20,21,3,2,14,2,19,18,3
 ,15,2,16,44,6,7,6,51,0,48,0,7,0,39,0,53,6,0,7,2,0,10,0,17,0,46,6,7,6,53,0,50,0,7,0,41,0,55,6,0,7,4,0,8,0,17,0,16,6,7,6,9,0,120,0
@@ -426,7 +426,7 @@ const Demo::PackedModel::Part parts[] = {{82,22,120,},{90,22,120,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace shard
 
-// demo/data/models/powerups/health/large_cross.md3
+// data/models/powerups/health/large_cross.md3
 namespace large_cross {
 const u8 vertices[] = {17,32,33,32,0,33,0,32,33,0,0,32,0,0,0,0,33,32,33,0,0,32,0,33,52,0,0,0,37,0,0,0,0,35,0,34,35,0,0,34,0,35,0
 ,0,37,0,0,0,58,0,37,0,36,0,37,0,35,34,35,0,0,34,36,36,0,0,0,37,37,0,36,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -437,7 +437,7 @@ const Demo::PackedModel::Part parts[] = {{82,24,132,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace large_cross
 
-// demo/data/models/powerups/health/large_sphere.md3
+// data/models/powerups/health/large_sphere.md3
 namespace large_sphere {
 const u8 vertices[] = {0,0,39,76,39,42,28,29,43,43,27,26,42,40,34,16,17,35,41,41,35,6,23,0,9,8,0,16,34,2,38,38,39,0,40,30,20,17,
 33,43,43,27,30,38,38,32,20,8,9,17,5,33,2,2,43,43,42,0,41,35,6,30,38,0,41,35,0,36,37,0,39,11,48,48,20,21,49,49,23,11,32,48,48,32,
@@ -455,7 +455,7 @@ const Demo::PackedModel::Part parts[] = {{92,66,384,},};
 const u16 stream_lengths[] = {0,0,1,0,0,};
 } // namespace large_sphere
 
-// demo/data/models/powerups/health/mega_cross.md3
+// data/models/powerups/health/mega_cross.md3
 namespace mega_cross {
 const u8 vertices[] = {15,28,0,29,0,28,29,28,29,0,28,0,29,28,0,29,28,0,29,0,28,0,29,0,0,28,29,28,29,28,0,29,28,0,0,29,0,0,0,28,0
 ,29,28,0,29,0,28,29,0,28,6,16,17,20,5,30,0,14,0,15,0,27,3,0,16,0,10,11,10,11,21,21,20,21,6,0,15,0,19,0,4,0,21,0,11,10,11,10,14,0
@@ -470,7 +470,7 @@ const Demo::PackedModel::Part parts[] = {{82,50,288,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace mega_cross
 
-// demo/data/models/powerups/instant/quad.md3
+// data/models/powerups/instant/quad.md3
 namespace quad {
 const u8 vertices[] = {98,3,2,0,10,13,7,12,6,15,5,12,7,21,10,10,21,8,11,9,15,10,6,9,19,7,8,8,21,9,7,8,21,6,7,7,19,4,6,7,19,5,4,4
 ,21,3,5,2,19,4,3,5,17,2,2,0,17,3,0,2,15,2,3,0,13,2,0,0,0,3,2,0,12,3,0,0,14,0,3,0,16,2,0,5,16,2,4,3,18,5,2,4,20,5,5,4,18,6,7,5,18
@@ -499,7 +499,7 @@ const Demo::PackedModel::Part parts[] = {{82,136,792,},{82,8,36,},};
 const u16 stream_lengths[] = {0,1,3,0,0,};
 } // namespace quad
 
-// demo/data/models/powerups/instant/quad_ring.md3
+// data/models/powerups/instant/quad_ring.md3
 namespace quad_ring {
 const u8 vertices[] = {139,1,10,27,40,19,9,5,4,12,33,4,16,12,12,20,23,10,26,12,19,36,2,12,34,9,5,34,12,3,38,15,12,30,6,19,24,12,
 10,20,27,12,10,14,27,0,12,16,11,27,12,17,12,25,25,12,8,35,17,14,35,3,11,35,12,9,39,0,12,33,19,6,29,12,21,13,43,46,7,29,68,47,34,
@@ -518,7 +518,7 @@ const Demo::PackedModel::Part parts[] = {{82,75,450,},};
 const u16 stream_lengths[] = {1,0,0,0,0,};
 } // namespace quad_ring
 
-// demo/data/models/powerups/weapons2/gauntlet/gauntlet.md3
+// data/models/powerups/weapons2/gauntlet/gauntlet.md3
 namespace gauntlet {
 const u8 vertices[] = {9,14,13,16,3,4,2,3,14,2,5,3,12,2,5,3,29,2,18,5,6,7,8,3,14,2,9,3,8,0,5,0,123,12,2,7,20,7,5,27,10,13,38,0,
 14,6,3,11,6,15,10,25,2,34,4,6,3,26,3,31,35,34,29,30,2,2,27,30,30,14,0,8,0,0,0,0,7,23,15,8,17,12,12,14,4,17,6,3,11,23,4,35,3,2,9,
@@ -542,7 +542,7 @@ const Demo::PackedModel::Part parts[] = {{81,107,594,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace gauntlet
 
-// demo/data/models/powerups/weapons2/gauntlet/gauntlet_barrel.md3
+// data/models/powerups/weapons2/gauntlet/gauntlet_barrel.md3
 namespace gauntlet_barrel {
 const u8 vertices[] = {5,0,16,0,17,16,17,16,17,16,17,16,2,0,0,0,0,0,17,5,0,6,0,3,5,6,0,0,3,5,4,2,7,4,2,7,4,2,7,2,3,0,0,2,4,5,4,5
 ,4,6,3,2,3,9,0,3,0,2,0,8,0,3,5,5,4,4,4,30,5,7,0,6,12,19,0,27,10,4,5,23,2,0,27,12,0,21,12,0,5,10,16,20,26,27,4,25,5,13,0,6,7,6,0,
@@ -557,7 +557,7 @@ const Demo::PackedModel::Part parts[] = {{81,49,258,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace gauntlet_barrel
 
-// demo/data/models/powerups/weapons2/machinegun/machinegun.md3
+// data/models/powerups/weapons2/machinegun/machinegun.md3
 namespace machinegun {
 const u8 vertices[] = {80,0,19,18,19,18,19,18,19,18,19,18,71,0,19,24,25,24,25,0,27,0,2,0,100,2,0,3,5,0,7,0,3,0,3,0,2,0,2,0,6,0,4
 ,0,2,0,101,3,7,2,14,7,8,5,3,7,54,38,0,12,51,33,0,29,0,9,38,31,9,38,31,24,0,8,40,33,0,9,40,0,7,23,0,18,0,4,16,0,4,0,15,40,10,2,0,
@@ -580,7 +580,7 @@ const Demo::PackedModel::Part parts[] = {{81,107,513,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace machinegun
 
-// demo/data/models/powerups/weapons2/machinegun/machinegun_barrel.md3
+// data/models/powerups/weapons2/machinegun/machinegun_barrel.md3
 namespace machinegun_barrel {
 const u8 vertices[] = {12,5,0,114,111,110,4,0,5,4,115,5,118,115,5,114,4,115,5,118,115,5,118,115,5,118,115,5,9,0,120,0,121,120,
 121,0,120,121,0,120,121,0,0,120,121,0,0,4,2,13,14,13,3,10,9,12,6,16,13,5,16,13,25,10,0,2,11,0,3,9,17,12,4,17,12,40,11,3,11,24,15
@@ -594,7 +594,7 @@ const Demo::PackedModel::Part parts[] = {{81,47,216,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace machinegun_barrel
 
-// demo/data/models/powerups/weapons2/plasma/plasma.md3
+// data/models/powerups/weapons2/plasma/plasma.md3
 namespace plasma {
 const u8 vertices[] = {32,20,21,21,46,47,26,7,20,21,21,0,0,19,2,9,6,0,0,112,24,0,0,25,3,0,26,147,1,2,0,16,19,18,3,0,66,6,0,2,13,
 10,7,3,10,2,15,14,0,13,10,3,11,9,3,2,7,5,2,10,6,2,7,3,11,5,63,7,10,7,9,7,9,8,14,23,14,8,0,126,0,10,39,38,39,32,21,4,14,15,5,11,0
@@ -638,7 +638,7 @@ const Demo::PackedModel::Part parts[] = {{81,222,1065,},{101,12,30,},{86,12,42,}
 const u16 stream_lengths[] = {3,0,0,0,0,};
 } // namespace plasma
 
-// demo/data/models/powerups/weapons2/railgun/railgun.md3
+// data/models/powerups/weapons2/railgun/railgun.md3
 namespace railgun {
 const u8 vertices[] = {23,73,2,0,70,0,75,76,77,76,4,0,2,22,23,22,0,0,11,9,0,16,9,8,0,0,68,5,4,2,7,5,0,5,2,5,2,0,2,2,0,2,4,4,5,6,
 4,0,9,8,0,9,0,8,0,7,6,7,6,5,4,7,5,3,3,93,9,8,0,9,8,21,0,0,46,47,46,35,0,32,0,37,0,13,14,15,14,9,0,8,0,4,112,0,9,8,11,10,7,2,4,5,
@@ -688,7 +688,7 @@ const Demo::PackedModel::Part parts[] = {{81,245,1131,},{81,30,78,},{81,14,42,},
 const u16 stream_lengths[] = {2,0,0,0,0,};
 } // namespace railgun
 
-// demo/data/models/powerups/weapons2/rocketl/rocketl.md3
+// data/models/powerups/weapons2/rocketl/rocketl.md3
 namespace rocketl {
 const u8 vertices[] = {23,42,0,55,54,55,54,43,22,34,0,27,9,34,27,26,3,36,37,74,75,188,1,0,0,153,1,0,152,1,31,123,120,121,128,1,
 20,0,4,5,4,19,6,12,13,12,13,12,13,12,13,12,13,0,12,0,13,0,12,13,12,13,12,7,6,19,3,14,6,7,21,7,2,0,10,11,10,0,11,0,10,9,8,0,9,0,8
@@ -736,7 +736,7 @@ const Demo::PackedModel::Part parts[] = {{81,187,747,},{81,112,468,},};
 const u16 stream_lengths[] = {17,0,0,0,0,};
 } // namespace rocketl
 
-// demo/data/models/powerups/weapons2/shotgun/shotgun.md3
+// data/models/powerups/weapons2/shotgun/shotgun.md3
 namespace shotgun {
 const u8 vertices[] = {166,2,207,1,206,1,207,1,0,206,1,27,0,2,16,0,4,3,0,6,88,0,69,76,77,11,0,22,66,3,65,66,67,0,0,23,0,29,29,10
 ,0,9,11,0,8,13,0,5,7,22,28,28,0,0,22,23,22,0,0,0,51,3,2,19,0,0,0,11,2,11,0,5,0,8,3,9,3,7,11,0,8,0,16,14,72,73,0,0,0,72,0,73,15,7

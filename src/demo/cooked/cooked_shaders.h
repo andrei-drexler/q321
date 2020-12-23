@@ -3,7 +3,7 @@
 // auto-generated, do not modify
 static_assert(0x4faf5d5dU == Demo::Shader::Version, "Shader definition mismatch, please recompile the shader compiler & shaders");
 
-// src/demo/data/shaders//vertex_shaders.glsl: 5494 => 2615 (47.6%)
+// data/shaders/vertex_shaders.glsl: 5494 => 2615 (47.6%)
 namespace cooked::vertex_shaders {
 static constexpr char code[] =
 /* ---- @global: 627 chars (24.0%) ---- */
@@ -43,7 +43,7 @@ static constexpr u32 shader_deps[] = {1,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,1,5,5,5,5,5,5,5,5,5,5,5,5,5,};
 } // namespace cooked::vertex_shaders
 
-// src/demo/data/shaders//fragment_shaders.glsl: 95864 => 41348 (43.1%)
+// data/shaders/fragment_shaders.glsl: 95864 => 41348 (43.1%)
 namespace cooked::fragment_shaders {
 static constexpr char code[] =
 /* ---- @global: 4922 chars (11.9%) ---- */

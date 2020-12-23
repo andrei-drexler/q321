@@ -1725,7 +1725,7 @@ void WriteLights
 
 		/* add model lights */
 		MD3::Model model;
-		std::string base_path = "../../demo/data/";
+		std::string base_path = "../../../data/";
 		for (auto& entity : map.entities) {
 			if (entity.GetProperty("classname"sv) != "misc_model"sv)
 				continue;
@@ -2135,7 +2135,7 @@ struct MapEntry {
 };
 
 static constexpr MapEntry DemoMaps[] = {
-	#define PP_DEMO_MAP_DEF(name, source, ...)		{#name, #source, "../../demo/data/" #source},
+	#define PP_DEMO_MAP_DEF(name, source, ...)		{#name, #source, "../../../data/maps/" #source},
 	DEMO_MAPS(PP_DEMO_MAP_DEF)
 	#undef PP_DEMO_MAP_DEF
 };

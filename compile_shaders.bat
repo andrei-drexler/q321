@@ -4,10 +4,9 @@ pushd %~dp0
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-set src_folder=src/demo/data/shaders/
-set sources=%src_folder%*.glsl
-set out_folder=src/demo/cooked/
-set out_file=%out_folder%cooked_shaders.h
+set src_folder=data/shaders
+set out_folder=src/demo/cooked
+set out_file=%out_folder%/cooked_shaders.h
 set compiler=%~dp0output/Win32/Release/shader_compiler/shader_compiler.exe
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

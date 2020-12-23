@@ -790,7 +790,7 @@ static constexpr std::string_view ModelPaths[] = {
 int main() {
 	Options options;
 
-	options.src_path = "../../demo/data/";
+	options.src_path = "../../../data/";
 	options.out_path = "../../demo/cooked/cooked_models.h";
 
 	FILE* out = fopen(options.out_path.c_str(), "w");

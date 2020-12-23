@@ -29,7 +29,7 @@ struct Options {
 
 bool GatherOptions(Options& options, int argc, const char** argv) {
 	if (argc == 1) {
-		options.source_path = "../../demo/data/shaders";
+		options.source_path = "../../../data/shaders";
 		options.output_path = "../../demo/cooked/cooked_shaders.h";
 
 		printf(
