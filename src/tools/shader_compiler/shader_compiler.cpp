@@ -93,10 +93,18 @@ static constexpr string_view ShaderNames[] = {
 	#undef PP_ADD_SHADER_NAME
 };
 
-static constexpr string_view ShaderStages[] = {
-	"vertex",
-	"fragment",
-};
+namespace ShaderStage {
+	enum Type {
+		Vertex,
+		Fragment,
+		Count,
+	};
+
+	static constexpr string_view Names[] = {
+		"vertex",
+		"fragment",
+	};
+}
 
 ////////////////////////////////////////////////////////////////
 
@@ -704,8 +712,9 @@ int main(int argc, const char** argv) {
 		Demo::Shader::Version
 	);
 
-	for (std::string_view stage : ShaderStages) {
-		std::string file_name_no_extension = std::string(stage) + "_shaders";
+	for (size_t stage = 0; stage < ShaderStage::Count; ++stage) {
+		std::string stage_name             = std::string(ShaderStage::Names[stage]);
+		std::string file_name_no_extension = stage_name + "_shaders";
 		std::string file_name              = file_name_no_extension + ".glsl";
 		std::string full_path              = options.source_path + "/" + file_name;
 
