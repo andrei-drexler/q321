@@ -137,14 +137,10 @@ function getDemoPath() {
 		readRegKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Quake 3 Arena Demo\\UninstallString");
 	if (!uninstall)
 		return null;
-	var exe = uninstall.indexOf(".exe");
-	if (exe == -1)
-		return null;
-	var path = trim(uninstall.substr(exe + 4));
-	var suffix = "uninstal.log";
-	if (endsWith(suffix, path))
-		path = path.substr(0, path.length - suffix.length);
-	return path;
+	var match = uninstall.match(/(?:.*\\unvise32\.exe)\s+(.*)(?:[\\\/]uninstal\.log)\s*/i);
+	if (match)
+		return match[1];
+	return null;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -161,9 +157,11 @@ if (!fso.FileExists(pak_path) && !fso.FileExists(zip_path)) {
 	var demo_path = getDemoPath();
 	if (demo_path) {
 		print("Found Quake 3 Arena Demo in " + demo_path + "\n");
-		var demo_pak = demo_path + "demoq3/pak0.pk3";
-		fso.CopyFile(demo_pak, zip_path);
-		is_temp_pak = true;
+		var demo_pak = demo_path + "/demoq3/pak0.pk3";
+		if (fso.FileExists(demo_pak)) {
+			fso.CopyFile(demo_pak, zip_path);
+			is_temp_pak = true;
+		}
 	}
 }
 
