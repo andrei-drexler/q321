@@ -446,14 +446,14 @@
 	x(models/powerups/health,					mega_cross)\
 	x(models/powerups/instant,					quad)\
 	x(models/powerups/instant,					quad_ring)\
-	x(models/powerups/weapons2/gauntlet,		gauntlet)\
-	x(models/powerups/weapons2/gauntlet,		gauntlet_barrel)\
-	x(models/powerups/weapons2/machinegun,		machinegun)\
-	x(models/powerups/weapons2/machinegun,		machinegun_barrel)\
-	x(models/powerups/weapons2/plasma,			plasma)\
-	x(models/powerups/weapons2/railgun,			railgun)\
-	x(models/powerups/weapons2/rocketl,			rocketl)\
-	x(models/powerups/weapons2/shotgun,			shotgun)\
+	x(models/weapons2/gauntlet,					gauntlet)\
+	x(models/weapons2/gauntlet,					gauntlet_barrel)\
+	x(models/weapons2/machinegun,				machinegun)\
+	x(models/weapons2/machinegun,				machinegun_barrel)\
+	x(models/weapons2/plasma,					plasma)\
+	x(models/weapons2/railgun,					railgun)\
+	x(models/weapons2/rocketl,					rocketl)\
+	x(models/weapons2/shotgun,					shotgun)\
 
 #define DEMO_MODELS_USE_DELTA_ENCODING 1
 

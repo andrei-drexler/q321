@@ -518,7 +518,7 @@ const Demo::PackedModel::Part parts[] = {{82,75,450,},};
 const u16 stream_lengths[] = {1,0,0,0,0,};
 } // namespace quad_ring
 
-// data/models/powerups/weapons2/gauntlet/gauntlet.md3
+// data/models/weapons2/gauntlet/gauntlet.md3
 namespace gauntlet {
 const u8 vertices[] = {9,14,13,16,3,4,2,3,14,2,5,3,12,2,5,3,29,2,18,5,6,7,8,3,14,2,9,3,8,0,5,0,123,12,2,7,20,7,5,27,10,13,38,0,
 14,6,3,11,6,15,10,25,2,34,4,6,3,26,3,31,35,34,29,30,2,2,27,30,30,14,0,8,0,0,0,0,7,23,15,8,17,12,12,14,4,17,6,3,11,23,4,35,3,2,9,
@@ -542,7 +542,7 @@ const Demo::PackedModel::Part parts[] = {{81,107,594,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace gauntlet
 
-// data/models/powerups/weapons2/gauntlet/gauntlet_barrel.md3
+// data/models/weapons2/gauntlet/gauntlet_barrel.md3
 namespace gauntlet_barrel {
 const u8 vertices[] = {5,0,16,0,17,16,17,16,17,16,17,16,2,0,0,0,0,0,17,5,0,6,0,3,5,6,0,0,3,5,4,2,7,4,2,7,4,2,7,2,3,0,0,2,4,5,4,5
 ,4,6,3,2,3,9,0,3,0,2,0,8,0,3,5,5,4,4,4,30,5,7,0,6,12,19,0,27,10,4,5,23,2,0,27,12,0,21,12,0,5,10,16,20,26,27,4,25,5,13,0,6,7,6,0,
@@ -557,7 +557,7 @@ const Demo::PackedModel::Part parts[] = {{81,49,258,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace gauntlet_barrel
 
-// data/models/powerups/weapons2/machinegun/machinegun.md3
+// data/models/weapons2/machinegun/machinegun.md3
 namespace machinegun {
 const u8 vertices[] = {80,0,19,18,19,18,19,18,19,18,19,18,71,0,19,24,25,24,25,0,27,0,2,0,100,2,0,3,5,0,7,0,3,0,3,0,2,0,2,0,6,0,4
 ,0,2,0,101,3,7,2,14,7,8,5,3,7,54,38,0,12,51,33,0,29,0,9,38,31,9,38,31,24,0,8,40,33,0,9,40,0,7,23,0,18,0,4,16,0,4,0,15,40,10,2,0,
@@ -580,7 +580,7 @@ const Demo::PackedModel::Part parts[] = {{81,107,513,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace machinegun
 
-// data/models/powerups/weapons2/machinegun/machinegun_barrel.md3
+// data/models/weapons2/machinegun/machinegun_barrel.md3
 namespace machinegun_barrel {
 const u8 vertices[] = {12,5,0,114,111,110,4,0,5,4,115,5,118,115,5,114,4,115,5,118,115,5,118,115,5,118,115,5,9,0,120,0,121,120,
 121,0,120,121,0,120,121,0,0,120,121,0,0,4,2,13,14,13,3,10,9,12,6,16,13,5,16,13,25,10,0,2,11,0,3,9,17,12,4,17,12,40,11,3,11,24,15
@@ -594,7 +594,7 @@ const Demo::PackedModel::Part parts[] = {{81,47,216,},};
 const u16 stream_lengths[] = {0,0,0,0,0,};
 } // namespace machinegun_barrel
 
-// data/models/powerups/weapons2/plasma/plasma.md3
+// data/models/weapons2/plasma/plasma.md3
 namespace plasma {
 const u8 vertices[] = {32,20,21,21,46,47,26,7,20,21,21,0,0,19,2,9,6,0,0,112,24,0,0,25,3,0,26,147,1,2,0,16,19,18,3,0,66,6,0,2,13,
 10,7,3,10,2,15,14,0,13,10,3,11,9,3,2,7,5,2,10,6,2,7,3,11,5,63,7,10,7,9,7,9,8,14,23,14,8,0,126,0,10,39,38,39,32,21,4,14,15,5,11,0
@@ -638,7 +638,7 @@ const Demo::PackedModel::Part parts[] = {{81,222,1065,},{101,12,30,},{86,12,42,}
 const u16 stream_lengths[] = {3,0,0,0,0,};
 } // namespace plasma
 
-// data/models/powerups/weapons2/railgun/railgun.md3
+// data/models/weapons2/railgun/railgun.md3
 namespace railgun {
 const u8 vertices[] = {23,73,2,0,70,0,75,76,77,76,4,0,2,22,23,22,0,0,11,9,0,16,9,8,0,0,68,5,4,2,7,5,0,5,2,5,2,0,2,2,0,2,4,4,5,6,
 4,0,9,8,0,9,0,8,0,7,6,7,6,5,4,7,5,3,3,93,9,8,0,9,8,21,0,0,46,47,46,35,0,32,0,37,0,13,14,15,14,9,0,8,0,4,112,0,9,8,11,10,7,2,4,5,
@@ -688,7 +688,7 @@ const Demo::PackedModel::Part parts[] = {{81,245,1131,},{81,30,78,},{81,14,42,},
 const u16 stream_lengths[] = {2,0,0,0,0,};
 } // namespace railgun
 
-// data/models/powerups/weapons2/rocketl/rocketl.md3
+// data/models/weapons2/rocketl/rocketl.md3
 namespace rocketl {
 const u8 vertices[] = {23,42,0,55,54,55,54,43,22,34,0,27,9,34,27,26,3,36,37,74,75,188,1,0,0,153,1,0,152,1,31,123,120,121,128,1,
 20,0,4,5,4,19,6,12,13,12,13,12,13,12,13,12,13,0,12,0,13,0,12,13,12,13,12,7,6,19,3,14,6,7,21,7,2,0,10,11,10,0,11,0,10,9,8,0,9,0,8
@@ -736,7 +736,7 @@ const Demo::PackedModel::Part parts[] = {{81,187,747,},{81,112,468,},};
 const u16 stream_lengths[] = {17,0,0,0,0,};
 } // namespace rocketl
 
-// data/models/powerups/weapons2/shotgun/shotgun.md3
+// data/models/weapons2/shotgun/shotgun.md3
 namespace shotgun {
 const u8 vertices[] = {166,2,207,1,206,1,207,1,0,206,1,27,0,2,16,0,4,3,0,6,88,0,69,76,77,11,0,22,66,3,65,66,67,0,0,23,0,29,29,10
 ,0,9,11,0,8,13,0,5,7,22,28,28,0,0,22,23,22,0,0,0,51,3,2,19,0,0,0,11,2,11,0,5,0,8,3,9,3,7,11,0,8,0,16,14,72,73,0,0,0,72,0,73,15,7
