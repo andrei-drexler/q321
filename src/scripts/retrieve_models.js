@@ -69,12 +69,28 @@ function parseModelList(path) {
 	return models;
 }
 
-function runScript(script) {
+function runScript(path, animate) {
 	var Finished = 1;
 	var Failed = 2;
-	var proc = shell.Exec("cscript /nologo " + script);
-	while (!proc.status)
-		WScript.Sleep(100);
+	var proc = shell.Exec(WScript.FullName + " /nologo " + path);
+	var frame = 0;
+	var anim = [
+		"   \b\b\b",
+		".  \b\b\b",
+		".. \b\b\b",
+		"...\b\b\b",
+		" ..\b\b\b",
+		"  .\b\b\b"
+	];
+	while (!proc.status) {
+		if (animate) {
+			print(anim[frame++]);
+			frame %= anim.length;
+		}
+		WScript.Sleep(50);
+	}
+	if (animate)
+		print("   \b\b\b");
 	var output = "";
 	var result = proc.status;
 	if (result == Finished)
@@ -86,7 +102,7 @@ function runScript(script) {
 }
 
 function download(url, output_path) {
-	return runScript(script_dir + "/download.js -silent " + url + " " + output_path)
+	return runScript(script_dir + "/download.js -silent " + url + " " + output_path, true)
 }
 
 function getLevel(s) {
