@@ -340,7 +340,7 @@ FORCEINLINE void Sys::DebugLog(const char* text) {
 
 FORCEINLINE void Sys::Breakpoint() {
 #ifdef DEV
-	DebugBreak();
+	BREAKPOINT();
 #endif
 }
 

@@ -50,6 +50,8 @@
 			__asm__ __volatile__("rep stosl" : "+D"(dst), "+c"(n) : "a"(x) : "memory");
 		}
 	#endif
+
+	#define BREAKPOINT()					__debugbreak()
 #else
 	#define PP_CPP_VERSION					__cplusplus
 	#define PP_USE_INLINE_ASM				0

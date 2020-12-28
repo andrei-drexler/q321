@@ -10,7 +10,7 @@
 			 do {															\
 				if (!(condition)) {											\
 					Sys::Log("\nAssertion failed:\n\n" #condition "\n\n");	\
-					Sys::Breakpoint();										\
+					BREAKPOINT();											\
 				}															\
 			 } while (0)
 	#else
