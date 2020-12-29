@@ -12,93 +12,93 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\demo\map.h">
+    <ClInclude Include="map.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\aabb.h">
+    <ClInclude Include="..\engine\aabb.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\demo.h">
+    <ClInclude Include="..\engine\demo.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\math.h">
+    <ClInclude Include="..\engine\math.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\gfx_resources.h">
+    <ClInclude Include="gfx_resources.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\console.h">
+    <ClInclude Include="console.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\gfx_opengl.h">
+    <ClInclude Include="..\engine\gfx_opengl.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\sys_win32.h">
+    <ClInclude Include="..\engine\sys_win32.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\keys_win32.h">
+    <ClInclude Include="..\engine\keys_win32.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\gfx.h">
+    <ClInclude Include="..\engine\gfx.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\sys.h">
+    <ClInclude Include="..\engine\sys.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\resource_def.h">
+    <ClInclude Include="resource_def.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\material.h">
+    <ClInclude Include="material.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\player.h">
+    <ClInclude Include="player.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\rect_packer.h">
+    <ClInclude Include="..\engine\rect_packer.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\cooked\cooked_shaders.h">
+    <ClInclude Include="cooked\cooked_shaders.h">
       <Filter>Cooked</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\cooked\cooked_maps.h">
+    <ClInclude Include="cooked\cooked_maps.h">
       <Filter>Cooked</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\packed_map.h">
+    <ClInclude Include="packed_map.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\models.h">
+    <ClInclude Include="models.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\cooked\cooked_models.h">
+    <ClInclude Include="cooked\cooked_models.h">
       <Filter>Cooked</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\menu.h">
+    <ClInclude Include="menu.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\game_state.h">
+    <ClInclude Include="game_state.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\entity_def.h">
+    <ClInclude Include="entity_def.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\lightmap.h">
+    <ClInclude Include="lightmap.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\partition.h">
+    <ClInclude Include="partition.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\curves.h">
+    <ClInclude Include="curves.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\demo\movement.h">
+    <ClInclude Include="movement.h">
       <Filter>Demo</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\core.h">
+    <ClInclude Include="..\engine\core.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\demo\demo.cpp">
+    <ClCompile Include="demo.cpp">
       <Filter>Demo</Filter>
     </ClCompile>
   </ItemGroup>

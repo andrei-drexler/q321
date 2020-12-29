@@ -19,37 +19,37 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\demo\console.h" />
-    <ClInclude Include="src\demo\cooked\cooked_maps.h" />
-    <ClInclude Include="src\demo\cooked\cooked_models.h" />
-    <ClInclude Include="src\demo\cooked\cooked_shaders.h" />
-    <ClInclude Include="src\demo\entity_def.h" />
-    <ClInclude Include="src\demo\gfx_resources.h" />
-    <ClInclude Include="src\demo\game_state.h" />
-    <ClInclude Include="src\demo\map.h" />
-    <ClInclude Include="src\demo\lightmap.h" />
-    <ClInclude Include="src\demo\partition.h" />
-    <ClInclude Include="src\demo\curves.h" />
-    <ClInclude Include="src\demo\material.h" />
-    <ClInclude Include="src\demo\models.h" />
-    <ClInclude Include="src\demo\packed_map.h" />
-    <ClInclude Include="src\demo\player.h" />
-    <ClInclude Include="src\demo\movement.h" />
-    <ClInclude Include="src\demo\resource_def.h" />
-    <ClInclude Include="src\demo\menu.h" />
-    <ClInclude Include="src\engine\aabb.h" />
-    <ClInclude Include="src\engine\demo.h" />
-    <ClInclude Include="src\engine\gfx.h" />
-    <ClInclude Include="src\engine\gfx_opengl.h" />
-    <ClInclude Include="src\engine\rect_packer.h" />
-    <ClInclude Include="src\engine\sys.h" />
-    <ClInclude Include="src\engine\sys_win32.h" />
-    <ClInclude Include="src\engine\math.h" />
-    <ClInclude Include="src\engine\core.h" />
-    <ClInclude Include="src\engine\keys_win32.h" />
+    <ClInclude Include="console.h" />
+    <ClInclude Include="cooked\cooked_maps.h" />
+    <ClInclude Include="cooked\cooked_models.h" />
+    <ClInclude Include="cooked\cooked_shaders.h" />
+    <ClInclude Include="entity_def.h" />
+    <ClInclude Include="gfx_resources.h" />
+    <ClInclude Include="game_state.h" />
+    <ClInclude Include="map.h" />
+    <ClInclude Include="lightmap.h" />
+    <ClInclude Include="partition.h" />
+    <ClInclude Include="curves.h" />
+    <ClInclude Include="material.h" />
+    <ClInclude Include="models.h" />
+    <ClInclude Include="packed_map.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="movement.h" />
+    <ClInclude Include="resource_def.h" />
+    <ClInclude Include="menu.h" />
+    <ClInclude Include="..\engine\aabb.h" />
+    <ClInclude Include="..\engine\demo.h" />
+    <ClInclude Include="..\engine\gfx.h" />
+    <ClInclude Include="..\engine\gfx_opengl.h" />
+    <ClInclude Include="..\engine\rect_packer.h" />
+    <ClInclude Include="..\engine\sys.h" />
+    <ClInclude Include="..\engine\sys_win32.h" />
+    <ClInclude Include="..\engine\math.h" />
+    <ClInclude Include="..\engine\core.h" />
+    <ClInclude Include="..\engine\keys_win32.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\demo\demo.cpp" />
+    <ClCompile Include="demo.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -89,19 +89,19 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="src\engine\demo.props" />
+    <Import Project="..\engine\demo.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="src\engine\demo.props" />
+    <Import Project="..\engine\demo.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="src\engine\demo.props" />
+    <Import Project="..\engine\demo.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="src\engine\demo.props" />
+    <Import Project="..\engine\demo.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
