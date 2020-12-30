@@ -1,0 +1,10 @@
+output/
+.vs/
+.vscode/
+*.user
+*.obj
+*.iobj
+*.pdb
+*.ipdb
+*.log
+*.tlog
