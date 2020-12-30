@@ -187,7 +187,7 @@ FORCEINLINE void MemCopyScalar(T* dst, const T* src) {
 	}
 }
 
-#ifdef PP_USE_INLINE_ASM
+#if PP_USE_INLINE_ASM
 __declspec(naked) size_t __fastcall StrLen(const char* text) {
 	__asm {
 		xor eax, eax;
