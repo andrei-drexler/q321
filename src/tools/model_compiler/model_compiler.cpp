@@ -608,7 +608,7 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 			std::rotate(idx, idx + min_pos, idx + 3);
 		}
 
-		output_parts.push_back({material, num_vertices, num_indices});
+		output_parts.push_back({(u32)material, (u32)num_vertices, (u32)num_indices});
 
 		/* sort vertices */
 		sorted_vertices.clear();
