@@ -774,7 +774,7 @@ void CompileModel(MD3::Header& model, const Options& options, const std::string&
 	print << "};"sv;
 	print.Flush();
 
-	printf(INDENT "%d parts, %d verts, %d tris\n",
+	printf(INDENT "%zd parts, %zd verts, %zd tris\n",
 		output_parts.size(), num_vertices, num_tris
 	);
 }
