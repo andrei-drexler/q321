@@ -161,7 +161,7 @@ function getDemoPath() {
 
 ////////////////////////////////////////////////////////////////
 
-var models = parseModelList(script_dir + "/../demo/resource_def.h");
+var models = parseModelList(script_dir + "/../src/demo/resource_def.h");
 var num_retrieved = 0;
 var num_needed_models = models.items.length + models.mapobjects.length;
 

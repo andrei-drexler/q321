@@ -35,7 +35,7 @@ set isodate=%ts:~0,4%-%ts:~4,2%-%ts:~6,2%T%ts:~8,2%:%ts:~10,2%
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-call %~dp0src\scripts\setup_env.bat
+call %~dp0scripts\setup_env.bat
 if ERRORLEVEL 1 exit /b 1
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

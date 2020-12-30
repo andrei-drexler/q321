@@ -1,3 +1,3 @@
 @echo off
-cscript /nologo ..\src\scripts\retrieve_models.js
+cscript /nologo ..\scripts\retrieve_models.js
 pause
