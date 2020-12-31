@@ -7,6 +7,7 @@
     <OutDir>$(SolutionDir)output\$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>..\..\..\output\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
