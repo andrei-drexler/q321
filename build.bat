@@ -3,11 +3,6 @@ setlocal EnableDelayedExpansion
 pushd %~dp0
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-set crinkler_reuse=WRITE
-set crinkler_options=/COMPMODE:FAST
-::set crinkler_options=/COMPMODE:FAST /ORDERTRIES:6000 /HASHTRIES:300
-
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set os_bits=64
 if /i "%PROCESSOR_ARCHITECTURE%" == "x86" (
@@ -20,6 +15,38 @@ set size_log=size_history.txt
 set crinkler=external\crinkler23\win%os_bits%\crinkler.exe
 set libs=user32.lib kernel32.lib gdi32.lib opengl32.lib
 set range_libs=/RANGE:opengl32
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+set mode=fast
+if /i "%1" == "improve" set mode=improve
+if /i "%1" == "stable" set mode=stable
+if /i "%1" == "repro" set mode=repro
+
+set crinkler_options=/COMPMODE:FAST
+set crinkler_reuse=WRITE
+set reuse_file=%out_folder%reuse.dat
+
+if %mode% == improve (
+	set crinkler_reuse=IMPROVE
+	set crinkler_options=/COMPMODE:FAST /ORDERTRIES:100000 /HASHTRIES:1000
+)
+
+if %mode% == stable (
+	set crinkler_reuse=STABLE
+)
+
+if %mode% == repro (
+	set crinkler_reuse=STABLE
+	set reuse_file=repro.dat
+	if not "%2" == "" (
+		set reuse_file=%2
+	)
+	if not exist !reuse_file! (
+		echo ERROR: Repro file '!reuse_file!' not found.
+		exit /b 1
+	)
+)
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -53,7 +80,7 @@ for %%f in (src\demo\*.cpp) do (
 	set obj_files=!obj_files! !obj_folder!%%~nf.obj
 )
 
-%crinkler% /PRIORITY:IDLE /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /CRINKLER /TRUNCATEFLOATS %crinkler_options% /SATURATE /NOINITIALIZERS /TRANSFORM:CALLS %obj_files% %libs% %range_libs% /REPORT:!out_folder!report.html /REUSE:!out_folder!reuse.dat /REUSEMODE:!crinkler_reuse! /NODEFAULTLIB /OUT:%exe_path%
+%crinkler% /PRIORITY:IDLE /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /CRINKLER /TRUNCATEFLOATS %crinkler_options% /SATURATE /NOINITIALIZERS /TRANSFORM:CALLS %obj_files% %libs% %range_libs% /REPORT:!out_folder!report.html /REUSE:!reuse_file! /REUSEMODE:!crinkler_reuse! /NODEFAULTLIB /OUT:%exe_path%
 
 set /p comment=Log comment: 
 ::for %%f in (%exe_path%) do @echo %isodate%,%%~zf,%comment%>>%size_log%
