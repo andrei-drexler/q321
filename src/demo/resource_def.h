@@ -58,6 +58,7 @@
 	x(gcntr2trn_m,			MapVertexBits)\
 	x(scmpblk17,			FSVertexBits)\
 	x(scmpblk17_m,			MapVertexBits)\
+	x(gskdr,				FSVertexBits)\
 	x(gskdr_a,				FSVertexBits)\
 	x(gskdr_b,				FSVertexBits)\
 	x(gskdr_c,				FSVertexBits)\
@@ -222,12 +223,13 @@
 	x(gtbsbrd09e,		Texture::White,		Shader::gtbsbrd09e,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gtbsbrd09e2,		Texture::gtbsbrd09e,Shader::gtbsbrd09e2,	128,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(scmpblk17,		Texture::gblks15,	Shader::scmpblk17,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_a,			Texture::gblks15,	Shader::gskdr_a,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_b,			Texture::gblks15,	Shader::gskdr_b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_c,			Texture::gblks15,	Shader::gskdr_c,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_d,			Texture::gblks15,	Shader::gskdr_d,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_e,			Texture::gblks15,	Shader::gskdr_e,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
-	x(gskdr_f,			Texture::gblks15,	Shader::gskdr_f,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr,			Texture::gblks15,	Shader::gskdr,			384,	384,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_a,			Texture::gskdr,		Shader::gskdr_a,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_b,			Texture::gskdr,		Shader::gskdr_b,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_c,			Texture::gskdr,		Shader::gskdr_c,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_d,			Texture::gskdr,		Shader::gskdr_d,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_e,			Texture::gskdr,		Shader::gskdr_e,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gskdr_f,			Texture::gskdr,		Shader::gskdr_f,		64,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1a,			Texture::White,		Shader::gwdclg1a,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gwdclg1bd,		Texture::gwdclg1a,	Shader::gwdclg1bd,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gsltrfc,			Texture::White,		Shader::gsltrfc,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
