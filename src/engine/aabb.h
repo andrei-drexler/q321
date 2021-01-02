@@ -60,9 +60,13 @@ struct Rect {
 
 	Rect() = default;
 
-	void clear() {
-		mins = vec2(FLT_MAX);
-		maxs = vec2(-FLT_MAX);
+	FORCEINLINE void clear() {
+		static constexpr float ClearValues[4] = {FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX};
+#if 1
+		_mm_storeu_ps(&v[0][0], _mm_loadu_ps(&ClearValues[0]));
+#else
+		MemCopy(&v[0][0], &ClearValues[0], 4);
+#endif
 	}
 
 	void add(const vec2& v) {

@@ -1271,3 +1271,4 @@
 63420,--- public release ---
 64148,removed array_view (unused)
 64177,cached gskdr
+64059,tweaked rect::clear
