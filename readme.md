@@ -1,4 +1,5 @@
 # Q321 - A tiny unofficial Quake III: Arena demake
+[![Build status](https://ci.appveyor.com/api/projects/status/m9bhlscm8gqiev4e?svg=true)](https://ci.appveyor.com/project/andrei-drexler/q321)
 
 ## Prerequisites
 Visual Studio 2017 (2019 should also work, but I haven't tested it)
