@@ -17,8 +17,18 @@ for /f "usebackq delims=" %%a in (`echo %cmdcmdline% ^| find /i /c /v "%~dpn0"`)
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+:: skip costly dev env setup + compilation if possible
+cscript /nologo scripts/compare_file_times.js src/demo/resource_def.h "!compiler!"
+if not errorlevel 1 goto has_compiler
+
+echo Setting up compilation environment...
 call scripts\setup_env.bat
-if NOT ERRORLEVEL 1 msbuild /nologo /v:quiet src\tools\shader_compiler\shader_compiler.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:SolutionDir=%~dp0../
+if NOT ERRORLEVEL 1 (
+	echo Building shader compiler...
+	msbuild /nologo /v:quiet src\tools\shader_compiler\shader_compiler.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:SolutionDir=%~dp0../
+)
+
+echo.
 
 if exist "%compiler%" goto has_compiler
 echo ERROR: Shader compiler not found.
