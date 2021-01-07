@@ -1025,13 +1025,16 @@ vec3 add_techpipe(vec3 c, vec3 b, vec2 uv, float h, float s) {
 vec3 add_all_techpipes(vec3 c, vec2 uv, float b) {
 	vec2 p = uv, q = p;
 
-	c *= 1. - .5 * tri(.2, .01, uv.y); // shadow above top pipe
+	c *= 1.
+		- .5 * tri(.2, .01, uv.y) // shadow above top silver pipe
+		- .9 * tri(.155, .007, uv.y) // shadow above top copper pipe
+	;
 
 	q.y += tri(.1, .01, mod(q.x, .33)) / 2e2;
-	c = add_techpipe(c, 2. * b * RGB(93, 84, 79), uv, .185, .015);
-	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), uv, .13, .025);
-	c = add_techpipe(c, 2. * b * RGB(112, 71, 51), uv, .09, .015);
-	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), q, .05, .015);
+	c = add_techpipe(c, 2. * b * RGB(93, 84, 79), uv, .185, .015); // silver
+	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), uv, .13, .025); // copper (top)
+	c = add_techpipe(c, 2. * b * RGB(112, 71, 51), uv, .09, .015); // copper (mid)
+	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), q, .05, .015); // copper (bottom)
 
 	// rectangular gizmos on top of cables
 	p.x = abs(fract(uv.x * 6. - .5) - .5) / 6.;
