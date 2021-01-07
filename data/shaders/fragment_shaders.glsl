@@ -710,25 +710,61 @@ void dmnd2cow_m() {
 	FCol = vec4(mix(RGB(66, 111, 155) * (.8 + 2. * b * b), c.xyz * Light(), c.w), 1);
 }
 
+vec2 knob(vec2 uv, float s) {
+	return vec2(1. - length(uv) / s, msk(length(uv) - s));
+}
+
+vec3 add_knob_gizmo(vec3 c, vec2 uv, float b) {
+	vec2 v = knob(uv, .02);
+	float d = length(uv);
+	c = mix(c, RGB(222, 155, 144) * (b * .4 + .3), tri(.03, .01, d)); // knob exterior bevel highlight
+	//c *= 1. - .5 * tri(.04, .03, .0, d) * clamp(u.y / .02, -1., 1.);
+	c *= 1. - .5 * tri(.02, .01, d); // sunken knob exterior
+	c = mix(c, RGB(111, 66, 44) * (v.x * 1.5 + .2), v.y); // knob interior
+	return c;
+}
+
 // sfx/diamond2cjumppad (texture)
 TEX(dmnd2cjp) {
-	float b = FBMT(uv, vec2(7), .9, 3., 4);
 	vec3 c = T0(uv).xyz;
-	float r = length(uv - .5);
-	float m = ls(.46, .45, r);
-	float l = 1.5 - 1.5 * ls(.0, .3, r * r);
-	l = mix(l, 2.5, tri(.42, .07, r));
-	l = mix(l, 3.5, tri(.44, .05, r));
-	l = mix(l, 2.6, tri(.36, .03, r));
-	float n = .3 + .2 * ls(.35, .30, r);
-	l *= 1. - n * ls(.3, .7, b);
-	l *= 1. - .3 * sqr(ls(.13, .05, r));
-	l = mix(l, 2.5, ls(.04, .01, r));
-	l -= l * tri(.03, .01, r) * .7;
-	c = mix(c, RGB(68, 66, 54) * l, m);
-	c *= 1.-sqr(tri(.34, .02, r));
-	c *= 1.-sqr(tri(.46, .03, r));
-	c *= 1.-tri(.41, .03, r) * .7;
+
+	float
+		b = FBMT(uv, vec2(7), .9, 3., 4),
+		t = .9 + .2 * b,
+		r = length(uv - .5),
+		m = ls(.46, .45, r),
+		d;
+
+	vec2 p;
+
+	// interior surface
+	c = mix(c, RGB(199, 199, 166. + 33. * b) * mix(vec3(.2 * b + .1), .1 + 2. * greebles(uv * 3., b), .5), m); // base color
+
+	// central knob
+	c = add_knob_gizmo(c, uv - .5, b);
+
+	// outer metal ring
+	m *= ls(.33, .35, r);
+	c = mix(c, RGB(166, 166, 133) * t, m);
+	c *= 1.
+		+ .4 * tri(.36, .01, r) // small bevel highlight
+		+ .6 * tri(.43, .013, r) // large bevel highlight
+		- .6 * tri(.41, .03, r) // large bevel shadow
+		- .4 * tri(.37, .015, r) // small bevel shadow
+		- sqr(tri(.33, .03, r)) // inner shadow
+		- sqr(tri(.46, .03, r)) // outer shadow
+	;
+
+	// ring wires
+	p.x = nang(uv - .5);
+	p.y = ls(.35, .4, r);
+	d = voro1(p, vec2(35, 1)).z; // polar voronoi with manhattan distance
+	m = ls(.03, .01, abs(r - .39)) * m; // interior mask, excluding the top clamp
+	c *= 1.
+		+ .5 * m * tri(.0, .2, d) // wire highlight
+		- .3 * m * tri(.3, .3, d) // wire shadow
+		;
+
 	return c;
 }
 
@@ -737,7 +773,7 @@ void dmnd2cjp_m() {
 	vec4 c = T0(UV);
 	float r = length(fract(UV) - .5);
 	float s = mix(.4, 8., fract(Time.x * 1.5));
-	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.37, .32, r), 1);
+	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.35, .3, r), 1);
 }
 
 // textures/sfx/pentfloor_diamond2c (texture)
@@ -754,17 +790,13 @@ void dmnd2pnt_m() {
 	FCol = vec4(c.xyz * Light() + RGB(111, 55, 0) * c.w * (sin(Time.x * PI) * .5 + .5), 1);
 }
 
-vec2 knob(vec2 uv, float s) {
-	return vec2(1. - length(uv) / s, msk(length(uv) - s));
-}
-
 // sfx/launchpad_diamond (texture)
 TEXA(lpdmnd) {
 	vec3 c = T0(uv).xyz; // base texture
 	float
 		b = FBMT(uv, vec2(5), .9, 3., 4), // base FBM
 		t, o, k, r, h, d;
-	vec2 u, v;
+	vec2 u;
 	u.x = abs(uv.x - .5);
 	u.y = uv.y;
 
@@ -821,16 +853,12 @@ TEXA(lpdmnd) {
 		- .3 * d * tri(.0, .01, r) // dark interior line
 	;
 	c *= 1. - .2 * tri(.0, .05, t) * msk(o, .004); // inner lane shadow
-	
+
 	// central knob
-	v = knob(u = uv - vec2(.5, .37), .02);
-	d = length(u);
-	c = mix(c, RGB(222, 155, 144) * (b * .4 + .3), tri(.03, .01, d)); // knob exterior bevel highlight
-	//c *= 1. - .5 * tri(.04, .03, .0, d) * clamp(u.y / .02, -1., 1.);
-	c *= 1. - .5 * tri(.02, .01, d); // sunken knob exterior
-	c = mix(c, RGB(111, 66, 44) * (v.x * 1.5 + .2), v.y); // knob interior
+	c = add_knob_gizmo(c, u = uv - vec2(.5, .37), b);
 
 	// metal clamps
+	d = length(u);
 	u.x = abs(uv.x - .5);
 	u.y = uv.y - .3;
 	u = u.x > .06 ? u * rot(50.) - vec2(.08, -.11) : u + vec2(0, .07);
