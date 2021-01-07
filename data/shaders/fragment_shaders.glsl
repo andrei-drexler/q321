@@ -538,6 +538,33 @@ float sdf_Q(vec2 uv) {
 
 ////////////////////////////////////////////////////////////////
 
+vec3 greebles(vec2 uv, float n) {
+	float
+		i = 5.,
+		l = n * n * .3 + .05,
+		d, m;
+
+	for (; i < 9.; i += 3.) {
+		vec2 p = uv * i, q = floor(p);
+		vec4 h = H4(q + i);
+		p -= q;
+		l = mix(l, .2, .2 * ls(.05, .02, mn(abs(p - .5))));
+		q = h.xy * .4 + .15;
+		d = box(p -= mix(q, 1.-q, h.zw), q - .05);
+		l = mix(l, n * h.z * .2 + .1, m = msk(d, .01));
+		l *= 1.
+			+ .5 * tri(-.03, .03, d) * h.x
+			- .3 * tri(.1, .0, -.05, d)
+			- .5 * tri(.05, .05, mod(p.y, .1)) * m * float(h.z < .1)
+			- .5 * tri(.05, .05, mod(p.x, .1)) * m * float(h.z > .9)
+		;
+	}
+
+	return vec3(l);
+}
+
+////////////////////////////////////////////////////////////////
+
 // "Asymmetric Blocks" by Shane
 // https://www.shadertoy.com/view/Ws3GRs
 
@@ -639,7 +666,7 @@ TEX(ptrshn) {
 }
 
 ////////////////////////////////////////////////////////////////
-#pragma section diamond2c
+#pragma section diamond2c : patterns
 ////////////////////////////////////////////////////////////////
 
 // base_floor/diamond2c
@@ -782,7 +809,7 @@ TEXA(lpdmnd) {
 	o = max(o, uv.y - 1. + u.x * .5);
 	o = max(o, uv.y - .96);
 	c = mix(c, vec3(1, 1, .9) - uv.y * .55, tri(-.01, .01, o)); // lane edge highlight
-	c = mix(c, vec3(.2 * b + .1), msk(t, .01)); // inner lane color
+	c = mix(c, mix(vec3(.2 * b + .1), .07 + greebles(uv * 3., b), .5), msk(t, .01)); // inner lane color
 
 	// lane traces
 	k = .2 - .05 * ls(.8, .5, uv.y) - .15 * ls(.5, .3, uv.y);
@@ -1000,31 +1027,6 @@ vec3 add_all_techpipes(vec3 c, vec2 uv, float b) {
 	c += RGB(67, 38, 30) * 4. * sqrt(b) * sqr(tri(-.02, .015, r) * tri(.023, .02, uv.y)); // specular?
 
 	return c;
-}
-
-vec3 greebles(vec2 uv, float n) {
-	float
-		i = 5.,
-		l = n * n * .3 + .05,
-		d, m;
-
-	for (; i < 9.; i += 3.) {
-		vec2 p = uv * i, q = floor(p);
-		vec4 h = H4(q + i);
-		p -= q;
-		l = mix(l, .2, .2 * ls(.05, .02, mn(abs(p - .5))));
-		q = h.xy * .4 + .15;
-		d = box(p -= mix(q, 1.-q, h.zw), q - .05);
-		l = mix(l, n * h.z * .2 + .1, m = msk(d, .01));
-		l *= 1.
-			+ .5 * tri(-.03, .03, d) * h.x
-			- .3 * tri(.1, .0, -.05, d)
-			- .5 * tri(.05, .05, mod(p.y, .1)) * m * float(h.z < .1)
-			- .5 * tri(.05, .05, mod(p.x, .1)) * m * float(h.z > .9)
-		;
-	}
-
-	return vec3(l);
 }
 
 // gothic_wall/iron01_ntech3
