@@ -538,29 +538,34 @@ float sdf_Q(vec2 uv) {
 
 ////////////////////////////////////////////////////////////////
 
-vec3 greebles(vec2 uv, float n) {
+// several layers of boxes with faint grid connectors over a noisy background
+// uv = evaluation point [0..1]
+// b = FBM
+// f = fraction of boxes with horizontal/vertical slats (default 0.2)
+vec3 greebles(vec2 uv, float b, float f) {
 	float
-		i = 5.,
-		l = n * n * .3 + .05,
+		i = 5., // initial grid size
+		t = b * b * .3 + .05, // background value
 		d, m;
 
 	for (; i < 9.; i += 3.) {
-		vec2 p = uv * i, q = floor(p);
-		vec4 h = H4(q + i);
-		p -= q;
-		l = mix(l, .2, .2 * ls(.05, .02, mn(abs(p - .5))));
-		q = h.xy * .4 + .15;
-		d = box(p -= mix(q, 1.-q, h.zw), q - .05);
-		l = mix(l, n * h.z * .2 + .1, m = msk(d, .01));
-		l *= 1.
-			+ .5 * tri(-.03, .03, d) * h.x
-			- .3 * tri(.1, .0, -.05, d)
-			- .5 * tri(.05, .05, mod(p.y, .1)) * m * float(h.z < .1)
-			- .5 * tri(.05, .05, mod(p.x, .1)) * m * float(h.z > .9)
+		vec2 p = uv * i, q = floor(p); // grid
+		vec4 h = H4(q + i); // 4 random values per cell
+		p -= q; // relative grid position
+		t = mix(t, .2, .2 * ls(.05, .02, mn(abs(p - .5)))); // overlay grid (connectors)
+		q = h.xy * .4 + .15; // box size
+		d = box(p -= mix(q, 1.-q, h.zw), q - .05); // box within cell bounds
+		t = mix(t, b * h.z * .2 + .1, m = msk(d, .01)); // add random-intensity box
+		t *= 1.
+			+ .7 * tri(.82, .08, abs(p.y / q.y)) * m * h.x * sign(p.y) // top/bottom edge lighting
+			//+ .5 * tri(-.03, .03, d) * h.x // edge highlight
+			- .3 * tri(.1, .0, -.05, d) // outer shadow
+			- .5 * tri(.05, .05, mod(p.y, .1)) * m * float(h.z < f) // horizontal slats for some objects
+			- .5 * tri(.05, .05, mod(p.x, .1)) * m * float(h.z > 1. - f) // vertical slats for some objects
 		;
 	}
 
-	return vec3(l);
+	return vec3(t);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -738,7 +743,7 @@ TEX(dmnd2cjp) {
 	vec2 p;
 
 	// interior surface
-	c = mix(c, RGB(199, 199, 166. + 33. * b) * mix(vec3(.2 * b + .1), .1 + 2. * greebles(uv * 3., b), .5), m); // base color
+	c = mix(c, RGB(199, 199, 166. + 33. * b) * mix(vec3(.2 * b + .1), .1 + 2. * greebles(uv * 3., b, .3), .5), m); // base color
 
 	// central knob
 	c = add_knob_gizmo(c, uv - .5, b);
@@ -841,7 +846,7 @@ TEXA(lpdmnd) {
 	o = max(o, uv.y - 1. + u.x * .5);
 	o = max(o, uv.y - .96);
 	c = mix(c, vec3(1, 1, .9) - uv.y * .55, tri(-.01, .01, o)); // lane edge highlight
-	c = mix(c, mix(vec3(.2 * b + .1), .07 + greebles(uv * 3., b), .5), msk(t, .01)); // inner lane color
+	c = mix(c, mix(vec3(.2 * b + .1), .07 + greebles(uv * 3., b, .3), .5), msk(t, .01)); // inner lane color
 
 	// lane traces
 	k = .2 - .05 * ls(.8, .5, uv.y) - .15 * ls(.5, .3, uv.y);
@@ -1086,7 +1091,7 @@ TEX(giron01nt3) {
 		(ls(.035, .03, .5 - r) + tri(.48, .01, r) - tri(.46, .02, r));
 
 	// greebles
-	c = mix(c * n, greebles(uv * 2., b), max(ls(.31, .3, uv.y), msk(f2)));
+	c = mix(c * n, greebles(uv * 2., b, .2), max(ls(.31, .3, uv.y), msk(f2)));
 	c *= ls(1.5, .7, uv.y);
 	if (uv.y < .306)
 		c *= 1. - tri(.3, .05, uv.y) * msk(-f2 + 10., 20.); // panel shadow
