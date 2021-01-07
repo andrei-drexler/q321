@@ -970,6 +970,8 @@ vec3 add_techpipe(vec3 c, vec3 b, vec2 uv, float h, float s) {
 vec3 add_all_techpipes(vec3 c, vec2 uv, float b) {
 	vec2 p = uv, q = p;
 
+	c *= 1. - .5 * tri(.2, .01, uv.y); // shadow above top pipe
+
 	q.y += tri(.1, .01, mod(q.x, .33)) / 2e2;
 	c = add_techpipe(c, 2. * b * RGB(93, 84, 79), uv, .185, .015);
 	c = add_techpipe(c, 2. * b * RGB(138, 77, 48), uv, .13, .025);
@@ -1000,9 +1002,29 @@ vec3 add_all_techpipes(vec3 c, vec2 uv, float b) {
 	return c;
 }
 
-// TODO: PCB/chips?
-vec3 techno(vec2 uv, float n) {
-	return vec3(n * n * .4);
+vec3 greebles(vec2 uv, float n) {
+	float
+		i = 5.,
+		l = n * n * .3 + .05,
+		d, m;
+
+	for (; i < 9.; i += 3.) {
+		vec2 p = uv * i, q = floor(p);
+		vec4 h = H4(q + i);
+		p -= q;
+		l = mix(l, .2, .2 * ls(.05, .02, mn(abs(p - .5))));
+		q = h.xy * .4 + .15;
+		d = box(p -= mix(q, 1.-q, h.zw), q - .05);
+		l = mix(l, n * h.z * .2 + .1, m = msk(d, .01));
+		l *= 1.
+			+ .5 * tri(-.03, .03, d) * h.x
+			- .3 * tri(.1, .0, -.05, d)
+			- .5 * tri(.05, .05, mod(p.y, .1)) * m * float(h.z < .1)
+			- .5 * tri(.05, .05, mod(p.x, .1)) * m * float(h.z > .9)
+		;
+	}
+
+	return vec3(l);
 }
 
 // gothic_wall/iron01_ntech3
@@ -1030,8 +1052,8 @@ TEX(giron01nt3) {
 	c *= 1. - .3 * ls(.31, .32, uv.y) * ls(.87, .86, uv.y) *
 		(ls(.035, .03, .5 - r) + tri(.48, .01, r) - tri(.46, .02, r));
 
-	// techno jumble
-	c = mix(c * n, techno(uv, b), max(ls(.31, .3, uv.y), msk(f2)));
+	// greebles
+	c = mix(c * n, greebles(uv * 2., b), max(ls(.31, .3, uv.y), msk(f2)));
 	c *= ls(1.5, .7, uv.y);
 	if (uv.y < .306)
 		c *= 1. - tri(.3, .05, uv.y) * msk(-f2 + 10., 20.); // panel shadow
