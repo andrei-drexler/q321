@@ -1278,3 +1278,4 @@
 64297,tweaked giron01nt3
 64324,tweaked greebles
 64319,optimized light baking
+64461,slightly more detailed dmnd2cjp

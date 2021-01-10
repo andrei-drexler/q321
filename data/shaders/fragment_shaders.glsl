@@ -729,15 +729,42 @@ vec3 add_knob_gizmo(vec3 c, vec2 uv, float b) {
 	return c;
 }
 
+// Basic clamp piece
+// c = background color
+// p = polar coordinates
+// u.x = angular position
+// u.y = angular extent
+// v.x = radial position
+// v.y = radial extent
+// k = clamp color
+vec3 dmnd2cjp_clamp(vec3 c, vec2 p, vec2 u, vec2 v, vec3 k) {
+	p.x = fract(p.x - u.x + .5);
+	p.x = abs(p.x - .5) - u.y;
+	p.y = abs(p.y - v.x) - v.y;
+	c *= 1. - .4 * tri(.0, .004, p.x) * ls(.01, .0, p.y); // side shadow
+	c = mix(c, k, ls(.0, -.002, p.x) * ls(.01, .0, p.y)); // mix clamp color
+	c *= 1. + .3 * tri(-.003, .002, p.x) * ls(.0, -.01, p.y); // side highlights
+	return c;
+}
+
+// Two-piece metallic clamp
+vec3 dmnd2cjp_clamp(vec3 c, vec2 p, float v, vec3 k) {
+	c = dmnd2cjp_clamp(c, p, vec2(v, .015), vec2(.36, .04), k * (.3 + .5 * sqr(ls(.38, .33, p.y)) - .7 * ls(.33, .3, p.y)));
+	c = dmnd2cjp_clamp(c, p, vec2(v, .025), vec2(.43, .02), k * (.3 + .5 * sqr(tri(.43, .025, p.y))));
+	return c;
+}
+
 // sfx/diamond2cjumppad (texture)
 TEX(dmnd2cjp) {
 	vec3 c = T0(uv).xyz;
 
 	float
-		b = FBMT(uv, vec2(7), .9, 3., 4),
-		t = .9 + .2 * b,
-		r = length(uv - .5),
-		m = ls(.46, .45, r),
+		b = FBMT(uv, vec2(7), .9, 3., 4), // base FBM
+		n = NT(uv, vec2(13)) - .5, // smooth noise
+		k = NT(uv, vec2(17)) - .5, // another smooth noise
+		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
+		r = length(uv - .5), // distance from center
+		m = ls(.46, .45, r), // initial mask
 		d;
 
 	vec2 p;
@@ -749,26 +776,32 @@ TEX(dmnd2cjp) {
 	c = add_knob_gizmo(c, uv - .5, b);
 
 	// outer metal ring
-	m *= ls(.33, .35, r);
-	c = mix(c, RGB(166, 166, 133) * t, m);
+	m *= ls(.31, .33, r);
+	c = mix(c, RGB(144, 122, 99) * t, m) // base color
+		+ .44 * tri(.335, .01, r) // small bevel highlight
+	;
 	c *= 1.
-		+ .4 * tri(.36, .01, r) // small bevel highlight
-		+ .6 * tri(.43, .013, r) // large bevel highlight
+		+ .5 * tri(.43, .013, r) // large bevel highlight
 		- .6 * tri(.41, .03, r) // large bevel shadow
-		- .4 * tri(.37, .015, r) // small bevel shadow
-		- sqr(tri(.33, .03, r)) // inner shadow
+		- .4 * tri(.35, .015, r) // small bevel shadow
+		- sqr(tri(.315, .03, r)) // inner shadow
 		- sqr(tri(.46, .03, r)) // outer shadow
 	;
 
 	// ring wires
-	p.x = nang(uv - .5);
-	p.y = ls(.35, .4, r);
-	d = voro1(p, vec2(35, 1)).z; // polar voronoi with manhattan distance
-	m = ls(.03, .01, abs(r - .39)) * m; // interior mask, excluding the top clamp
+	p = fract(vec2(nang(uv - .5) * 22. + k * .1, r * 55. + n * .6));
+	d = mn(abs(p - .5) * vec2(2, .5 + n * .3));
+	m = ls(.03, .02, abs(r - .38)) * m; // interior mask
 	c *= 1.
-		+ .5 * m * tri(.0, .2, d) // wire highlight
-		- .3 * m * tri(.3, .3, d) // wire shadow
-		;
+		+ .3 * m * tri(.0, .2, d) // wire highlight
+		- .5 * m * tri(.3, .3, d) // wire shadow
+	;
+
+	// metal clamps
+	p = vec2(nang(uv - .5), r);
+	c = dmnd2cjp_clamp(c, p, .63, vec3(.9, .9, .8) * t);
+	c = dmnd2cjp_clamp(c, p, .37, vec3(.9, .9, .8) * t);
+	c = dmnd2cjp_clamp(c, p, .0, vec3(.9, .9, .8) * t);
 
 	return c;
 }
@@ -778,7 +811,7 @@ void dmnd2cjp_m() {
 	vec4 c = T0(UV);
 	float r = length(fract(UV) - .5);
 	float s = mix(.4, 8., fract(Time.x * 1.5));
-	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.35, .3, r), 1);
+	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.34, .3, r), 1);
 }
 
 // textures/sfx/pentfloor_diamond2c (texture)
