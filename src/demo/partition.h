@@ -160,10 +160,20 @@ beginning:
 
 			for (; plane_index < plane_index_end; ++plane_index) {
 				const vec4& plane = brushes.planes[plane_index];
-				float dist = plane.w;
-				for (u8 j = 0; j < 3; ++j)
-					dist += plane[j] * trace.start[j] - trace.box_half_size[j] * abs(plane[j]);
-				float align = dot(plane.xyz, trace.delta);
+				float dist =
+					plane.w +
+					plane.x * trace.start.x +
+					plane.y * trace.start.y +
+					plane.z * trace.start.z ;
+				float align =
+					plane.x * trace.delta.x +
+					plane.y * trace.delta.y +
+					plane.z * trace.delta.z ;
+
+				if (trace.type == TraceType::Collision)
+					for (u32 j = 0; j < 3; ++j)
+						dist -= trace.box_half_size[j] * abs(plane[j]);
+
 				if (align == 0.f) {
 					if (dist > 0.f) {
 						t_enter = FLT_MAX;
@@ -171,6 +181,7 @@ beginning:
 					}
 					continue;
 				}
+
 				dist /= -align;
 				if (align < 0.f) {
 					if (t_enter < dist) {
