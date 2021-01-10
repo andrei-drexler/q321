@@ -1279,3 +1279,4 @@
 64324,tweaked greebles
 64319,optimized light baking
 64461,slightly more detailed dmnd2cjp
+64463,tweaked scmpblk17

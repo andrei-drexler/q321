@@ -653,6 +653,30 @@ VORO_FUNC(voro1, sum(abs(r))) // L1 (Manhattan) norm
 VORO_FUNC(voro, length(r)) // L2 norm
 
 ////////////////////////////////////////////////////////////////
+
+// Ring of wires
+// c = background color
+// uv = evaluation point
+// p = ring center radius
+// s = radial ring extent
+vec3 wire_ring(vec3 c, vec2 uv, float p, float s) {
+	float
+		n = NT(uv, vec2(13)) - .5, // smooth angular distortion
+		k = NT(uv, vec2(17)) - .5, // smooth radial distortion
+		r = length(uv -= .5), // radius
+		d, m
+	;
+	vec2 q = fract(vec2(nang(uv) * 22. + k * .1, r * 55. + n * .6)); // scaled/distorted polar coordinates
+	d = mn(abs(q - .5) * vec2(2, .5 + n * .3)); // wire distance
+	m = ls(.01, .0, abs(r - p) - s); // interior mask
+	c *= 1.
+		+ .3 * m * tri(.0, .2, d) // wire highlight
+		- .5 * m * tri(.3, .3, d) // wire shadow
+	;
+	return c;
+}
+
+////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
@@ -789,13 +813,7 @@ TEX(dmnd2cjp) {
 	;
 
 	// ring wires
-	p = fract(vec2(nang(uv - .5) * 22. + k * .1, r * 55. + n * .6));
-	d = mn(abs(p - .5) * vec2(2, .5 + n * .3));
-	m = ls(.03, .02, abs(r - .38)) * m; // interior mask
-	c *= 1.
-		+ .3 * m * tri(.0, .2, d) // wire highlight
-		- .5 * m * tri(.3, .3, d) // wire shadow
-	;
+	c = wire_ring(c, uv, .38, .02);
 
 	// metal clamps
 	p = vec2(nang(uv - .5), r);
@@ -2033,7 +2051,7 @@ TEX(scmpblk17) {
 		p = uv - .5,
 		q;
 	float
-		b = FBMT(uv, vec2(9), .7, 2., 4), // base FBM
+		b = FBMT(uv, vec2(9), .7, 3., 4), // base FBM
 		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
 		r = circ(p, .41), // outer ring SDF
 		d = scmpblk17_sdf(p), // base SDF
@@ -2077,10 +2095,7 @@ TEX(scmpblk17) {
 	c += vec3(.8, .8, 1) * pow(sat(1. - length(uv - vec2(.41, .59)) / .35), 8.); // specular
 
 	/* ring wires */
-	q.x = a;
-	q.y = ls(.05, .12, -r);
-	e = voro1(q, vec2(37, 1)).z; // polar voronoi with manhattan distance
-	m = tri(.085, .035, -r) * x; // interior mask, excluding the top clamp
+	c = mix(c, wire_ring(c, uv, .32, .025), x);
 
 	c *= 1.
 		+ .5 * m * tri(.0, .2, e) // wire highlight
