@@ -420,7 +420,7 @@ float exclude(float a, float b) {
 // polynomial smooth min
 // http://www.iquilezles.org/www/articles/smin/smin.htm
 float smin(float a, float b, float k) {
-	float h = sat(.5 + 0.5 * (b - a) / k);
+	float h = sat(.5 + .5 * (b - a) / k);
 	return mix(b, a, h) - k * h * (1. - h);
 }
 

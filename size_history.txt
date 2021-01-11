@@ -1282,3 +1282,4 @@
 64463,tweaked scmpblk17
 64458,removed left-over noise from dmnd2cjp
 64560,more dmnd2cjp work
+64558,minor smin tweak
