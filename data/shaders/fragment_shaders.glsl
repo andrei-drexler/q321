@@ -784,8 +784,6 @@ TEX(dmnd2cjp) {
 
 	float
 		b = FBMT(uv, vec2(7), .9, 3., 4), // base FBM
-		n = NT(uv, vec2(13)) - .5, // smooth noise
-		k = NT(uv, vec2(17)) - .5, // another smooth noise
 		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
 		r = length(uv - .5), // distance from center
 		m = ls(.46, .45, r), // initial mask
