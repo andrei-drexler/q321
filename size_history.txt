@@ -1281,3 +1281,4 @@
 64461,slightly more detailed dmnd2cjp
 64463,tweaked scmpblk17
 64458,removed left-over noise from dmnd2cjp
+64560,more dmnd2cjp work

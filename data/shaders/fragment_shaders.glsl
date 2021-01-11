@@ -778,18 +778,39 @@ vec3 dmnd2cjp_clamp(vec3 c, vec2 p, float v, vec3 k) {
 	return c;
 }
 
+// c = background color
+// l = light mask accum
+// p.x = normalized angle
+// p.y = radius
+// u.x = angular position
+// u.y = angluar extent
+vec3 dmnd2cjp_led(vec3 c, inout float l, vec2 p, vec2 u, vec2 v) {
+	p.x = fract(p.x - u.x + .5); // shift angle
+	p.x = max(abs(p.x - .5) - u.y, 0.) * 4.; // scale & clamp angle
+	p.y -= v.x; // shift radius
+	float d = circ(p, v.y); // SDF
+	l += pow(ls(.1, -.01, d), 4.); // add glow
+	c = mix(c, c * vec3(1.5, .5, .5), msk(d, .01)); // interior color
+	c *= 1.
+		- .3 * tri(.0, .01, d) // edge shadow
+		+ .3 * tri(.01, .01, d) // edge highlight
+	;
+	return c;
+}
+
 // sfx/diamond2cjumppad (texture)
-TEX(dmnd2cjp) {
+TEXA(dmnd2cjp) {
 	vec3 c = T0(uv).xyz;
 
 	float
 		b = FBMT(uv, vec2(7), .9, 3., 4), // base FBM
 		t = .8 + .8 * b * b, // base texture intensity (remapped FBM)
+		a = nang(uv - .5), // normalized angle
 		r = length(uv - .5), // distance from center
 		m = ls(.46, .45, r), // initial mask
+		l = tri(.32, .01, r) + tri(.43, .01, r) * ls(.07, .0, abs(a - .11) - .03), // initial light mask
 		d;
-
-	vec2 p;
+	vec2 p = vec2(a, r);
 
 	// interior surface
 	c = mix(c, RGB(199, 199, 166. + 33. * b) * mix(vec3(.2 * b + .1), .1 + 2. * greebles(uv * 3., b, .3), .5), m); // base color
@@ -814,25 +835,48 @@ TEX(dmnd2cjp) {
 	c = wire_ring(c, uv, .38, .02);
 
 	// metal clamps
-	p = vec2(nang(uv - .5), r);
-	c = dmnd2cjp_clamp(c, p, .63, vec3(.9, .9, .8) * t);
-	c = dmnd2cjp_clamp(c, p, .37, vec3(.9, .9, .8) * t);
-	c = dmnd2cjp_clamp(c, p, .0, vec3(.9, .9, .8) * t);
+	vec3 k = vec3(.9, .9, .8) * t; // base color
+	c = dmnd2cjp_clamp(c, p, .63, k); // bottom-left
+	c = dmnd2cjp_clamp(c, p, .37, k); // top-left
+	c = dmnd2cjp_clamp(c, p, vec2(.0, .1), vec2(.38, .03), k * (.25 + .6 * ls(.4, .33, p.y))); // right
+	c = dmnd2cjp_clamp(c, p, vec2(.11, .06), vec2(.38, .03), k * (.3 + .5 * ls(.4, .33, p.y))); // top-right
+	c = dmnd2cjp_clamp(c, p, vec2(.91, .05), vec2(.37, .04), k * (.5 + .4 * ls(.37, .36, p.y) - .7 * ls(.33, .3, p.y))); // bottom-right
+	c = dmnd2cjp_clamp(c, p, vec2(.948, .003), vec2(.37, .04), k * (.5 + .4 * ls(.36, .35, p.y) - .7 * ls(.33, .3, p.y))); // above b-r
+	c = dmnd2cjp_clamp(c, p, vec2(.965, .007), vec2(.37, .04), k * (.5 + .4 * ls(.36, .35, p.y) - .7 * ls(.33, .3, p.y))); // above 
+	c = dmnd2cjp_clamp(c, p, vec2(.02, .005), vec2(.36, .015), k * (.5 + .4 * ls(.36, .35, p.y) - .7 * ls(.33, .3, p.y))); // tiny right
 
-	return c;
+	// lights
+	c = dmnd2cjp_led(c, l, p, vec2(.125, .02), vec2(.383, .017)); // large top-right
+	c = dmnd2cjp_led(c, l, p, vec2(.075, .001), vec2(.383, .017)); // small top-right
+	c = dmnd2cjp_led(c, l, p, vec2(.02, .001), vec2(.37, .0)); // tiny right
+	c = dmnd2cjp_led(c, l, p, vec2(.63, .007), vec2(.44, .007)); // small bottom-left
+
+	// subtle floor reflection (lower-left)
+	l += ls(.2, .8, c.x) * tri(.5, .6, .8, r) * sqr(tri(.63, .06, a));
+
+	return vec4(c, l);
 }
 
 // sfx/diamond2cjumppad (map shader)
 void dmnd2cjp_m() {
 	vec4 c = T0(UV);
-	float r = length(fract(UV) - .5);
-	float s = mix(.4, 8., fract(Time.x * 1.5));
-	FCol = vec4(c.xyz * Light() + RGB(240, 130, 5) * tri(.1, .05, r / s) * ls(.34, .3, r), 1);
+	vec2 uv = fract(UV) - .5;
+	float
+		r = length(uv),
+		v = fract(Time.x * 1.5),
+		s = mix(.4, 8., v),
+		b = NT(uv/s, vec2(255)),
+		t = .8 + .2 * b
+	;
+	FCol = vec4(
+		c.xyz * Light()
+		+ RGB(240, 130, 5) * (tri(.1, .05, r / s) * ls(.34, .3, r) * t + .5 * c.w * ridged(v))
+	, 1);
 }
 
 // textures/sfx/pentfloor_diamond2c (texture)
 TEXA(dmnd2pnt) {
-	vec3 c = dmnd2cjp(uv);
+	vec3 c = dmnd2cjp(uv).xyz;
 	uv = fract(uv) - .5;
 	float b = FBMT(uv, vec2(3), .9, 3., 4), d = min(abs(length(uv) - .4), pentagram(uv, .35));
 	return vec4(c, msk(d - .02 + b * .02, .01));
