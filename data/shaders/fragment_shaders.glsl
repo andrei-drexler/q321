@@ -753,6 +753,13 @@ vec3 add_knob_gizmo(vec3 c, vec2 uv, float b) {
 	return c;
 }
 
+// infinite pie slice
+// a = normalized angle
+// s = angular extent
+float slice(float a, float s) {
+	return abs(fract(a - .5) - .5) - s;
+}
+
 // Basic clamp piece
 // c = background color
 // p = polar coordinates
@@ -762,8 +769,7 @@ vec3 add_knob_gizmo(vec3 c, vec2 uv, float b) {
 // v.y = radial extent
 // k = clamp color
 vec3 dmnd2cjp_clamp(vec3 c, vec2 p, vec2 u, vec2 v, vec3 k) {
-	p.x = fract(p.x - u.x + .5);
-	p.x = abs(p.x - .5) - u.y;
+	p.x = slice(p.x - u.x, u.y);
 	p.y = abs(p.y - v.x) - v.y;
 	c *= 1. - .4 * tri(.0, .004, p.x) * ls(.01, .0, p.y); // side shadow
 	c = mix(c, k, ls(.0, -.002, p.x) * ls(.01, .0, p.y)); // mix clamp color
@@ -783,10 +789,9 @@ vec3 dmnd2cjp_clamp(vec3 c, vec2 p, float v, vec3 k) {
 // p.x = normalized angle
 // p.y = radius
 // u.x = angular position
-// u.y = angluar extent
+// u.y = angular extent
 vec3 dmnd2cjp_led(vec3 c, inout float l, vec2 p, vec2 u, vec2 v) {
-	p.x = fract(p.x - u.x + .5); // shift angle
-	p.x = max(abs(p.x - .5) - u.y, 0.) * 4.; // scale & clamp angle
+	p.x = 4. * max(0., slice(p.x - u.x, u.y)); // clamp & scale angle
 	p.y -= v.x; // shift radius
 	float d = circ(p, v.y); // SDF
 	l += pow(ls(.1, -.01, d), 4.); // add glow
@@ -808,7 +813,7 @@ TEXA(dmnd2cjp) {
 		a = nang(uv - .5), // normalized angle
 		r = length(uv - .5), // distance from center
 		m = ls(.46, .45, r), // initial mask
-		l = tri(.32, .01, r) + tri(.43, .01, r) * ls(.07, .0, abs(a - .11) - .03), // initial light mask
+		l = tri(.43, .01, r) * ls(.07, .0, abs(a - .11) - .03), // initial light mask
 		d;
 	vec2 p = vec2(a, r);
 
@@ -840,7 +845,7 @@ TEXA(dmnd2cjp) {
 	c = dmnd2cjp_clamp(c, p, .37, k); // top-left
 	c = dmnd2cjp_clamp(c, p, vec2(.0, .1), vec2(.38, .03), k * (.25 + .6 * ls(.4, .33, p.y))); // right
 	c = dmnd2cjp_clamp(c, p, vec2(.11, .06), vec2(.38, .03), k * (.3 + .5 * ls(.4, .33, p.y))); // top-right
-	c = dmnd2cjp_clamp(c, p, vec2(.91, .05), vec2(.37, .04), k * (.5 + .4 * ls(.37, .36, p.y) - .7 * ls(.33, .3, p.y))); // bottom-right
+	c = dmnd2cjp_clamp(c, p, vec2(.91, .05), vec2(.373, .035), k * (.5 + .4 * ls(.37, .36, p.y) - .7 * ls(.33, .3, p.y))); // bottom-right
 	c = dmnd2cjp_clamp(c, p, vec2(.948, .003), vec2(.37, .04), k * (.5 + .4 * ls(.36, .35, p.y) - .7 * ls(.33, .3, p.y))); // above b-r
 	c = dmnd2cjp_clamp(c, p, vec2(.965, .007), vec2(.37, .04), k * (.5 + .4 * ls(.36, .35, p.y) - .7 * ls(.33, .3, p.y))); // above 
 	c = dmnd2cjp_clamp(c, p, vec2(.02, .005), vec2(.36, .015), k * (.5 + .4 * ls(.36, .35, p.y) - .7 * ls(.33, .3, p.y))); // tiny right
@@ -850,6 +855,9 @@ TEXA(dmnd2cjp) {
 	c = dmnd2cjp_led(c, l, p, vec2(.075, .001), vec2(.383, .017)); // small top-right
 	c = dmnd2cjp_led(c, l, p, vec2(.02, .001), vec2(.37, .0)); // tiny right
 	c = dmnd2cjp_led(c, l, p, vec2(.63, .007), vec2(.44, .007)); // small bottom-left
+
+	// inner ring glow (with offsets for the left clamps)
+	l += tri(.32, .01, r + msk(min(slice(a - .63, .011), slice(a - .37, .011)), .005) * .005);
 
 	// subtle floor reflection (lower-left)
 	l += ls(.2, .8, c.x) * tri(.5, .6, .8, r) * sqr(tri(.63, .06, a));
