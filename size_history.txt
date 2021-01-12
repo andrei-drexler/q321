@@ -1284,3 +1284,4 @@
 64560,more dmnd2cjp work
 64558,minor smin tweak
 64589,more dmnd2cjp tweaks
+64594,more dmnd2cow details

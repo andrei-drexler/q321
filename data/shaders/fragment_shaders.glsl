@@ -713,22 +713,36 @@ TEX(dmnd2c) {
 	return vec3((f + 1.) * mix(.21, .29, b * b) * l);
 }
 
+// p = offset from center
+// s = scale
+// k = number of spokes
+// n = noise
+float dmnd2cow_spokes(vec2 p, float s, float k, float n) {
+	return
+		ridged(fract(nang(p) * k + n))
+		* ls(.5, .3, length(p) / s + n - .5)
+	;
+}
+
 // base_floor/diamond2c_ow (texture)
 TEXA(dmnd2cow) {
-	vec3 c = T0(uv).xyz;
+	vec3 c = T0(uv).xyz; // base texture
 	float
-		b = FBMT(uv = wavy(uv, 7., .01), vec2(5), .7, 3., 4),
-		n = FBMT(uv, vec2(7), .5, 2., 4),
-		r = length(uv -= .5),
-		a = nang(uv),
-		d = r + n * .8 - .33
+		b = FBMT(uv = wavy(uv, 7., .01), vec2(5), .7, 3., 4), // base FBM + slight UV distortion
+		n = FBMT(uv, vec2(7), .5, 2., 4), // smoother FBM
+		r = length(uv -= .5), // distance to center
+		a = nang(uv), // normalized angle
+		d = r + n * .8 - .33, // distorted distance
+		m = ls(.1, .15, d) // floor mask
 	;
-	c = mix(c, mix(RGB(21, 17, 14), RGB(70, 59, 51), b), ls(.5, .2, r + b*b*b));
-	c *=
-		ls(.1, .11, d)
-		+ 2. * pow(tri(.4, .12, .1, d), 8.)
+	c = mix(c, mix(RGB(21, 17, 14), RGB(70, 59, 51), b), ls(.5, .3, r + b*b*b)); // base impact color
+	c *= 1.
+		- .7 * ls(.13, .1, d) // inner shadow
+		+ 1.5 * pow(tri(.3, .15, .05, d), 4.) // edge highlight
+		+ m * dmnd2cow_spokes(uv - vec2(-.05, .05), .44, 22., n) // top radial marks
+		+ m * dmnd2cow_spokes(uv - vec2(.07, -.18), .3, 15., n) // bottom radial marks
 		;
-	return vec4(c, 1. - sqrt(ls(.11, .06, d)));
+	return vec4(c, 1. - sqrt(ls(.11, .05, d))); // color + alpha (including shadow)
 }
 
 // base_floor/diamond2c_ow (map shader)
