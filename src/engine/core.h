@@ -34,6 +34,61 @@
 		#endif
 	#endif
 
+	#ifndef NO_CRT_
+		#ifdef _VC_NODEFAULTLIB
+			#define NO_CRT
+		#endif
+	#endif
+
+	#ifdef NO_CRT
+		extern "C" void* __cdecl memset(void *dest, int c, size_t count);
+		extern "C" void* __cdecl memcpy(void *dest, const void *src, size_t count);
+		extern "C" void* __cdecl memmove(void *dest, const void *src, size_t count);
+		extern "C" size_t __cdecl strlen(const char* str);
+
+		#pragma intrinsic(memset)
+		#pragma intrinsic(memcpy)
+		#pragma intrinsic(memmove)
+		#pragma intrinsic(strlen)
+
+		// Put .CRT data into .rdata section
+		#pragma comment(linker, "/merge:.CRT=.rdata")
+
+		#pragma comment(lib, "user32.lib")
+		#pragma comment(lib, "kernel32.lib")
+
+		extern "C" {
+			int _fltused = 0;
+			size_t __security_cookie = 0x12345678;
+
+			#pragma function(memset)
+			void* __cdecl memset(void* dest, int c, size_t count) {
+				char* bytes = (char*)dest;
+				while (count--)
+					*bytes++ = (char)c;
+				return dest;
+			}
+
+			#pragma function(memcpy)
+			void* __cdecl memcpy(void* dest, const void* src, size_t count) {
+				char* dest_bytes = (char*)dest;
+				const char* src_bytes = (const char*)src;
+				while (count--)
+					*dest_bytes++ = *src_bytes++;
+				return dest;
+			}
+
+			#pragma function(memmove)
+			void* __cdecl memmove(void* dest, const void* src, size_t count) {
+				char* dest_bytes = (char*)dest;
+				const char* src_bytes = (const char*)src;
+				while (count--)
+					dest_bytes[count] = src_bytes[count];
+				return dest;
+			}
+		}
+	#endif // NO_CRT
+
 	#pragma warning(error: 4002)			// too many actual parameters for macro 'identifier'
 	#pragma warning(error: 4003)			// not enough actual parameters for macro 'identifier'
 

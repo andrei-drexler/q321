@@ -18,6 +18,8 @@
 	#endif // ndef NDEBUG
 #endif
 
+#define NO_CRT
+
 #include "core.h"
 #include "math.h"
 #include "aabb.h"

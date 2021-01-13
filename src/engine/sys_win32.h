@@ -10,59 +10,6 @@
 
 ////////////////////////////////////////////////////////////////
 
-extern "C" void* __cdecl memset(void *dest, int c, size_t count);
-extern "C" void* __cdecl memcpy(void *dest, const void *src, size_t count);
-extern "C" void* __cdecl memmove(void *dest, const void *src, size_t count);
-extern "C" size_t __cdecl strlen(const char* str);
-
-#ifdef _MSC_VER
-	#pragma intrinsic(memset)
-	#pragma intrinsic(memcpy)
-	#pragma intrinsic(memmove)
-	#pragma intrinsic(strlen)
-
-	// Put .CRT data into .rdata section
-	#pragma comment(linker, "/merge:.CRT=.rdata")
-
-	#pragma comment(lib, "user32.lib")
-	#pragma comment(lib, "kernel32.lib")
-
-	extern "C" {
-		int _fltused = 0;
-		size_t __security_cookie = 0x12345678;
-
-		#pragma function(memset)
-		void* __cdecl memset(void* dest, int c, size_t count) {
-			char* bytes = (char*)dest;
-			while (count--)
-				*bytes++ = (char)c;
-			return dest;
-		}
-
-		#pragma function(memcpy)
-		void* __cdecl memcpy(void* dest, const void* src, size_t count) {
-			char* dest_bytes = (char*)dest;
-			const char* src_bytes = (const char*)src;
-			while (count--)
-				*dest_bytes++ = *src_bytes++;
-			return dest;
-		}
-
-		#pragma function(memmove)
-		void* __cdecl memmove(void* dest, const void* src, size_t count) {
-			char* dest_bytes = (char*)dest;
-			const char* src_bytes = (const char*)src;
-			while (count--)
-				dest_bytes[count] = src_bytes[count];
-			return dest;
-		}
-	}
-#else
-	#error Unsupported platform
-#endif
-
-////////////////////////////////////////////////////////////////
-
 namespace Win32 {
 	void* CreateSystemWindow(Sys::Window* window);
 	void* CreateSystemRenderer(Sys::Window* window);

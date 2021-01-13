@@ -1287,3 +1287,4 @@
 64594,more dmnd2cow details
 65124,textured lion head
 65125,explicit ascii version of createwindow
+65125,moved crt replacement to core.h
