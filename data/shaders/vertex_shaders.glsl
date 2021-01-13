@@ -174,6 +174,9 @@ void flame() { Generic(); }
 void flame_large() { Generic(); }
 void gr8torch2b() { FS(); }
 void gr8torch2b_m() { miscmodel(); }
+void lion() { FS(); }
+void lion_m() { misc_model(); }
+void lion_mouth() { misc_model(); }
 void tlpnrg() { misc_model(); }
 void tlptrns() { FS(); }
 void tlptrns_m() { misc_model(); }

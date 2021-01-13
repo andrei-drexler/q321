@@ -3189,6 +3189,82 @@ void gr8torch2b_m() {
 	FCol *= Clr * 1.5 + .3;
 }
 
+// models/mapobjects/wallhead/lion.tga (texture)
+TEXA(lion) {
+	vec2 p = uv, q;
+	p.x = abs(p.x - .5); // mirror
+
+	float
+		b = FBMT(uv, vec2(7), .9, 3., 4), // base FBM
+		t = .5 + b, // base texture intensity
+		v = msk(-elips(p - vec2(.1, .54), vec2(.2, .25)) * 2., 1.), // hair mask
+		d, r, n, i, f, m,
+		j = 0.
+	;
+
+	vec3 c = RGB(66, 55, 55) * t; // base color
+
+	// hair layers
+	for (; j < 16.; ++j) {
+		vec2 o = (R2(j) - .5) * vec2(.3, .2); // random offset
+		r = elips(p - o - vec2(.1, .4), vec2(.22, .3));
+		n = FBMT(wavy(uv + o * .5, .7, .01), vec2(5), .3, 2., 4);
+		d = r * 1.5 + 2. * n; // distorted distance
+		i = floor(d); // strand id
+		f = abs(fract(d) - .5); // location within strand
+		m = v * sat(d) * step(H(i + j * PHI) * .9 + .1, .5); // strand mask
+		c *= 1.
+			+ .2 * m * ls(.2, .0, f) // highlight
+			- .2 * m * tri(.3, .2, f) // shadow
+		;
+	}
+
+	// eyes + eyebrows + cheekbones
+	r = length(q = p - vec2(.13, .595));
+	q *= rot(3.);
+	q.y = abs(q.y) + .025;
+	m = ls(.0, -.2, d = elips(q, vec2(.06, .039)) * .07); // eye interior mask
+	c *= 1.
+		+ .4 * ls(.05, .0, length((p - vec2(.21, .53)) * vec2(.8, 1))) // cheekbone highlight
+		- .5 * tri(3.5, .9, d) * tri(.7, .05, p.y) * tri(.07, .15, p.x) // frown
+		+ .9 * tri(1.9, .9, d) * ls(.15, .0, length(p - vec2(.06, .66))) // eyebrow highlight
+		- .7 * tri(.4, .9, d) * ls(.15, .0, length(p - vec2(.09, .64))) // eyebrow shadow
+		- .9 * tri(.05, .02, length(p - vec2(.05, .64))) * sat(1. - length(p - vec2(0, .6)) * 15.)
+		+ .9 * sqr(ls(.03, .005, r)) * m // brighten eye interior
+		- .4 * sqr(tri(.0, .5, d)) // darken contour
+		- .6 * ls(.0, .05, r) * m // darken interior
+		- 1.5 * ls(.5, .2, r * 50.) // darken pupil
+	;
+
+	// nose
+	d = length((p - vec2(0, .51)) * vec2(1.5, 2.5));
+	r = length((p - vec2(.05, .46)));
+	c *= 1.
+		+ .6 * ls(.1, .03, d) * ls(.03, .06, r) // nose specular
+		- .9 * ls(.05, .02, r) * ls(.06, .09, length(p - vec2(.08, .41))) // nostrils
+		- .4 * tri(.1, .05, length((p - vec2(.06, .47)) * vec2(1.3, 1.1))) // snout shadow
+	;
+
+	// teeth
+	q = p - vec2(.09, .29);
+	d = seg(q, vec2(0), vec2(0, .07), .02 * ls(.0, .1, q.y));
+	c *= 1.
+		+ sqr(ls(.02, .0, d)) // upper canines
+	;
+
+	return vec4(c, b);
+}
+
+// models/mapobjects/wallhead/lion.tga (model shader)
+void lion_m() {
+	FCol = triplanar(4.).w * Clr * 3. * T0(Pos.yz / vec2(48, 64) + vec2(.5, .15));
+}
+
+// models/mapobjects/wallhead/lion_m.tga (model shader)
+void lion_mouth() {
+	FCol = triplanar(4.).x * Clr * .7 * sqrt(ls(16., 24., Pos.x));
+}
+
 // models/mapobjects/teleporter/energy.tga
 void tlpnrg() {
 	vec2 uv = vec2(2. * nang(Pos.xy), 3. * ls(8., 128., Pos.z));
