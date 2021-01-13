@@ -903,8 +903,8 @@ namespace Win32 {
 	}
 
 	HWND CreateDummyWindow() {
-		constexpr auto ClassName = "Static";
-		return CreateWindow(ClassName, ClassName, WS_DISABLED, 0, 0, 0, 0, NULL, NULL, NULL, NULL);
+		constexpr const char* ClassName = "Static";
+		return CreateWindowA(ClassName, ClassName, WS_DISABLED, 0, 0, 0, 0, NULL, NULL, NULL, NULL);
 	}
 
 	FORCEINLINE HGLRC CreateGLContext(HDC dc) {
