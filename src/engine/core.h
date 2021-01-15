@@ -486,6 +486,11 @@ NOINLINE i32 DecodeSignMagnitude(u32 u) {
 ////////////////////////////////////////////////////////////////
 
 template <typename T, size_t Size>
+constexpr FORCEINLINE size_t size(T (&)[Size]) { return Size; }
+
+////////////////////////////////////////////////////////////////
+
+template <typename T, size_t Size>
 struct StaticArray {
 	T data[Size];
 
@@ -564,6 +569,12 @@ constexpr auto MakeLookupTable(MapFunction map) {
 		result.data[i] = map(static_cast<Key>(static_cast<size_t>(FirstKey) + i));
 	return result;
 }
+
+////////////////////////////////////////////////////////////////
+
+struct IRect {
+	int x, y, w, h;
+};
 
 ////////////////////////////////////////////////////////////////
 
