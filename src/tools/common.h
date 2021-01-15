@@ -21,9 +21,9 @@ using std::string_view;
 
 ////////////////////////////////////////////////////////////////
 
-#include "../../engine/core.h"
-#include "../../engine/math.h"
-#include "../../engine/aabb.h"
+#include "../engine/core.h"
+#include "../engine/math.h"
+#include "../engine/aabb.h"
 
 #include "parse.h"
 #include "print_array.h"
