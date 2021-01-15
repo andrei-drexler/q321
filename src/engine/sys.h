@@ -197,6 +197,24 @@ namespace Sys {
 	}
 
 	void RasterizeFont(const char* name, int font_size, u32 flags, u32* pixels, u16 width, u16 height, u16 padding, RectPacker& packer, Font::Glyph* glyphs);
+
+	// Dynamic libraries ///////////////////////////////////////////
+
+	struct Library {
+		using Function = void (*)();
+		
+		void* handle;
+		explicit operator bool() const { return handle != nullptr; }
+	};
+
+	Library				LoadDynamicLibrary(const char* name);
+	void				UnloadDynamicLibrary(Library& lib);
+	Library::Function	GetRawFunction(Library lib, const char* name);
+
+	template <typename Return, typename... Args>
+	auto GetFunction(Library lib, const char* name, Return (__cdecl *&out)(Args...)) {
+		out = reinterpret_cast<Return(__cdecl*)(Args...)>(GetRawFunction(lib, name));
+	}
 }
 
 ////////////////////////////////////////////////////////////////

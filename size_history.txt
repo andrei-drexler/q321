@@ -1289,3 +1289,4 @@
 65125,explicit ascii version of createwindow
 65125,moved crt replacement to core.h
 65125,moved irect & size from demo.h to core.h
+65129,added sys::library

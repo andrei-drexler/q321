@@ -819,6 +819,23 @@ FORCEINLINE void Sys::UpdateMouseState(vec2& pt, float dt) {
 }
 
 ////////////////////////////////////////////////////////////////
+// Dynamic libraries ///////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+
+FORCEINLINE Sys::Library Sys::LoadDynamicLibrary(const char* name) {
+	return {::LoadLibraryA(name)};
+}
+
+FORCEINLINE void Sys::UnloadDynamicLibrary(Library& lib) {
+	::FreeLibrary(reinterpret_cast<HMODULE>(lib.handle));
+	lib.handle = nullptr;
+}
+
+FORCEINLINE Sys::Library::Function Sys::GetRawFunction(Library lib, const char* name) {
+	return reinterpret_cast<Library::Function>(GetProcAddress(reinterpret_cast<HMODULE>(lib.handle), name));
+}
+
+////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
