@@ -213,8 +213,9 @@ namespace Sys {
 	Library::Function	GetRawFunction(Library lib, const char* name);
 
 	template <typename Return, typename... Args>
-	auto GetFunction(Library lib, const char* name, Return (__cdecl *&out)(Args...)) {
+	FORCEINLINE bool GetFunction(Library lib, const char* name, Return (__cdecl *&out)(Args...)) {
 		out = reinterpret_cast<Return(__cdecl*)(Args...)>(GetRawFunction(lib, name));
+		return out != nullptr;
 	}
 }
 
