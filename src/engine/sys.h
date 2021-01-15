@@ -171,6 +171,7 @@ namespace Sys {
 	bool			FileExists(const char* path);
 	bool			ReadFromFile(File::Handle file, void* buffer, u32 size, u32* read = nullptr);
 	bool			WriteToFile(File::Handle file, const void* buffer, u32 size, u32* written = nullptr);
+	u64				GetFileTime(const char* path);
 	bool			CreateFolder(const char* name);
 
 	// Font ////////////////////////////////////////////////////////

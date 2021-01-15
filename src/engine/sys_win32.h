@@ -379,6 +379,24 @@ FORCEINLINE bool Sys::WriteToFile(File::Handle file, const void* buffer, u32 siz
 	return result != FALSE;
 }
 
+NOINLINE u64 Sys::GetFileTime(const char* path) {
+	HANDLE handle = ::CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (handle == INVALID_HANDLE_VALUE)
+		return 0;
+
+	FILETIME time;
+	if (!::GetFileTime(handle, NULL, NULL, &time))
+		time.dwHighDateTime = time.dwHighDateTime = 0;
+
+	::CloseHandle(handle);
+
+	ULARGE_INTEGER time64;
+	time64.LowPart = time.dwLowDateTime;
+	time64.HighPart = time.dwHighDateTime;
+
+	return time64.QuadPart;
+}
+
 FORCEINLINE bool Sys::CreateFolder(const char* name) {
 	return ::CreateDirectoryA(name, NULL) || ::GetLastError() == ERROR_ALREADY_EXISTS;
 }
