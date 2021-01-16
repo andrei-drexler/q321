@@ -7,6 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo", "src\demo\demo.vcxpr
 	ProjectSection(ProjectDependencies) = postProject
 		{E36F3037-69FC-42E8-8798-48745069FD2A} = {E36F3037-69FC-42E8-8798-48745069FD2A}
 		{B3BE3697-E3FD-4191-8230-4691C14EA1CB} = {B3BE3697-E3FD-4191-8230-4691C14EA1CB}
+		{EA21D6AB-53D4-41BC-8CDB-65C96B52386E} = {EA21D6AB-53D4-41BC-8CDB-65C96B52386E}
 		{81E95FE8-21BF-45AD-9D49-334D43D9302E} = {81E95FE8-21BF-45AD-9D49-334D43D9302E}
 	EndProjectSection
 EndProject
@@ -15,6 +16,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "model_compiler", "src\tools\model_compiler\model_compiler.vcxproj", "{B3BE3697-E3FD-4191-8230-4691C14EA1CB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shader_compiler", "src\tools\shader_compiler\shader_compiler.vcxproj", "{81E95FE8-21BF-45AD-9D49-334D43D9302E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shader_compiler_dll", "src\tools\shader_compiler\shader_compiler_dll.vcxproj", "{EA21D6AB-53D4-41BC-8CDB-65C96B52386E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,6 +59,14 @@ Global
 		{81E95FE8-21BF-45AD-9D49-334D43D9302E}.Release|x64.Build.0 = Release|x64
 		{81E95FE8-21BF-45AD-9D49-334D43D9302E}.Release|x86.ActiveCfg = Release|Win32
 		{81E95FE8-21BF-45AD-9D49-334D43D9302E}.Release|x86.Build.0 = Release|Win32
+		{EA21D6AB-53D4-41BC-8CDB-65C96B52386E}.Debug|x64.ActiveCfg = Debug|x64
+		{EA21D6AB-53D4-41BC-8CDB-65C96B52386E}.Debug|x64.Build.0 = Debug|x64
+		{EA21D6AB-53D4-41BC-8CDB-65C96B52386E}.Debug|x86.ActiveCfg = Debug|Win32
+		{EA21D6AB-53D4-41BC-8CDB-65C96B52386E}.Debug|x86.Build.0 = Debug|Win32
+		{EA21D6AB-53D4-41BC-8CDB-65C96B52386E}.Release|x64.ActiveCfg = Release|x64
+		{EA21D6AB-53D4-41BC-8CDB-65C96B52386E}.Release|x64.Build.0 = Release|x64
+		{EA21D6AB-53D4-41BC-8CDB-65C96B52386E}.Release|x86.ActiveCfg = Release|Win32
+		{EA21D6AB-53D4-41BC-8CDB-65C96B52386E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1291,3 +1291,4 @@
 65125,moved irect & size from demo.h to core.h
 65129,added sys::library
 65129,added sys::getfiletime
+65129,added shader reloading

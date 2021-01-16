@@ -51,7 +51,7 @@ using GLintptr = iptr;
 
 ////////////////////////////////////////////////////////////////
 
-#ifdef DEV
+#if defined(DEV) || defined(ENABLE_SHADER_RELOAD)
 #define GL_DEV_FUNCTIONS(x)	\
 	x(void,			DeleteBuffers, (GLsizei n, const GLuint *buffers))\
 	x(void,			DeleteProgram, (GLuint program))\
@@ -266,6 +266,9 @@ namespace GL {
 		const Gfx::Shader::Flags*			shader_flags;
 		GLint								shader_uniforms[MaxNumUniforms];
 		GLuint								shader_programs[MaxNumShaders];
+#ifdef ENABLE_SHADER_RELOAD
+		GLuint								old_shader_programs[MaxNumShaders];
+#endif
 		const Gfx::Shader::Module*			shader_modules[ShaderStage::Count];
 
 		TextureState						texture_state[MaxNumTextures];
@@ -394,22 +397,33 @@ FORCEINLINE GLuint GL::StitchAndCompileShader(u16 shader_index, u32 stage) {
 NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 	using namespace GL;
 
+#ifdef ENABLE_SHADER_RELOAD
+	MemCopy(&g_state.old_shader_programs, &g_state.shader_programs);
+#endif
+
 	// Two passes, to enable parallel shader compilation
 
 	for (u16 shader_index = first, end = first + count; shader_index < end; ++shader_index) {
 		auto& program = g_state.shader_programs[shader_index];
 		program = glCreateProgram();
-		if (!program)
+		if (!program) {
+#ifdef ENABLE_SHADER_RELOAD
+			if (g_state.old_shader_programs[shader_index]) {
+				program = g_state.old_shader_programs[shader_index];
+				continue;
+			}
+#endif
 			Sys::Fatal(Error::Shader);
+		}
 
-#ifdef DEV
+#if defined(DEV) || defined(ENABLE_SHADER_RELOAD)
 		GLuint shaders[ShaderStage::Count];
 #endif
 
 		for (u32 stage = 0; stage< ShaderStage::Count; ++stage) {
 			GLuint shader = StitchAndCompileShader(shader_index, stage);
 			glAttachShader(program, shader);
-#ifdef DEV
+#if defined(DEV) || defined(ENABLE_SHADER_RELOAD)
 			shaders[stage] = shader;
 #endif
 		}
@@ -427,7 +441,7 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 #endif
 		glLinkProgram(program);
 
-#ifdef DEV
+#if defined(DEV) || defined(ENABLE_SHADER_RELOAD)
 		for (u32 stage = 0; stage< ShaderStage::Count; ++stage) {
 			glDetachShader(program, shaders[stage]);
 			glDeleteShader(shaders[stage]);
@@ -442,7 +456,7 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 		GLint is_linked = 0;
 		glGetProgramiv(program, GL_LINK_STATUS, &is_linked);
 		if (!is_linked) {
-#ifdef DEV
+#if defined(DEV) || defined(ENABLE_SHADER_RELOAD)
 			GLint max_length = 0;
 			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &max_length);
 			char* buf = Mem::Alloc<char>(max_length);
@@ -450,6 +464,14 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 			Sys::DebugStream << "Program linking failed:\n" << buf << "\n";
 			TrimLog(buf, 8);
 			MessageBoxA(0, buf, "Program linking failed", MB_OK);
+#endif
+#ifdef ENABLE_SHADER_RELOAD
+			if (g_state.old_shader_programs[shader_index]) {
+				glDeleteProgram(program);
+				program = g_state.old_shader_programs[shader_index];
+				g_state.old_shader_programs[shader_index] = 0;
+				continue;
+			}
 #endif
 			Sys::Fatal(Error::Shader);
 		}

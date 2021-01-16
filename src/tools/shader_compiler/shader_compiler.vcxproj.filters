@@ -9,6 +9,8 @@
     <ClInclude Include="..\..\demo\resource_def.h">
       <Filter>Demo</Filter>
     </ClInclude>
+    <ClInclude Include="shader_compiler.h" />
+    <ClInclude Include="shader_compiler_interface.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Demo">

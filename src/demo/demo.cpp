@@ -1,6 +1,8 @@
 //#define ENABLE_RENDERDOC
 //#define DISABLE_SHADER_CACHE
 //#define DISABLE_SHADER_STITCHING
+//#define ENABLE_SHADER_RELOAD			0, Shader::Count
+//#define ENABLE_SHADER_RELOAD			Shader::lion, 1
 //#define DISABLE_TEXTURE_FILTERING
 #define USE_RAW_INPUT
 //#define DISABLE_PARTITION
@@ -503,6 +505,10 @@ namespace Demo {
 		vec2 mouse_delta;
 		Sys::UpdateMouseState(mouse_delta, dt);
 		Sys::UpdateKeyboardState();
+
+#ifdef ENABLE_SHADER_RELOAD
+		Shader::RecompileIfNeeded(dt);
+#endif
 
 		if (Sys::IsKeyFirstDown(Key::PrintScreen))
 			TakeScreenshot();

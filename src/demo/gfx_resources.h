@@ -2,6 +2,10 @@
 
 #include "cooked/cooked_shaders.h"
 
+#ifdef ENABLE_SHADER_RELOAD
+	#include "../tools/shader_compiler/shader_compiler_interface.h"
+#endif
+
 namespace Demo {
 	static const u32 GPUPoolSizes[Gfx::Arena::Count] = {
 		8  * Mem::MB,	// permanent
@@ -33,6 +37,32 @@ namespace Demo {
 			UIVertexBits	= Attrib::PositionBit|Attrib::TexCoordBit|Attrib::ColorBit,
 		};
 		GFX_DECLARE_SHADERS(DEMO_SHADERS);
+
+#ifdef ENABLE_SHADER_RELOAD
+		static constexpr const char* BasePath = "data/shaders";
+
+		static constexpr const char* FilePaths[] = {
+			"data/shaders/vertex_shaders.glsl",
+			"data/shaders/fragment_shaders.glsl",
+		};
+
+		static constexpr float
+			ReloadInterval = 0.5f,
+			ReloadDelay = 0.125f
+		;
+
+		IShaderCompiler*		g_compiler;
+		Sys::Library			g_compiler_dll;
+		Gfx::Shader::Module		g_modules[size(FilePaths)];
+		u64						g_file_times[size(FilePaths)];
+		bool					g_change_pending;
+		float					g_reload_check_time;
+		float					g_delay;
+
+		void					InitCompiler();
+		bool					UpdateFileTimes(float dt); // returns true if changed
+		void					RecompileIfNeeded(float dt);
+#endif // def ENABLE_SHADER_RELOAD
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -278,6 +308,93 @@ namespace Demo {
 		}
 	}
 
+#ifdef ENABLE_SHADER_RELOAD
+	NOINLINE bool Shader::UpdateFileTimes(float dt) {
+		g_reload_check_time -= dt;
+		if (g_reload_check_time > 0.f)
+			return false;
+
+		g_reload_check_time = ReloadInterval;
+
+		bool any_changed = false;
+		for (u32 file_index = 0; file_index < size(FilePaths); ++file_index) {
+			u64 old_time = g_file_times[file_index];
+			u64 new_time = Sys::GetFileTime(FilePaths[file_index]);
+			if (new_time != old_time)
+				any_changed = true;
+			g_file_times[file_index] = new_time;
+		}
+
+		if (any_changed)
+			g_delay = ReloadDelay;
+
+		return any_changed;
+	}
+
+	FORCEINLINE void Shader::InitCompiler() {
+		g_compiler_dll = Sys::LoadDynamicLibrary("shader_compiler_dll.dll");
+		if (!g_compiler_dll) {
+			Sys::Log("Shader compiler library not found, shader reloading disabled...\n");
+			return;
+		}
+		
+		IShaderCompiler::CreateFunction create_compiler = nullptr;
+		if (!Sys::GetFunction(Shader::g_compiler_dll, "CreateShaderCompiler", create_compiler)) {
+			Sys::Log("ERROR: 'CreateShaderCompiler' function not found, shader reloading disabled...\n");
+			return;
+		}
+
+		g_compiler = create_compiler(Demo::Shader::Version);
+		if (!g_compiler) {
+			Sys::Log("ERROR: Unable to create shader compiler, shader reloading disabled...\n");
+			return;
+		}
+
+		UpdateFileTimes(0.f);
+
+		Sys::Log("Shader compiler initialized\n");
+	}
+
+	void Shader::RecompileIfNeeded(float dt) {
+		if (g_change_pending) {
+			g_delay -= dt;
+			if (g_delay >= 0.f)
+				return;
+			g_delay = ReloadDelay;
+			g_change_pending = false;
+		} else {
+			if (!UpdateFileTimes(dt))
+				return;
+			g_change_pending = true;
+			return;
+		}
+		
+		Sys::Log("Recompiling shaders... ");
+		const IShaderCompiler::Module* modules = g_compiler->Compile(BasePath);
+		if (!modules) {
+			Sys::Log("failed!\n");
+			return;
+		}
+
+		for (u32 i = 0; i < size(g_modules); ++i) {
+			g_modules[i].code			= modules[i].code;
+			g_modules[i].num_sections	= modules[i].num_sections;
+			g_modules[i].section_sizes	= modules[i].section_sizes;
+			g_modules[i].shader_deps	= modules[i].shader_deps;
+		}
+
+		Sys::Time start = Sys::GetTime();
+		Gfx::RegisterShaders(Shader::Count, Metadata::Properties, g_modules[0], g_modules[1]);
+		// Note: ENABLE_SHADER_RELOAD *MUST* be defined as
+		// <first reloadable shader>, <# of reloadable shaders>
+		Gfx::CompileShaders(ENABLE_SHADER_RELOAD);
+
+		Texture::GenerateProceduralTextures();
+
+		Sys::Printf("%d msec\n", int((Sys::GetTime() - start) * 1000.0));
+	}
+#endif // ENABLE_SHADER_RELOAD
+
 	FORCEINLINE void InitGfxResources() {
 		/* initialize essential resources */
 		UI::InitIndices();
@@ -287,6 +404,10 @@ namespace Demo {
 		Uniform::RegisterAll();
 		Shader::RegisterAll(shader_modules);
 		Gfx::CompileShaders(0, Shader::UI + 1);
+
+#ifdef ENABLE_SHADER_RELOAD
+		Shader::InitCompiler();
+#endif
 
 		/* show a basic loading screen while compiling shaders */
 		for (i8 frame = 4; frame >= 0; --frame) {
