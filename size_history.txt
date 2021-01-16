@@ -1294,3 +1294,4 @@
 65129,added shader reloading
 65151,tweaked lion texture
 65105,fixed brick texture alignment near dragon mouth
+65105,added show_position/start_position/start_angles dev options

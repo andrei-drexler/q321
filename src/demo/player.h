@@ -149,6 +149,13 @@ void Demo::Player::Update(float dt) {
 			input_list[(u16)command] = 1;
 	}
 
+#ifdef SHOW_POSITION
+	if (Sys::IsKeyFirstDown(Key::P)) {
+		Sys::Printf("#define START_POSITION %d, %d, %d\n", int(position.x), int(position.y), int(position.z));
+		Sys::Printf("#define START_ANGLES   %d, %d\n", int(angles.x), int(angles.y));
+	}
+#endif
+
 	bool noclip = NoClipping();
 	if (!noclip) {
 		if (input_list[(u32)Input::MoveUp]) {
@@ -366,4 +373,13 @@ NOINLINE void Demo::Player::Spawn() {
 	weapon		= Entity::Type::weapon_rocketlauncher;
 	flags		= Flag::NoJump;
 	teleport	= 1.f;
+
+#ifdef START_POSITION
+	position	= vec3(START_POSITION);
+	flags		|= Flag::NoClip;
+#endif
+
+#ifdef START_ANGLES
+	angles.xy	= vec2(START_ANGLES);
+#endif
 }
