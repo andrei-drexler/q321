@@ -3197,7 +3197,7 @@ TEXA(lion) {
 	float
 		b = FBMT(uv, vec2(7), .9, 3., 4), // base FBM
 		t = .5 + b, // base texture intensity
-		v = msk(-elips(p - vec2(.1, .54), vec2(.2, .25)) * 2., 1.), // hair mask
+		v = msk(-elips(p - vec2(.1, .57), vec2(.18, .2)), 1.), // hair mask
 		d, r, n, i, f, m,
 		j = 0.
 	;
@@ -3206,26 +3206,29 @@ TEXA(lion) {
 
 	// hair layers
 	for (; j < 16.; ++j) {
-		vec2 o = (R2(j) - .5) * vec2(.3, .2); // random offset
-		r = elips(p - o - vec2(.1, .4), vec2(.22, .3));
-		n = FBMT(wavy(uv + o * .5, .7, .01), vec2(5), .3, 2., 4);
-		d = r * 1.5 + 2. * n; // distorted distance
+		vec2 o = (R2(j) - .5) * vec2(.15, .1); // random offset
+		q = p - o;
+		q.x += .1 * sin(11. * q.y) * sqr(1. - q.y); // hair waviness
+		r = elips(q - vec2(.1, .4), vec2(.22, .3));
+		n = FBMT(wavy(uv + o * .5, .7, .01), vec2(5), .3, 2., 4); // smooth noise
+		d = r * .5 + n; // distorted distance
 		i = floor(d); // strand id
 		f = abs(fract(d) - .5); // location within strand
 		m = v * sat(d) * step(H(i + j * PHI) * .9 + .1, .5); // strand mask
 		c *= 1.
-			+ .2 * m * ls(.2, .0, f) // highlight
-			- .2 * m * tri(.3, .2, f) // shadow
+			+ .25 * m * ls(.2, .0, f) // highlight
+			- .25 * m * tri(.3, .2, f) // shadow
 		;
 	}
 
 	// eyes + eyebrows + cheekbones
 	r = length(q = p - vec2(.13, .595));
-	q *= rot(3.);
+	q *= rot(11.); // eye/eyebrow angle
 	q.y = abs(q.y) + .025;
 	m = ls(.0, -.2, d = elips(q, vec2(.06, .039)) * .07); // eye interior mask
 	c *= 1.
 		+ .4 * ls(.05, .0, length((p - vec2(.21, .53)) * vec2(.8, 1))) // cheekbone highlight
+		- .4 * ls(.07, .0, length((p - vec2(.19, .42)))) // cheekbone shadow
 		- .5 * tri(3.5, .9, d) * tri(.7, .05, p.y) * tri(.07, .15, p.x) // frown
 		+ .9 * tri(1.9, .9, d) * ls(.15, .0, length(p - vec2(.06, .66))) // eyebrow highlight
 		- .7 * tri(.4, .9, d) * ls(.15, .0, length(p - vec2(.09, .64))) // eyebrow shadow
