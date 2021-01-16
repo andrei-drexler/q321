@@ -456,6 +456,8 @@ bool SplitIntoSections(std::vector<Lexer::Token>& tokens, SectionList& sections)
 		/* remove pragma directive from token stream */
 		tokens.erase(tokens.begin() + section.offset, tokens.begin() + i);
 	}
+
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////
