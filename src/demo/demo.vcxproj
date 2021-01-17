@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\tools\shader_compiler\shader_compiler_interface.h" />
     <ClInclude Include="console.h" />
     <ClInclude Include="cooked\cooked_maps.h" />
     <ClInclude Include="cooked\cooked_models.h" />

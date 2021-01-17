@@ -153,6 +153,13 @@
   <ItemGroup>
     <ClCompile Include="shader_compiler_dll.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\demo\resource_def.h" />
+    <ClInclude Include="arena.h" />
+    <ClInclude Include="lexer.h" />
+    <ClInclude Include="shader_compiler.h" />
+    <ClInclude Include="shader_compiler_interface.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

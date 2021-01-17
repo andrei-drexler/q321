@@ -26,7 +26,6 @@
     <ClInclude Include="arena.h" />
     <ClInclude Include="lexer.h" />
     <ClInclude Include="shader_compiler.h" />
-    <ClInclude Include="shader_compiler_interface.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

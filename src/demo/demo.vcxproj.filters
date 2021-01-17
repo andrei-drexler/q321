@@ -10,6 +10,9 @@
     <Filter Include="Demo">
       <UniqueIdentifier>{523b9fc0-48e5-4411-8ae2-7d1f4a7f95ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{6bbef699-f2aa-40ae-9592-5df8d4c4ef46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map.h">
@@ -95,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="..\engine\core.h">
       <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tools\shader_compiler\shader_compiler_interface.h">
+      <Filter>Tools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
