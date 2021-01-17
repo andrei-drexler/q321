@@ -3307,6 +3307,43 @@ void tlptrns_m() {
 	FCol = triplanar(p, 8.);
 }
 
+vec3 flatnor(vec3 n) {
+	return normalize(cross(dFdx(n), dFdy(n)));
+}
+
+// models/mapobjects/teleporter/pad.tga (texture)
+TEXA(tlppad) {
+	vec2 p = uv - vec2(.41, .5);
+	p.y = abs(p.y);
+	float
+		b = FBMT(uv, vec2(7), .9, 3., 4),
+		m = 1. - ls(.666, .67, uv.x) * ls(.125, .122, p.x * .09 + p.y * .95),
+		d = length(p)
+	;
+	vec3 c = vec3(.15 + .2 * b); // base texture
+	c = mix(c, T0(p * 1.2 + .5).xyz, ls(.3, .28, d) * m); // add disk
+	c *= 1.
+		- .5 * m * sqr(tri(.3, .02, d)) // shadow
+		+ .5 * m * sqr(tri(.31, .02, d)) // highlight
+	;
+	return vec4(c, b);
+}
+
+// models/mapobjects/teleporter/pad.tga (model shader)
+void tlppad_m() {
+	float
+		b = triplanar(4.).w, // triplanar noise
+		t = .8 + .8 * b * b
+	;
+	FCol =
+		T0(Pos.xy / 100. + vec2(.42, .5)) // projected texture
+		* Clr * 2. // lighting
+		* (1. + pow(lsq(Nor), 24.)) // highlight edges
+		* t // intensity variation
+		* (flatnor(Pos).z * .3 + .7) // partial flat shading
+	;
+}
+
 // models/weapons2/rocketl/rocketl.tga
 TEX(rocketl) {
 	uv = wavy(uv, 5., .02);

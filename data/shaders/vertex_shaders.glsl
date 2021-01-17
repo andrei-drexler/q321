@@ -180,6 +180,8 @@ void lion_mouth() { misc_model(); }
 void tlpnrg() { misc_model(); }
 void tlptrns() { FS(); }
 void tlptrns_m() { misc_model(); }
+void tlppad() { FS(); }
+void tlppad_m() { misc_model(); }
 void rocketl() { FS(); }
 void item() {
 	Generic();

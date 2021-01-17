@@ -31,10 +31,11 @@ namespace Demo {
 
 	namespace Shader {
 		enum {
-			MapVertexBits	= Attrib::PositionBit|Attrib::TexCoordBit|Attrib::NormalBit,
-			ModelVertexBits	= Attrib::PositionBit|Attrib::NormalBit,
-			FSVertexBits	= Attrib::PositionBit,
-			UIVertexBits	= Attrib::PositionBit|Attrib::TexCoordBit|Attrib::ColorBit,
+			MapVertexBits		= Attrib::PositionBit|Attrib::TexCoordBit|Attrib::NormalBit,
+			MiscModelVertexBits	= Attrib::PositionBit|Attrib::TexCoordBit|Attrib::NormalBit|Attrib::ColorBit,
+			ModelVertexBits		= Attrib::PositionBit|Attrib::NormalBit,
+			FSVertexBits		= Attrib::PositionBit,
+			UIVertexBits		= Attrib::PositionBit|Attrib::TexCoordBit|Attrib::ColorBit,
 		};
 		GFX_DECLARE_SHADERS(DEMO_SHADERS);
 

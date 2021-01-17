@@ -140,6 +140,8 @@
 	x(tlpnrg,				MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(tlptrns,				FSVertexBits)\
 	x(tlptrns_m,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(tlppad,				FSVertexBits)\
+	x(tlppad_m,				MiscModelVertexBits)\
 	x(rocketl,				FSVertexBits)\
 	x(item,					ModelVertexBits)\
 	x(itemshiny,			ModelVertexBits)\
@@ -277,6 +279,7 @@
 	x(lion,				Texture::White,		Shader::lion,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(botflare2,		Texture::White,		Shader::botflare2,		32,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(tlptrns,			Texture::White,		Shader::tlptrns,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(tlppad,			Texture::dmnd2cjp,	Shader::tlppad,			512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(rocketl,			Texture::White,		Shader::rocketl,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
 	x(_128x256,			Texture::White,		Gfx::InvalidID,			128,	256,	BGRA8,		Gfx::Texture::Flags::NoMips)\
@@ -371,7 +374,7 @@
 	x("liquids/lavahell_750",					lava,			White,			Solid,		Opaque,					(500,16,5,2))\
 	x("base_wall/protobanner",					bwprtbnr_m,		bwprtbnr,		Solid,		Opaque|NeedsUV,			(0))\
 	x("*map_model",								miscmodel,		gtprst3,		Solid,		Opaque,					(0))\
-	x("models/mapobjects/teleporter/pad",		miscmodel,		ptrshn,			Solid,		Opaque,					(0))\
+	x("models/mapobjects/teleporter/pad",		tlppad_m,		tlppad,			Solid,		Opaque,					(0))\
 	x("models/mapobjects/spotlamp/spotlamp",	miscmodel2s,	gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/storch/storch_tall",	storchtl,		gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/spotlamp/spotlamp_l",	fixture,		lt2,			Solid,		Opaque|NeedsUV,			(0))\
