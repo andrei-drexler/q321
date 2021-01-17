@@ -60,7 +60,7 @@ namespace Demo {
 		float					g_delay;
 
 		void					InitCompiler();
-		bool					UpdateFileTimes(float dt); // returns true if changed
+		bool					AnyFileChanged(float dt);
 		void					RecompileIfNeeded(float dt);
 #endif // def ENABLE_SHADER_RELOAD
 	}
@@ -309,26 +309,31 @@ namespace Demo {
 	}
 
 #ifdef ENABLE_SHADER_RELOAD
-	NOINLINE bool Shader::UpdateFileTimes(float dt) {
+	NOINLINE bool Shader::AnyFileChanged(float dt) {
 		g_reload_check_time -= dt;
 		if (g_reload_check_time > 0.f)
 			return false;
 
 		g_reload_check_time = ReloadInterval;
 
-		bool any_changed = false;
+		bool any_change = false;
 		for (u32 file_index = 0; file_index < size(FilePaths); ++file_index) {
-			u64 old_time = g_file_times[file_index];
 			u64 new_time = Sys::GetFileTime(FilePaths[file_index]);
-			if (new_time != old_time)
-				any_changed = true;
+			// skip if unable to read new file time
+			if (new_time == 0)
+				continue;
+
+			u64 old_time = g_file_times[file_index];
 			g_file_times[file_index] = new_time;
+			// don't signal change if we don't have a valid previous time
+			if (old_time == 0)
+				continue;
+
+			if (new_time != old_time)
+				any_change = true;
 		}
 
-		if (any_changed)
-			g_delay = ReloadDelay;
-
-		return any_changed;
+		return any_change;
 	}
 
 	FORCEINLINE void Shader::InitCompiler() {
@@ -350,24 +355,24 @@ namespace Demo {
 			return;
 		}
 
-		UpdateFileTimes(0.f);
-
 		Sys::Log("Shader compiler initialized\n");
 	}
 
 	void Shader::RecompileIfNeeded(float dt) {
-		if (g_change_pending) {
-			g_delay -= dt;
-			if (g_delay >= 0.f)
-				return;
-			g_delay = ReloadDelay;
-			g_change_pending = false;
-		} else {
-			if (!UpdateFileTimes(dt))
-				return;
+		if (AnyFileChanged(dt)) {
 			g_change_pending = true;
+			g_delay = ReloadDelay;
 			return;
 		}
+
+		if (!g_change_pending)
+			return;
+
+		g_delay -= dt;
+		if (g_delay > 0.f)
+			return;
+		g_delay = ReloadDelay;
+		g_change_pending = false;
 		
 		Sys::Log("Recompiling shaders... ");
 		const IShaderCompiler::Module* modules = g_compiler->Compile(BasePath);
