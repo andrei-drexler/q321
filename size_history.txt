@@ -1296,3 +1296,4 @@
 65105,fixed brick texture alignment near dragon mouth
 65105,added show_position/start_position/start_angles dev options
 65284,added basic teleporter pad
+65298,tweaked dmnd2cjp

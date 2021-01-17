@@ -799,17 +799,18 @@ vec3 dmnd2cjp_clamp(vec3 c, vec2 p, float v, vec3 k) {
 }
 
 // c = background color
+// k = light color
 // l = light mask accum
 // p.x = normalized angle
 // p.y = radius
 // u.x = angular position
 // u.y = angular extent
-vec3 dmnd2cjp_led(vec3 c, inout float l, vec2 p, vec2 u, vec2 v) {
+vec3 dmnd2cjp_led(vec3 c, vec3 k, inout float l, vec2 p, vec2 u, vec2 v) {
 	p.x = 4. * max(0., slice(p.x - u.x, u.y)); // clamp & scale angle
 	p.y -= v.x; // shift radius
 	float d = circ(p, v.y); // SDF
 	l += pow(ls(.1, -.01, d), 4.); // add glow
-	c = mix(c, c * vec3(1.5, .5, .5), msk(d, .01)); // interior color
+	c = mix(c, c * k, msk(d, .01)); // interior color
 	c *= 1.
 		- .3 * tri(.0, .01, d) // edge shadow
 		+ .3 * tri(.01, .01, d) // edge highlight
@@ -828,11 +829,12 @@ TEXA(dmnd2cjp) {
 		r = length(uv - .5), // distance from center
 		m = ls(.46, .45, r), // initial mask
 		l = tri(.43, .01, r) * ls(.07, .0, abs(a - .11) - .03), // initial light mask
+		g = greebles(uv * 3., b, .3).x,
 		d;
 	vec2 p = vec2(a, r);
 
 	// interior surface
-	c = mix(c, RGB(199, 199, 166. + 33. * b) * mix(vec3(.2 * b + .1), .1 + 2. * greebles(uv * 3., b, .3), .5), m); // base color
+	c = mix(c, RGB(199, 199, 166. + 33. * b) * (.1 + .1 * b + g), m); // base color
 
 	// central knob
 	c = add_knob_gizmo(c, uv - .5, b);
@@ -865,10 +867,11 @@ TEXA(dmnd2cjp) {
 	c = dmnd2cjp_clamp(c, p, vec2(.02, .005), vec2(.36, .015), k * (.5 + .4 * ls(.36, .35, p.y) - .7 * ls(.33, .3, p.y))); // tiny right
 
 	// lights
-	c = dmnd2cjp_led(c, l, p, vec2(.125, .02), vec2(.383, .017)); // large top-right
-	c = dmnd2cjp_led(c, l, p, vec2(.075, .001), vec2(.383, .017)); // small top-right
-	c = dmnd2cjp_led(c, l, p, vec2(.02, .001), vec2(.37, .0)); // tiny right
-	c = dmnd2cjp_led(c, l, p, vec2(.63, .007), vec2(.44, .007)); // small bottom-left
+	k = vec3(1.5, .5, .5) * (g * 4. + .2);
+	c = dmnd2cjp_led(c, k, l, p, vec2(.125, .02), vec2(.383, .017)); // large top-right
+	c = dmnd2cjp_led(c, k, l, p, vec2(.075, .001), vec2(.383, .017)); // small top-right
+	c = dmnd2cjp_led(c, k, l, p, vec2(.02, .001), vec2(.37, .0)); // tiny right
+	c = dmnd2cjp_led(c, k, l, p, vec2(.63, .007), vec2(.44, .007)); // small bottom-left
 
 	// inner ring glow (with offsets for the left clamps)
 	l += tri(.32, .01, r + msk(min(slice(a - .63, .011), slice(a - .37, .011)), .005) * .005);
