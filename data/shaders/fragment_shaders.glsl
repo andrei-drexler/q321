@@ -879,7 +879,8 @@ TEXA(dmnd2cjp) {
 	// subtle floor reflection (lower-left)
 	l += ls(.2, .8, c.x) * tri(.5, .6, .8, r) * sqr(tri(.63, .06, a));
 
-	return vec4(c, l);
+	// store inverted glow mask in alpha to avoid flashes with r_lightmap 1
+	return vec4(c, 1. - l);
 }
 
 // sfx/diamond2cjumppad (map shader)
@@ -895,7 +896,7 @@ void dmnd2cjp_m() {
 	;
 	FCol = vec4(
 		c.xyz * Light()
-		+ RGB(240, 130, 5) * (tri(.1, .05, r / s) * ls(.34, .3, r) * t + .5 * c.w * ridged(v))
+		+ RGB(240, 130, 5) * (tri(.1, .05, r / s) * ls(.34, .3, r) * t + (.5 - .5 * c.w) * ridged(v))
 	, 1);
 }
 

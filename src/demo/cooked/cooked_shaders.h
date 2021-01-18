@@ -43,7 +43,7 @@ static constexpr u32 shader_deps[] = {1,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,1,5,5,5,5,5,5,5,5,5,5,5,5,5,};
 } // namespace cooked::vertex_shaders
 
-// data/shaders/fragment_shaders.glsl: 106178 => 45117 (42.5%)
+// data/shaders/fragment_shaders.glsl: 106264 => 45125 (42.5%)
 namespace cooked::fragment_shaders {
 static constexpr char code[] =
 /* ---- @global: 4953 chars (11.0%) ---- */
@@ -134,7 +134,7 @@ static constexpr char code[] =
 "aj*.1,r*55.+v*.6));f=cp(ac(q-.5)*d(2,.5+v*.3));u=j(.01,.0,ac(r-p)-s);e*=1.+.3*u*i(.0,.2,f)-.5*u*i(.3,.3,f);l e;}a1(_9){h b"
 "=ah(c,d(5),.9,3.,4);k e=n(o(48,41,33),o(103,101,104),b);l e;}a1(_10){h b=ah(c,d(3),.9,3.,4);k e=n(o(49,45,43),o(81,75,78),"
 "b*b);l e;}"
-/* ---- diamond2c: 4647 chars (10.3%) ---- */
+/* ---- diamond2c: 4655 chars (10.3%) ---- */
 "a1(_11){h b=ah(c,d(7),.9,3.,4);c.r*=-1.5;c.g+=c.r*.5;c.r=1.-c.r+c.g;c=ak(c*28.);h a6=a7(1.-an(.1-c));a6*=j(.6,.2,an(.6-c))"
 ";a6*=j(.6,.8,an(.1-c));a6*=j(.2,.6,b)*2.+1.;h af=1.-j(.2,b+2.,b7(ac(c-.5)));l k((a6+1.)*n(.21,.29,b*b)*af);}h ek(d p,h s,h"
 " aj,h v){l b6(ak(cg(p)*aj+v))*j(.5,.3,an(p)/s+v-.5);}bd(_12){k e=a3(c).av;h b=ah(c=be(c,7.,.01),d(5),.7,3.,4),v=ah(c,d(7),"
@@ -157,23 +157,23 @@ static constexpr char code[] =
 ");e=ck(e,p,d(.02,.005),d(.36,.015),aj*(.5+.4*j(.36,.35,p.g)-.7*j(.33,.3,p.g)));aj=k(1.5,.5,.5)*(g*4.+.2);e=dj(e,aj,af,p,d("
 ".125,.02),d(.383,.017));e=dj(e,aj,af,p,d(.075,.001),d(.383,.017));e=dj(e,aj,af,p,d(.02,.001),d(.37,.0));e=dj(e,aj,af,p,d(."
 "63,.007),d(.44,.007));af+=i(.32,.01,r+al(au(di(a-.63,.011),di(a-.37,.011)),.005)*.005);af+=j(.2,.8,e.r)*i(.5,.6,.8,r)*ai(i"
-"(.63,.06,a));l ae(e,af);}ao _84(){ae e=a3(UV);d c=ak(UV)-.5;h r=an(c),ad=ak(U6.r*1.5),s=n(.4,8.,ad),b=a8(c/s,d(255)),t=.8+"
-".2*b;am=ae(e.av*b0()+o(240,130,5)*(i(.1,.05,r/s)*j(.34,.3,r)*t+.5*e.a*b6(ad)),1);}bd(_14){k e=_83(c).av;c=ak(c)-.5;h b=ah("
-"c,d(3),.9,3.,4),f=au(ac(an(c)-.4),ea(c,.35));l ae(e,al(f-.02+b*.02,.01));}ao _15(){ae e=a3(UV);am=ae(e.av*b0()+o(111,55,0)"
-"*e.a*(sin(U6.r*cs)*.5+.5),1);}bd(_85){k e=a3(c).av;h b=ah(c,d(5),.9,3.,4),t,bf,aj,r,a2,f;d bc;bc.r=ac(c.r-.5);bc.g=c.g;e=n"
-"(e,k(.2+.3*b*b),r=al(aj=a4(bc-d(0,.5),d(.33-c.g*.1,.15))-.05,.004));e*=1.-.5*i(.0,.01,aj)+.2*i(-.01,.01,aj);e=n(e,k(.22+.2"
-"2*b*b),r=al(aj=a4(bc,d(.2)),.004));e*=1.+.3*i(.0,.01,aj)+.5*ai(i(.05,.03,c.g))*r;bc=cw(bc,.11);e*=1.-.3*al(aj=a4(bc-d(.07,"
-"-.03),d(0,.05))-.015,.004)-.3*i(.0,.007,aj);bc.r=ac(c.r-.5);bc.g=au(c.g,.4);r=an(bc-d(0,.4))-(.18-.06*j(.4,1.,c.g));aj=.25"
-"-.15*j(.9,.96,c.g)+.03*ai(j(.82,.86,c.g))+.07*j(.8,.2,c.g)+.07*ai(j(.35,.22,c.g))-.07*j(.22,.0,c.g);bf=a4(c-d(.5,.5),d(aj,"
-".46));bf=a5(bf,-a4(bc,d(.15,.03))+.06);e=n(e,k(.6,.55,.55)-c.g*.3+b*.2,al(bf,.004));e*=1.-.7*i(.0,.013,bf);e*=1.-(r/.5-.1)"
-"*al(bf,.004);t=a5(r,c.g-.96);bf=ac(t-.02)-.03;bf=a5(bf,c.g-1.+bc.r*.5);bf=a5(bf,c.g-.96);e=n(e,k(1,1,.9)-c.g*.55,i(-.01,.0"
-"1,bf));e=n(e,n(k(.2*b+.1),.07+ds(c*3.,b,.3),.5),al(t,.01));aj=.2-.05*j(.8,.5,c.g)-.15*j(.5,.3,c.g);f=al(t,.004);r=a4(d(bc."
-"r,c.g)-d(.25,.6),d(aj,.2));r=au(r,a4(c-d(.5,.21),d(.02,.05))-.09);e*=1.+.3*f*i(.01,.01,r)-.3*f*i(.0,.01,r);e*=1.-.2*i(.0,."
-"05,t)*al(bf,.004);e=el(e,bc=c-d(.5,.37),b);f=an(bc);bc.r=ac(c.r-.5);bc.g=c.g-.3;bc=bc.r>.06?bc*bi(50.)-d(.08,-.11):bc+d(0,"
-".07);a2=a7(bc.g/.09+.5);r=a4(bc,d(.04-.02*a2,.04))-.01;e=n(e,k(.6,.55,.55)*(1.+.4*b-.5*a2),al(r,.007)*j(.21,.18,f));e*=1.-"
-".5*a2*i(.02,.008,.0,r);l ae(e,al(t-.025,.03));}ao _86(){ae e=a3(UV);d c=ak(UV);c.r=ac(.5-c.r);h t=ak(-U6.r),r=an(c-d(0,.4)"
-"),af=t*pow(a5(0.,1.-r),4.)*e.a;if(t>.75)af+=j(.03,.01,ac(ak(c.g+c.r*.5+t*2.)-.45))*j(.1,.08,c.r);am=ae(e.av*b0()+o(180,150"
-",5)*af,1);}"
+"(.63,.06,a));l ae(e,1.-af);}ao _84(){ae e=a3(UV);d c=ak(UV)-.5;h r=an(c),ad=ak(U6.r*1.5),s=n(.4,8.,ad),b=a8(c/s,d(255)),t="
+".8+.2*b;am=ae(e.av*b0()+o(240,130,5)*(i(.1,.05,r/s)*j(.34,.3,r)*t+(.5-.5*e.a)*b6(ad)),1);}bd(_14){k e=_83(c).av;c=ak(c)-.5"
+";h b=ah(c,d(3),.9,3.,4),f=au(ac(an(c)-.4),ea(c,.35));l ae(e,al(f-.02+b*.02,.01));}ao _15(){ae e=a3(UV);am=ae(e.av*b0()+o(1"
+"11,55,0)*e.a*(sin(U6.r*cs)*.5+.5),1);}bd(_85){k e=a3(c).av;h b=ah(c,d(5),.9,3.,4),t,bf,aj,r,a2,f;d bc;bc.r=ac(c.r-.5);bc.g"
+"=c.g;e=n(e,k(.2+.3*b*b),r=al(aj=a4(bc-d(0,.5),d(.33-c.g*.1,.15))-.05,.004));e*=1.-.5*i(.0,.01,aj)+.2*i(-.01,.01,aj);e=n(e,"
+"k(.22+.22*b*b),r=al(aj=a4(bc,d(.2)),.004));e*=1.+.3*i(.0,.01,aj)+.5*ai(i(.05,.03,c.g))*r;bc=cw(bc,.11);e*=1.-.3*al(aj=a4(b"
+"c-d(.07,-.03),d(0,.05))-.015,.004)-.3*i(.0,.007,aj);bc.r=ac(c.r-.5);bc.g=au(c.g,.4);r=an(bc-d(0,.4))-(.18-.06*j(.4,1.,c.g)"
+");aj=.25-.15*j(.9,.96,c.g)+.03*ai(j(.82,.86,c.g))+.07*j(.8,.2,c.g)+.07*ai(j(.35,.22,c.g))-.07*j(.22,.0,c.g);bf=a4(c-d(.5,."
+"5),d(aj,.46));bf=a5(bf,-a4(bc,d(.15,.03))+.06);e=n(e,k(.6,.55,.55)-c.g*.3+b*.2,al(bf,.004));e*=1.-.7*i(.0,.013,bf);e*=1.-("
+"r/.5-.1)*al(bf,.004);t=a5(r,c.g-.96);bf=ac(t-.02)-.03;bf=a5(bf,c.g-1.+bc.r*.5);bf=a5(bf,c.g-.96);e=n(e,k(1,1,.9)-c.g*.55,i"
+"(-.01,.01,bf));e=n(e,n(k(.2*b+.1),.07+ds(c*3.,b,.3),.5),al(t,.01));aj=.2-.05*j(.8,.5,c.g)-.15*j(.5,.3,c.g);f=al(t,.004);r="
+"a4(d(bc.r,c.g)-d(.25,.6),d(aj,.2));r=au(r,a4(c-d(.5,.21),d(.02,.05))-.09);e*=1.+.3*f*i(.01,.01,r)-.3*f*i(.0,.01,r);e*=1.-."
+"2*i(.0,.05,t)*al(bf,.004);e=el(e,bc=c-d(.5,.37),b);f=an(bc);bc.r=ac(c.r-.5);bc.g=c.g-.3;bc=bc.r>.06?bc*bi(50.)-d(.08,-.11)"
+":bc+d(0,.07);a2=a7(bc.g/.09+.5);r=a4(bc,d(.04-.02*a2,.04))-.01;e=n(e,k(.6,.55,.55)*(1.+.4*b-.5*a2),al(r,.007)*j(.21,.18,f)"
+");e*=1.-.5*a2*i(.02,.008,.0,r);l ae(e,al(t-.025,.03));}ao _86(){ae e=a3(UV);d c=ak(UV);c.r=ac(.5-c.r);h t=ak(-U6.r),r=an(c"
+"-d(0,.4)),af=t*pow(a5(0.,1.-r),4.)*e.a;if(t>.75)af+=j(.03,.01,ac(ak(c.g+c.r*.5+t*2.)-.45))*j(.1,.08,c.r);am=ae(e.av*b0()+o"
+"(180,150,5)*af,1);}"
 /* ---- metal: 4329 chars (9.6%) ---- */
 "a1(_16){h b=ah(c,d(5),.9,3.,4);k e=n(o(44,14,16),o(93,63,63),b*b);l e;}k em(d c){h a0=3e-3,a=0.;d g=d(6),r=dt(c,g).rg;bn(b"
 "h m=0;m<9;++m)a+=cv(ac(dt(d(m%3-1,m/3-1)*a0+c,g).rg-r));l k(c+r.rg/g,a);}a1(_17){h b=ah(c,d(3),.9,3.,4);k e=n(o(80,70,72),"
@@ -397,7 +397,7 @@ static constexpr char code[] =
 "(.1,.18),d(5),.6,2.,6));am=ae(k(b,0,0)+o(80,30,8)*s*s*2.,1);}ao _89(){d c=be(UV/8.,U6.r*.5,2.,.05);h b=ah(c,d(7),.9,2.,4);"
 "k e=o(91,22,14)*(.2+1.6*b);e=n(e,o(144,44,0),i(.6,.2,ah(c,d(3),.7,3.,4)));e=n(e,o(244,144,66)*b*2.,ai(i(.55,.25,ah(c,d(11)"
 ",.5,2.,4))));am=ae(e*a7(b7(b0())),1);}ao _90(){_89();}"
-/* ---- models: 5121 chars (11.4%) ---- */
+/* ---- models: 5121 chars (11.3%) ---- */
 "k e1(){l n(U9.av,U8.av,a7(dot(U10.av,WNor)));}ae cc(k p,k v,h s){p*=s/h(textureSize(U0,0).r);v*=v;ae e=ae(0);bn(bh m=0;m<3"
 ";++m,p=p.gbr)e+=a3(p.gb)*v[m];l e/cv(v);}ae cc(k p,h s){l cc(p,Nor,s);}ae cc(h s){l cc(bk,s);}ao _101(){am=ae(cd(Ref)*o(13"
 "3,111,111),0);}bd(_102){h b=ah(c,d(3,4),.5,2.,4),f;c.r=ac(c.r-.5)*1.7;f=cr(c-d(0,1))+b*.3;l ae(.44,.3,.3,0)/(333.*f*f*f+.1"
@@ -463,7 +463,7 @@ static constexpr char code[] =
 "01;f=au(f,a4(df(c*bi(45.),4.)-d(.45,.0),d(.11,.02)));am=ae(0,.88,.95,1)*al(f,.01);}ao _141(){h f=an(UV-.5)*32.;am=ae(.5*j("
 "1.,.0,ac(f-14.))+j(1.,.5,f));}ao _142(){d c=ac(UV-.5)*32.;am=ae(b1(cp(c),1.)*b1(b7(c),6.));}ao _143(){d c=ac(UV-.5)*32.;am"
 "=ae(b1(cp(c),1.)*b1(b7(c),6.)*b1(3.,b7(c)));}";
-static constexpr u32 section_sizes[] = {/*@global*/4953,/*patterns*/2283,/*diamond2c*/4647,/*metal*/4329,/*arena*/3169,/*
+static constexpr u32 section_sizes[] = {/*@global*/4953,/*patterns*/2283,/*diamond2c*/4655,/*metal*/4329,/*arena*/3169,/*
 blocks*/4084,/*largerblock*/1206,/*center2trn*/1681,/*computer_blocks17*/1547,/*organic*/4522,/*lights*/1044,/*banner*/3016,
 /*elemental*/908,/*models*/5121,/*ui*/2607,};
 static constexpr u32 shader_deps[] = {2051,16387,16387,16387,16387,16387,2051,1025,4097,3,3,7,7,7,7,7,11,11,11,11,11,11,11,
