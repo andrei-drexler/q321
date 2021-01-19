@@ -21,6 +21,7 @@
 //#define FULLBRIGHT
 //#define DRAFT_LIGHTMAP
 //#define ENABLE_RADIOSITY
+//#define FREEZE_ITEMS
 //#define SHOW_POSITION // press P to log position/angles to console
 //#define START_POSITION 936, 824, 8
 //#define START_ANGLES   225, 0
@@ -194,8 +195,13 @@ namespace Demo {
 			for (u32 i = 0; i < 3; ++i)
 				transform.position[i] = ent.origin[i];
 			float phase = (transform.position[0] + transform.position[1]) / 1024.f;
+#ifdef FREEZE_ITEMS
+			transform.position[2] += 4.f;
+			transform.angles[0] = ent.angle;
+#else
 			transform.position[2] += 4.f + 4.f * sin(Math::TAU * (float(g_level_time) + phase));
 			transform.angles[0] = ent.angle + float(g_level_time) * 180.f;
+#endif
 
 			if (ent.IsWeapon()) {
 				transform.scale = 1.5f;
