@@ -182,6 +182,7 @@ void tlptrns() { FS(); }
 void tlptrns_m() { misc_model(); }
 void tlppad() { FS(); }
 void tlppad_m() { misc_model(); }
+void gunmetal() { FS(); }
 void rocketl() { FS(); }
 void item() {
 	Generic();
@@ -189,6 +190,7 @@ void item() {
 	Ref = normalize(reflect((World * P - Cam).xyz, WNor));
 }
 void itemshiny() { item(); }
+void rocketl_m() { item(); }
 void ammobox() { item(); }
 void ammoboxicon() { item(); }
 void healthsphere() { item(); }

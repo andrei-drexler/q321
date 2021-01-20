@@ -3348,8 +3348,8 @@ void tlppad_m() {
 	;
 }
 
-// models/weapons2/rocketl/rocketl.tga
-TEX(rocketl) {
+// 
+TEX(gunmetal) {
 	uv = wavy(uv, 5., .02);
 	float
 		b = FBMT(uv, vec2(6), .8, 2., 4), // base FBM, tileable
@@ -3362,6 +3362,71 @@ TEX(rocketl) {
 		- .2 * tri(.3, .1, m)
 		;
 	return c;
+}
+
+// models/weapons2/rocketl/rocketl.tga (texture)
+TEXA(rocketl) {
+	vec2 p = uv;
+	float
+		b = FBMT(wavy(uv, 5., .02), vec2(6), .8, 2., 4), // base FBM, tileable
+		t = .8 + .6 * b * b, // base texture intensity
+		d, m, v
+		;
+
+	vec3 c = T0(uv).xyz; // base color
+
+	// generate metal mask
+	d = dot(uv, vec2(-.9, .4)) + .146; // left cut
+	d = min(d, dot(uv, vec2(-.1, 1.)) - .181); // horizontal cut
+	d = min(d, dot(uv, vec2(.7)) - .284); // right cut
+	d = max(d, mx(uv - vec2(.463, .264))); // left + top cut
+	//d = max(d, -circ(uv - vec2(.13, .2), .005) * 2.); // right disk
+	//d = max(d, -circ(uv - vec2(.34, .17), .004) * 1.5); // middle disk
+	v = max(dot(uv, vec2(.98, .18)) - .18, dot(uv, vec2(.37, .92)) - .167); // handle SDF
+
+	d = max(d, -v * 11.); // exclude handle
+	m = ls(.0, .003, d); // metal mask
+
+	c = mix(vec3(.6, .1, .1), c, m); // colorize red part
+
+	// front exhausts
+	p.x = abs(uv.x - .861) - .027;
+	p.y = uv.y - .305;
+
+	c *= 1.
+		- ls(.25, .0, uv.y) // vertical gradient (darken base)
+		- .2 * sqrt(tri(.265, .02, uv.y)) * m // top crease shadow
+		- .3 * sqr(tri(.004, .01, d)) // metal/red part contact shadow
+		+ .3 * tri(.007, .005, d) // metal/red part edge highlight
+		+ .5 * sqr(tri(.14, .05, uv.y)) * m // faint reflection from below
+		+ .3 * sqr(ls(.26, .27, uv.y)) * m // top edge highlight
+		+ 2. * sqr(tri(.19, .014, uv.y)) * tri(.9, .1, uv.x) // side gizmo edge highlight
+		+ 1.5 * t * sqr(tri(.245, .04, uv.y)) * sqr(tri(.0, .4, 1.3, uv.x)) * m // specular
+		+ b * sqr(ls(.02, .005, box(p, vec2(.013, .09)))) // front exhaust edge highlight
+	;
+
+	c +=
+		.3 * pow(tri(-.007, .05, d), 8.) // red part edge specular
+		+ .7 * pow(ls(.1, .005, length((uv - vec2(.11, .233)) * vec2(.4, 1))), 16.)
+	;
+
+	return vec4(c, t);
+}
+
+// models/weapons2/rocketl/rocketl.tga (model shader)
+void rocketl_m() {
+	FCol =
+		T0(Pos.xz/40. + vec2(.25, .15))
+		* triplanar(24.).w
+		//* (.7 + .3 * normalize(Nor).z)
+	;
+	FCol.xyz += pow(sat(normalize(Nor).z), mix(2., 8., FCol.y)) * sqr(FCol.xyz); // fake baked specular
+	FCol.xyz *= ModelLight();
+	//vec3 n = normalize(Nor);
+	//float d = dot(n, normalize(vec3(0, 2, 8)));
+	//FCol.xyz *= vec3(.5) * sat(d) + 1. * pow(sat(d), 16.);
+	//FCol.xyz = vec3(fract(Pos.xz/40. + vec2(.25, .15)), 0);
+	//FCol.xyz = vec3(fract(Pos.xz/1.), 0);
 }
 
 ////////////////////////////////////////////////////////////////
