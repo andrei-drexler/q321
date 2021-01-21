@@ -44,7 +44,7 @@ static constexpr u32 shader_deps[] = {1,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,1,5,5,5,5,5,5,5,5,5,5,5,5,5,};
 } // namespace cooked::vertex_shaders
 
-// data/shaders/fragment_shaders.glsl: 108579 => 45893 (42.3%)
+// data/shaders/fragment_shaders.glsl: 108596 => 45905 (42.3%)
 namespace cooked::fragment_shaders {
 static constexpr char code[] =
 /* ---- @global: 4971 chars (10.8%) ---- */
@@ -391,15 +391,15 @@ static constexpr char code[] =
 ".rg;}bh ft(k v){v=ac(v)+k(.01,.02,.03);h o=b6(v);l(o==v.r)?0:(o==v.g)?1:2;}k fu(k e){k au=a7(ac(mod(e.r*6.+k(0,4,2),6.)-3."
 ")-1.);au*=au*(3.-2.*au);l e.b*n(k(1.),au,e.g);}ao _0(){h af=bm(Nor,ck(k(2,0,8)));af=af*.4+.7;d c=fs(bk,ft(Nor));k e=k(.5);"
 "e*=fu(k(ak(cv*U6.a+.25),1.,1.));al=ae(e*af,1);}ao _6(){k e=a2(UV).au;al=ae(e*b2(),1);}"
-/* ---- elemental: 908 chars (2.0%) ---- */
+/* ---- elemental: 920 chars (2.0%) ---- */
 "ao _100(){d c=ak(UV);c.r+=U6.r/13.;h b=ah(c,d(3,7),.9,2.,4),a6=c.g;al=ae(2.*u(95,85,80)*a6*a6*a6*a6*n(1.,b,.5),0.);}h e2(d"
 " c,h s){d p=c;p.g+=p.g-U6.r*s;c.r+=(c2(p.g*5.)-.5)*1.5*ai(c.g);h v=ah(be(p,7.,.02),d(9),.7,2.,4),a3=j(.9,.03,c.g),b=a5(c-d"
 "(.5,.15),d(0,.3));l ai(am(b+v*ai(1.2-a3)-.13,.15));}ao e3(h s){d c=ak(UV);al=(e2(c,s*.6)+e2(c,s))*ae(2.5,1,.35,0);}ao _106"
-"(){e3(2.5);}ao _107(){e3(1.);}ao _8(){ae e=a2(UV);e.au*=1.+e.a*cf(Ref);al=ae(e.au*b2(),1);}ao _87(){al=ae(0);}ao _88(){k f"
-"=ck(bk-U5.au);f.b=f.b*4.+2.;d c=ck(f).rg*2.;h b=j(.2,1.,ah(c-U6.r*d(.1,.2),d(5),.5,2.,6));c.g*=1.5;h s=j(.3,1.,ah(c-U6.r*d"
-"(.1,.18),d(5),.6,2.,6));al=ae(k(b,0,0)+u(80,30,8)*s*s*2.,1);}ao _89(){d c=be(UV/8.,U6.r*.5,2.,.05);h b=ah(c,d(7),.9,2.,4);"
-"k e=u(91,22,14)*(.2+1.6*b);e=n(e,u(144,44,0),i(.6,.2,ah(c,d(3),.7,3.,4)));e=n(e,u(244,144,66)*b*2.,ai(i(.55,.25,ah(c,d(11)"
-",.5,2.,4))));al=ae(e*a7(b6(b2())),1);}ao _90(){_89();}"
+"(){e3(2.5);}ao _107(){e3(1.);}ao _8(){ae e=a2(UV);e.au*=1.+2.*(e.a-.5)*cf(Ref,90.);al=ae(e.au*b2(),1);}ao _87(){al=ae(0);}"
+"ao _88(){k f=ck(bk-U5.au);f.b=f.b*4.+2.;d c=ck(f).rg*2.;h b=j(.2,1.,ah(c-U6.r*d(.1,.2),d(5),.5,2.,6));c.g*=1.5;h s=j(.3,1."
+",ah(c-U6.r*d(.1,.18),d(5),.6,2.,6));al=ae(k(b,0,0)+u(80,30,8)*s*s*2.,1);}ao _89(){d c=be(UV/8.,U6.r*.5,2.,.05);h b=ah(c,d("
+"7),.9,2.,4);k e=u(91,22,14)*(.2+1.6*b);e=n(e,u(144,44,0),i(.6,.2,ah(c,d(3),.7,3.,4)));e=n(e,u(244,144,66)*b*2.,ai(i(.55,.2"
+"5,ah(c,d(11),.5,2.,4))));al=ae(e*a7(b6(b2())),1);}ao _90(){_89();}"
 /* ---- models: 5890 chars (12.8%) ---- */
 "k d0(){l n(U9.au,U8.au,a7(bm(U10.au,WNor)));}ae ca(k p,k v,h s){p*=s/h(textureSize(U0,0).r);v*=v;ae e=ae(0);bu(bh m=0;m<3;"
 "++m,p=p.gbr)e+=a2(p.gb)*v[m];l e/cx(v);}ae ca(k p,h s){l ca(p,Nor,s);}ae ca(h s){l ca(bk,s);}ao _101(){al=ae(cf(Ref)*u(133"
@@ -475,7 +475,7 @@ static constexpr char code[] =
 "ae(b3(cr(c),1.)*b3(b6(c),6.)*b3(3.,b6(c)));}";
 static constexpr u32 section_sizes[] = {/*@global*/4971,/*patterns*/2283,/*diamond2c*/4652,/*metal*/4328,/*arena*/3169,/*
 blocks*/4081,/*largerblock*/1205,/*center2trn*/1680,/*computer_blocks17*/1545,/*organic*/4518,/*lights*/1043,/*banner*/3014,
-/*elemental*/908,/*models*/5890,/*ui*/2606,};
+/*elemental*/920,/*models*/5890,/*ui*/2606,};
 static constexpr u32 shader_deps[] = {2051,16387,16387,16387,16387,16387,2051,1025,4097,3,3,7,7,7,7,7,11,11,11,11,11,11,11,
 11,515,515,515,515,515,515,129,129,259,259,59,59,59,59,59,59,59,515,515,515,19,19,19,19,59,59,59,59,11,11,515,515,515,515,
 515,515,11,11,65,65,65,65,65,59,59,59,59,515,11,515,515,515,515,515,515,1025,1025,1025,1025,7,7,7,7,4097,4097,4097,4097,2051

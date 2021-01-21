@@ -2906,7 +2906,7 @@ void flame_large() {
 
 void shiny() {
 	vec4 c = T0(UV);
-	c.xyz *= 1. + c.w * env(Ref);
+	c.xyz *= 1. + 2. * (c.w - .5) * env(Ref, 90.);
 	FCol = vec4(c.xyz * Light(), 1);
 }
 

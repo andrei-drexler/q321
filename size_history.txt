@@ -1300,3 +1300,4 @@
 65308,more brick texture alignment fixes
 65308,avoid dmnd2cjp flashes with r_lightmap 1
 65474,added rocketl texture/shader
+65477,shinier pewter_shiney
