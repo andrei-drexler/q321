@@ -112,7 +112,7 @@ NOINLINE void Demo::Map::Details::CreatePartition() {
 	for (u16 i = 0, count = brushes.count; i < count; ++i)
 		partition.brushes[i] = i;
 
-	auto& root = partition.nodes[0];
+	Partition::Node& root = partition.nodes[0];
 	root.data[0] = 0;
 	root.data[1] = brushes.count;
 	partition.num_nodes = 1;
@@ -139,14 +139,14 @@ FORCEINLINE bool Demo::Map::Details::TraceRayStep(TraceInfo& trace, u16 node_ind
 	u8 stack_top = 0;
 
 beginning:
-	auto& node = partition.nodes[node_index];
+	Partition::Node& node = partition.nodes[node_index];
 	if (tmin > tmax)
 		goto pop;
 
 	if (node.IsLeaf()) {
 		for (auto i = node.data[0], endi = node.data[1]; i < endi; ++i) {
-			auto brush_index = partition.brushes[i];
-			i16 best_brush_plane = -1;
+			u32 brush_index = partition.brushes[i];
+			i32 best_brush_plane = -1;
 
 			// Note: when determining which entities we're touching
 			// we don't want to ignore those we're already inside of
@@ -155,8 +155,8 @@ beginning:
 			float t_enter = trace.max_touch_ents || trace.type == TraceType::Lightmap ? -FLT_MAX : -1.f;
 			float t_exit = tmax;
 
-			auto plane_index = brushes.start[brush_index];
-			auto plane_index_end = brushes.start[brush_index + 1];
+			u32 plane_index = brushes.start[brush_index];
+			u32 plane_index_end = brushes.start[brush_index + 1];
 
 			for (; plane_index < plane_index_end; ++plane_index) {
 				const vec4& plane = brushes.planes[plane_index];
@@ -201,10 +201,10 @@ beginning:
 			if (best_brush_plane != -1 && t_exit > max(t_enter, 0.f) && t_enter < trace.fraction) {
 				assert(best_brush_plane < (i32)brushes.plane_count);
 
-				auto material = brushes.GetPlaneMaterial(best_brush_plane);
-				auto props = Material::Properties[material];
-				auto contents = props & Material::MaskContents;
-				auto visibility = props & Material::MaskVisibility;
+				u32 material = brushes.GetPlaneMaterial(best_brush_plane);
+				u32 props = Material::Properties[material];
+				u32 contents = props & Material::MaskContents;
+				u32 visibility = props & Material::MaskVisibility;
 
 				if (trace.type == TraceType::Collision) {
 					if (trace.num_touch_ents < trace.max_touch_ents) {
@@ -249,7 +249,7 @@ pop:
 		if (stack_top == 0)
 			return hit;
 
-		auto& top = stack[--stack_top];
+		StackEntry& top = stack[--stack_top];
 		node_index = top.node_index;
 		tmin = top.tmin;
 		tmax = min(top.tmax, trace.fraction);
@@ -275,7 +275,7 @@ pop:
 	if (go_near) {
 		if (go_far) {
 			assert(stack_top < size(stack));
-			auto& top = stack[stack_top++];
+			StackEntry& top = stack[stack_top++];
 			top.node_index = node.GetChild(!flip);
 			top.tmin = max(tmin, split_far);
 			top.tmax = tmax;
@@ -294,25 +294,21 @@ pop:
 }
 
 NOINLINE bool Demo::Map::TraceRay(TraceInfo& trace) {
+	float travel = length(trace.delta);
+	trace.start.z -= trace.z_offset;
 	trace.fraction = 1.f;
 	trace.plane = -1;
 
-	float travel = length(trace.delta);
-	trace.start.z -= trace.z_offset;
 	bool result = Details::TraceRayStep(trace, 0, 0.f, 1.f);
+
 	trace.start.z += trace.z_offset;
 	trace.start_solid = trace.fraction < 0.f;
-	if (trace.start_solid)
-		trace.fraction = 0.f;
-
-	if (trace.fraction < 1.f) {
+	if (trace.fraction < 1.f)
 		trace.fraction -= 0.125f / travel;
-		assign_max(trace.fraction, 0.f);
-	}
+	assign_max(trace.fraction, 0.f);
 
-	trace.hit_point.x = trace.start.x + trace.fraction * trace.delta.x;
-	trace.hit_point.y = trace.start.y + trace.fraction * trace.delta.y;
-	trace.hit_point.z = trace.start.z + trace.fraction * trace.delta.z;
+	trace.hit_point = trace.start;
+	mad(trace.hit_point, trace.delta, trace.fraction);
 
 	if (u16(trace.plane) < brushes.plane_count)
 		trace.hit_normal = brushes.planes[trace.plane].xyz;
