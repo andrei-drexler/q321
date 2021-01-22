@@ -401,6 +401,29 @@ namespace Demo {
 	}
 #endif // ENABLE_SHADER_RELOAD
 
+	enum class PreloadingScreen {
+		BlackFrame,
+		Full,
+	};
+
+	NOINLINE void ShowPreloadingScreen(PreloadingScreen type = PreloadingScreen::Full) {
+		Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
+
+		if (type != PreloadingScreen::BlackFrame) {
+			Gfx::SetShader(Shader::bglogo);
+			Gfx::DrawFullScreen();
+
+			static constexpr vec2
+				font_scale = UI::FontScale[UI::LargeFont] * 0.75f,
+				pos = {0.f, 128.f}
+			;
+			UI::PrintShadowed("Starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
+			UI::FlushGeometry();
+		}
+
+		Gfx::Present();
+	}
+
 	FORCEINLINE void InitGfxResources() {
 		/* initialize essential resources */
 		UI::InitIndices();
@@ -415,39 +438,26 @@ namespace Demo {
 		Shader::InitCompiler();
 #endif
 
-		/* show a basic loading screen while compiling shaders */
-		for (i8 frame = 4; frame >= 0; --frame) {
-			// HACK: we hide the inevitable OpenGL black frame flickering
-			// on startup for 'borderless full-screen' windows by drawing
-			// a few fully black frames before the actual loading screen
-
-			Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
-
-			if (frame == 0) {
-				Gfx::SetShader(Shader::bglogo);
-				Gfx::DrawFullScreen();
-
-				static constexpr vec2
-					font_scale = UI::FontScale[UI::LargeFont] * 0.75f,
-					pos = {0.f, 128.f}
-				;
-				UI::PrintShadowed("Starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
-				UI::FlushGeometry();
-			}
-
-			Gfx::Present();
-		}
+		// HACK: we hide the inevitable OpenGL black frame flickering
+		// on startup for 'borderless full-screen' windows by drawing
+		// a few fully black frames before the actual loading screen
+		ShowPreloadingScreen(PreloadingScreen::BlackFrame);
+		ShowPreloadingScreen(PreloadingScreen::BlackFrame);
 
 		/* compile remaining shaders */
 #ifdef DISABLE_SHADER_CACHE
 		Sys::Time start = Sys::GetTime();
-		Gfx::CompileShaders(Shader::UI + 1, Shader::Count - Shader::UI - 1);
+#endif
+		for (int i = Shader::UI + 1; i < Shader::Count; ++i) {
+			Uniform::Time.w = float(i - Shader::UI - 1) / float(Shader::Count - Shader::UI - 1);
+			ShowPreloadingScreen();
+			Gfx::CompileShaders(i, 1);
+		}
+#ifdef DISABLE_SHADER_CACHE
 		Sys::Printf("Compiled %d shaders in %d msec\n",
 			Shader::Count - Shader::UI,
 			int(1000.f * float(Sys::GetTime() - start))
 		);
-#else
-		Gfx::CompileShaders(Shader::UI + 1, Shader::Count - Shader::UI - 1);
 #endif
 
 		Texture::GenerateProceduralTextures();

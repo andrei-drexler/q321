@@ -489,6 +489,8 @@ NOINLINE void Gfx::CompileShaders(Shader::ID first, u16 count) {
 				glUniform1i(location, g_state.uniform_tex_unit[uniform_index]);
 		}
 	}
+
+	SetState(g_state.current_bits, State::MaskShaderID); // restore program
 }
 
 ////////////////////////////////////////////////////////////////

@@ -1303,3 +1303,4 @@
 65477,shinier pewter_shiney
 65431,tweaked partition code
 65752,added botwing texture
+65774,sequential shader compilation + startup animation

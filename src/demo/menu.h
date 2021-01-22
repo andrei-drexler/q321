@@ -412,6 +412,8 @@ FORCEINLINE void Demo::Menu::Draw() {
 
 	// store background scale in Time.yz
 	MemCopy(&Uniform::Time.y, &g_active->bg_scale.x, 2);
+	// store loading progress in Time.w
+	Uniform::Time.w = 1.f;
 	Gfx::DrawFullScreen();
 
 	if (main_menu) {

@@ -3543,6 +3543,11 @@ TEX(bglogo) {
 		+ t * .4 * tri(.005, .005, d) * ls(.2, -.1, uv.y) * ls(.3, .2, x) * sat(-l) // bottom light
 		;
 
+	// progress anim (not present in shadertoy!)
+	c *= .5 + .5 * ls(.05, .0, t = uv.x / .63 + .5 - Time.w)
+		+ .5 * tri(.0, .1, t)
+		;
+
 	return c;
 }
 
