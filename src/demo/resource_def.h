@@ -142,6 +142,8 @@
 	x(tlptrns_m,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(tlppad,				FSVertexBits)\
 	x(tlppad_m,				MiscModelVertexBits)\
+	x(botwing,				FSVertexBits)\
+	x(botwing_m,			MiscModelVertexBits|Gfx::Shader::NoCull)\
 	x(gunmetal,				FSVertexBits)\
 	x(rocketl,				FSVertexBits)\
 	x(rocketl_m,			ModelVertexBits)\
@@ -282,6 +284,7 @@
 	x(botflare2,		Texture::White,		Shader::botflare2,		32,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(tlptrns,			Texture::White,		Shader::tlptrns,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(tlppad,			Texture::dmnd2cjp,	Shader::tlppad,			512,	512,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(botwing,			Texture::White,		Shader::botwing,		128,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gunmetal,			Texture::White,		Shader::gunmetal,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(rocketl,			Texture::gunmetal,	Shader::rocketl,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	/* HACK: dummy texture needed by the flame material to get proper UV mapping...*/\
@@ -384,6 +387,7 @@
 	x("models/mapobjects/gratelamp/gratetorch2b",	gr8torch2b_m,	gr8torch2b,	Solid,		Opaque|NeedsUV,			(0))\
 	x("models/mapobjects/wallhead/lion",		lion_m,			lion,			Solid,		Opaque,					(0))\
 	x("models/mapobjects/wallhead/lion_m",		lion_mouth,		gtprst3,		Solid,		Opaque,					(0))\
+	x("models/mapobjects/lamps/bot_wing",		botwing_m,		botwing,		Solid,		Opaque|NeedsUV,			(0))\
 	x("*item_model",							item,			gunmetal,		Solid,		Opaque,					(0))\
 	x("*item_shiny",							itemshiny,		gunmetal,		Solid,		Opaque,					(0))\
 	x("models/powerups/ammo/rockammo",			ammobox,		gunmetal,		Solid,		Opaque,					(0))\

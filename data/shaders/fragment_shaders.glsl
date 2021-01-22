@@ -3348,6 +3348,78 @@ void tlppad_m() {
 	;
 }
 
+// Smooth polygon side
+// uv = evaluation point
+// d = sdf
+// p = current polygon point
+// q = next polygon point
+// s = corner smoothness
+void poly(vec2 uv, inout float d, inout vec2 p, vec2 q, float s) {
+	d = -smin(-d, dot(uv - p, rot(90.) * normalize(p - q)), s);
+	p = q;
+}
+
+// models/mapobjects/lamps/bot_wing.tga (texture)
+TEXA(botwing) {
+	uv.y *= .5; // correct aspect ratio
+	float
+		b = FBMT(uv, vec2(7), .7, 2., 4),
+		t = .8 + .8 * b * b,
+		d = -1e6,
+		m, l, v, k;
+
+	vec2 p = vec2(.19, .42); // top-left (highest point)
+	poly(uv, d, p, vec2(.55, .42), .02);
+	poly(uv, d, p, vec2(.74, .34), .03);
+	poly(uv, d, p, vec2(.74, .29), .02);
+	poly(uv, d, p, vec2(.63, .1), .01);
+	poly(uv, d, p, vec2(.31, .04), .06);
+	poly(uv, d, p, vec2(.12, .1), .01);
+	poly(uv, d, p, vec2(.02, .29), .01);
+	poly(uv, d, p, vec2(.19, .42), .03); // close loop
+
+	d = min(d, box(p = rot(22.5) * (uv - vec2(.7, .22)), vec2(.17, .065))); // connecting box
+	d = max(d, -box(p - vec2(.04, .0), vec2(.03, .01))); // cut off box interior
+	d = max(d, -max(d + .07, box(uv - vec2(.4 - uv.y * .5, .23), vec2(.033, .2)))); // left slit
+	d = max(d, -max(d + .07, box(uv - vec2(.52 - uv.y * .5, .23), vec2(.033, .2)))); // middle slit
+	d = max(d, -max(d + .07, box(uv - vec2(.65 - uv.y * .5, .23), vec2(.033, .2)))); // right slit
+	d = min(d, k = circ(uv - vec2(.86, .18), .09)); // disk
+
+	l = grad(d).y; // lighting [-1..1]
+
+	vec3 c = RGB(44, 33, 30) * t * t * t; // base color
+	c *= 1.
+		+ 2.5 * sqr(ls(.1, .0, length(uv - vec2(.18, .4)))) // brighten top-left corner
+		+ 2.5 * sqr(ls(.2, .0, length(uv - vec2(.64, .4)))) // brighten top-right corner
+	;
+
+	c *= 1.
+		+ tri(-.01, .007, d) * (l + .5) // bevel lighting
+		+ 6. * pow(ls(.15, .01, length(p = (uv - vec2(.5, .26)) * rot(7.) * vec2(.14, 1))), 6.) * sqr(ls(.04, .02, p.x)) // mid specular
+	;
+
+	l = grad(k += .05).y; // inner disk lighting
+	c *= 1.
+		+ 1.5 * tri(.0, .01, k) * sqr(abs(l + .3)) // edge highlight
+		- .9 * tri(.01, .01, k) * sat(.3 - l) // edge shadow down below
+		+ .7 * tri(-.03, .01, k) * l // axle lighting/shadow
+		+ 2.5 * ls(-.03, -.04, k) // bright axle interior
+		//-.9 * ls(-.002, .01, d) // darken edges
+	;
+
+	return msk(d) * vec4(c, 1);
+}
+
+// models/mapobjects/lamps/bot_wing.tga (model shader)
+void botwing_m() {
+	FCol = T0(UV);
+	if (FCol.w < .5)
+		discard;
+	FCol.xyz *=
+		ModelLight()
+	;
+}
+
 // 
 TEX(gunmetal) {
 	uv = wavy(uv, 5., .02);

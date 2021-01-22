@@ -182,6 +182,8 @@ void tlptrns() { FS(); }
 void tlptrns_m() { misc_model(); }
 void tlppad() { FS(); }
 void tlppad_m() { misc_model(); }
+void botwing() { FS(); }
+void botwing_m() { misc_model(); }
 void gunmetal() { FS(); }
 void rocketl() { FS(); }
 void item() {
