@@ -1304,3 +1304,4 @@
 65431,tweaked partition code
 65752,added botwing texture
 65774,sequential shader compilation + startup animation
+65983,added botlamp2 stub and botlamp

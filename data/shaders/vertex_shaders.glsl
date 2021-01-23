@@ -184,6 +184,10 @@ void tlppad() { FS(); }
 void tlppad_m() { misc_model(); }
 void botwing() { FS(); }
 void botwing_m() { misc_model(); }
+void botlamp() { FS(); }
+void botlamp_m() { misc_model(); }
+void botlamp2() { FS(); }
+void botlamp2_m() { misc_model(); }
 void gunmetal() { FS(); }
 void rocketl() { FS(); }
 void item() {

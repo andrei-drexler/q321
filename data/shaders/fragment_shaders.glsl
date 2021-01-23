@@ -2940,7 +2940,7 @@ void lavaf() {
 }
 
 ////////////////////////////////////////////////////////////////
-#pragma section models
+#pragma section models : patterns
 ////////////////////////////////////////////////////////////////
 
 vec3 ModelLight() {
@@ -3417,6 +3417,106 @@ void botwing_m() {
 		discard;
 	FCol.xyz *=
 		ModelLight()
+	;
+}
+
+// models/mapobjects/lamps/bot_lamp.tga (texture)
+TEXA(botlamp) {
+	uv.x += .025; // slight horizontal shift to align with model geometry
+	uv.y *= 2.; // correct aspect ratio
+
+	float
+		b = FBMT(uv, vec2(7), .7, 2., 4),
+		t = .7 + 1.2 * b * b,
+		d, l
+	;
+	uv.x = abs(uv.x - .5); // mirror
+	vec3 c = RGB(44, 33, 30) * t; // base color
+	vec2 p = uv - vec2(.17, .37);
+
+	l = grad(d = length(p * vec2(.85, 1))).y;
+	c *= 1.
+		+ 4. * pow(ls(.5, .05, length(uv - vec2(0, .6))), 5.) // large specular highlight
+		+ tri(.0, .075, .1, d) * (.2 - l) // eye socket edge
+	;
+
+	// pupils
+	l = grad(d = length(p += vec2(.02, 0))).y;
+	c *= 1.
+		- .5 * sqr(tri(.03, .02, d)) // darken pupil exterior
+		- .9 * sqr(tri(.04, .09, d)) * tri(.1, .2, p.y) // darken eye socket
+		- ls(.02, .01, d) * (.2 + .7 * ls(.0, .01, p.y)) // darken interior
+		+ tri(.02, .01, d) * (.4 + tri(.0, .015, p.x)) // edge highlight
+	;
+
+	// forehead
+	d = box(p = uv - vec2(0, .5), vec2(.08 - .7 * p.y, .05));
+	c *= 1.
+		+ .5 * tri(.05, .02, d) * ls(.0, .1, p.y) // edge highlight
+		- .9 * tri(.05, .03, -.1, d) * ls(-.1, .05, p.y) // inner shadow
+	;
+
+	d = box(p = uv - vec2(0, .4), vec2(.02, .03));
+	c *= 1.
+		+ .7 * tri(.05, .02, d) * ls(.0, .1, p.y) // edge highlight
+		- .7 * tri(.05, .03, -.2, d) * ls(-.1, .05, p.y) // inner shadow
+	;
+
+	d = box(p = uv - vec2(0, .34), vec2(.025 - .5 * p.y, .007));
+	c *= 1.
+		+ .7 * tri(.02, .02, d) * ls(-.05, .05, p.y) // edge highlight
+		- .7 * tri(.02, .0, -.1, d) * ls(-.05, .02, p.y) // inner shadow
+	;
+
+	// nasal cavity
+	d = length(p = (uv - vec2(0, .22)) * vec2(1.4, 1)) - .1;
+	d = max(d, length(uv - vec2(.1, .25)) - .15);
+	c *= 1.
+		+ .4 * tri(.0, .03 + p.y * .05, d) // edge highlight
+		- .9 * ls(.0, -.08, d) // darken nasal cavity interior
+	;
+
+	// ridge
+	d = seg(wavy(uv, 5., .05), vec2(.09, .63), vec2(.3, .9), .0);
+	c *= 1.
+		+ ls(.03, .0, d) * (.2 + .3 * tri(.6, .05, uv.y))
+	;
+
+	return vec4(c, b);
+}
+
+// models/mapobjects/lamps/bot_lamp.tga (model shader)
+void botlamp_m() {
+	float
+		b = triplanar(8.).w,
+		t = .8 + .4 * b,
+		n = normalize(Nor).x
+	;
+	vec2 uv = Pos.yz/vec2(76, 152) + vec2(.5, .025);
+	FCol = mix(T0(uv), T0(uv + vec2(0, .5)), ls(.01, .0, Nor.x));
+	FCol.xyz *=
+		t
+		* 2. * ModelLight()
+		* (.5 + .5 * n)
+	;
+}
+
+// models/mapobjects/lamps/bot_lamp2.tga (texture)
+TEX(botlamp2) {
+	float
+		b = FBMT(uv, vec2(7), .7, 2., 4),
+		t = .8 + .8 * b * b
+	;
+	return RGB(44, 33, 30) * t * (.3 + 3. * greebles(uv, b, .2));
+}
+
+// models/mapobjects/lamps/bot_lamp2.tga (model shader)
+void botlamp2_m() {
+	float n = flatnor(Pos).x;
+	FCol = triplanar(4.);
+	FCol.xyz *=
+		2. * ModelLight()
+		* (.5 + .5 * n)
 	;
 }
 
