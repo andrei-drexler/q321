@@ -18,8 +18,17 @@ void FS() {
 	gl_Position = P; UV = P.xy * .5 + .5;
 }
 
+void move(vec3 n, float amp, float freq, float phase) {
+	gl_Position += amp * MVP * vec4(n, 0) * sin(6.28 * (Time.x * freq + phase));
+}
+
 void wave(float div, float amp, float freq) {
-	gl_Position += amp * MVP * vec4(Nor, 0) * sin(6.28 * (Time.x * freq + dot(P.xyz/div, vec3(1))));
+	move(Nor, amp, freq, dot(P.xyz/div, vec3(1)));
+}
+
+void botlamp_anim() {
+	move(vec3(0, 0, 3), 5., .1, 0.);
+	move(vec3(2, 2, 0), 9., .05, 0.);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -160,8 +169,12 @@ void menubnr_m() { FS(); }
 void beam() { Generic(); }
 void kmlampwt() { misc_model(); }
 void botflare2() { FS(); }
-void botflare2_m() {
+void botlamp_model() {
 	misc_model();
+	botlamp_anim();
+}
+void botflare2_m() {
+	botlamp_model();
 	wave(100., 1., 9.);
 }
 void flare03() {
@@ -169,7 +182,7 @@ void flare03() {
 	// extract rotation from view matrix, transpose and multiply with sprite offset
 	gl_Position += MVP * vec4(Nor * mat3(View), 0);
 }
-void botflare() { flare03(); }
+void botflare() { flare03(); botlamp_anim(); }
 void flame() { Generic(); }
 void flame_large() { Generic(); }
 void gr8torch2b() { FS(); }
@@ -183,11 +196,11 @@ void tlptrns_m() { misc_model(); }
 void tlppad() { FS(); }
 void tlppad_m() { misc_model(); }
 void botwing() { FS(); }
-void botwing_m() { misc_model(); }
+void botwing_m() { botlamp_model(); wave(100., .5, .5); }
 void botlamp() { FS(); }
-void botlamp_m() { misc_model(); }
+void botlamp_m() { botlamp_model(); }
 void botlamp2() { FS(); }
-void botlamp2_m() { misc_model(); }
+void botlamp2_m() { botlamp_model(); }
 void gunmetal() { FS(); }
 void rocketl() { FS(); }
 void item() {

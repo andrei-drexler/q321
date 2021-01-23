@@ -3,21 +3,23 @@
 // auto-generated, do not modify
 static_assert(0x9d3f78d5U == Demo::Shader::Version, "Shader definition mismatch, please recompile the shader compiler & shaders");
 
-// data/shaders/vertex_shaders.glsl: 5916 => 2814 (47.6%)
+// data/shaders/vertex_shaders.glsl: 6215 => 2959 (47.6%)
 namespace cooked::vertex_shaders {
 static constexpr char code[] =
-/* ---- @global: 627 chars (22.3%) ---- */
+/* ---- @global: 735 chars (24.8%) ---- */
 "#define c void\n"
 "#define h vec4\n"
-"#define j gl_Position\n"
-"#define n normalize\n"
-"#define k(v)layout(location=v)in\n"
-"uniform mat4 U2,U3,U4;uniform h U5,U6;k(0)h f;k(1)h l;k(2)vec3 i;k(3)h o;out vec3 Pos,Nor,WNor,Ref;out vec2 UV,LUV;out h C"
-"lr;c d(){j=f;UV=f.rg*.5+.5;}c m(float ac,float ad,float ae){j+=ad*U2*h(Nor,0)*sin(6.28*(U6.r*ae+dot(f.rgb/ac,vec3(1))));}c"
-" _0(){j=U2*f;Pos=f.rgb;Nor=i;UV=l.rg;LUV=l.ba;Clr=o;Ref=n(reflect((f-U5).rgb,i));}c e(){_0();Pos=floor(i)/4.;Nor=fract(i)*"
-"4.-2.;Ref=n(reflect((f-U5).rgb,Nor));float a=l.b,u=cos(a),s=sin(a);Nor.rg*=mat2(u,s,-s,u);}c _5(){j=h(f.rg,1,1);UV=l.rg;Cl"
-"r=o;Clr.rgb*=Clr.a;}c _138(){d();}"
-/* ---- @section1: 991 chars (35.2%) ---- */
+"#define j float\n"
+"#define k gl_Position\n"
+"#define ad normalize\n"
+"#define m(ai)layout(location=ai)in\n"
+"uniform mat4 U2,U3,U4;uniform h U5,U6;m(0)h f;m(1)h n;m(2)vec3 i;m(3)h ae;out vec3 Pos,Nor,WNor,Ref;out vec2 UV,LUV;out h "
+"Clr;c d(){k=f;UV=f.rg*.5+.5;}c u(vec3 aj,j v,j ac,j ak){k+=v*U2*h(aj,0)*sin(6.28*(U6.r*ac+ak));}c l(j al,j v,j ac){u(Nor,v"
+",ac,dot(f.rgb/al,vec3(1)));}c af(){u(vec3(0,0,3),5.,.1,0.);u(vec3(2,2,0),9.,.05,0.);}c _0(){k=U2*f;Pos=f.rgb;Nor=i;UV=n.rg"
+";LUV=n.ba;Clr=ae;Ref=ad(reflect((f-U5).rgb,i));}c e(){_0();Pos=floor(i)/4.;Nor=fract(i)*4.-2.;Ref=ad(reflect((f-U5).rgb,No"
+"r));j a=n.b,ah=cos(a),s=sin(a);Nor.rg*=mat2(ah,s,-s,ah);}c _5(){k=h(f.rg,1,1);UV=n.rg;Clr=ae;Clr.rgb*=Clr.a;}c _138(){d();"
+"}"
+/* ---- @section1: 991 chars (33.5%) ---- */
 "c _1(){d();}c _2(){d();}c _3(){d();}c _4(){d();}c _6(){_0();}c _7(){_0();}c _8(){_0();}c _9(){d();}c _10(){d();}c _11(){d("
 ");}c _12(){d();}c _13(){_0();}c _14(){d();}c _15(){_0();}c _16(){d();}c _17(){d();}c _18(){d();}c _19(){_0();}c _20(){d();"
 "}c _21(){d();}c _22(){d();}c _23(){d();}c _24(){d();}c _25(){d();}c _26(){_0();}c _27(){d();}c _28(){d();}c _29(){d();}c _"
@@ -27,18 +29,19 @@ static constexpr char code[] =
 "58(){d();}c _59(){d();}c _60(){d();}c _61(){d();}c _62(){d();}c _63(){d();}c _64(){_0();}c _65(){d();}c _66(){_0();}c _67("
 "){d();}c _68(){d();}c _69(){d();}c _70(){d();}c _71(){d();}c _72(){d();}c _73(){d();}c _74(){d();}c _75(){d();}c _76(){d()"
 ";}c _77(){d();}"
-/* ---- @section2: 1196 chars (42.5%) ---- */
+/* ---- @section2: 1233 chars (41.7%) ---- */
 "c _78(){d();}c _79(){d();}c _80(){d();}c _81(){d();}c _82(){d();}c _83(){d();}c _84(){_0();}c _85(){d();}c _86(){_0();}c _"
-"87(){_0();}c _88(){_0();}c _89(){_0();m(100.,3.,.1);}c _90(){_0();}c _91(){d();}c _92(){_0();m(30.,3.,.2);m(100.,3.,.7);}c"
+"87(){_0();}c _88(){_0();}c _89(){_0();l(100.,3.,.1);}c _90(){_0();}c _91(){d();}c _92(){_0();l(30.,3.,.2);l(100.,3.,.7);}c"
 " _93(){e();}c _94(){e();}c _95(){e();}c _96(){d();}c _97(){_0();}c _98(){d();}c _99(){d();}c _100(){_0();}c _101(){e();}c "
-"_102(){d();}c _103(){e();m(100.,1.,9.);}c _104(){_0();j+=U2*h(Nor*mat3(U3),0);}c _105(){_104();}c _106(){_0();}c _107(){_0"
-"();}c _108(){d();}c _109(){_93();}c _110(){d();}c _111(){e();}c _112(){e();}c _113(){e();}c _114(){d();}c _115(){e();}c _1"
-"16(){d();}c _117(){e();}c _118(){d();}c _119(){e();}c _120(){d();}c _121(){e();}c _122(){d();}c _123(){e();}c _124(){d();}"
-"c _125(){d();}c _127(){_0();WNor=n(mat3(U4)*i);Ref=n(reflect((U4*f-U5).rgb,WNor));}c _128(){_127();}c _126(){_127();}c _12"
-"9(){_127();}c _130(){_127();}c _131(){_127();}c _132(){_127();}c _133(){_127();}c _134(){_127();j+=U2*h(i+i,0);}c _135(){d"
-"();}c _136(){_127();}c _137(){_127();}c _139(){d();}c _140(){d();}c _141(){d();}c _142(){d();}c _143(){d();}c _144(){d();}"
-"c _145(){d();}c _146(){d();}c _147(){d();}c _148(){d();}c _149(){d();}c _150(){d();}c _151(){d();}";
-static constexpr u32 section_sizes[] = {/*@global*/627,/*@section1*/991,/*@section2*/1196,};
+"_102(){d();}c o(){e();af();}c _103(){o();l(100.,1.,9.);}c _104(){_0();k+=U2*h(Nor*mat3(U3),0);}c _105(){_104();af();}c _10"
+"6(){_0();}c _107(){_0();}c _108(){d();}c _109(){_93();}c _110(){d();}c _111(){e();}c _112(){e();}c _113(){e();}c _114(){d("
+");}c _115(){e();}c _116(){d();}c _117(){e();}c _118(){d();}c _119(){o();l(100.,.5,.5);}c _120(){d();}c _121(){o();}c _122("
+"){d();}c _123(){o();}c _124(){d();}c _125(){d();}c _127(){_0();WNor=ad(mat3(U4)*i);Ref=ad(reflect((U4*f-U5).rgb,WNor));}c "
+"_128(){_127();}c _126(){_127();}c _129(){_127();}c _130(){_127();}c _131(){_127();}c _132(){_127();}c _133(){_127();}c _13"
+"4(){_127();k+=U2*h(i+i,0);}c _135(){d();}c _136(){_127();}c _137(){_127();}c _139(){d();}c _140(){d();}c _141(){d();}c _14"
+"2(){d();}c _143(){d();}c _144(){d();}c _145(){d();}c _146(){d();}c _147(){d();}c _148(){d();}c _149(){d();}c _150(){d();}c"
+" _151(){d();}";
+static constexpr u32 section_sizes[] = {/*@global*/735,/*@section1*/991,/*@section2*/1233,};
 static constexpr u32 shader_deps[] = {1,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,1,5,5,5,5,5,5,5,5,5,5,5,5,5,};
