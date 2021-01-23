@@ -429,6 +429,10 @@ vec2 grad(float x) {
 	return d / max(length(d), 1e-8);
 }
 
+vec3 flatnor(vec3 x) {
+	return normalize(cross(dFdx(x), dFdy(x)));
+}
+
 float msk(float s, float d) {
 	return sat(1. - s/d);
 }
@@ -3309,10 +3313,6 @@ void tlptrns_m() {
 	vec3 p = Pos;
 	p -= Time.x * 6.4 * sign(p.z - 72.);
 	FCol = triplanar(p, 8.);
-}
-
-vec3 flatnor(vec3 n) {
-	return normalize(cross(dFdx(n), dFdy(n)));
 }
 
 // models/mapobjects/teleporter/pad.tga (texture)

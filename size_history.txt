@@ -1306,3 +1306,4 @@
 65774,sequential shader compilation + startup animation
 65983,added botlamp2 stub and botlamp
 66011,added botlamp animation
+66006,tweaked flatnor
