@@ -382,10 +382,13 @@ void Lexer::SkipComment(CommentType type) {
 		while (m_cursor != m_end) {
 			while (m_cursor != m_end && *m_cursor != '*')
 				++m_cursor;
-			if (m_cursor + 1 < m_end && m_cursor[1] == '/') {
+			if (m_cursor == m_end)
+				break;
+			if (m_cursor[1] == '/') {
 				m_cursor += 2;
 				break;
 			}
+			++m_cursor;
 		}
 	}
 }
