@@ -315,7 +315,6 @@
 	DEMO_FALLBACK_MATERIAL(x)\
 	x("common/caulk",							Generic,		White,			Solid,		Invisible|BlocksLight,	(0))\
 	x("base_wall/c_met5_2",						Lmapped,		cmet52,			Solid,		Opaque,					(0))\
-	x("base_wall/c_met7_2",						Lmapped,		cmet72,			Solid,		Opaque|NeedsUV,			(0))\
 	x("base_trim/pewter_shiney",				shiny,			ptrshn,			Solid,		Opaque,					(0))\
 	x("base_floor/diamond2c",					Lmapped,		dmnd2c,			Solid,		Opaque,					(0))\
 	x("base_floor/diamond2c_ow",				dmnd2cow_m,		dmnd2cow,		Solid,		Opaque|NeedsUV,			(0))\
@@ -386,6 +385,7 @@
 	x("gothic_door/skull_door_d",				Lmapped,		gskdr_d,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_door/skull_door_e",				Lmapped,		gskdr_e,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_door/skull_door_f",				Lmapped,		gskdr_f,		Solid,		Opaque|NeedsUV,			(0))\
+	x("base_wall/c_met7_2",						Lmapped,		cmet72,			Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahell_750",					lava,			White,			Solid,		Opaque,					(500,16,5,2))\
 	x("base_wall/protobanner",					bwprtbnr_m,		bwprtbnr,		Solid,		Opaque|NeedsUV,			(0))\
 	x("*map_model",								miscmodel,		gtprst3,		Solid,		Opaque,					(0))\

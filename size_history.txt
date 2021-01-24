@@ -1311,3 +1311,4 @@
 66114,fixed botlamp lighting
 66107,removed quad platform blue light
 66065,added cmet72
+66055,tweaked material order
