@@ -1308,3 +1308,4 @@
 66011,added botlamp animation
 66006,tweaked flatnor
 65986,minor shader tweaks
+66114,fixed botlamp lighting

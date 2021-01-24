@@ -3412,9 +3412,7 @@ void botwing_m() {
 	FCol = T0(UV);
 	if (FCol.w < .5)
 		discard;
-	FCol.xyz *=
-		ModelLight()
-	;
+	FCol *= Clr;
 }
 
 // models/mapobjects/lamps/bot_lamp.tga (texture)
@@ -3490,10 +3488,9 @@ void botlamp_m() {
 		n = normalize(Nor).x
 	;
 	vec2 uv = Pos.yz/vec2(76, 152) + vec2(.5, .025);
-	FCol = mix(T0(uv), T0(uv + vec2(0, .5)), ls(.01, .0, Nor.x));
-	FCol.xyz *=
-		t
-		* 2. * ModelLight()
+	FCol = Clr
+		* mix(T0(uv), T0(uv + vec2(0, .5)), ls(.01, .0, Nor.x))
+		* t
 		* (.5 + .5 * n)
 	;
 }
@@ -3509,12 +3506,7 @@ TEX(botlamp2) {
 
 // models/mapobjects/lamps/bot_lamp2.tga (model shader)
 void botlamp2_m() {
-	float n = flatnor(Pos).x;
-	FCol = triplanar(4.);
-	FCol.xyz *=
-		2. * ModelLight()
-		* (.5 + .5 * n)
-	;
+	FCol = Clr * triplanar(4.) * (.5 + .5 * flatnor(Pos).x);
 }
 
 // 
