@@ -68,6 +68,7 @@ void Lmapped() { Generic(); }
 void fixture() { Generic(); }
 void shiny() { Generic(); }
 void cmet52() { FS(); }
+void cmet72() { FS(); }
 void ptrshn() { FS(); }
 void dmnd2c() { FS(); }
 void dmnd2cow() { FS(); }

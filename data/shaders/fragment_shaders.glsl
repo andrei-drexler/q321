@@ -688,6 +688,20 @@ TEX(cmet52) {
 	return c;
 }
 
+// base_wall/c_met7_2
+TEX(cmet72) {
+	vec3 c = T0(uv).xyz; // base texture
+	uv.x = abs(uv.x - .515); // slightly off-center horizontal mirroring
+	uv.y = abs(uv.y - .5); // vertical mirroring
+	uv.y = abs(uv.y - .25); // vertical mirroring (again)
+	float d = box(uv - vec2(0, .23), vec2(.5, .21)); // box SDF
+	c *= 1.
+		+ .3 * tri(.0, .01, -d) // edge highlight
+		- .3 * ls(.0, .01, d) // darker part (grout?)
+	;
+	return c;
+}
+
 // base_trim/pewter_shiney
 TEX(ptrshn) {
 	float b = FBMT(uv, vec2(3), .9, 3., 4);

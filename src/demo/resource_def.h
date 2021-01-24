@@ -34,6 +34,7 @@
 	x(fixture,				MapVertexBits)\
 	x(shiny,				MapVertexBits)\
 	x(cmet52,				FSVertexBits)\
+	x(cmet72,				FSVertexBits)\
 	x(ptrshn,				FSVertexBits)\
 	x(dmnd2c,				FSVertexBits)\
 	x(dmnd2cow,				FSVertexBits)\
@@ -208,6 +209,7 @@
 	x(Levelshot_q3dm17,	Texture::White,		Gfx::InvalidID,			512,	512,	BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::RenderTarget)\
 	x(Font,				Texture::White,		Gfx::InvalidID,			1024,	1024,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(cmet52,			Texture::White,		Shader::cmet52,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(cmet72,			Texture::cmet52,	Shader::cmet72,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2c,			Texture::White,		Shader::dmnd2c,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2cow,			Texture::dmnd2c,	Shader::dmnd2cow,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(dmnd2pnt,			Texture::dmnd2c,	Shader::dmnd2pnt,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -313,6 +315,7 @@
 	DEMO_FALLBACK_MATERIAL(x)\
 	x("common/caulk",							Generic,		White,			Solid,		Invisible|BlocksLight,	(0))\
 	x("base_wall/c_met5_2",						Lmapped,		cmet52,			Solid,		Opaque,					(0))\
+	x("base_wall/c_met7_2",						Lmapped,		cmet72,			Solid,		Opaque|NeedsUV,			(0))\
 	x("base_trim/pewter_shiney",				shiny,			ptrshn,			Solid,		Opaque,					(0))\
 	x("base_floor/diamond2c",					Lmapped,		dmnd2c,			Solid,		Opaque,					(0))\
 	x("base_floor/diamond2c_ow",				dmnd2cow_m,		dmnd2cow,		Solid,		Opaque|NeedsUV,			(0))\
