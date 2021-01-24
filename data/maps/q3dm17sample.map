@@ -5056,58 +5056,51 @@ base_wall/metalfloor_wall_10
 }
 // entity 155
 {
-"origin" "280 64 1336"
-"_color" "0.033149 0.066432 0.099347"
-"light" "600"
-"classname" "light"
-}
-// entity 156
-{
 "origin" "-208 -648 344"
 "classname" "ammo_bullets"
 }
-// entity 157
+// entity 156
 {
 "classname" "info_player_deathmatch"
 "spawnflags" "4"
 "angle" "270"
 "origin" "192 656 24"
 }
-// entity 158
+// entity 157
 {
 "origin" "200 -552 24"
 "angle" "90"
 "spawnflags" "4"
 "classname" "info_player_deathmatch"
 }
-// entity 159
+// entity 158
 {
 "origin" "2606 61 456"
 "angle" "180"
 "model" "models/mapobjects/lamps/bot_lamp2.md3"
 "classname" "misc_model"
 }
-// entity 160
+// entity 159
 {
 "origin" "2546 64 428"
 "light" "200"
 "_color" "1.000000 0.837321 0.971292"
 "classname" "light"
 }
-// entity 161
+// entity 160
 {
 "origin" "-48 -948 532"
 "model" "models/mapobjects/spotlamp/spotlamp.md3"
 "classname" "misc_model"
 "angle" "90"
 }
-// entity 162
+// entity 161
 {
 "origin" "-48 -772 352"
 "targetname" "t96"
 "classname" "target_position"
 }
-// entity 163
+// entity 162
 {
 "_color" "1.000000 0.795082 0.565574"
 "target" "t96"
@@ -5115,41 +5108,41 @@ base_wall/metalfloor_wall_10
 "light" "250"
 "origin" "-48 -892 472"
 }
-// entity 164
+// entity 163
 {
 "classname" "light"
 "_color" "1.000000 0.837321 0.971292"
 "light" "30"
 "origin" "-50 -898 488"
 }
-// entity 165
+// entity 164
 {
 "origin" "-102 -878 496"
 "light" "30"
 "_color" "1.000000 0.837321 0.971292"
 "classname" "light"
 }
-// entity 166
+// entity 165
 {
 "classname" "light"
 "_color" "1.000000 0.837321 0.971292"
 "light" "30"
 "origin" "2 -886 496"
 }
-// entity 167
+// entity 166
 {
 "angle" "270"
 "classname" "misc_model"
 "model" "models/mapobjects/spotlamp/spotlamp.md3"
 "origin" "-48 1076 532"
 }
-// entity 168
+// entity 167
 {
 "classname" "target_position"
 "targetname" "t97"
 "origin" "-48 900 352"
 }
-// entity 169
+// entity 168
 {
 "origin" "-48 1020 472"
 "light" "250"
@@ -5157,28 +5150,28 @@ base_wall/metalfloor_wall_10
 "target" "t97"
 "_color" "1.000000 0.795082 0.565574"
 }
-// entity 170
+// entity 169
 {
 "origin" "-50 1026 488"
 "light" "30"
 "_color" "1.000000 0.837321 0.971292"
 "classname" "light"
 }
-// entity 171
+// entity 170
 {
 "classname" "light"
 "_color" "1.000000 0.837321 0.971292"
 "light" "30"
 "origin" "-102 1006 496"
 }
-// entity 172
+// entity 171
 {
 "origin" "2 1014 496"
 "light" "30"
 "_color" "1.000000 0.837321 0.971292"
 "classname" "light"
 }
-// entity 173
+// entity 172
 {
 "classname" "func_group"
 // brush 0
@@ -5254,7 +5247,7 @@ base_wall/metalfloor_wall_10
 ( 32 -848 552 ) ( 8 -848 552 ) ( 8 -864 552 ) common/weapclip 0 0 0 0.500000 0.500000 0 5 0
 }
 }
-// entity 174
+// entity 173
 {
 "target" "t85"
 "classname" "trigger_push"
@@ -5267,7 +5260,7 @@ base_wall/metalfloor_wall_10
 ( 108 128 -4 ) ( -20 128 -4 ) ( -20 -8 -4 ) common/trigger 8 0 0 0.500000 0.500000 0 0 0
 }
 }
-// entity 175
+// entity 174
 {
 "target" "t82"
 "classname" "trigger_push"
@@ -5280,7 +5273,7 @@ base_wall/metalfloor_wall_10
 ( 256 148 -20 ) ( 256 276 -20 ) ( 120 276 -20 ) common/trigger -7 0 90 0.500000 0.500000 0 0 0
 }
 }
-// entity 176
+// entity 175
 {
 "target" "t84"
 "classname" "trigger_push"
@@ -5293,7 +5286,7 @@ base_wall/metalfloor_wall_10
 ( 276 0 -4 ) ( 404 0 -4 ) ( 404 136 -4 ) common/trigger 7 0 -180 0.500000 0.500000 0 0 0
 }
 }
-// entity 177
+// entity 176
 {
 "target" "t83"
 "classname" "trigger_push"
@@ -5306,7 +5299,7 @@ base_wall/metalfloor_wall_10
 ( 128 -20 -20 ) ( 128 -148 -20 ) ( 264 -148 -20 ) common/trigger -9 0 -90 0.500000 0.500000 0 0 0
 }
 }
-// entity 178
+// entity 177
 {
 "_keep_uvs" "1"
 "classname" "func_group"
