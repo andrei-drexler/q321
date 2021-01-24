@@ -322,9 +322,9 @@ float NT(vec2 p, vec2 s) {
 	return mix(mix(s00, s10, p.x), mix(s01, s11, p.x), p.y);
 }
 
-float FBMT(vec2 p, vec2 scale, float gain, float lac, int lyrs) {
+float FBMT(vec2 p, vec2 scale, float gain, float lac, int n) {
 	float acc = NT(p, scale), ow = 1., tw = 1.;
-	for (int i=0; i<lyrs; ++i) {
+	for (int i=0; i<n; ++i) {
 		p = fract(p + PHI);
 		scale *= lac; ow *= gain;
 		acc += NT(p, scale) * ow;
@@ -334,9 +334,9 @@ float FBMT(vec2 p, vec2 scale, float gain, float lac, int lyrs) {
 }
 
 // FIXME: 1D noise should take a normalized value, like its 2D counterpart!
-float FBMT(float p, float scale, float gain, float lac, int lyrs) {
+float FBMT(float p, float scale, float gain, float lac, int n) {
 	float acc = NT(p * scale, scale), ow = 1., tw = 1.;
-	for (int i=0; i<lyrs; ++i) {
+	for (int i=0; i<n; ++i) {
 		p = fract(p + PHI);
 		scale *= lac; ow *= gain;
 		acc += NT(p * scale, scale) * ow;
@@ -345,9 +345,9 @@ float FBMT(float p, float scale, float gain, float lac, int lyrs) {
 	return acc / tw;
 }
 
-float FBMT_ridged(vec2 p, vec2 scale, float gain, float lac, int lyrs) {
+float FBMT_ridged(vec2 p, vec2 scale, float gain, float lac, int n) {
 	float acc = ridged(NT(p, scale)), ow = 1., tw = 1.;
-	for (int i=0; i<lyrs; ++i) {
+	for (int i=0; i<n; ++i) {
 		p = fract(p + PHI);
 		scale *= lac; ow *= gain;
 		acc += ridged(NT(p, scale)) * ow;
@@ -383,22 +383,19 @@ vec3 Light() {
 ////////////////////////////////////////////////////////////////
 
 vec2 seg(vec2 p, vec2 a, vec2 b) {
-	vec2 ab = b-a, ap = p-a;
-	float t = sat(dot(ap, ab)/dot(ab, ab));
-	return ab*t + a;
+	return sat(dot(p -= a, b -= a) / dot(b, b)) * b + a;
 }
 
-float half_plane(vec2 uv, vec2 d) {
-	return dot(uv, rot(90.) * normalize(d));
+float half_plane(vec2 p, vec2 d) {
+	return dot(p, rot(90.) * normalize(d));
 }
 
-float box(vec2 p, vec2 b) {
-	vec2 d = abs(p) - b;
-	return min(max(d.x, d.y), 0.) + length(max(d, 0.));
+float box(vec2 p, vec2 r) {
+	return min(mx(p = abs(p) - r), 0.) + length(max(p, 0.));
 }
 
-float box1(vec2 p, vec2 b) {
-	return mx(abs(p) - b);
+float box1(vec2 p, vec2 r) {
+	return mx(abs(p) - r);
 }
 
 float circ(vec2 p, float r) {
@@ -410,7 +407,7 @@ float seg(vec2 p, vec2 a, vec2 b, float r) {
 }
 
 float elips(vec2 p, vec2 r) {
-	return circ(p/r, 1.) / min(r.x, r.y);
+	return circ(p/r, 1.) / mn(r);
 }
 
 float exclude(float a, float b) {
@@ -525,8 +522,8 @@ float icon_sdf(vec2 uv, float t) {
 // Quake 1 logo SDF
 float sdf_Q(vec2 uv) {
 	float d = circ(uv - vec2(0, .17), .32);
-	d = exclude(d, circ(uv - vec2(0, .235), .27));
-	d = exclude(d, circ(uv - vec2(0, .5), .15));
+	d = max(d, -circ(uv - vec2(0, .235), .27));
+	d = max(d, -circ(uv - vec2(0, .5), .15));
 
 	// nail
 	uv.y -= .09;
@@ -583,35 +580,35 @@ vec3 pattern(vec2 p, float sc, float bv) {
 	p -= (ip + .5) / sc;
 
 	float
-		h11 = .5 * HT(ip + e.yy, vec2(sc)),
-		h10 = .5 * HT(ip + e.xy, vec2(sc)),
-		h01 = .5 * HT(ip + e.yz, vec2(sc)),
-		h12 = .5 * HT(ip + e.zy, vec2(sc)),
-		h21 = .5 * HT(ip + e.yx, vec2(sc)),
-		h00 = .5 * HT(ip + e.xz, vec2(sc)),
-		h02 = .5 * HT(ip + e.zz, vec2(sc)),
-		h22 = .5 * HT(ip + e.zx, vec2(sc)),
-		h20 = .5 * HT(ip + e.xx, vec2(sc));
+		s11 = .5 * HT(ip + e.yy, vec2(sc)),
+		s10 = .5 * HT(ip + e.xy, vec2(sc)),
+		s01 = .5 * HT(ip + e.yz, vec2(sc)),
+		s12 = .5 * HT(ip + e.zy, vec2(sc)),
+		s21 = .5 * HT(ip + e.yx, vec2(sc)),
+		s00 = .5 * HT(ip + e.xz, vec2(sc)),
+		s02 = .5 * HT(ip + e.zz, vec2(sc)),
+		s22 = .5 * HT(ip + e.zx, vec2(sc)),
+		s20 = .5 * HT(ip + e.xx, vec2(sc));
 
 	vec2[4] ctr, l;
 	if (mod(ip.x + ip.y, 2.) < .5) {
-		l[0] = 1. + vec2(h21 - h10, h11 - h20);
-		l[1] = 1. + vec2(h12 - h21, h11 - h22);
-		l[2] = 1. + vec2(h01 - h10, h00 - h11);
-		l[3] = 1. + vec2(h12 - h01, h02 - h11);
-		ctr[0] = vec2(h21, h11);
-		ctr[1] = vec2(h21, h11);
-		ctr[2] = vec2(h01, h11);
-		ctr[3] = vec2(h01, h11);
+		l[0] = 1. + vec2(s21 - s10, s11 - s20);
+		l[1] = 1. + vec2(s12 - s21, s11 - s22);
+		l[2] = 1. + vec2(s01 - s10, s00 - s11);
+		l[3] = 1. + vec2(s12 - s01, s02 - s11);
+		ctr[0] = vec2(s21, s11);
+		ctr[1] = vec2(s21, s11);
+		ctr[2] = vec2(s01, s11);
+		ctr[3] = vec2(s01, s11);
 	} else {
-		l[0] = 1. + vec2(h11 - h20, h10 - h21);
-		l[1] = 1. + vec2(h22 - h11, h12 - h21);
-		l[2] = 1. + vec2(h11 - h00, h01 - h10);
-		l[3] = 1. + vec2(h02 - h11, h01 - h12);
-		ctr[0] = vec2(h11, h10);
-		ctr[1] = vec2(h11, h12);
-		ctr[2] = vec2(h11, h10);
-		ctr[3] = vec2(h11, h12);
+		l[0] = 1. + vec2(s11 - s20, s10 - s21);
+		l[1] = 1. + vec2(s22 - s11, s12 - s21);
+		l[2] = 1. + vec2(s11 - s00, s01 - s10);
+		l[3] = 1. + vec2(s02 - s11, s01 - s12);
+		ctr[0] = vec2(s11, s10);
+		ctr[1] = vec2(s11, s12);
+		ctr[2] = vec2(s11, s10);
+		ctr[3] = vec2(s11, s12);
 	}
 
 	for (int i=0; i<4; i++) {

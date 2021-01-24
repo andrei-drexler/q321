@@ -1307,3 +1307,4 @@
 65983,added botlamp2 stub and botlamp
 66011,added botlamp animation
 66006,tweaked flatnor
+65986,minor shader tweaks
