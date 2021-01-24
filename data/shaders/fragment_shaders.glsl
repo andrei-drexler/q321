@@ -683,9 +683,12 @@ vec3 wire_ring(vec3 c, vec2 uv, float p, float s) {
 
 // base_wall/c_met5_2
 TEX(cmet52) {
-	float b = FBMT(uv, vec2(5), .9, 3., 4);
-	vec3 c = mix(RGB(48, 41, 33), RGB(103, 101, 104), b);
-	return c;
+	float
+		b = FBMT(uv, vec2(7), .9, 3., 4),
+		n = FBMT(uv, vec2(9), .9, 3., 4),
+		t = .7 + .6 * b
+	;
+	return mix(RGB(77, 75, 73), RGB(77, 66, 55), ls(.4, .6, n)) * t;
 }
 
 // base_wall/c_met7_2

@@ -47,7 +47,7 @@ static constexpr u32 shader_deps[] = {1,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,1,5,5,5,5,5,5,5,5,5,5,5,5,5,};
 } // namespace cooked::vertex_shaders
 
-// data/shaders/fragment_shaders.glsl: 114138 => 48229 (42.3%)
+// data/shaders/fragment_shaders.glsl: 114200 => 48262 (42.3%)
 namespace cooked::fragment_shaders {
 static constexpr char code[] =
 /* ---- @global: 4968 chars (10.3%) ---- */
@@ -119,7 +119,7 @@ static constexpr char code[] =
 "(1.-an(b.a,s+s))*f;l e;}k cl(k e,d c,h s){l cl(e,c,s,.5,.3);}h c3(d p,d e,h s,h m){p-=e;h a=j(.3,.5,ac(ak(cj(p/=s)*8.+bo(a"
 "k(e)))-.5));l j(.9,m,bl(cx(p),.0625)-a*a*.006);}h dv(d p,d e,h s,h m){h f=c3(p,e,s,m);e.r+=p.r<e.r?-1.:1.;l f+c3(p,e,s,m);"
 "}h ef(d c,h s){h f=1e6,m=0.;bu(;m<5.;++m){d p=d(0,-s)*bf(m*72.);f=av(f,am(c-cp(c,p,p*bf(144.))));}l f;}"
-/* ---- patterns: 2425 chars (5.0%) ---- */
+/* ---- patterns: 2458 chars (5.1%) ---- */
 "h c7(d c,h t){c.r=ac(c.r);c.g-=.07;h f=cr(c,d(.31,.12-t*.02))/50.;f=a0(f,-cr(c-d(0,.01+.01*t),d(.28+t*.01,.07))/75.);f=a0("
 "f,-a2(c-d(0,.1),d(.22-.02*t,.12)));f=a0(f,-a2(c-d(0,.1),d(.084-.012*t,.31)));f=av(f,bj(c-d(0,-.09),d(i(-.09,.32,c.g)*(.04-"
 ".015*t),.32)));f=av(f,bj(c-d(.11-.02*t,-.21+.01*t),d(i(-.07,.3,c.g)*(.03-.01*t),.15)));l f;}h fd(d c){h f=a9(c-d(0,.17),.3"
@@ -138,9 +138,9 @@ static constexpr char code[] =
 "(mod(v+g,el));r=g+bh-a7;f=ff;if(f<de){dm=de;de=f;em=r;}else if(f<dm){dm=f;}}l k(em,dm-de);}\n"
 "ek(dw,c1(ac(r)))ek(dx,am(r))k en(k e,d c,h p,h s){h v=a8(c,d(13))-.5,aj=a8(c,d(17))-.5,r=am(c-=.5),f,o;d q=ak(d(cj(c)*22.+"
 "aj*.1,r*55.+v*.6));f=cq(ac(q-.5)*d(2,.5+v*.3));o=j(.01,.0,ac(r-p)-s);e*=1.+.3*o*i(.0,.2,f)-.5*o*i(.3,.3,f);l e;}a3(_9){h b"
-"=ai(c,d(5),.9,3.,4);k e=n(u(48,41,33),u(103,101,104),b);l e;}a3(_10){k e=a4(c).au;c.r=ac(c.r-.515);c.g=ac(c.g-.5);c.g=ac(c"
-".g-.25);h f=a2(c-d(0,.23),d(.5,.21));e*=1.+.3*i(.0,.01,-f)-.3*j(.0,.01,f);l e;}a3(_11){h b=ai(c,d(3),.9,3.,4);k e=n(u(49,4"
-"5,43),u(81,75,78),b*b);l e;}"
+"=ai(c,d(7),.9,3.,4),v=ai(c,d(9),.9,3.,4),t=.7+.6*b;l n(u(77,75,73),u(77,66,55),j(.4,.6,v))*t;}a3(_10){k e=a4(c).au;c.r=ac("
+"c.r-.515);c.g=ac(c.g-.5);c.g=ac(c.g-.25);h f=a2(c-d(0,.23),d(.5,.21));e*=1.+.3*i(.0,.01,-f)-.3*j(.0,.01,f);l e;}a3(_11){h "
+"b=ai(c,d(3),.9,3.,4);k e=n(u(49,45,43),u(81,75,78),b*b);l e;}"
 /* ---- diamond2c: 4652 chars (9.6%) ---- */
 "a3(_12){h b=ai(c,d(7),.9,3.,4);c.r*=-1.5;c.g+=c.r*.5;c.r=1.-c.r+c.g;c=ak(c*28.);h a7=a6(1.-am(.1-c));a7*=j(.6,.2,am(.6-c))"
 ";a7*=j(.6,.8,am(.1-c));a7*=j(.2,.6,b)*2.+1.;h ad=1.-j(.2,b+2.,b1(ac(c-.5)));l k((a7+1.)*n(.21,.29,b*b)*ad);}h eo(d p,h s,h"
@@ -369,7 +369,7 @@ static constexpr char code[] =
 "(.46,.04,r));ad*=1.-.4*ah(i(.36,.04,r));l af(e*ad,a);}bc(_82){h b=ai(c,d(5),.9,3.,4),f=dk(ef(c-=.5,.35),ac(a9(c,.4)),.02),"
 "a=bl(an(f-.02,.15),8.),bh=av(a0(a2(c,d(.46)),-a9(c,.51)),ac(a9(c,.44)));k e=u(76,62,47)*(.8+.8*b*b);e*=1.+(b+.5)*an(ac(bh)"
 "-.01,.01);e*=1.-j(.1,.05,f)*an(a9(c,.4));l af(e+1.*k(1,1,.3)*a,a);}"
-/* ---- banner: 3015 chars (6.3%) ---- */
+/* ---- banner: 3015 chars (6.2%) ---- */
 "h e0(d c,h s,h m,h fo){m=(c.g-ah(ac(c.r-.5))*fo)*s-m;l 2.*i(.5,.4,m)*(ak(m)-.5);}bc(_92){h b=ai(c,d(5,9),.9,3.,4),t=.8+.8*"
 "b*b,v=ai(c,d(5,9),.9,3.,2),x=ac(c.r-.5),f;k e=u(77,60,44)*t;d p=c*d(1,2)-d(.5,.7);e*=1.-.55*an(ce(a9(p,.3),c7(bf(45.)*p*.8"
 ",0.)-.01));e*=1.+ah(j(.6,.9,b))+i(.2,.5,c.g)*i(.2,.3,x)*e0(c,4.,.2,4.);bu(h a7=6.;a7<9.;++a7)e*=1.+i(.8,.5,c.g)*i(.2,.3,x)"
@@ -494,7 +494,7 @@ static constexpr char code[] =
 ",.01);}ao _149(){d c=UV-.5;h f=c7(c+d(0,.05),0.)-.01;f=av(f,a2(di(c*bf(45.),4.)-d(.45,.0),d(.11,.02)));al=af(0,.88,.95,1)*"
 "an(f,.01);}ao _150(){h f=am(UV-.5)*32.;al=af(.5*j(1.,.0,ac(f-14.))+j(1.,.5,f));}ao _151(){d c=ac(UV-.5)*32.;al=af(b5(cq(c)"
 ",1.)*b5(b1(c),6.));}ao _152(){d c=ac(UV-.5)*32.;al=af(b5(cq(c),1.)*b5(b1(c),6.)*b5(3.,b1(c)));}";
-static constexpr u32 section_sizes[] = {/*@global*/4968,/*patterns*/2425,/*diamond2c*/4652,/*metal*/4328,/*arena*/3169,/*
+static constexpr u32 section_sizes[] = {/*@global*/4968,/*patterns*/2458,/*diamond2c*/4652,/*metal*/4328,/*arena*/3169,/*
 blocks*/4081,/*largerblock*/1205,/*center2trn*/1680,/*computer_blocks17*/1545,/*organic*/4518,/*lights*/1043,/*banner*/3015,
 /*elemental*/920,/*models*/8023,/*ui*/2657,};
 static constexpr u32 shader_deps[] = {2051,16387,16387,16387,16387,16387,2051,1025,4097,3,3,3,7,7,7,7,7,11,11,11,11,11,11,11

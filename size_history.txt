@@ -1312,3 +1312,4 @@
 66107,removed quad platform blue light
 66065,added cmet72
 66055,tweaked material order
+66070,slightly more detailed cmet52
