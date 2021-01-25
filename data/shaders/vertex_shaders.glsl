@@ -138,6 +138,7 @@ void gsklvtg02b() { FS(); }
 void bmtsprt() { FS(); }
 void cable() { FS(); }
 #pragma section
+void steed1gf() { FS(); }
 void brdr11b() { FS(); }
 void blt414k() { FS(); }
 void lt2() { FS(); }

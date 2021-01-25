@@ -103,6 +103,7 @@
 	x(gsklvtg02b,			FSVertexBits)\
 	x(bmtsprt,				FSVertexBits)\
 	x(cable,				FSVertexBits)\
+	x(steed1gf,				FSVertexBits)\
 	x(brdr11b,				FSVertexBits)\
 	x(blt414k,				FSVertexBits)\
 	x(lt2,					FSVertexBits)\
@@ -277,6 +278,7 @@
 	x(gxstpbrdr3brn,	Texture::White,		Shader::gxstpbrdr3brn,	256,	16,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(bmtsprt,			Texture::White,		Shader::bmtsprt,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(cable,			Texture::White,		Shader::cable,			128,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(steed1gf,			Texture::White,		Shader::steed1gf,		128,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(brdr11b,			Texture::White,		Shader::brdr11b,		64,		32,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(blt414k,			Texture::White,		Shader::blt414k,		64,		256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(lt2,				Texture::White,		Shader::lt2,			64,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -386,6 +388,7 @@
 	x("gothic_door/skull_door_e",				Lmapped,		gskdr_e,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_door/skull_door_f",				Lmapped,		gskdr_f,		Solid,		Opaque|NeedsUV,			(0))\
 	x("base_wall/c_met7_2",						Lmapped,		cmet72,			Solid,		Opaque|NeedsUV,			(0))\
+	x("base_wall/steed1gf",						Lmapped,		steed1gf,		Solid,		Opaque|NeedsUV,			(0))\
 	x("liquids/lavahell_750",					lava,			White,			Solid,		Opaque,					(500,16,5,2))\
 	x("base_wall/protobanner",					bwprtbnr_m,		bwprtbnr,		Solid,		Opaque|NeedsUV,			(0))\
 	x("*map_model",								miscmodel,		gtprst3,		Solid,		Opaque,					(0))\

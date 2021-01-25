@@ -2599,6 +2599,37 @@ TEX(bmtsprt) {
 	return c;
 }
 
+// base_wall/steed1gf
+TEX(steed1gf) {
+	float
+		b = FBMT(uv -= .5, vec2(7, 3), .9, 3., 4),
+		n = FBMT(uv, vec2(5, 3), .7, 2., 4),
+		t = .85 + .3 * b,
+		d, m
+	;
+
+	vec3 c = mix(RGB(88, 90, 72), RGB(60, 64, 50), length(uv) * 2.5 - .5) * t; // base color
+	uv.y *= .5; // correct aspect ratio
+
+	d = box(uv, vec2(.485, .23)); // box SDF
+	c = mix(c, RGB(133, 144, 144) * t, tri(.0, .01, d) * n); // edge highlight
+	c *= 1.
+		- .5 * ls(.0, .01, d) // edge shadow
+	;
+
+	vec2 p = abs(uv) - vec2(.41, .16); // bolt position (mirrored x & y)
+	m = ls(.035, .02, d = length(p *= sign(uv - .1))) * (.8 + .8 * b * b); // change p sign based on quadrant and generate bolt mask
+	c *= 1.
+		- .2 * sqr(tri(.04, .02, d)) // bolt shadow
+		+ 3. * m * ls(-.01, .01, p.y) * ls(.02, -.01, p.x) // very bright top-left reflection
+		+ .3 * m * ls(-.01, .01, -p.y) * ls(-.01, .02, p.x) // bright bottom-right reflection
+		- .9 * m * ls(-.01, .01, p.y) * ls(-.01, .02, p.x) // dark top-right reflection
+		- .3 * m * ls(-.01, .01, -p.y) * ls(.02, -.01, p.x) // dark bottom-left reflection
+	;
+
+	return c;
+}
+
 // base_trim/border11b
 TEX(brdr11b) {
 	float b = FBMT(uv, vec2(5, 3), .9, 3., 4);
