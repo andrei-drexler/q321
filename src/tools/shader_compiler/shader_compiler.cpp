@@ -103,13 +103,20 @@ int main(int argc, const char** argv) {
 			return 1;
 		}
 
+		// Same as 'clean_path', but without the (potentially repeated) "../" prefix
+		// that gets added when running the compiler from within MSVC.
+		// Note: still null-terminated.
+		string_view clean_full_path = {full_path.data(), full_path.size()};
+		while (RemovePrefix(clean_full_path, "../"sv))
+			;
+
 		/* file header */
 		fprintf(out,
 			"\n"
 			"// %s: %zd => %zd (%.1f%%)\n"
 			"namespace cooked::%s {\n"
 			"static constexpr char code[] =\n",
-			full_path.c_str(), source_code.size(), generated_code.size(), (float)generated_code.size() / (float)source_code.size() * 100.f,
+			clean_full_path.data(), source_code.size(), generated_code.size(), (float)generated_code.size() / (float)source_code.size() * 100.f,
 			file_name_no_extension.c_str()
 		);
 
