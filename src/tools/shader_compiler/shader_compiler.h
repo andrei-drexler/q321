@@ -186,12 +186,9 @@ bool RenameVectorFields(std::vector<Lexer::Token>& tokens, AtomList& atoms) {
 
 ////////////////////////////////////////////////////////////////
 
-enum class Preserve {
-	Inputs,
-	InputsAndOtputs,
-};
+using VaryingMap = std::unordered_map<string_view, size_t>;
 
-bool RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Preserve mode, std::unordered_map<string_view, const char*>& rename) {
+bool RenameIdentifiers(ShaderStage::Type stage, std::vector<Lexer::Token>& tokens, AtomList& atoms, VaryingMap& varyings, std::unordered_map<string_view, const char*>& rename) {
 	Print("Renaming identifiers...\n");
 
 	/* map shader names to integer ids */
@@ -210,33 +207,37 @@ bool RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 	for (auto keyword : Keywords)
 		untouchable.insert(keyword);
 
-	/* find inputs/outputs */
-	for (size_t i = 0; i < tokens.size(); ++i) {
-		Token& token = tokens[i];
-		if (SkipPragma(tokens, i))
-			continue;
+	/* find vertex shader outputs */
+	if (stage == ShaderStage::Vertex) {
+		varyings.clear();
 
-		if (token.type != Token::Type::Identifier)
-			continue;
-
-		string_view value = token.value;
-		if (value != "in"sv) {
-			if (mode != Preserve::InputsAndOtputs || value != "out"sv)
+		for (size_t i = 0; i < tokens.size(); ++i) {
+			Token& token = tokens[i];
+			if (SkipPragma(tokens, i))
 				continue;
-		}
 
-		// in|out must be either the very first token, or preceded by a semicolon
-		if (i != 0 && tokens[i - 1].type != Token::Type::Semicolon)
-			continue;
+			if (token.type != Token::Type::Identifier)
+				continue;
 
-		if (i + 2 >= tokens.size())
-			continue;
+			string_view value = token.value;
+			if (value != "out"sv)
+				continue;
 
-		i += 2;
-		while (i + 1 < tokens.size() && tokens[i].type != Token::Type::Semicolon) {
-			untouchable.insert(tokens[i++].value);
-			if (tokens[i].type == Token::Type::Comma)
-				++i;
+			// in|out must be either the very first token, or preceded by a semicolon
+			if (i != 0 && tokens[i - 1].type != Token::Type::Semicolon)
+				continue;
+
+			if (i + 2 >= tokens.size())
+				continue;
+
+			i += 2;
+			while (i + 1 < tokens.size() && tokens[i].type != Token::Type::Semicolon) {
+				string_view name = tokens[i++].value;
+				size_t next_index = varyings.size();
+				varyings[name] = next_index;
+				if (tokens[i].type == Token::Type::Comma)
+					++i;
+			}
 		}
 	}
 
@@ -314,6 +315,14 @@ bool RenameIdentifiers(std::vector<Lexer::Token>& tokens, AtomList& atoms, Prese
 				new_name = atoms.Intern(next_name());
 			}
 		} else {
+			auto varying_iter = varyings.find(name);
+			if (varying_iter != varyings.end()) {
+				char buf[64];
+				sprintf(buf, "V%zd", varying_iter->second);
+				new_name = atoms.Intern(buf);
+				continue;
+			}
+
 			auto entry_iter = entry_points.find(name);
 			if (entry_iter != entry_points.end()) {
 				char buf[64];
@@ -475,9 +484,11 @@ bool Link(const std::vector<Lexer::Token>& tokens, const SectionList& sections, 
 	size_t missing_shaders = shader_deps.size();
 	size_t section_index = 0;
 	for (size_t token_index = 0; token_index < tokens.size(); ++token_index) {
+		/* crossed into next section? */
 		if (section_index < sections.size() - 1 && token_index == sections[section_index + 1].offset)
 			++section_index;
 
+		/* check if entrypoint (underscore followed by a number) */
 		const Token& token = tokens[token_index];
 		if (token.type != Token::Type::Identifier || token.value[0] != '_')
 			continue;
@@ -488,6 +499,7 @@ bool Link(const std::vector<Lexer::Token>& tokens, const SectionList& sections, 
 		assert(shader_index >= 0);
 		assert(shader_index < std::size(ShaderNames));
 
+		/* check if not already assigned to a section */
 		if (shader_deps.data[shader_index] == 0) {
 			shader_deps.data[shader_index] = sections[section_index].dependencies | (1 << section_index);
 			--missing_shaders;
@@ -497,6 +509,7 @@ bool Link(const std::vector<Lexer::Token>& tokens, const SectionList& sections, 
 		}
 	}
 
+	/* print list of missing shaders */
 	if (missing_shaders) {
 		std::string message = std::to_string(missing_shaders) + " missing shader";
 		if (missing_shaders != 1)

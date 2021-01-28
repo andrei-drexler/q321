@@ -52,6 +52,7 @@ int main(int argc, const char** argv) {
 
 	std::vector<char> source_code;
 	std::vector<Lexer::Token> tokens;
+	VaryingMap varyings;
 	std::unordered_map<string_view, const char*> translation;
 	SectionList sections;
 	ShaderDependencies shader_deps;
@@ -80,11 +81,10 @@ int main(int argc, const char** argv) {
 		std::string file_name_no_extension = stage_name + "_shaders";
 		std::string file_name              = file_name_no_extension + ".glsl";
 		std::string full_path              = options.source_path + "/" + file_name;
+		ShaderStage::Type stage_type       = ShaderStage::Type(stage);
 
 		using clock = std::chrono::high_resolution_clock;
 		auto time_begin = clock::now();
-
-		Preserve mode = file_name_no_extension.find("vertex") != std::string::npos ? Preserve::InputsAndOtputs : Preserve::Inputs;
 
 		Print("--- Compiling %s ---\n", file_name.c_str());
 
@@ -96,7 +96,7 @@ int main(int argc, const char** argv) {
 
 		if (!Tokenize({source_code.data(), source_code.size()}, lexer, tokens) ||
 			!RenameVectorFields(tokens, lexer.GetAtoms()) ||
-			!RenameIdentifiers(tokens, lexer.GetAtoms(), mode, translation) ||
+			!RenameIdentifiers(stage_type, tokens, lexer.GetAtoms(), varyings, translation) ||
 			!SplitIntoSections(tokens, sections) ||
 			!Link(tokens, sections, shader_deps) ||
 			!GenerateCode(tokens, sections, generated_code)) {

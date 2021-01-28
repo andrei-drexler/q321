@@ -1314,3 +1314,4 @@
 66055,tweaked material order
 66070,slightly more detailed cmet52
 66301,added basic steed1gf
+66248,renamed shader varyings

@@ -32,6 +32,7 @@ public:
 	}								stage_data[ShaderStage::Count];
 	Module							modules[ShaderStage::Count];
 	Lexer							lexer;
+	VaryingMap						varyings;
 };
 
 const IShaderCompiler::Module* ShaderCompiler::Compile(const char* source_path) {
@@ -43,16 +44,15 @@ const IShaderCompiler::Module* ShaderCompiler::Compile(const char* source_path) 
 			std::string file_name_no_extension = stage_name + "_shaders";
 			std::string file_name              = file_name_no_extension + ".glsl";
 			std::string full_path              = std::string(source_path) + "/" + file_name;
+			ShaderStage::Type stage_type       = ShaderStage::Type(stage_index);
 			StageData& stage                   = stage_data[stage_index];
 
 			if (!ReadFile(full_path.c_str(), stage.source_code))
 				return nullptr;
 
-			Preserve mode = stage_index == ShaderStage::Vertex ? Preserve::InputsAndOtputs : Preserve::Inputs;
-
 			if (!Tokenize({stage.source_code.data(), stage.source_code.size()}, lexer, stage.tokens) ||
 				!RenameVectorFields(stage.tokens, lexer.GetAtoms()) ||
-				!RenameIdentifiers(stage.tokens, lexer.GetAtoms(), mode, stage.translation) ||
+				!RenameIdentifiers(stage_type, stage.tokens, lexer.GetAtoms(), varyings, stage.translation) ||
 				!SplitIntoSections(stage.tokens, stage.sections) ||
 				!Link(stage.tokens, stage.sections, stage.shader_deps) ||
 				!GenerateCode(stage.tokens, stage.sections, stage.generated_code)) {
