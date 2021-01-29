@@ -23,7 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\engine\aabb.h" />
-    <ClInclude Include="..\..\engine\common.h" />
+    <ClInclude Include="..\..\engine\core.h" />
     <ClInclude Include="..\..\engine\math.h" />
     <ClInclude Include="..\..\demo\material.h" />
     <ClInclude Include="..\common.h" />

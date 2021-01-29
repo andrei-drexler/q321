@@ -23,7 +23,7 @@
     <ClInclude Include="..\print_array.h" />
     <ClInclude Include="q3map.h" />
     <ClInclude Include="export_map.h" />
-    <ClInclude Include="..\..\engine\common.h">
+    <ClInclude Include="..\..\engine\core.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\demo\material.h">
