@@ -314,7 +314,7 @@ void CompileModel(const Mesh& mesh, const Options& options, const std::string& p
 
 			for (u32 j = 0; j < num_entries; ++j) {
 				u32 idx = buffer[j];
-				assert(idx < num_vertices);
+				assert(idx < part.vertices.size());
 				output_indices.push_back(watermark + 3 - idx);
 				watermark = std::max<u32>(watermark, idx);
 			}
