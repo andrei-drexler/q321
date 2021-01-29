@@ -8,6 +8,8 @@
     <ClInclude Include="..\..\demo\resource_def.h">
       <Filter>Demo</Filter>
     </ClInclude>
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="forsyth.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Demo">

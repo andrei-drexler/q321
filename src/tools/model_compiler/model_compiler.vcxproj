@@ -23,6 +23,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\demo\resource_def.h" />
+    <ClInclude Include="forsyth.h" />
+    <ClInclude Include="mesh.h" />
     <ClInclude Include="q3model.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
