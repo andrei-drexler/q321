@@ -83,9 +83,20 @@ void ConvertModel(const MD3::Header& model, Mesh& mesh) {
 		if ((props & Demo::Material::MaskVisibility) == Demo::Material::Invisible)
 			continue;
 
-		/* add new part */
-		Mesh::Part* dst = &mesh.parts.emplace_back();
-		dst->material = material;
+		/* try to find an existing part with the same material */
+		Mesh::Part* dst = nullptr;
+		for (Mesh::Part& part : mesh.parts) {
+			if (part.material == material) {
+				dst = &part;
+				break;
+			}
+		}
+
+		/* add new part if needed */
+		if (!dst) {
+			dst = &mesh.parts.emplace_back();
+			dst->material = material;
+		}
 
 		/* copy vertex data */
 		const MD3::Vertex* src_verts = src.GetVerts();

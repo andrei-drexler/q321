@@ -1315,3 +1315,4 @@
 66070,slightly more detailed cmet52
 66301,added basic steed1gf
 66248,renamed shader varyings
+66174,merged model parts with the same material
