@@ -1316,3 +1316,4 @@
 66301,added basic steed1gf
 66248,renamed shader varyings
 66174,merged model parts with the same material
+66064,tweaked degrees-to-radians conversion in renderworld

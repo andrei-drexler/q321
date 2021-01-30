@@ -319,7 +319,7 @@ namespace Demo {
 		Uniform::Cache::ViewProj = projection * ToYUp * Uniform::View;
 		Uniform::MVP = Uniform::Cache::ViewProj;
 		Uniform::Cam.xyz = frame.pos;
-		Uniform::Cam.w = frame.shadow_angle * RAD2DEG;
+		Uniform::Cam.w = frame.shadow_angle / DEG2RAD;
 
 		Gfx::SetRenderTarget(frame.render_target, &Gfx::Clear::Depth);
 		Map::Render();
