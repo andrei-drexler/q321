@@ -402,7 +402,7 @@ FORCEINLINE void Demo::Map::Details::LoadModels(u8 pass) {
 			part_end   = Model::Storage::first_model_part[entity->model]
 		;
 
-		float angle = float(entity->angle) * Math::DEG2RAD;
+		float angle = Math::ToRadians(float(entity->angle));
 		mat4 transform = MakeRotation({angle, 0.f, 0.f});
 		for (u32 i = 0; i < 3; ++i)
 			transform.GetPosition()[i] = entity->origin[i];

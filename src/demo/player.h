@@ -196,8 +196,8 @@ void Demo::Player::Update(float dt) {
 	angles.y = clamp(angles.y, -85.f, 85.f);
 
 	/* movement input */
-	float yaw = angles.x * Math::DEG2RAD;
-	float pitch = noclip ? angles.y * Math::DEG2RAD : 0.f;
+	float yaw = Math::ToRadians(angles.x);
+	float pitch = noclip ? Math::ToRadians(angles.y) : 0.f;
 	float sin_pitch = sin(pitch);
 	float cos_pitch = cos(pitch);
 
@@ -302,7 +302,7 @@ void Demo::Player::Update(float dt) {
 					angles[0] = target->angle;
 					angles[1] = 0.f;
 					angles[2] = 0.f;
-					float yaw = angles[0] * Math::DEG2RAD;
+					float yaw = Math::ToRadians(angles[0]);
 					velocity.x = cos(yaw) * TeleportSpeed;
 					velocity.y = sin(yaw) * TeleportSpeed;
 					velocity.z = 0.f;

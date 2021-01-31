@@ -262,6 +262,7 @@ FORCEINLINE void Demo::Model::LoadAll(const PackedModel* models) {
 ////////////////////////////////////////////////////////////////
 
 FORCEINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
+	// Note: using Math::ToRadians here would increase generated code size
 	mat4 model_matrix = MakeRotation(transform.angles * Math::DEG2RAD);
 	for (u16 i = 0; i < 3; ++i)
 		mul(model_matrix.GetAxis(i), transform.scale);

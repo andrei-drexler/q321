@@ -24,9 +24,15 @@ namespace Math {
 			PI_2		= PI * 0.5f,
 			PI_4		= PI * 0.25f,
 			TAU			= 2.f * PI,
-			DEG2RAD		= PI / 180.f,
-			RAD2DEG		= 180.f / PI;
+			DEG2RAD		= PI / 180.f
+		;
 	}
+
+	template <typename T>
+	FORCEINLINE T ToDegrees(const T& x) { return x / DEG2RAD; }
+
+	template <typename T>
+	FORCEINLINE T ToRadians(const T& x) { return x * DEG2RAD; }
 
 	inline namespace CRT {
 		constexpr FORCEINLINE bool isnan(float x) {

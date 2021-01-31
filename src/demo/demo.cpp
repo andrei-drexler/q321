@@ -54,7 +54,7 @@ namespace Demo {
 		Gfx::Mesh mesh;
 		memset(&mesh, 0, sizeof(mesh));
 
-		mat4 rotation = MakeRotation(g_player.angles * Math::DEG2RAD);
+		mat4 rotation = MakeRotation(Math::ToRadians(g_player.angles));
 		vec3 x = rotation.y.xyz * size;
 		vec3 y = rotation.z.xyz * size;
 		vec3 z = rotation.x.xyz;
@@ -251,11 +251,11 @@ namespace Demo {
 		transform.angles = g_player.angles;
 
 		const float DefaultVerticalFov = 58.75f; // approximation
-		float fov_delta = (g_fov.y / Math::DEG2RAD - DefaultVerticalFov) * 0.5f;
+		float fov_delta = (Math::ToDegrees(g_fov.y) - DefaultVerticalFov) * 0.5f;
 		if (fov_delta > 0.f)
 			transform.angles[1] -= fov_delta;
 
-		mat4 rotation = MakeRotation(transform.angles * Math::DEG2RAD);
+		mat4 rotation = MakeRotation(Math::ToRadians(transform.angles));
 		transform.position = g_player.position;
 		transform.position.z -= g_player.step;
 		mix_into(transform.position, Uniform::Cam.xyz, 17.f/16.f);
@@ -305,12 +305,12 @@ namespace Demo {
 		Uniform::Time.x = frame.time;
 
 		mat4 rotation, translation, projection;
-		transpose(MakeRotation(frame.angles * DEG2RAD), rotation);
+		transpose(MakeRotation(Math::ToRadians(frame.angles)), rotation);
 		translation = i4x4;
 		translation.GetPosition() -= frame.pos;
 
 		float aspect = Gfx::GetAspectRatio();
-		g_fov.x = ScaleFov(frame.fov * DEG2RAD, aspect * (9.f/16.f));
+		g_fov.x = ScaleFov(Math::ToRadians(frame.fov), aspect * (9.f/16.f));
 		g_fov.y = ScaleFov(g_fov.x, 1.f / aspect);
 
 		MakePerspective(g_fov, 2.f, 8192.f, projection);
@@ -319,7 +319,7 @@ namespace Demo {
 		Uniform::Cache::ViewProj = projection * ToYUp * Uniform::View;
 		Uniform::MVP = Uniform::Cache::ViewProj;
 		Uniform::Cam.xyz = frame.pos;
-		Uniform::Cam.w = frame.shadow_angle / DEG2RAD;
+		Uniform::Cam.w = Math::ToDegrees(frame.shadow_angle);
 
 		Gfx::SetRenderTarget(frame.render_target, &Gfx::Clear::Depth);
 		Map::Render();
