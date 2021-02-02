@@ -867,21 +867,21 @@ FORCEINLINE void IntersectPlanes(const vec4& p0, const vec4& p1, vec3& origin, v
 	mad(origin, coeff[1], -p1.w);
 }
 
-FORCEINLINE void IntersectPlanes(const vec4& p0, const vec4& p1, const vec4& p2, vec3& origin) {
+FORCEINLINE void IntersectPlanes(const vec4& p0, const vec4& p1, const vec4& p2, vec3& intersection) {
 	/*
 	x*p0.x + y*p0.y + z*p0.z + p0.w = 0
 	x*p1.x + y*p1.y + z*p1.z + p1.w = 0
 	x*p2.x + y*p2.y + z*p2.z + p2.w = 0
 
-	[p0.x  p0.u  p0.z ]   [x]   [-p0.w]
-	[p1.x  p1.u  p1.z ]   [x]   [-p1.w]
-	[p2.x  p2.u  p2.z ]   [x]   [-p2.w]
+	[p0.x  p0.y  p0.z ]   [x]   [-p0.w]
+	[p1.x  p1.y  p1.z ] * [x] = [-p1.w]
+	[p2.x  p2.y  p2.z ]   [x]   [-p2.w]
 	*/
 
 	mat3 coeff(p0.xyz, p1.xyz, p2.xyz), tmp;
 	transpose(coeff, tmp);
 	invert(tmp, coeff);
-	origin = coeff * vec3(-p0.w, -p1.w, -p2.w);
+	intersection = coeff * vec3(-p0.w, -p1.w, -p2.w);
 }
 
 FORCEINLINE void ClipSegmentByPlane(const vec3& origin, const vec3& dir, const vec4& plane, float& tmin, float& tmax, float epsilon = 0.f) {
