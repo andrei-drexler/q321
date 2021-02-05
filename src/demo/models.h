@@ -100,7 +100,7 @@ namespace Demo {
 NOINLINE u32 ReadVarint(const u8*& ptr) {
 	u32 result = 0;
 
-	u8 shift = 0;
+	u32 shift = 0;
 	u8 fragment;
 	do {
 		fragment = *ptr++;

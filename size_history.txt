@@ -1321,3 +1321,4 @@
 66131,added gothic_trim/baseboard09_o3 stub
 66097,tweaked oct_to_vec3
 66055,tweaked plane decoding
+66054,tweaked readvarint
