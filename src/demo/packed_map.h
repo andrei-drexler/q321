@@ -303,15 +303,11 @@ FORCEINLINE void Demo::PackedMap::GetPlane(const i32*& plane_data, const i16 bru
 			DistFractBits	= 4,
 			DistScale		= 1 << DistFractBits;
 
-		vec2 oct;
 		i32 x = value & OctMask;
 		i32 y = value >> 16;
-		oct.x = DecodeSignMagnitude(x) / float(OctMaxValue);
-		oct.y = DecodeSignMagnitude(y) / float(OctMaxValue);
-		assert(oct.x >= -1.f && oct.x <= 1.f);
-		assert(oct.y >= -1.f && oct.y <= 1.f);
-
-		plane.xyz = oct_to_vec3(oct);
-		plane.w = DecodeSignMagnitude(w) * (1.f / float(DistScale));
+		plane.x = DecodeSignMagnitude(x) / float(OctMaxValue);
+		plane.y = DecodeSignMagnitude(y) / float(OctMaxValue);
+		plane.w = DecodeSignMagnitude(w) / float(DistScale);
+		plane.xyz = oct_to_vec3(plane.xy);
 	}
 }

@@ -1032,6 +1032,8 @@ FORCEINLINE vec3 oct_to_vec3(const vec2& e) {
 	vec3 v;
 	float absx = Math::abs(e.x);
 	float absy = Math::abs(e.y);
+	assert(absx <= 1.f);
+	assert(absy <= 1.f);
 	v.z = 1.f - absx - absy;
 	if (v.z < 0.f) {
 		float sx = Math::sign_nonzero(e.x);
