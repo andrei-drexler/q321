@@ -1780,6 +1780,46 @@ TEXA(gtbsbrd09e2) {
 	return T0(uv);
 }
 
+// gothic_trim/baseboard09_o3
+TEX(gtbsbrd09o3) {
+	uv.y *= .5; // correct aspect ratio
+	float
+		b = FBMT(uv, vec2(7), .9, 3., 4),
+		d, m
+	;
+	vec3 c = vec3(b * .6);
+	vec2 p;
+	p.x = mod(uv.x + .15, .33) - .15;
+	p.y = uv.y - .5;
+	p.x *= 2.;
+	c = mix(c, RGB(111, 99, 77) * b, m = ls(.0, -.01, d = box(p, vec2(.14, .05)) - .05)); // top slots
+
+	c *= 1.
+		+ 2. * tri(.46, .033, uv.y) // top specular
+		+ tri(.0, .01, d) // slot edge highlight
+		- .7 * tri(.14, .01, uv.y) // dark groove
+		- .5 * tri(-.01, .01, d) // inner slot shadow
+		- ridged(fract(p.x * 44.)) * sat(-d * 44.) * b // corrugated pipe ridges
+		- ls(.1, .0, uv.y) // bottom shadow
+	;
+
+	// vertical pipes (bottom)
+	//p.x = mod(mod(uv.x, .33) - .02, .1) - .05;
+	p.x = mod(elongate(mod(uv.x, .33), .03), .1) - .05; // slightly uneven repetition
+	p.y = uv.y - .14;
+	c = mix(c, RGB(144, 99, 77) * b, m = ls(.0, -.01, d = box(p, vec2(0, .04)) - .025));
+	c *= 1.
+		- .6 * pow(tri(-.005, .03, d), 4.) // edge shadow
+		+ 1.5 * tri(.0, .015, p.x) * tri(.0, .05, p.y) // specular
+	;
+	c *= 1.
+		- b * tri(.3, .7, .9, fract(p.y * 55. + .2)) * m // ridges
+		- sqr(tri(.5, .01, uv.y)) // bilinear filtering hack: darken top
+	;
+
+	return c;
+}
+
 // (384 x 384) Combination of:
 // - gothic_door/skull_door_a ( 64 x 256 - bottom right)
 // - gothic_door/skull_door_b (256 x 256 - bottom mid)
