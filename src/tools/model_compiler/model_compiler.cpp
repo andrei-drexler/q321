@@ -421,7 +421,7 @@ int main() {
 			continue;
 		}
 
-		//AdaptiveQuantization(model);
+		AdaptiveQuantization(model);
 		//ExportObj(model, (std::string("d:\\temp\\") + std::string(ExtractFileName({path})) + ".obj").c_str());
 
 		Mesh mesh;

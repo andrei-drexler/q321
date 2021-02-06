@@ -1322,3 +1322,4 @@
 66097,tweaked oct_to_vec3
 66055,tweaked plane decoding
 66054,tweaked readvarint
+65687,enabled adaptive quantization
