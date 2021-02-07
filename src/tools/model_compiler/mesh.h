@@ -291,6 +291,8 @@ void AdaptiveQuantization(Mesh& mesh, float quality = 2.f) {
 
 	/* snap vertices */
 	for (Mesh::Part& part : mesh.parts) {
+		bool is_sprite = Demo::Material::Properties[part.material] & Demo::Material::Sprite;
+
 		for (Mesh::Vertex& v : part.vertices) {
 			u16 min_dist = min_vertex_dist[v];
 			if (min_dist <= 0)
@@ -300,8 +302,10 @@ void AdaptiveQuantization(Mesh& mesh, float quality = 2.f) {
 				continue;
 			u16 bias = 1 << (bits - 1);
 			u16 mask = (1 << bits) - 1;
-			for (auto& k : v.pos)
-				k = (k + bias) & ~mask;
+
+			/* quantize components, skipping X axis for sprites */
+			for (size_t axis = is_sprite; axis < 3; ++axis)
+				v.pos[axis] = (v.pos[axis] + bias) & ~mask;
 		}
 	}
 }
