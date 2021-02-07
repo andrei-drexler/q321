@@ -6,6 +6,8 @@
 
 #ifndef assert
 	#ifndef NDEBUG
+		namespace Sys { void Log(const char* text); }
+
 		#define assert(condition)											\
 			 do {															\
 				if (!(condition)) {											\
