@@ -1780,6 +1780,55 @@ TEXA(gtbsbrd09e2) {
 	return T0(uv);
 }
 
+// gothic_trim/baseboard09_c3
+TEX(gtbsbrd09c3) {
+	float
+		b = FBMT(uv, vec2(9, 3), .9, 3., 4), // base FBM
+		t = .65 + 1.4 * b * b; // base texture intensity (remapped FBM)
+	vec3
+		c = RGB(60, 50, 44) * t, // base color
+		k; // secondary color
+	vec2 p, q;
+
+	p.x = mod(uv.x + .14, .28) - .22;
+	p.y = uv.y * .4 - .09;
+
+	// panels
+	c *= 1.
+		+ b * tri(-.13, .006, p.x) // panel edge highlight
+		- tri(-.135, .004, p.x) // panel edge shadow
+	;
+	c = add_rivet(c, vec2(abs(p.x + .135) - .02, mod(uv.y * .5 - .02, .07) - .05), .006, .4, .7);
+
+	// vent interior
+	k = RGB(77, 55, 33) * t * (.7 + .3 * ridged(fract(uv.x * 66.)));
+	q.x = p.x;
+	q.y = elongate(p.y - .16, .07);
+	c = mix(c, k, msk(circ(q, .02), .03));
+
+	// top slots
+	q.x = mod(uv.x - .014, .14);
+	q.y = uv.y;
+	c = mix(c, RGB(122, 99, 88) * t, tri(.9, .91, 1., uv.y) * ls(.03, .033, abs(q.x - .07)));
+	c = mix(c, RGB(88, 77, 66) * t * ls(1., .96, uv.y), ls(.86, .87, uv.y) * ls(.033, .03, abs(q.x - .07)));
+
+	// stadium-shaped vents
+	c = gklblki_vent(c, p * 1.2, b);
+
+	// bottom panel
+	c = mix(c, t * mix(RGB(45, 77, 66), RGB(99, 55, 22), NT(uv.x * 55., 55.)), ls(.25, .23, uv.y)); // base color
+
+	c *= 1.
+		//+ b * tri(.5, .3, fract(uv.x * 99.)) * tri(.23, .025, uv.y) // bottom panel edge ridges
+		+ .7 * sqr(tri(.23, .03, uv.y)) // bottom panel edge highlight
+		- .4 * tri(.22, .18, .12, uv.y) // bottom panel edge shadow
+		- .5 * ls(.23, .21, uv.y) // darken bottom panel
+		- .5 * ls(.1, .0, uv.y) // black bottom
+	;
+
+	return c;
+}
+
 // gothic_trim/baseboard09_o3
 TEX(gtbsbrd09o3) {
 	uv.y *= .5; // correct aspect ratio

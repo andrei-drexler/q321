@@ -77,6 +77,7 @@
 	x(gdmnblk15fx,			FSVertexBits)\
 	x(gtbsbrd09e,			FSVertexBits)\
 	x(gtbsbrd09e2,			FSVertexBits)\
+	x(gtbsbrd09c3,			FSVertexBits)\
 	x(gtbsbrd09o3,			FSVertexBits)\
 	x(giron01e,				FSVertexBits)\
 	x(giron01nt3,			FSVertexBits)\
@@ -239,6 +240,7 @@
 	x(gdmnblk15fx,		Texture::gblks15,	Shader::gdmnblk15fx,	256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gtbsbrd09e,		Texture::White,		Shader::gtbsbrd09e,		256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gtbsbrd09e2,		Texture::gtbsbrd09e,Shader::gtbsbrd09e2,	128,	64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(gtbsbrd09c3,		Texture::White,		Shader::gtbsbrd09c3,	256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gtbsbrd09o3,		Texture::White,		Shader::gtbsbrd09o3,	256,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(scmpblk17,		Texture::gblks15,	Shader::scmpblk17,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(gskdr,			Texture::gblks15,	Shader::gskdr,			384,	384,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -363,6 +365,7 @@
 	x("gothic_block/demon_block15fx",			Lmapped,		gdmnblk15fx,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/baseboard09_e",				Lmapped,		gtbsbrd09e,		Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/baseboard09_e2",				Lmapped,		gtbsbrd09e2,	Solid,		Opaque|NeedsUV,			(0))\
+	x("gothic_trim/baseboard09_c3",				Lmapped,		gtbsbrd09c3,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_trim/baseboard09_o3",				Lmapped,		gtbsbrd09o3,	Solid,		Opaque|NeedsUV,			(0))\
 	x("gothic_wall/iron01_e",					Lmapped,		giron01e,		Solid,		Opaque,					(0))\
 	x("gothic_wall/iron01_ntech3",				Lmapped,		giron01nt3,		Solid,		Opaque|NeedsUV,			(0))\
