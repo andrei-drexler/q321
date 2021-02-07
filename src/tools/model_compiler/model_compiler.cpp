@@ -99,24 +99,37 @@ bool ExportObj(const MD3::Header& model, const char* path, float scale = 1.f, in
 
 ////////////////////////////////////////////////////////////////
 
-void AdaptiveQuantization(MD3::Header& model, float quality = 2.f) {
-	MD3::VertexPositionHashMap<u16> min_vertex_dist;
-
-	/* find per-vertex minimum edge distances */
-	for (MD3::Surface& surf : MD3::GetSurfaces(model)) {
-		MD3::Triangle* tris = surf.GetTris();
-		MD3::Vertex* verts = surf.GetVerts();
-
-		for (u16 i = 0; i < surf.num_verts; ++i) {
-			min_vertex_dist[verts[i]] = 0x7fff;
+void AdaptiveQuantization(Mesh& mesh, float quality = 2.f) {
+	struct PosHasher {
+		/* equality comparison */
+		bool operator()(const Mesh::Vertex& v0, const Mesh::Vertex& v1) const {
+			return 0 == memcmp(&v0.pos, &v1.pos, sizeof(v0.pos));
 		}
 
-		for (u16 i = 0; i < surf.num_tris; ++i) {
+		/* hashing */
+		size_t operator()(const Mesh::Vertex& v) const {
+			size_t result = HashValue(v.pos[0]);
+			result = HashCombine(result, v.pos[1]);
+			result = HashCombine(result, v.pos[2]);
+			return result;
+		}
+	};
+
+	using VertexHashMap = std::unordered_map<Mesh::Vertex, u16, PosHasher, PosHasher>;
+	VertexHashMap min_vertex_dist;
+
+	/* find per-vertex minimum edge distances */
+	for (Mesh::Part& part : mesh.parts) {
+		for (size_t i = 0; i < part.vertices.size(); ++i) {
+			min_vertex_dist[part.vertices[i]] = 0x7fff;
+		}
+
+		for (size_t i = 0; i < part.indices.size(); i += 3) {
 			for (u8 j = 0; j < 3; ++j) {
-				u32 i0 = tris[i].indices[j];
-				u32 i1 = tris[i].indices[(j + 1) % 3];
-				MD3::Vertex& v0 = verts[i0];
-				MD3::Vertex& v1 = verts[i1];
+				u32 i0 = part.indices[i + j];
+				u32 i1 = part.indices[i + (j + 1) % 3];
+				Mesh::Vertex& v0 = part.vertices[i0];
+				Mesh::Vertex& v1 = part.vertices[i1];
 				u16& min_dist = min_vertex_dist[v0];
 				u16 edge_dist = 0;
 				for (u16 k = 0; k < 3; ++k)
@@ -127,13 +140,13 @@ void AdaptiveQuantization(MD3::Header& model, float quality = 2.f) {
 	}
 
 	/* propagate min dist to neighbors */
-	for (MD3::Surface& surf : MD3::GetSurfaces(model)) {
-		for (MD3::Triangle& tri : MD3::GetTriangles(surf)) {
+	for (Mesh::Part& part : mesh.parts) {
+		for (size_t i = 0; i < part.indices.size(); i += 3) {
 			for (u8 j = 0; j < 3; ++j) {
-				u32 i0 = tri.indices[j];
-				u32 i1 = tri.indices[(j + 1) % 3];
-				MD3::Vertex& v0 = surf.GetVerts()[i0];
-				MD3::Vertex& v1 = surf.GetVerts()[i1];
+				u32 i0 = part.indices[i + j];
+				u32 i1 = part.indices[i + (j + 1) % 3];
+				Mesh::Vertex& v0 = part.vertices[i0];
+				Mesh::Vertex& v1 = part.vertices[i1];
 				u16& d0 = min_vertex_dist[v0];
 				u16& d1 = min_vertex_dist[v1];
 				d0 = std::min(d0, d1);
@@ -142,8 +155,8 @@ void AdaptiveQuantization(MD3::Header& model, float quality = 2.f) {
 	}
 
 	/* snap vertices */
-	for (MD3::Surface& surf : MD3::GetSurfaces(model)) {
-		for (MD3::Vertex& v : MD3::GetVertices(surf)) {
+	for (Mesh::Part& part : mesh.parts) {
+		for (Mesh::Vertex& v : part.vertices) {
 			u16 min_dist = min_vertex_dist[v];
 			if (min_dist <= 0)
 				continue;
@@ -421,11 +434,11 @@ int main() {
 			continue;
 		}
 
-		AdaptiveQuantization(model);
 		//ExportObj(model, (std::string("d:\\temp\\") + std::string(ExtractFileName({path})) + ".obj").c_str());
 
 		Mesh mesh;
 		ConvertModel(model, mesh);
+		AdaptiveQuantization(mesh);
 		WeldVertices(mesh);
 		Optimize(mesh);
 		PrepareTriangleIndices(mesh);

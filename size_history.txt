@@ -1323,3 +1323,4 @@
 66055,tweaked plane decoding
 66054,tweaked readvarint
 65687,enabled adaptive quantization
+65695,refactored adaptivequantization
