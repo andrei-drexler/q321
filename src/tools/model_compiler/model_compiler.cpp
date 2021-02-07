@@ -306,7 +306,7 @@ void CompileModel(const Mesh& mesh, const Options& options, const std::string& p
 	print << "};"sv;
 	print.Flush();
 
-	printf(INDENT "%zd parts, %zd verts, %zd tris\n",
+	printf("%zd parts, %3zd verts, %3zd tris\n",
 		output_parts.size(), num_vertices, num_tris
 	);
 }
@@ -345,8 +345,15 @@ int main() {
 	std::vector<std::string> model_names;
 	model_names.reserve(256);
 
+	/* determine max path length (for pretty-printing) */
+	size_t max_length = 0;
+	for (auto path : ModelPaths)
+		max_length = std::max(max_length, path.length());
+
 	for (auto path : ModelPaths) {
-		printf("Compiling %.*s\n", int(path.length()), path.data());
+		// -4 = remove extension and dot
+		assert(path.length() > 4 && path[path.length() - 4] == '.');
+		printf("%*.*s: ", -int(max_length - 4), int(path.length()) - 4, path.data());
 
 		std::string full_path = options.src_path + std::string{path};
 		if (!ReadFile(full_path.c_str(), contents)) {
