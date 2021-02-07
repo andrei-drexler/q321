@@ -3331,6 +3331,41 @@ void gr8torch2b_m() {
 	FCol *= Clr * 1.5 + .3;
 }
 
+// models/mapobjects/wallhead/wallhead02.jpg (texture)
+TEX(wallhead02) {
+	float
+		b = FBMT(uv, vec2(7), .7, 3., 4),
+		t = .8 + .8 * b * b;
+	return RGB(111, 77, 55) * t;
+}
+
+// models/mapobjects/wallhead/wallhead02.jpg (model shader)
+void wallhead02_m() {
+	FCol =
+		triplanar(4.) // base texture
+		* Clr * 2. // vertex lighting
+		* sat(.5 + Nor.x + Nor.z) // hardcoded shadow
+	;
+
+	vec3 p = Pos, q;
+	p.y = abs(p.y); // symmetry
+	q = p - vec3(13, 6, 23); // eye position
+	float r = length(q);
+	FCol.xyz *= 1.
+		- ls(5., .5, r) // darken eye socket interior
+		+ .3 * triaa(6., 2., r) // eye socket edge highlight
+		- .7 * triaa(8. + N(Pos.y), 5., p.z) * ls(8., 5., p.y) // teeth
+		- .5 * pow(triaa(20., 10., length(p - vec3(22, 26, 37))), 4.) // darken horn edge
+	;
+
+	q = p - vec3(18, -1, 13); // nasal cavity position
+	q.z *= .7; // stretch vertically
+	r = length(q);
+	FCol.xyz *= 1.
+		- ls(5., 3., r) * sat(.3 + .6 * q.z / r) // darken nasal cavity interior
+	;
+}
+
 // models/mapobjects/wallhead/lion.tga (texture)
 TEXA(lion) {
 	vec2 p = uv, q;

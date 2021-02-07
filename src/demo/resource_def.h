@@ -138,6 +138,8 @@
 	x(flame_large,			MapVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(gr8torch2b,			FSVertexBits)\
 	x(gr8torch2b_m,			MapVertexBits|Attrib::ColorBit|Gfx::Shader::NoCull)\
+	x(wallhead02,			FSVertexBits)\
+	x(wallhead02_m,			MiscModelVertexBits)\
 	x(lion,					FSVertexBits)\
 	x(lion_m,				MapVertexBits|Attrib::ColorBit)\
 	x(lion_mouth,			MapVertexBits|Attrib::ColorBit)\
@@ -292,6 +294,7 @@
 	x(q3bnr,			Texture::White,		Shader::q3bnr,			512,	128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(menubnr,			Texture::White,		Shader::menubnr,		1024,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget|Gfx::Texture::Flags::NoMips)\
 	x(gr8torch2b,		Texture::White,		Shader::gr8torch2b,		32,		64,		BGRA8,		Gfx::Texture::Flags::RenderTarget)\
+	x(wallhead02,		Texture::White,		Shader::wallhead02,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(lion,				Texture::White,		Shader::lion,			256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(botflare2,		Texture::White,		Shader::botflare2,		32,		128,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
 	x(tlptrns,			Texture::White,		Shader::tlptrns,		256,	256,	BGRA8,		Gfx::Texture::Flags::RenderTarget)\
@@ -403,6 +406,7 @@
 	x("models/mapobjects/storch/storch_tall",	storchtl,		gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/spotlamp/spotlamp_l",	fixture,		lt2,			Solid,		Opaque|NeedsUV,			(0))\
 	x("models/mapobjects/gratelamp/gratetorch2b",	gr8torch2b_m,	gr8torch2b,	Solid,		Opaque|NeedsUV,			(0))\
+	x("models/mapobjects/wallhead/wallhead02",	wallhead02_m,	wallhead02,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/wallhead/lion",		lion_m,			lion,			Solid,		Opaque,					(0))\
 	x("models/mapobjects/wallhead/lion_m",		lion_mouth,		gtprst3,		Solid,		Opaque,					(0))\
 	x("models/mapobjects/lamps/bot_wing",		botwing_m,		botwing,		Solid,		Opaque|NeedsUV,			(0))\

@@ -191,6 +191,8 @@ void flame() { Generic(); }
 void flame_large() { Generic(); }
 void gr8torch2b() { FS(); }
 void gr8torch2b_m() { miscmodel(); }
+void wallhead02() { FS(); }
+void wallhead02_m() { misc_model(); }
 void lion() { FS(); }
 void lion_m() { misc_model(); }
 void lion_mouth() { misc_model(); }
