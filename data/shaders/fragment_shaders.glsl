@@ -1836,8 +1836,8 @@ TEX(gtbsbrd09o3) {
 		b = FBMT(uv, vec2(7), .9, 3., 4),
 		d, m
 	;
-	vec3 c = vec3(b * .6);
-	vec2 p;
+	vec3 c = vec3(.6 * b);
+	vec2 p, q;
 	p.x = mod(uv.x + .15, .33) - .15;
 	p.y = uv.y - .5;
 	p.x *= 2.;
@@ -1846,24 +1846,105 @@ TEX(gtbsbrd09o3) {
 	c *= 1.
 		+ 2. * tri(.46, .033, uv.y) // top specular
 		+ tri(.0, .01, d) // slot edge highlight
-		- .7 * tri(.14, .01, uv.y) // dark groove
-		- .5 * tri(-.01, .01, d) // inner slot shadow
-		- ridged(fract(p.x * 44.)) * sat(-d * 44.) * b // corrugated pipe ridges
+		- .9 * sqr(tri(.13, .03, uv.y)) // dark groove
+		- .7 * tri(-.01, .01, d) // inner slot shadow
+		- ridged(fract(p.x * 44.)) * sat(-d * 44.) * b // top pipe ridges
+		//- ls(.08, .0, uv.y - .02 * NT(uv.x * 15., 15.)) // jagged bottom shadow
 		- ls(.1, .0, uv.y) // bottom shadow
+		- ls(.03, .01, abs(uv.y - .33)) // shadow behind top third pipes
 	;
 
-	// vertical pipes (bottom)
+	vec3 k = mix(RGB(122, 88, 66), RGB(133, 77, 44), b) * (.5 + 1.5 * b * b); // copper-ish color
+	c = mix(c, c * 8. * greebles(uv * 2., b, .3), ls(.35, .3, uv.y)); // greeble up
+/*
+	c *= 1.
+		- (.4 - b) * ls(.4, .2, uv.y) // amplify noise and brighten up a bit
+	;
+*/
+/*
+	// thin twin middle pipes (90-degree corners)
+	p = mod(uv, .63) - vec2(.21, .3);
+	d = circ(q = min(p, vec2(0)), .02);
+	d = onion(d, .01);
+	d = onion(d, .005);
+	d = max(d, uv.y - .33);
+	d = max(d, p.x - .1);
+	c = mix(c, k, ls(.0, -.005, d));
+	c *= 1.
+		- .7 * tri(-.005, .0, .02, d)
+	;
+
+	p.x = mod(uv.x, .62) - .3;
+	p.y += .02;
+	c = mix(c, k * .5, ls(.0, -.005, d = box(p, vec2(.04, .02))));
+	c *= 1.
+		- .7 * tri(-.005, .0, .02, d)
+	;
+*/
+
+	// top third pipes and covers
+	p.x = abs(uv.x - .5); // horizontal symmetry
+	p.y = uv.y - .33;
+	d = abs(p.y) - .03;
+	d = max(d, -box(p - vec2(.16, 0), vec2(.02, 0)) + .01); // inner slots
+	d = max(d, -box(p - vec2(.55, 0), vec2(.01, 0)) + .08);
+	d = max(d, -box(p - vec2(.33, 0), vec2(.01, 0)) + .08);
+	c = mix(c, k, ls(.0, -.005, abs(p.y) - .013)); // top third pipes
+	c *= 1.
+		+ .5 * tri(.004, .006, p.y) // bright pipe reflection
+		- .7 * tri(-.004, .006, p.y) // dark pipe reflection
+	;
+	c *= 1.
+		- .7 * tri(.5, .05, fract(p.x * 11.)) * tri(.0, .02, p.y) // pipe segments
+	;
+	c = mix(c, k, m = ls(.0, -.005, d));
+	c *= 1.
+		+ .5 * tri(-.004, .004, d) // edge highlight
+		- .7 * tri(-.004, .0, .01 + .07 * ls(.02, .2, -p.y), d) * ls(.04, .0, p.y) // outer shadow
+	;
+
+	c = mix(c, c * k * 2., ls(.05 + .5 * sqr(NT(uv.x * 99., 99.)), -.1, .3 - uv.y) * ls(.35, .28, uv.y)); // grime
+
+	// bottom third pipes
+	p.y = uv.y - .117;
+	c = mix(c, k * .4 * b, ls(.0, -.005, abs(p.y) - .013));
+	c *= 1.
+		+ 1.5 * tri(.001, .007, p.y) // bright reflection
+		+ 1.5 * tri(.5, .3, fract(uv.x * 77. + .2)) * tri(.0, .01, p.y) // ridges
+	;
+
+	// vertical pipes (bottom third)
 	//p.x = mod(mod(uv.x, .33) - .02, .1) - .05;
 	p.x = mod(elongate(mod(uv.x, .33), .03), .1) - .05; // slightly uneven repetition
 	p.y = uv.y - .14;
-	c = mix(c, RGB(144, 99, 77) * b, m = ls(.0, -.01, d = box(p, vec2(0, .04)) - .025));
+	c = mix(c, RGB(144, 99, 77) * b, m = ls(.0, -.01, d = box(p + vec2(0, .01), vec2(0, .05)) - .025));
 	c *= 1.
-		- .6 * pow(tri(-.005, .03, d), 4.) // edge shadow
+		- .9 * pow(tri(-.005, .03, d), 4.) // edge shadow
 		+ 1.5 * tri(.0, .015, p.x) * tri(.0, .05, p.y) // specular
 	;
 	c *= 1.
-		- b * tri(.3, .7, .9, fract(p.y * 55. + .2)) * m // ridges
+		- b * tri(.3, .7, .9, fract(p.y * 55.)) * m // ridges
 		- sqr(tri(.5, .01, uv.y)) // bilinear filtering hack: darken top
+	;
+
+	// vertical pipe fittings
+	d = abs(d - .005) - .01 * ls(-.05, .05, p.y);
+	c = mix(c, RGB(188, 155, 133) * b * 2. * ls(.06, .01, length(p - vec2(0, .06))), m = ls(.0, -.01, d = max(d, -p.y)));
+
+	c *= 1.
+		- sqr(tri(-.01, .0, .012, d)) // pipe fitting outer shadow
+		//+ .5 * tri(.007, .007, d) // pipe fitting edge highlight
+	;
+
+	// small rectangular flaps
+	d = box(p - vec2(0, .1), vec2(.025, .007));
+	c *= 1.
+		- .7 * sqr(ls(.02, .005, d)) // shadow
+	;
+	d = max(d, -box(p - vec2(0, .082), vec2(.015, .02)));
+	c = mix(c, k * b * 1.5, ls(.004, .0, d));
+	c *= 1.
+		+ .5 * tri(.0, .004, d) // edge highlight
 	;
 
 	return c;
