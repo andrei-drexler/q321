@@ -1328,3 +1328,4 @@
 65907,added gothic_trim/baseboard09_c3
 65937,added very basic wallhead02
 66167,more detailed baseboard09_o3
+66108,tweaked baseboard09_o3

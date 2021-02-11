@@ -1916,18 +1916,20 @@ TEX(gtbsbrd09o3) {
 	// vertical pipes (bottom third)
 	//p.x = mod(mod(uv.x, .33) - .02, .1) - .05;
 	p.x = mod(elongate(mod(uv.x, .33), .03), .1) - .05; // slightly uneven repetition
-	p.y = uv.y - .14;
-	c = mix(c, RGB(144, 99, 77) * b, m = ls(.0, -.01, d = box(p + vec2(0, .01), vec2(0, .05)) - .025));
+	p.y = uv.y - .13;
+	c = mix(c, RGB(144, 99, 77) * b, m = ls(.0, -.01, d = box(p, vec2(0, .05)) - .025));
 	c *= 1.
 		- .9 * pow(tri(-.005, .03, d), 4.) // edge shadow
-		+ 1.5 * tri(.0, .015, p.x) * tri(.0, .05, p.y) // specular
+		+ 1.5 * tri(.0, .015, p.x) * tri(.0, .055, p.y) // specular
 	;
+	p.y += sqr(p.x) * 555. * p.y; // distortion: make ridges appear curved
 	c *= 1.
 		- b * tri(.3, .7, .9, fract(p.y * 55.)) * m // ridges
 		- sqr(tri(.5, .01, uv.y)) // bilinear filtering hack: darken top
 	;
 
 	// vertical pipe fittings
+	p.y = uv.y - .13;
 	d = abs(d - .005) - .01 * ls(-.05, .05, p.y);
 	c = mix(c, RGB(188, 155, 133) * b * 2. * ls(.06, .01, length(p - vec2(0, .06))), m = ls(.0, -.01, d = max(d, -p.y)));
 
