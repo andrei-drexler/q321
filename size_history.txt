@@ -1329,3 +1329,4 @@
 65937,added very basic wallhead02
 66167,more detailed baseboard09_o3
 66108,tweaked baseboard09_o3
+66125,tweaked 3x3 matrix determinant/inversion

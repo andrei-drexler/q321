@@ -592,31 +592,23 @@ vec3 operator*(const mat3& lhs, const vec3& rhs) {
 }
 
 float determinant(const mat3& m) {
-	return
-		m.x.x * m.y.y * m.z.z +
-		m.x.y * m.y.z * m.z.x +
-		m.x.z * m.y.x * m.z.y -
-		m.x.z * m.y.y * m.z.x -
-		m.x.y * m.y.x * m.z.z -
-		m.x.x * m.y.z * m.z.y ;
+	return dot(m[0], cross(m[1], m[2]));
 }
 
 NOINLINE void invert(const mat3& m, mat3& out) {
 	float det = determinant(m);
-	if (det != 0.f) {
-		out.x.x = (m.y.y*m.z.z-m.z.y*m.y.z) /  det;
-		out.x.y = (m.x.y*m.z.z-m.z.y*m.x.z) / -det;
-		out.x.z = (m.x.y*m.y.z-m.y.y*m.x.z) /  det;
-	
-		out.y.x = (m.y.x*m.z.z-m.z.x*m.y.z) / -det;
-		out.y.y = (m.x.x*m.z.z-m.z.x*m.x.z) /  det;
-		out.y.z = (m.x.x*m.y.z-m.y.x*m.x.z) / -det;
-	
-		out.z.x = (m.y.x*m.z.y-m.z.x*m.y.y) /  det;
-		out.z.y = (m.x.x*m.z.y-m.z.x*m.x.y) / -det;
-		out.z.z = (m.x.x*m.y.y-m.y.x*m.x.y) /  det;
+	if (det == 0.f) {
+		MemSet(&out);
 	} else {
-		out = o3x3;
+		mat3 tmp;
+		cross(m[1], m[2], tmp[0]);
+		cross(m[2], m[0], tmp[1]);
+		cross(m[0], m[1], tmp[2]);
+		transpose(tmp, out);
+		u32 i = 0;
+		do {
+			out.data[i] /= det;
+		} while (++i < 9);
 	}
 }
 
