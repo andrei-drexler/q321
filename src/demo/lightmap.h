@@ -503,9 +503,13 @@ NOINLINE void Demo::Map::Details::InitLightTrace(TraceInfo& trace) {
 // Maintains hue instead of clamping to white
 NOINLINE u32 Demo::Map::Details::ClampColor(const vec3& accum) {
 	float max_value = 255.f;
-	for (u8 i = 0; i < 3; ++i)
-		if (max_value < accum[i])
-			max_value = accum[i];
+	{
+		i32 i = 2;
+		do {
+			if (max_value < accum[i])
+				max_value = accum[i];
+		} while (--i >= 0);
+	}
 	float scale = 255.f / max_value;
 
 	u32 result = 0;
