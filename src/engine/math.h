@@ -677,12 +677,12 @@ constexpr mat3::mat3(const mat4& m) :
 { }
 
 NOINLINE void transpose(const mat4& m, mat4& out) {
-	// Note: for loop would have been inlined.
+	// Note: for loop would have been unrolled.
 	// We don't want that, hence the wacky do/while.
-	u16 i = 0;
+	i32 i = 15;
 	do {
 		out[i & 3][i >> 2] = m.data[i];
-	} while (++i < 16);
+	} while (--i >= 0);
 }
 
 FORCEINLINE mat4 transpose(const mat4& m) {
@@ -694,15 +694,15 @@ FORCEINLINE mat4 transpose(const mat4& m) {
 NOINLINE mat4 operator*(const mat4& lhs, const mat4& rhs) {
 #if 1
 	mat4 out;
-	for (u16 col = 0; col < 4; ++col) {
-		for (u16 row = 0; row < 4; ++row) {
-			out[col][row] =
-				lhs[0][row] * rhs[col][0] + 
-				lhs[1][row] * rhs[col][1] + 
-				lhs[2][row] * rhs[col][2] + 
-				lhs[3][row] * rhs[col][3] ;
-		}
+	MemSet(&out);
+
+	for (u32 i = 0; i < 64; ++i) {
+		u32 col = i >> 4;
+		u32 row = (i >> 2) & 3;
+		u32 j = i & 3;
+		out.data[i >> 2] += lhs[j][row] * rhs[col][j];
 	}
+
 	return out;
 #else
 	#define MUL(col, row)	lhs.x.row*rhs.col.x + lhs.y.row*rhs.col.y + lhs.z.row*rhs.col.z + lhs.w.row*rhs.col.w
