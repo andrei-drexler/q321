@@ -546,6 +546,16 @@ static constexpr mat3 o3x3(0.f);
 static constexpr mat3 i3x3(1.f);
 
 NOINLINE void transpose(const mat3& m, mat3& out) {
+#if 1
+	i32 i = 8;
+	i32 j = i;
+	do {
+		out.data[i] = m.data[j];
+		j -= 3;
+		if (j < 0)
+			j += 8;
+	} while (--i >= 0);
+#else
 	u32 remap =
 		((0^0)<< 0) | ((1^3)<< 3) | ((2^6)<< 6) |
 		((3^1)<< 9) | ((4^4)<<12) | ((5^7)<<15) |
@@ -556,6 +566,7 @@ NOINLINE void transpose(const mat3& m, mat3& out) {
 		out.data[i] = m.data[i ^ (remap & 7)];
 		remap >>= 3;
 	} while (++i < 9);
+#endif
 }
 
 FORCEINLINE mat3 transpose(const mat3& m) {
@@ -677,12 +688,23 @@ constexpr mat3::mat3(const mat4& m) :
 { }
 
 NOINLINE void transpose(const mat4& m, mat4& out) {
+#if 1
+	i32 i = 15;
+	i32 j = i;
+	do {
+		out.data[i] = m.data[j];
+		j -= 4;
+		if (j < 0)
+			j += 15;
+	} while (--i >= 0);
+#else
 	// Note: for loop would have been unrolled.
 	// We don't want that, hence the wacky do/while.
 	i32 i = 15;
 	do {
 		out[i & 3][i >> 2] = m.data[i];
 	} while (--i >= 0);
+#endif
 }
 
 FORCEINLINE mat4 transpose(const mat4& m) {
