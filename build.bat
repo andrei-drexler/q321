@@ -19,6 +19,7 @@ set range_libs=/RANGE:opengl32
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set mode=fast
+set iterations=100000
 if /i "%1" == "improve" set mode=improve
 if /i "%1" == "stable" set mode=stable
 if /i "%1" == "repro" set mode=repro
@@ -29,7 +30,10 @@ set reuse_file=%out_folder%reuse.dat
 
 if %mode% == improve (
 	set crinkler_reuse=IMPROVE
-	set crinkler_options=/COMPMODE:FAST /ORDERTRIES:100000 /HASHTRIES:1000
+	if not "%2" == "" (
+		set iterations=%2
+	)
+	set crinkler_options=/COMPMODE:FAST /ORDERTRIES:!iterations! /HASHTRIES:1000
 )
 
 if %mode% == stable (
