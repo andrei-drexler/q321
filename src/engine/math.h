@@ -769,25 +769,26 @@ NOINLINE mat4 MakeRotation(const vec3& angles) {
 			0.f,				0.f,				0.f,	1.f,	// column 3
 		};
 	} else {
-		mat4 rot[3]; // yaw, pitch, roll
+		mat4 result = i4x4;
 
 		u32 axis = 0;
 		do {
-			float s = Math::sin(angles[axis]);
-			float c = Math::cos(angles[axis]);
-
 			u32 i = axis == 2;			// 0 0 1
-			u32 j = 2 - (axis == 0);	// 1 2 2
+			u32 j = (axis != 0) + 1;	// 1 2 2
 
-			rot[axis] = i4x4;
-			rot[axis][i][i] = c;
-			rot[axis][i][j] = s;
-			rot[axis][j][i] = -s;
-			rot[axis][j][j] = c;
-		
+			mat4 rot = i4x4;
+			float c = Math::cos(angles[axis]);
+			rot[i][i] = c;
+			rot[j][j] = c;
+
+			float s = Math::sin(angles[axis]);
+			rot[j][i] = -s;
+			rot[i][j] = s;
+
+			result = result * rot;
 		} while (++axis < 3);
 
-		return rot[0] * rot[1] * rot[2];
+		return result;
 	}
 }
 

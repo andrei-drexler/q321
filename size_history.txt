@@ -1333,3 +1333,4 @@
 66075,tweaked clampcolor
 66023,tweaked mat4 multiplication and transpose
 66008,new mat3/mat4 transpose functions
+66002,tweaked mat4 makerotation
