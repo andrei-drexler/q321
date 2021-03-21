@@ -9,9 +9,9 @@ MM.      ,MP      ,89     ,;j9   MM
       MMb    (O)  .M'                
        `bood' bmmmd'                 
 
-An unofficial Quake III: Arena demake in 63,420 bytes*
+An unofficial Quake III: Arena demake in 65,111 bytes*
 Also, a work in progress.
-Andrei Drexler, Dec 2020 
+Andrei Drexler, 2021/03/21
 
 
 // REQUIREMENTS //
