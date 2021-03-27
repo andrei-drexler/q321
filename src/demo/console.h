@@ -10,6 +10,7 @@
 
 #define CVAR_LIST(x)			\
 	x(sensitivity,		1)		\
+	x(cl_inverty,		0)		\
 	x(com_maxFps,		0)		\
 	x(cg_fov,			90)		\
 	x(cg_zoomfov,		45)		\

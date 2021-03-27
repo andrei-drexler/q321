@@ -1335,3 +1335,4 @@
 66008,new mat3/mat4 transpose functions
 66002,tweaked mat4 makerotation
 65111,--- alpha 1 ---
+66016,added cl_inverty
