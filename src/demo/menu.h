@@ -3,34 +3,34 @@
 ////////////////////////////////////////////////////////////////
 
 #define DEMO_MENUS(begin, item, end)\
-	/*Name,							Bg Scale X,			Bg Scale Y*/\
-	begin(MainMenu,					0.f,				0.f)\
-		/*Text,						Action,				X,		Y,		Flags,						Data*/\
-		item("new game",			NewGame,			0,		120,	0,							0)\
-		item("setup",				Options,			0,		40,		0,							0)\
-		item("cinematics",			Options,			0,		-40,	0,							0)\
-		item("exit",				ConfirmExitGame,	0,		-120,	0,							0)\
+	/*Name,						Bg Scale X,		Bg Scale Y*/\
+	begin(MainMenu,				0.f,			0.f)\
+		/*Text,					Type,			Action/Data,				X,		Y,	*/\
+		item("new game",		Default,		Action::NewGame,			0,		120)\
+		item("setup",			Default,		Action::Options,			0,		40)\
+		item("cinematics",		Default,		Action::None,				0,		-40)\
+		item("exit",			Default,		Action::ConfirmExitGame,	0,		-120)\
 	end()\
-	/*Name,							Bg Scale X,			Bg Scale Y*/\
-	begin(InGame,					7.f/8.f,			5.f/8.f)\
-		item("resume game",			CloseMenu,			0,		160,	0,							0)\
-		item("setup",				Options,			0,		80,		0,							0)\
-		item("next arena",			NextMap,			0,		0,		0,							0)\
-		item("leave arena",			QuitMap,			0,		-80,	0,							0)\
-		item("exit game",			ConfirmExitGame,	0,		-160,	0,							0)\
+	/*Name,						Bg Scale X,		Bg Scale Y*/\
+	begin(InGame,				7.f/8.f,		5.f/8.f)\
+		item("resume game",		Default,		Action::CloseMenu,			0,		160)\
+		item("setup",			Default,		Action::Options,			0,		80)\
+		item("next arena",		Default,		Action::NextMap,			0,		0)\
+		item("leave arena",		Default,		Action::QuitMap,			0,		-80)\
+		item("exit game",		Default,		Action::ConfirmExitGame,	0,		-160)\
 	end()\
-	/*Name,							Bg Scale X,			Bg Scale Y*/\
-	begin(ExitGameModal,			6.f/8.f,			3.5f/8.f)\
-		item("exit game?",			CloseMenu,			0,		56,		Item::Flags::Decoration,	0)\
-		item("yes",					ExitGame,			-76,	-56,	0,							0)\
-		item("/",					CloseMenu,			0,		-56,	Item::Flags::Decoration,	0)\
-		item("no",					CloseMenu,			64,		-56,	0,							0)\
+	/*Name,						Bg Scale X,		Bg Scale Y*/\
+	begin(ExitGameModal,		6.f/8.f,		3.5f/8.f)\
+		item("exit game?",		Decoration,		Action::CloseMenu,			0,		56)\
+		item("yes",				Default,		Action::ExitGame,			-76,	-56)\
+		item("/",				Decoration,		Action::CloseMenu,			0,		-56)\
+		item("no",				Default,		Action::CloseMenu,			64,		-56)\
 	end()\
-	/*Name,							Bg Scale X,			Bg Scale Y*/\
-	begin(NewGame,					6.5f/8.f,			4.f/8.f)\
-		item("choose arena:",		CloseMenu,			0,		144,	Item::Flags::Decoration,	0)\
-		item(" ",					LoadMap,			-128,	-96,	Item::Flags::Levelshot,		Map::ID::q3dm1)\
-		item(" ",					LoadMap,			+128,	-96,	Item::Flags::Levelshot,		Map::ID::q3dm17)\
+	/*Name,						Bg Scale X,		Bg Scale Y*/\
+	begin(NewGame,				6.5f/8.f,		4.f/8.f)\
+		item("choose arena:",	Decoration,		Action::CloseMenu,			0,		144)\
+		item(" ",				Levelshot,		Map::ID::q3dm1,				-128,	-96)\
+		item(" ",				Levelshot,		Map::ID::q3dm17,			+128,	-96)\
 	end()\
 
 ////////////////////////////////////////////////////////////////
@@ -44,9 +44,9 @@ namespace Demo::Menu {
 		QuitMap,
 		ConfirmExitGame,
 		ExitGame,
-		LoadMap,
 
 		Count,
+		None = Count,
 	};
 
 	enum class Direction : i32 {
@@ -55,15 +55,15 @@ namespace Demo::Menu {
 	};
 
 	namespace Item {
-		enum Flags {
-			Decoration			= 1 << 0,
-			Levelshot			= 1 << 1,
+		enum Type {
+			Decoration,
+			Default,
+			Levelshot,
 		};
 
 		struct State {
 			const char*			text;
-			u16					flags;
-			Action				action;
+			u8					type;
 			u8					data;
 			vec2				pos;
 		};
@@ -109,7 +109,7 @@ namespace Demo::Menu {
 		};
 
 		static constexpr char ItemStringList[] =
-			#define PP_ADD_ITEM_STRING(caption, action, x, y, flags, data) caption "\0"
+			#define PP_ADD_ITEM_STRING(caption, type, data, x, y) caption "\0"
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_STRING, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_STRING
 		;
@@ -152,21 +152,15 @@ namespace Demo::Menu {
 			NumCreditsLines = Constexpr::CountLines(Details::CreditsText),
 			NumEmptyCreditsLines = Constexpr::CountEmptyLines(Details::CreditsText);
 
-		static constexpr Action ItemActions[ItemCount] = {
-			#define PP_ADD_ITEM_ACTION(caption, action, x, y, flags, data) Action::action,
-			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_ACTION, PP_IGNORE_ARGS)
-			#undef PP_ADD_ITEM_ACTION
-		};
-
-		static constexpr u16 ItemFlags[ItemCount] = {
-			#define PP_ADD_ITEM_FLAGS(caption, action, x, y, flags, data) flags,
-			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_FLAGS, PP_IGNORE_ARGS)
-			#undef PP_ADD_ITEM_FLAGS
+		static constexpr u8 ItemType[ItemCount] = {
+			#define PP_ADD_ITEM_TYPE(caption, type, data, x, y) u8(Item::Type::type),
+			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_TYPE, PP_IGNORE_ARGS)
+			#undef PP_ADD_ITEM_TYPE
 		};
 
 		static constexpr u8 ItemOffsets[2][ItemCount] = {
-			#define PP_ADD_ITEM_OFFSET_X(caption, action, x, y, flags, data) EncodeSignMagnitude(x / 4),
-			#define PP_ADD_ITEM_OFFSET_Y(caption, action, x, y, flags, data) EncodeSignMagnitude((y - 16) / 4),
+			#define PP_ADD_ITEM_OFFSET_X(caption, type, data, x, y) EncodeSignMagnitude(x / 4),
+			#define PP_ADD_ITEM_OFFSET_Y(caption, type, data, x, y) EncodeSignMagnitude((y - 16) / 4),
 			{DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_OFFSET_X, PP_IGNORE_ARGS)},
 			{DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_OFFSET_Y, PP_IGNORE_ARGS)},
 			#undef PP_ADD_ITEM_OFFSET_X
@@ -174,7 +168,7 @@ namespace Demo::Menu {
 		};
 
 		static constexpr u8 ItemData[ItemCount] = {
-			#define PP_ADD_ITEM_DATA(caption, action, x, y, flags, data) (u8)data,
+			#define PP_ADD_ITEM_DATA(caption, type, data, x, y) (u8)data,
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_DATA, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_DATA
 		};
@@ -229,7 +223,7 @@ NOINLINE void Demo::Menu::AdvanceFocus(Direction direction) {
 		// This allows us to use the same wrap-around check for both directions.
 		if (focus >= num_items)
 			focus = wrap;
-	} while (items[focus].flags & Item::Flags::Decoration);
+	} while (items[focus].type == Item::Type::Decoration);
 
 	g_active->focus = focus;
 }
@@ -264,9 +258,8 @@ FORCEINLINE void Demo::Menu::Init() {
 		Item::State& item = Details::g_items[item_index];
 		item.text = text;
 		text = NextAfter(text);
-		item.flags = Details::ItemFlags[item_index];
+		item.type = Details::ItemType[item_index];
 		item.data = Details::ItemData[item_index];
-		item.action = Details::ItemActions[item_index];
 		item.pos[0] = float(DecodeSignMagnitude(Details::ItemOffsets[0][item_index]) << 2);
 		item.pos[1] = float(DecodeSignMagnitude(Details::ItemOffsets[1][item_index]) << 2);
 	} while (++item_index < Details::ItemCount);
@@ -329,42 +322,50 @@ NOINLINE bool Demo::Menu::Update(float dt) {
 			assert(g_active->focus < g_active->num_items);
 			const Item::State& item = g_active->items[g_active->focus];
 
-			switch (item.action) {
-				case Action::CloseMenu:
-					CloseCurrent();
+			switch (item.type) {
+				default:
+				case Item::Type::Decoration:
 					break;
 
-				case Action::Options:
-					break;
-
-				case Action::NewGame:
-					Push(&NewGame);
-					break;
-
-				case Action::LoadMap:
+				case Item::Type::Levelshot:
 					CloseAll();
 					LoadMap(Map::ID(item.data));
 					break;
 
-				case Action::NextMap:
-					LoadNextMap();
-					CloseAll();
-					break;
+				case Item::Type::Default:
+					switch (Action(item.data)) {
+						case Action::CloseMenu:
+							CloseCurrent();
+							break;
 
-				case Action::ExitGame:
-					g_credits = 1;
-					[[fallthrough]];
+						case Action::Options:
+							break;
 
-				case Action::QuitMap:
-					ShowMainMenu();
-					break;
+						case Action::NewGame:
+							Push(&NewGame);
+							break;
 
-				case Action::ConfirmExitGame:
-					Push(&ExitGameModal);
-					AdvanceFocus(); // focus 'NO'
-					break;
+						case Action::NextMap:
+							LoadNextMap();
+							CloseAll();
+							break;
 
-				default:
+						case Action::ExitGame:
+							g_credits = 1;
+							[[fallthrough]];
+
+						case Action::QuitMap:
+							ShowMainMenu();
+							break;
+
+						case Action::ConfirmExitGame:
+							Push(&ExitGameModal);
+							AdvanceFocus(); // focus 'NO'
+							break;
+
+						default:
+							break;
+					}
 					break;
 			}
 		}
@@ -457,9 +458,13 @@ FORCEINLINE void Demo::Menu::Draw() {
 		const vec2* font_scale = &UI::FontScale[UI::LargeFont];
 		const vec2& pos = item.pos;
 
-		if (item.flags & Item::Flags::Levelshot) {
-			static constexpr vec2 LevelshotFontScale = UI::FontScale[UI::LargeFont] * 0.75f;
-			font_scale = &LevelshotFontScale;
+		const u32 SmallTextTypes = (1 << Item::Type::Levelshot);
+		if (SmallTextTypes & (1 << item.type)) {
+			static constexpr vec2 SmallFontScale = UI::FontScale[UI::LargeFont] * 0.75f;
+			font_scale = &SmallFontScale;
+		}
+
+		if (item.type == Item::Type::Levelshot) {
 			UI::DrawLevelshot(pos, item.data, focus_color & -i32(focused)); // focused ? focus_color : 0
 			text = cooked_maps[item.data]->name;
 			focused = false;
