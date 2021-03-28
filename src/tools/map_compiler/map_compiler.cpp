@@ -1397,7 +1397,7 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 		const i32
 			SizeBits			= 3,
 			MaxPatchSize		= (((1 << SizeBits) - 1) << 1) + 3,
-			MaterialBits		= 6,
+			MaterialBits		= 8,
 			MaxMaterial			= (1 << MaterialBits) - 1,
 			MaxLevel			= 4,
 			MaxCombinedLevels	= 6;
