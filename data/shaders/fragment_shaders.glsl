@@ -3936,6 +3936,20 @@ void mapselect() {
 	FCol = vec4(1, 0, 0, 1) * (.3 * ls(24., .0, d) * step(.0, d)  + step(abs(d + 1.), 1.));
 }
 
+// menu/art/slider2.tga
+void slider2() {
+	float d = dot(UV, vec2(-.4, .5)) - .1;
+	FCol = vec4(msk(d, .02) * ls(-.1, .9, UV.x) * step(mx(abs(UV - .5)), .45));
+}
+
+// menu/art/sliderbutt_1.tga
+void sliderbutt1() {
+	float d = circ(UV - .5, .45);
+	FCol = vec4(.7 * ls(.1, -.3, d), 0, 0, msk(d, .02))
+		+ vec4(1, 1, 1, 0) * ls(.25, -.25, length(UV - vec2(.25, .75))) * tri(-.1, .1, d) // specular
+	;
+}
+
 ////////////////////////////////////////////////////////////////
 // Item icons
 ////////////////////////////////////////////////////////////////

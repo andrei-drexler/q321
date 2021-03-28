@@ -229,6 +229,8 @@ void plasma_glo() { FS(); }
 void plasma_glo_m() { item(); }
 void armor() { item(); }
 void mapselect() { FS(); }
+void slider2() { FS(); }
+void sliderbutt1() { FS(); }
 void icon_health() { FS(); }
 void icon_shard() { FS(); }
 void icon_armor() { FS(); }

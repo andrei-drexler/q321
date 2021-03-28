@@ -170,6 +170,8 @@
 	x(armor,				ModelVertexBits)\
 	x(teleport,				FSVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(mapselect,			FSVertexBits)\
+	x(slider2,				FSVertexBits)\
+	x(sliderbutt1,			FSVertexBits)\
 	x(icon_health,			FSVertexBits)\
 	x(icon_shard,			FSVertexBits)\
 	x(icon_armor,			FSVertexBits)\
@@ -188,6 +190,8 @@
 #define DEMO_TILES(x)\
 	/*Name/Shader,			Width,	Height*/\
 	x(mapselect,			256,	256)\
+	x(slider2,				256,	32)\
+	x(sliderbutt1,			32,		64)\
 	x(icon_health,			64,		64)\
 	x(icon_shard,			64,		64)\
 	x(icon_armor,			64,		64)\
