@@ -1027,6 +1027,76 @@ FORCEINLINE u32 EnumerateBrushEdges(const Plane* planes, u32 num_planes, BrushEd
 	return num_edges;
 }
 
+template <typename Plane>
+FORCEINLINE size_t EnumerateBrushFaceCorners(const Plane* brush_faces, size_t num_faces, size_t face_index, vec3* points, size_t max_num_points) {
+	const vec4& plane = brush_faces[face_index];
+
+	/* setup axes (Z = normal, XY = tangents) */
+	u32 z_axis = dominant_axis(plane.xyz);
+	static constexpr u8 NextAxis[4] = {1, 2, 0, 1,};
+	u32 x_axis = NextAxis[z_axis];
+	if (plane.xyz[z_axis] < 0.f)
+		x_axis = NextAxis[x_axis];
+	u32 y_axis = x_axis ^ z_axis ^ 3;
+
+	/* start with a large quad, projected onto the plane */
+	vec2 quad_corner = 8192.f;
+	for (size_t i = 0; i < 4; ++i) {
+		vec3& p = points[i];
+		float& flip = quad_corner[i & 1];
+		flip = -flip;
+		p[x_axis] = quad_corner.x;
+		p[y_axis] = quad_corner.y;
+		p[z_axis] = 0.f;
+		p[z_axis] = -(dot(plane.xyz, p) + plane.w) / plane[z_axis];
+	}
+	size_t num_points = 4;
+
+	/* clip quad with all the other brush planes */
+	for (size_t i = 0; i < num_faces; ++i) {
+		if (i == face_index)
+			continue;
+
+		const vec4& clip_plane = brush_faces[i];
+
+		const size_t MaxNumPoints = 256;
+		if (max_num_points > MaxNumPoints)
+			max_num_points = MaxNumPoints;
+		float distances[MaxNumPoints];
+		for (size_t j = 0; j < num_points; ++j)
+			distances[j] = dot(points[j], clip_plane.xyz) + clip_plane.w;
+
+		vec3 clipped_points[MaxNumPoints];
+		size_t num_clipped_points = 0;
+		for (size_t j = 0, prev = num_points - 1; j < num_points; prev = j++) {
+			float dist = distances[j];
+			float prev_dist = distances[prev];
+
+			/* clipped edge */
+			if (dist * prev_dist < 0.f) {
+				assert(num_clipped_points < max_num_points);
+				vec3& out = clipped_points[num_clipped_points++];
+				out = points[j];
+				mix_into(out, points[prev], Math::abs(dist) / (Math::abs(dist) + Math::abs(prev_dist)));
+			}
+
+			/* inside point */
+			if (dist <= 0.f) {
+				assert(num_clipped_points < max_num_points);
+				clipped_points[num_clipped_points++] = points[j];
+			}
+		}
+
+		num_points = num_clipped_points;
+		if (num_points <= 2)
+			return 0;
+
+		MemCopy(points, clipped_points, num_points);
+	}
+
+	return num_points;
+}
+
 ////////////////////////////////////////////////////////////////
 
 // http://jcgt.org/published/0003/02/01/paper.pdf
