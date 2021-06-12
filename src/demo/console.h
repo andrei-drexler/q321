@@ -26,6 +26,14 @@ namespace Demo {
 		i32 integer;
 		f32 value;
 
+		enum ID {
+			#define PP_CVAR_ADD_NAME(name, init)		name,
+			CVAR_LIST(PP_CVAR_ADD_NAME)
+			#undef PP_CVAR_ADD_NAME
+
+			Count,
+		};
+
 		FORCEINLINE void Set(float new_value) {
 			value = new_value;
 			integer = Math::ftoi(new_value);
@@ -36,7 +44,7 @@ namespace Demo {
 			integer = new_value;
 		}
 
-		FORCEINLINE void Toggle() {
+		NOINLINE void Toggle() {
 			Set(!integer);
 		}
 	};

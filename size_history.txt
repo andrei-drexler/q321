@@ -1340,3 +1340,4 @@
 66144,added slider rail and button shaders
 65909,changed brush-face-to-polygon algorithm
 65902,tweaked enumeratebrushfacecorners
+66364,added basic options menu

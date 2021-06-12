@@ -258,6 +258,7 @@ namespace Demo {
 			};
 
 			IRect				rects[Count];
+			Sys::Font::Glyph	glyphs[Count];
 
 			static constexpr Sys::Font::Glyph BaseMapSelectGlyph = []() constexpr {
 				Sys::Font::Glyph glyph = {};
@@ -291,6 +292,7 @@ namespace Demo {
 
 		VertexFormat*	AddQuads(u16 count);
 		void			DrawGlyph(const vec2& pos, const vec2& scale, const Sys::Font::Glyph& glyph, u32 color = -1);
+		void			DrawTile(const vec2& pos, const vec2& scale, Tile::ID tile, u32 color = -1);
 		void			FlushGeometry();
 		void			InitIndices();
 	}
@@ -500,7 +502,17 @@ FORCEINLINE void Demo::UI::Tile::PackAll() {
 	for (u32 tile_index = 0; tile_index < Tile::Count; ++tile_index) {
 		u16 width  = Dimensions[tile_index][0];
 		u16 height = Dimensions[tile_index][1];
-		PackTile(width, height, Padding, rects[tile_index]);
+
+		IRect& rect = rects[tile_index];
+		PackTile(width, height, Padding, rect);
+
+		Sys::Font::Glyph& glyph = glyphs[tile_index];
+		glyph.box_min[0] = rect.x;
+		glyph.box_min[1] = rect.y;
+		glyph.box_size[0] = width;
+		glyph.box_size[1] = height;
+		//glyph.anchor[0] = -(width / 2);
+		glyph.anchor[1] = -(height / 2);
 	}
 }
 
@@ -723,6 +735,10 @@ NOINLINE void Demo::UI::DrawGlyph(const vec2& pos, const vec2& scale, const Sys:
 		}
 		v[i].color = color;
 	}
+}
+
+FORCEINLINE void Demo::UI::DrawTile(const vec2& pos, const vec2& scale, Tile::ID tile, u32 color) {
+	DrawGlyph(pos, scale, Tile::glyphs[tile], color);
 }
 
 NOINLINE void Demo::UI::Print(const char* text, const vec2& pos, vec2 scale, u32 color, float align, Font font) {

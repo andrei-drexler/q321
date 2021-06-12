@@ -32,6 +32,12 @@
 		item(" ",				Levelshot,		Map::ID::q3dm1,				-128,	-96)\
 		item(" ",				Levelshot,		Map::ID::q3dm17,			+128,	-96)\
 	end()\
+	/*Name,						Bg Scale X,		Bg Scale Y*/\
+	begin(Options,				6.f/8.f,		3.5f/8.f)\
+		item("options",			Decoration,		0,							0,		120)\
+		item("mouse speed:",	Slider,			Cvar::ID::sensitivity,		32,		0)\
+		item("invert y:",		Toggle,			Cvar::ID::cl_inverty,		32,		-80)\
+	end()\
 
 ////////////////////////////////////////////////////////////////
 
@@ -59,13 +65,17 @@ namespace Demo::Menu {
 			Decoration,
 			Default,
 			Levelshot,
+			Slider,
+			Toggle,
 		};
 
-		struct State {
+		struct alignas(16) State {
 			const char*			text;
 			u8					type;
 			u8					data;
 			vec2				pos;
+			float				min_value;
+			float				max_value;
 		};
 	};
 
@@ -262,6 +272,9 @@ FORCEINLINE void Demo::Menu::Init() {
 		item.data = Details::ItemData[item_index];
 		item.pos[0] = float(DecodeSignMagnitude(Details::ItemOffsets[0][item_index]) << 2);
 		item.pos[1] = float(DecodeSignMagnitude(Details::ItemOffsets[1][item_index]) << 2);
+		// FIXME: hardcoded!
+		item.min_value = 0.f;
+		item.max_value = 2.f;
 	} while (++item_index < Details::ItemCount);
 
 	u32 menu_index = 0;
@@ -313,23 +326,51 @@ NOINLINE bool Demo::Menu::Update(float dt) {
 	}
 
 	if (g_active) {
-		if (Sys::IsKeyRepeating(Key::Up) || Sys::IsKeyRepeating(Key::Left))
+		assert(g_active->focus < g_active->num_items);
+		const Item::State& item = g_active->items[g_active->focus];
+		const u32 TrapLeftRightTypes =
+			(1 << Item::Type::Slider) |
+			(1 << Item::Type::Toggle)
+		;
+		bool allow_leftright = (TrapLeftRightTypes & (1 << item.type)) == 0;
+		int leftright = Sys::IsKeyRepeating(Key::Right) - Sys::IsKeyRepeating(Key::Left);
+
+		if (Sys::IsKeyRepeating(Key::Up) || (allow_leftright && leftright < 0))
 			AdvanceFocus(Direction::Back);
-		else if (Sys::IsKeyRepeating(Key::Down) || Sys::IsKeyRepeating(Key::Right) || Sys::IsKeyRepeating(Key::Tab))
+		else if (Sys::IsKeyRepeating(Key::Down) || Sys::IsKeyRepeating(Key::Tab) || (allow_leftright && leftright > 0))
 			AdvanceFocus(Direction::Forward);
 
-		if (Sys::IsKeyFirstDown(Key::Enter)) {
-			assert(g_active->focus < g_active->num_items);
-			const Item::State& item = g_active->items[g_active->focus];
+		if (!allow_leftright && leftright != 0) {
+			assert(item.data >= 0 && item.data < size(CvarData));
+			Cvar& cvar = CvarData[item.data];
 
 			switch (item.type) {
+				case Item::Type::Toggle:
+					cvar.Toggle();
+					break;
+
+				case Item::Type::Slider:
+					cvar.Set(clamp(cvar.value + (float)leftright * 0.125f, item.min_value, item.max_value));
+					break;
+
 				default:
-				case Item::Type::Decoration:
+					break;
+			}
+		}
+
+		if (Sys::IsKeyFirstDown(Key::Enter)) {
+			switch (item.type) {
+				default:
 					break;
 
 				case Item::Type::Levelshot:
 					CloseAll();
 					LoadMap(Map::ID(item.data));
+					break;
+
+				case Item::Type::Toggle:
+					assert(item.data >= 0 && item.data < size(CvarData));
+					CvarData[item.data].Toggle();
 					break;
 
 				case Item::Type::Default:
@@ -339,6 +380,7 @@ NOINLINE bool Demo::Menu::Update(float dt) {
 							break;
 
 						case Action::Options:
+							Push(&Options);
 							break;
 
 						case Action::NewGame:
@@ -446,7 +488,8 @@ FORCEINLINE void Demo::Menu::Draw() {
 	const Menu::State* menu = g_active;
 	const Item::State* items = menu->items;
 
-	u32 glow_alpha = u32(255.f * 2.f * abs(fract(float(g_time) * 2.f) - 0.5f)) << 24;
+	u32 glow_frac = u32(255.f * 2.f * abs(fract(float(g_time) * 2.f) - 0.5f));
+	u32 glow_alpha = glow_frac << 24;
 	u32 focus_color = (Details::FocusFolor & 0xFF'FF'FFu) | glow_alpha;
 
 	for (u32 item_index = 0; item_index < menu->num_items; ++item_index) {
@@ -456,9 +499,14 @@ FORCEINLINE void Demo::Menu::Draw() {
 		u32 color = focused ? Details::FocusFolor : Details::ItemColor;
 
 		const vec2* font_scale = &UI::FontScale[UI::LargeFont];
-		const vec2& pos = item.pos;
+		vec2 pos = item.pos;
+		float alignment = 0.5f;
 
-		const u32 SmallTextTypes = (1 << Item::Type::Levelshot);
+		const u32 SmallTextTypes =
+			(1 << Item::Type::Levelshot) |
+			(1 << Item::Type::Toggle) |
+			(1 << Item::Type::Slider)
+		;
 		if (SmallTextTypes & (1 << item.type)) {
 			static constexpr vec2 SmallFontScale = UI::FontScale[UI::LargeFont] * 0.75f;
 			font_scale = &SmallFontScale;
@@ -470,10 +518,49 @@ FORCEINLINE void Demo::Menu::Draw() {
 			focused = false;
 		}
 
-		UI::PrintShadowed(text, pos, *font_scale, color, 0.5f, UI::LargeFont);
+		const u32 RightAlignedTypes =
+			(1 << Item::Type::Toggle) |
+			(1 << Item::Type::Slider)
+		;
+		if (RightAlignedTypes & (1 << item.type))
+			alignment = 1.f;
 
+		UI::PrintShadowed(text, pos, *font_scale, color, alignment, UI::LargeFont);
 		if (focused)
-			UI::Print(text, pos, *font_scale, focus_color, 0.5f, UI::LargeFontBlurry);
+			UI::Print(text, pos, *font_scale, focus_color, alignment, UI::LargeFontBlurry);
+
+		if (item.type == Item::Type::Toggle) {
+			const Cvar& cvar = CvarData[item.data];
+			text = cvar.integer ? "yes" : "no";
+			pos.x += 32.f;
+			alignment = 0.f;
+
+			UI::PrintShadowed(text, pos, *font_scale, color, alignment, UI::LargeFont);
+			if (focused)
+				UI::Print(text, pos, *font_scale, focus_color, alignment, UI::LargeFontBlurry);
+		}
+
+		if (item.type == Item::Type::Slider) {
+			static constexpr vec2 Scale = 0.75f;
+
+			pos.x += 24.f;
+			pos.y += 16.f;
+			u32 slider_color = 0xffff6400;
+			if (focused)
+				slider_color = 0xffffff00;
+			UI::DrawTile(pos, Scale, UI::Tile::slider2, slider_color);
+
+			const Cvar& cvar = CvarData[item.data];
+			float frac = clamp((cvar.value - item.min_value) / (item.max_value - item.min_value), 0.f, 1.f);
+
+			const float
+				Margin = 16.f,
+				RailWidth = float(UI::Tile::Dimensions[UI::Tile::slider2][0]) * Scale.x - Margin * 2.f
+			;
+			pos.x += RailWidth * frac + (Margin - 0.5f * float(UI::Tile::Dimensions[UI::Tile::sliderbutt1][0]) * Scale.x);
+			u32 button_color = focused ? 0xffffffff : 0xffa0a0a0;
+			UI::DrawTile(pos, Scale, UI::Tile::sliderbutt1, button_color);
+		}
 	}
 
 	UI::FlushGeometry();
