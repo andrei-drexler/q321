@@ -47,15 +47,12 @@ namespace Demo {
 	namespace Console {
 		#define PP_CVAR_ADD_NAME(name, init)		#name "\0"
 		#define PP_CVAR_ADD_INIT(name, init)		#init "\0"
-		#define PP_CVAR_COUNT(name, init)			+1
-		
+
 		static constexpr char	CvarNames[]			= CVAR_LIST(PP_CVAR_ADD_NAME);
 		static constexpr char	CvarInit[]			= CVAR_LIST(PP_CVAR_ADD_INIT);
-		enum { NumCvars = CVAR_LIST(PP_CVAR_COUNT) };
 
 		#undef PP_CVAR_ADD_NAME
 		#undef PP_CVAR_ADD_INIT
-		#undef PP_CVAR_COUNT
 
 		void Init();
 	}
@@ -68,7 +65,7 @@ namespace Demo {
 			CVAR_LIST(PP_CVAR_ADD_DATA)
 			#undef PP_CVAR_ADD_DATA
 		};
-		Cvar CvarData[Console::NumCvars];
+		Cvar CvarData[Cvar::Count];
 	};
 }
 
@@ -76,7 +73,7 @@ namespace Demo {
 
 FORCEINLINE void Demo::Console::Init() {
 	const char* value = CvarInit;
-	for (u32 cvar_index = 0; cvar_index < NumCvars; ++cvar_index) {
+	for (u32 cvar_index = 0; cvar_index < Cvar::Count; ++cvar_index) {
 		auto& cvar = CvarData[cvar_index];
 		iptr advance = 0;
 		cvar.Set(StringToFloat(value, &advance));

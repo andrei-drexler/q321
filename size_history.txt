@@ -1343,3 +1343,4 @@
 66364,added basic options menu
 66364,tweaked mouse turning rate
 66303,removed cvar integer field
+66303,removed redundant console::numcvars
