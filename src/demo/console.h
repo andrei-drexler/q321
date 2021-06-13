@@ -23,7 +23,6 @@
 
 namespace Demo {
 	struct Cvar {
-		i32 integer;
 		f32 value;
 
 		enum ID {
@@ -36,16 +35,10 @@ namespace Demo {
 
 		FORCEINLINE void Set(float new_value) {
 			value = new_value;
-			integer = Math::ftoi(new_value);
-		}
-
-		FORCEINLINE void Set(int new_value) {
-			value = float(new_value);
-			integer = new_value;
 		}
 
 		NOINLINE void Toggle() {
-			Set(!integer);
+			Set(!value);
 		}
 	};
 

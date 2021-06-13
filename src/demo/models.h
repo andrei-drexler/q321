@@ -292,7 +292,7 @@ FORCEINLINE void Demo::Model::Draw(Model::ID id, const Transform& transform) {
 		mesh.num_indices		= part.num_indices;
 
 		Uniform::Texture0 = MaterialTextures[material];
-		if (r_lightmap.integer)
+		if (r_lightmap.value)
 			Uniform::Texture0 = Texture::Grey;
 
 		AddDrawCall(Material::ID(material), mesh);

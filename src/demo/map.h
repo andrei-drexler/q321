@@ -826,9 +826,9 @@ void Demo::Map::Render() {
 		Uniform::Texture0 = MaterialTextures[material];
 		Uniform::Texture1 = Texture::Lightmap;
 
-		if (r_lightmap.integer)
+		if (r_lightmap.value)
 			Uniform::Texture0 = Texture::Grey;
-		if (r_fullbright.integer)
+		if (r_fullbright.value)
 			Uniform::Texture1 = Texture::Grey;
 
 		AddDrawCall(Material::ID(material), mesh);

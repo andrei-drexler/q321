@@ -531,7 +531,7 @@ FORCEINLINE void Demo::Menu::Draw() {
 
 		if (item.type == Item::Type::Toggle) {
 			const Cvar& cvar = CvarData[item.data];
-			text = cvar.integer ? "yes" : "no";
+			text = cvar.value ? "yes" : "no";
 			pos.x += 32.f;
 			alignment = 0.f;
 
