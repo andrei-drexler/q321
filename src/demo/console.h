@@ -73,12 +73,8 @@ namespace Demo {
 
 FORCEINLINE void Demo::Console::Init() {
 	const char* value = CvarInit;
-	for (u32 cvar_index = 0; cvar_index < Cvar::Count; ++cvar_index) {
-		auto& cvar = CvarData[cvar_index];
-		iptr advance = 0;
-		cvar.Set(StringToFloat(value, &advance));
-		assert(advance > 0 && value[advance] == 0);
-		value += advance;
-		++value;
+	for (u32 cvar_index = 0; cvar_index < Cvar::Count; ++cvar_index, value = NextAfter(value)) {
+		Cvar& cvar = CvarData[cvar_index];
+		cvar.Set(StringToFloat(value));
 	}
 }

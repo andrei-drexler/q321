@@ -1344,3 +1344,4 @@
 66364,tweaked mouse turning rate
 66303,removed cvar integer field
 66303,removed redundant console::numcvars
+66313,tweaked cvar init
