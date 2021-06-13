@@ -66,7 +66,7 @@ namespace Demo {
 
 			float fov = mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
 			float zoom_scale = tan(fov * (0.5f * Math::DEG2RAD)) / tan(cg_fov.value * (0.5f * Math::DEG2RAD));
-			float mouse_scale = zoom_scale * sensitivity.value * -90.f / sqrt(float(Sys::g_window.width * Sys::g_window.height));
+			float mouse_scale = zoom_scale * sensitivity.value * -180.f / max(Sys::g_window.width, Sys::g_window.height);
 			g_player.angles.x += mouse_delta.x * mouse_scale;
 			if (cl_inverty.integer)
 				g_player.angles.y -= mouse_delta.y * mouse_scale;

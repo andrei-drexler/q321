@@ -1341,3 +1341,4 @@
 65909,changed brush-face-to-polygon algorithm
 65902,tweaked enumeratebrushfacecorners
 66364,added basic options menu
+66364,tweaked mouse turning rate
