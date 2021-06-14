@@ -34,9 +34,10 @@
 	end()\
 	/*Name,						Bg Scale X,		Bg Scale Y*/\
 	begin(Options,				6.f/8.f,		3.5f/8.f)\
-		item("options",			Decoration,		0,							0,		120)\
-		item("mouse speed:",	Slider,			Cvar::ID::sensitivity,		32,		0)\
-		item("invert y:",		Toggle,			Cvar::ID::cl_inverty,		32,		-80)\
+		item("options",			Decoration,		0,							0,		128)\
+		item("brightness:",		Slider,			Cvar::ID::r_gamma,			32,		16)\
+		item("mouse speed:",	Slider,			Cvar::ID::sensitivity,		32,		-48)\
+		item("invert y:",		Toggle,			Cvar::ID::cl_inverty,		32,		-112)\
 	end()\
 
 ////////////////////////////////////////////////////////////////

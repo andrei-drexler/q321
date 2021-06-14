@@ -14,6 +14,7 @@
 	x(com_maxFps,		0)		\
 	x(cg_fov,			90)		\
 	x(cg_zoomfov,		45)		\
+	x(r_gamma,			1)		\
 	x(r_lightmap,		0)		\
 	x(r_fullbright,		0)		\
 	PP_RADIOSITY_CVAR(x)		\

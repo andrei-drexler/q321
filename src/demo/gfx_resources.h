@@ -408,8 +408,18 @@ namespace Demo {
 		Full,
 	};
 
+	NOINLINE void PresentWithPostFX() {
+		Gfx::SetRenderTarget(Gfx::Backbuffer);
+		Gfx::SetShader(Shader::present);
+		Uniform::Texture0 = Texture::Main;
+		Uniform::Time.w = 1.f / r_gamma.value;
+		Gfx::UpdateUniforms();
+		Gfx::DrawFullScreen();
+		Gfx::Present();
+	}
+
 	NOINLINE void ShowPreloadingScreen(PreloadingScreen type = PreloadingScreen::Full) {
-		Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
+		Gfx::SetRenderTarget(Texture::Main, &Gfx::Clear::ColorAndDepth);
 
 		if (type != PreloadingScreen::BlackFrame) {
 			Gfx::SetShader(Shader::bglogo);
@@ -423,7 +433,7 @@ namespace Demo {
 			UI::FlushGeometry();
 		}
 
-		Gfx::Present();
+		PresentWithPostFX();
 	}
 
 	FORCEINLINE void InitGfxResources() {

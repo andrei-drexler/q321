@@ -30,6 +30,7 @@
 	x(uiframe,				FSVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
 	x(Loading,				FSVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull)\
 	x(UI,					UIVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull|Gfx::Shader::Premultiplied)\
+	x(present,				FSVertexBits|Gfx::Shader::NoZWrite|Gfx::Shader::ZTestAlways|Gfx::Shader::NoCull)\
 	x(Lmapped,				MapVertexBits)\
 	x(fixture,				MapVertexBits)\
 	x(shiny,				MapVertexBits)\
@@ -312,6 +313,8 @@
 	x(_128x256,			Texture::White,		Gfx::InvalidID,			128,	256,	BGRA8,		Gfx::Texture::Flags::NoMips)\
 	/* HACK: dummy texture needed by the beam material to get proper UV mapping...*/\
 	x(_32x128,			Texture::White,		Gfx::InvalidID,			32,		128,	BGRA8,		Gfx::Texture::Flags::NoMips)\
+	x(MainZ,			Texture::White,		Gfx::InvalidID,			0,		0,		Z32F,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::NoMips)\
+	x(Main,				Texture::White,		Gfx::InvalidID,			0,		0,		BGRA8,		Gfx::Texture::Flags::ZBuffer|Gfx::Texture::Flags::NoMips|Gfx::Texture::Flags::RenderTarget)\
 
 ////////////////////////////////////////////////////////////////
 

@@ -1,7 +1,7 @@
 #pragma once
 
 // auto-generated, do not modify
-static_assert(0x831ff735U == Demo::Model::Version, "Model definition mismatch, please recompile the model compiler & models");
+static_assert(0xff1e9bfcU == Demo::Model::Version, "Model definition mismatch, please recompile the model compiler & models");
 
 // data/models/mapobjects/kmlamp1.md3
 namespace kmlamp1 {

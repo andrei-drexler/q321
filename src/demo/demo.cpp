@@ -324,7 +324,7 @@ namespace Demo {
 		Gfx::SetRenderTarget(frame.render_target, &Gfx::Clear::Depth);
 		Map::Render();
 		RenderEntities();
-		if (frame.render_target == Gfx::Backbuffer)
+		if (frame.render_target == Texture::Main)
 			RenderViewModel();
 		FlushDrawCalls();
 	}
@@ -388,7 +388,7 @@ namespace Demo {
 	}
 
 	FORCEINLINE void RenderLoadingScreen() {
-		Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
+		Gfx::SetRenderTarget(Texture::Main, &Gfx::Clear::ColorAndDepth);
 		Gfx::SetShader(Shader::Loading);
 		Uniform::Texture0 = Map::source->levelshot.texture;
 		Uniform::Time.x = (float)g_time;
@@ -456,7 +456,7 @@ namespace Demo {
 			frame.fov			= mix(cg_fov.value, cg_zoomfov.value, g_player.zoom);
 			frame.time			= float(g_level_time);
 			frame.shadow_angle	= g_player.shadow_angle;
-			frame.render_target	= Gfx::Backbuffer;
+			frame.render_target	= Texture::Main;
 
 			Gfx::Sync();
 			RenderWorld(frame);
@@ -470,7 +470,7 @@ namespace Demo {
 			}
 		} else {
 			Menu::UpdateBannerTexture();
-			Gfx::SetRenderTarget(Gfx::Backbuffer, &Gfx::Clear::ColorAndDepth);
+			Gfx::SetRenderTarget(Texture::Main, &Gfx::Clear::ColorAndDepth);
 		}
 
 		Menu::Draw();
@@ -619,7 +619,7 @@ int FORCEINLINE demo_main() {
 		last_tick = Demo::g_time;
 
 		Demo::RenderFrame();
-		Gfx::Present();
+		Demo::PresentWithPostFX();
 
 		float fps = Demo::com_maxFps.value;
 		if (fps == 0.f)

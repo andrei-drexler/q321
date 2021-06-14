@@ -3088,6 +3088,11 @@ void Lmapped() {
 	FCol = vec4(c * Light(), 1);
 }
 
+void present() {
+	vec3 c = T0(UV).xyz;
+	FCol = vec4(pow(sat(c.xyz), Time.www) + H(UV * 255.) / 255., 1);
+}
+
 ////////////////////////////////////////////////////////////////
 #pragma section elemental
 ////////////////////////////////////////////////////////////////

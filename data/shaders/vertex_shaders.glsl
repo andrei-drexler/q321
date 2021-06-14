@@ -243,3 +243,4 @@ void icon_quad() { FS(); }
 void crosshaira() { FS(); }
 void crosshairb() { FS(); }
 void crosshairc() { FS(); }
+void present() { FS(); }
