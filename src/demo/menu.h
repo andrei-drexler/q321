@@ -5,39 +5,39 @@
 #define DEMO_MENUS(begin, item, end)\
 	/*Name,						Bg Scale X,		Bg Scale Y*/\
 	begin(MainMenu,				0.f,			0.f)\
-		/*Text,					Type,			Action/Data,				X,		Y,	*/\
-		item("new game",		Default,		Action::NewGame,			0,		120)\
-		item("setup",			Default,		Action::Options,			0,		40)\
-		item("cinematics",		Default,		Action::None,				0,		-40)\
-		item("exit",			Default,		Action::ConfirmExitGame,	0,		-120)\
+		/*Text,					Type,			Action/Data,				X,		Y,		Params*/\
+		item("new game",		Default,		Action::NewGame,			0,		120,	{})\
+		item("setup",			Default,		Action::Options,			0,		40,		{})\
+		item("cinematics",		Default,		Action::None,				0,		-40,	{})\
+		item("exit",			Default,		Action::ConfirmExitGame,	0,		-120,	{})\
 	end()\
 	/*Name,						Bg Scale X,		Bg Scale Y*/\
 	begin(InGame,				7.f/8.f,		5.f/8.f)\
-		item("resume game",		Default,		Action::CloseMenu,			0,		160)\
-		item("setup",			Default,		Action::Options,			0,		80)\
-		item("next arena",		Default,		Action::NextMap,			0,		0)\
-		item("leave arena",		Default,		Action::QuitMap,			0,		-80)\
-		item("exit game",		Default,		Action::ConfirmExitGame,	0,		-160)\
+		item("resume game",		Default,		Action::CloseMenu,			0,		160,	{})\
+		item("setup",			Default,		Action::Options,			0,		80,		{})\
+		item("next arena",		Default,		Action::NextMap,			0,		0,		{})\
+		item("leave arena",		Default,		Action::QuitMap,			0,		-80,	{})\
+		item("exit game",		Default,		Action::ConfirmExitGame,	0,		-160,	{})\
 	end()\
 	/*Name,						Bg Scale X,		Bg Scale Y*/\
 	begin(ExitGameModal,		6.f/8.f,		3.5f/8.f)\
-		item("exit game?",		Decoration,		Action::CloseMenu,			0,		56)\
-		item("yes",				Default,		Action::ExitGame,			-76,	-56)\
-		item("/",				Decoration,		Action::CloseMenu,			0,		-56)\
-		item("no",				Default,		Action::CloseMenu,			64,		-56)\
+		item("exit game?",		Decoration,		Action::CloseMenu,			0,		56,		{})\
+		item("yes",				Default,		Action::ExitGame,			-76,	-56,	{})\
+		item("/",				Decoration,		Action::CloseMenu,			0,		-56,	{})\
+		item("no",				Default,		Action::CloseMenu,			64,		-56,	{})\
 	end()\
 	/*Name,						Bg Scale X,		Bg Scale Y*/\
 	begin(NewGame,				6.5f/8.f,		4.f/8.f)\
-		item("choose arena:",	Decoration,		Action::CloseMenu,			0,		144)\
-		item(" ",				Levelshot,		Map::ID::q3dm1,				-128,	-96)\
-		item(" ",				Levelshot,		Map::ID::q3dm17,			+128,	-96)\
+		item("choose arena:",	Decoration,		Action::CloseMenu,			0,		144,	{})\
+		item(" ",				Levelshot,		Map::ID::q3dm1,				-128,	-96,	{})\
+		item(" ",				Levelshot,		Map::ID::q3dm17,			+128,	-96,	{})\
 	end()\
 	/*Name,						Bg Scale X,		Bg Scale Y*/\
 	begin(Options,				6.f/8.f,		3.5f/8.f)\
-		item("options",			Decoration,		0,							0,		128)\
-		item("brightness:",		Slider,			Cvar::ID::r_gamma,			32,		16)\
-		item("mouse speed:",	Slider,			Cvar::ID::sensitivity,		32,		-48)\
-		item("invert y:",		Toggle,			Cvar::ID::cl_inverty,		32,		-112)\
+		item("options",			Decoration,		0,							0,		128,	{})\
+		item("brightness:",		Slider,			Cvar::ID::r_gamma,			32,		16,		&BrightnessParams)\
+		item("mouse speed:",	Slider,			Cvar::ID::sensitivity,		32,		-48,	&SensitivityParams)\
+		item("invert y:",		Toggle,			Cvar::ID::cl_inverty,		32,		-112,	{})\
 	end()\
 
 ////////////////////////////////////////////////////////////////
@@ -70,13 +70,16 @@ namespace Demo::Menu {
 			Toggle,
 		};
 
+		struct Params {
+			float min, max;
+		};
+
 		struct alignas(16) State {
 			const char*			text;
 			u8					type;
 			u8					data;
 			vec2				pos;
-			float				min_value;
-			float				max_value;
+			const Params*		param;
 		};
 	};
 
@@ -114,13 +117,18 @@ namespace Demo::Menu {
 			DisclaimerColor = 0xFF'80'00'00;
 		;
 
+		static constexpr Item::Params
+			BrightnessParams	{0.5f,	1.5f},
+			SensitivityParams	{0.f,	2.f}
+		;
+
 		enum {
 			ItemCount = DEMO_MENUS(PP_IGNORE_ARGS, PP_INCREMENT, PP_IGNORE_ARGS),
 			MenuCount = DEMO_MENUS(PP_INCREMENT, PP_IGNORE_ARGS, PP_IGNORE_ARGS),
 		};
 
 		static constexpr char ItemStringList[] =
-			#define PP_ADD_ITEM_STRING(caption, type, data, x, y) caption "\0"
+			#define PP_ADD_ITEM_STRING(caption, type, data, x, y, param) caption "\0"
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_STRING, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_STRING
 		;
@@ -164,14 +172,14 @@ namespace Demo::Menu {
 			NumEmptyCreditsLines = Constexpr::CountEmptyLines(Details::CreditsText);
 
 		static constexpr u8 ItemType[ItemCount] = {
-			#define PP_ADD_ITEM_TYPE(caption, type, data, x, y) u8(Item::Type::type),
+			#define PP_ADD_ITEM_TYPE(caption, type, data, x, y, param) u8(Item::Type::type),
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_TYPE, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_TYPE
 		};
 
 		static constexpr u8 ItemOffsets[2][ItemCount] = {
-			#define PP_ADD_ITEM_OFFSET_X(caption, type, data, x, y) EncodeSignMagnitude(x / 4),
-			#define PP_ADD_ITEM_OFFSET_Y(caption, type, data, x, y) EncodeSignMagnitude((y - 16) / 4),
+			#define PP_ADD_ITEM_OFFSET_X(caption, type, data, x, y, param) EncodeSignMagnitude(x / 4),
+			#define PP_ADD_ITEM_OFFSET_Y(caption, type, data, x, y, param) EncodeSignMagnitude((y - 16) / 4),
 			{DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_OFFSET_X, PP_IGNORE_ARGS)},
 			{DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_OFFSET_Y, PP_IGNORE_ARGS)},
 			#undef PP_ADD_ITEM_OFFSET_X
@@ -179,9 +187,15 @@ namespace Demo::Menu {
 		};
 
 		static constexpr u8 ItemData[ItemCount] = {
-			#define PP_ADD_ITEM_DATA(caption, type, data, x, y) (u8)data,
+			#define PP_ADD_ITEM_DATA(caption, type, data, x, y, param) (u8)data,
 			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_DATA, PP_IGNORE_ARGS)
 			#undef PP_ADD_ITEM_DATA
+		};
+
+		static constexpr const Item::Params* ItemParams[ItemCount] = {
+			#define PP_ADD_ITEM_PARAM(caption, type, data, x, y, param) param,
+			DEMO_MENUS(PP_IGNORE_ARGS, PP_ADD_ITEM_PARAM, PP_IGNORE_ARGS)
+			#undef PP_ADD_ITEM_PARAM
 		};
 
 		static constexpr u8 MenuItemCounts[MenuCount] = {
@@ -273,9 +287,7 @@ FORCEINLINE void Demo::Menu::Init() {
 		item.data = Details::ItemData[item_index];
 		item.pos[0] = float(DecodeSignMagnitude(Details::ItemOffsets[0][item_index]) << 2);
 		item.pos[1] = float(DecodeSignMagnitude(Details::ItemOffsets[1][item_index]) << 2);
-		// FIXME: hardcoded!
-		item.min_value = 0.f;
-		item.max_value = 2.f;
+		item.param = Details::ItemParams[item_index];
 	} while (++item_index < Details::ItemCount);
 
 	u32 menu_index = 0;
@@ -351,7 +363,7 @@ NOINLINE bool Demo::Menu::Update(float dt) {
 					break;
 
 				case Item::Type::Slider:
-					cvar.Set(clamp(cvar.value + (float)leftright * 0.125f, item.min_value, item.max_value));
+					cvar.Set(clamp(cvar.value + (float)leftright * 0.125f, item.param->min, item.param->max));
 					break;
 
 				default:
@@ -552,7 +564,7 @@ FORCEINLINE void Demo::Menu::Draw() {
 			UI::DrawTile(pos, Scale, UI::Tile::slider2, slider_color);
 
 			const Cvar& cvar = CvarData[item.data];
-			float frac = clamp((cvar.value - item.min_value) / (item.max_value - item.min_value), 0.f, 1.f);
+			float frac = clamp((cvar.value - item.param->min) / (item.param->max - item.param->min), 0.f, 1.f);
 
 			const float
 				Margin = 16.f,

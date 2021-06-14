@@ -1346,3 +1346,4 @@
 66303,removed redundant console::numcvars
 66313,tweaked cvar init
 66402,added brightness option
+66352,added per-item slider ranges
