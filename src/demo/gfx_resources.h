@@ -403,11 +403,6 @@ namespace Demo {
 	}
 #endif // ENABLE_SHADER_RELOAD
 
-	enum class PreloadingScreen {
-		BlackFrame,
-		Full,
-	};
-
 	NOINLINE void PresentWithPostFX() {
 		Gfx::SetRenderTarget(Gfx::Backbuffer);
 		Gfx::SetShader(Shader::present);
@@ -418,21 +413,17 @@ namespace Demo {
 		Gfx::Present();
 	}
 
-	NOINLINE void ShowPreloadingScreen(PreloadingScreen type = PreloadingScreen::Full) {
+	FORCEINLINE void ShowPreloadingScreen() {
 		Gfx::SetRenderTarget(Texture::Main, &Gfx::Clear::ColorAndDepth);
+		Gfx::SetShader(Shader::bglogo);
+		Gfx::DrawFullScreen();
 
-		if (type != PreloadingScreen::BlackFrame) {
-			Gfx::SetShader(Shader::bglogo);
-			Gfx::DrawFullScreen();
-
-			static constexpr vec2
-				font_scale = UI::FontScale[UI::LargeFont] * 0.75f,
-				pos = {0.f, 128.f}
-			;
-			UI::PrintShadowed("Starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
-			UI::FlushGeometry();
-		}
-
+		static constexpr vec2
+			font_scale = UI::FontScale[UI::LargeFont] * 0.75f,
+			pos = {0.f, 128.f}
+		;
+		UI::PrintShadowed("Starting up...", pos, font_scale, -1, 0.5f, UI::LargeFont);
+		UI::FlushGeometry();
 		PresentWithPostFX();
 	}
 
@@ -449,12 +440,6 @@ namespace Demo {
 #ifdef ENABLE_SHADER_RELOAD
 		Shader::InitCompiler();
 #endif
-
-		// HACK: we hide the inevitable OpenGL black frame flickering
-		// on startup for 'borderless full-screen' windows by drawing
-		// a few fully black frames before the actual loading screen
-		ShowPreloadingScreen(PreloadingScreen::BlackFrame);
-		ShowPreloadingScreen(PreloadingScreen::BlackFrame);
 
 		/* compile remaining shaders */
 #ifdef DISABLE_SHADER_CACHE

@@ -1347,3 +1347,4 @@
 66313,tweaked cvar init
 66402,added brightness option
 66352,added per-item slider ranges
+66346,removed initial black frames
