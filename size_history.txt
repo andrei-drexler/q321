@@ -1348,3 +1348,4 @@
 66402,added brightness option
 66352,added per-item slider ranges
 66346,removed initial black frames
+66258,replaced rect packing algorithm
