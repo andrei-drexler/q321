@@ -140,12 +140,26 @@ namespace Demo {
 		};
 
 		struct Patch {
+			enum {
+				XPos,
+				XNeg,
+				YPos,
+				YNeg,
+				ZPos,
+				ZNeg,
+
+				NonAxial = 7,
+			};
+
 			u16		width;
 			u16		height;
 			u16		divx;
 			u16		divy;
 			u8		material;
 			bool	asymmetric;
+#ifdef ENABLE_HIQ_FLAT_PATCHES
+			u8		axis;
+#endif
 
 			/* used for delta decoding */
 			i16 delta[5];
@@ -209,8 +223,11 @@ NOINLINE void Demo::PackedMap::GetPatch(Patch& patch, u32 patch_index) const {
 	patch.height		= (((data >> 3) & 7) << 1) + 3;
 	patch.divx			= 1 << ((data >> 6) & 7);
 	patch.divy			= 1 << ((data >> 9) & 7);
-	patch.material		= data >> 12;
+	patch.material		= (data >> 12) & 0xff;
 	patch.asymmetric	= (data >> 20) & 1;
+#ifdef ENABLE_HIQ_FLAT_PATCHES
+	patch.axis			= (data >> 21) & 7;
+#endif
 }
 
 NOINLINE void Demo::PackedMap::GetPatchVertex(PatchVertex& v, Patch& patch, u32 vertex_index) const {

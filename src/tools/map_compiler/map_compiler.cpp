@@ -1379,12 +1379,31 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 		});
 	}
 
+	size_t num_axial = 0;
+
 	print << "const u32 "sv << patch_array_name << "[] = {"sv;
 	for (auto patch_index : order) {
 		auto& patch = world.patches[patch_index];
-		vec2 max_dist = 0.f;
-
 		auto* ctrl = patch.vertices.data();
+		const AABB& bounds = patch.bounds;
+
+		vec3 size = bounds.size();
+		int patch_axis = 7;
+		for (int j = 0; j < 3; ++j) {
+			if (size[j] < 1.f / 32.f) {
+				vec3 ds = ctrl[patch.width - 1].pos - ctrl[0].pos;
+				vec3 dt = ctrl[(patch.height - 1) * patch.width].pos - ctrl[0].pos;
+				vec3 normal = cross(dt, ds);
+				if (length_squared(normal) > 1e-4f) {
+					bool negative = normal[j] < 0.f;
+					patch_axis = j * 2 + negative;
+					++num_axial;
+				}
+				break;
+			}
+		}
+
+		vec2 max_dist = 0.f;
 		for (u32 j = 0; j < patch.height; ++j) {
 			for (u32 i = 0; i < patch.width; ++i, ++ctrl) {
 				if (i & 1)
@@ -1420,7 +1439,7 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 		divx = std::clamp(divx - overflow, 0, MaxLevel);
 		divy = std::clamp(divy - overflow, 0, MaxLevel);
 
-		u32 packed	= width | (height << 3) | (divx << 6) | (divy << 9) | (material << 12) | (patch.extra.asymmetric << 20);
+		u32 packed	= width | (height << 3) | (divx << 6) | (divy << 9) | (material << 12) | (patch.extra.asymmetric << 20) | (patch_axis << 21);
 
 		assert(patch.width >= 3);
 		assert(patch.width <= MaxPatchSize);
@@ -1475,8 +1494,8 @@ void WritePatchData(ArrayPrinter& print, const Map& map, const Options& options,
 	print << "};"sv;
 	print.Flush();
 
-	printf(INDENT "%zd patches, %d ctl. points, %d verts, %d tris\n",
-		world.patches.size(), num_control_points, num_verts, num_tris);
+	printf(INDENT "%zd patches (%zd axial), %d ctl. points, %d verts, %d tris\n",
+		world.patches.size(), num_axial, num_control_points, num_verts, num_tris);
 }
 
 ////////////////////////////////////////////////////////////////

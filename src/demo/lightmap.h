@@ -77,7 +77,7 @@ FORCEINLINE void Demo::Map::AllocLightmap() {
 
 ////////////////////////////////////////////////////////////////
 
-FORCEINLINE void Demo::Map::Details::PackLightmap() {
+NOINLINE void Demo::Map::Details::PackLightmap() {
 	MemSet(lightmap.pos, 0, Lightmap::TexelCount);
 	MemSet(lightmap.nor, 0, Lightmap::TexelCount);
 
@@ -102,56 +102,116 @@ FORCEINLINE void Demo::Map::Details::PackLightmap() {
 			}
 		}
 
-		vec2 size = 0.f;
-		for (u16 j = 0; j < patch.height; j += 2) {
-			const PackedMap::PatchVertex* row = ctrl + j * patch.width;
-			float width = 0.f;
-			for (u16 i = 2; i < patch.width; i += 2)
-				width += length(row[i].pos - row[i - 2].pos);
-			if (size.x < width)
-				size.x = width;
-		}
+#ifdef ENABLE_HIQ_FLAT_PATCHES
+		if (patch.axis == patch.NonAxial)
+#endif
+		{
+			vec2 size = 0.f;
+			for (u16 j = 0; j < patch.height; j += 2) {
+				const PackedMap::PatchVertex* row = ctrl + j * patch.width;
+				float width = 0.f;
+				for (u16 i = 2; i < patch.width; i += 2)
+					width += length(row[i].pos - row[i - 2].pos);
+				if (size.x < width)
+					size.x = width;
+			}
 
-		for (u16 i = 0; i < patch.width; i += 2) {
-			const PackedMap::PatchVertex* column = ctrl + i;
-			float height = 0.f;
-			for (u16 j = 2; j < patch.height; j += 2, column += 2 * patch.width)
-				height += length(column[2 * patch.width].pos - column[0].pos);
-			if (size.y < height)
-				size.y = height;
-		}
+			for (u16 i = 0; i < patch.width; i += 2) {
+				const PackedMap::PatchVertex* column = ctrl + i;
+				float height = 0.f;
+				for (u16 j = 2; j < patch.height; j += 2, column += 2 * patch.width)
+					height += length(column[2 * patch.width].pos - column[0].pos);
+				if (size.y < height)
+					size.y = height;
+			}
 
-		size.x = ceil(size.x / Lightmap::TexelSize);
-		size.y = ceil(size.y / Lightmap::TexelSize);
+			size.x = ceil(size.x / Lightmap::TexelSize);
+			size.y = ceil(size.y / Lightmap::TexelSize);
 
-		auto tile = lightmap.packer.Add(u16(size.x) + 1, u16(size.y) + 1);
-		assert(tile != lightmap.packer.Full);
-		auto& rect = *tile;
+			auto tile = lightmap.packer.Add(u16(size.x) + 1, u16(size.y) + 1);
+			assert(tile != lightmap.packer.Full);
+			auto& rect = *tile;
 
-		for (u16 vtx_index = patches.vertex_start[patch_index], vtx_end = vtx_index + patches.vertex_count[patch_index]; vtx_index < vtx_end; ++vtx_index) {
-			vec2& lightmap_uv = texcoords[vtx_index].zw;
-			lightmap_uv.x = (rect.min[0] + 0.5f + lightmap_uv.x * size.x) / Lightmap::Width;
-			lightmap_uv.y = (rect.min[1] + 0.5f + lightmap_uv.y * size.y) / Lightmap::Height;
-		}
+			for (u16 vtx_index = patches.vertex_start[patch_index], vtx_end = vtx_index + patches.vertex_count[patch_index]; vtx_index < vtx_end; ++vtx_index) {
+				vec2& lightmap_uv = texcoords[vtx_index].zw;
+				lightmap_uv.x = (rect.min[0] + 0.5f + lightmap_uv.x * size.x) / Lightmap::Width;
+				lightmap_uv.y = (rect.min[1] + 0.5f + lightmap_uv.y * size.y) / Lightmap::Height;
+			}
 		
-		vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width + rect.min[0];
-		vec3* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width + rect.min[0];
+			vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width + rect.min[0];
+			vec3* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width + rect.min[0];
 
-		for (u16 y = 0, height = rect.GetHeight(); y < height; ++y, texel_pos += Lightmap::Width, texel_nor += Lightmap::Width) {
-			float t = y / float(height - 1);
+			for (u16 y = 0, height = rect.GetHeight(); y < height; ++y, texel_pos += Lightmap::Width, texel_nor += Lightmap::Width) {
+				float t = y / float(height - 1);
 
-			for (u16 x = 0, width = rect.GetWidth(); x < width; ++x) {
-				float s = x / float(width - 1);
+				for (u16 x = 0, width = rect.GetWidth(); x < width; ++x) {
+					float s = x / float(width - 1);
 
-				vec2 uv;
-				EvaluatePatch(patch, ctrl, s, t, texel_pos[x], texel_nor[x], uv);
+					vec2 uv;
+					EvaluatePatch(patch, ctrl, s, t, texel_pos[x], texel_nor[x], uv);
 				
-				u32 flip_sign = is_mirrored << 31;
-				*(u32*)&texel_nor[x][0] ^= flip_sign;
-				*(u32*)&texel_nor[x][1] ^= flip_sign;
-				*(u32*)&texel_nor[x][2] ^= flip_sign;
+					u32 flip_sign = is_mirrored << 31;
+					*(u32*)&texel_nor[x][0] ^= flip_sign;
+					*(u32*)&texel_nor[x][1] ^= flip_sign;
+					*(u32*)&texel_nor[x][2] ^= flip_sign;
+				}
 			}
 		}
+#ifdef ENABLE_HIQ_FLAT_PATCHES
+		else
+		{ // axial patch
+			const u8 NextAxis[4] = {1, 2, 0, 1};
+
+			int zaxis = patch.axis >> 1;
+			int xaxis = NextAxis[zaxis];
+			int yaxis = zaxis ^ xaxis ^ 3;
+		
+			bool negative = patch.axis & 1;
+			if (is_mirrored && symmetry_axis == zaxis)
+				negative ^= true;
+
+			Rect bounds;
+			bounds.clear();
+
+			for (u32 i = 0; i < num_control_points; ++i)
+				bounds.add(vec2{ctrl[i].pos[xaxis], ctrl[i].pos[yaxis]});
+
+			bounds.mins.x -= mod(bounds.mins.x, Lightmap::TexelSize);
+			bounds.mins.y -= mod(bounds.mins.y, Lightmap::TexelSize);
+
+			vec2 size;
+			size.x = ceil(bounds.width() / Lightmap::TexelSize);
+			size.y = ceil(bounds.height() / Lightmap::TexelSize);
+
+			auto tile = lightmap.packer.Add(u16(size.x) + 1, u16(size.y) + 1);
+			assert(tile != lightmap.packer.Full);
+			auto& rect = *tile;
+
+			for (u16 vtx_index = patches.vertex_start[patch_index], vtx_end = vtx_index + patches.vertex_count[patch_index]; vtx_index < vtx_end; ++vtx_index) {
+				const vec3& pos = positions[vtx_index];
+				vec2& lightmap_uv = texcoords[vtx_index].zw;
+				lightmap_uv[0] = (rect.min[0] + 0.5f + (pos[xaxis] - bounds.mins[0]) / Lightmap::TexelSize) / Lightmap::Width;
+				lightmap_uv[1] = (rect.min[1] + 0.5f + (pos[yaxis] - bounds.mins[1]) / Lightmap::TexelSize) / Lightmap::Height;
+			}
+		
+			vec3* texel_pos = lightmap.pos + rect.min[1] * Lightmap::Width + rect.min[0];
+			vec3* texel_nor = lightmap.nor + rect.min[1] * Lightmap::Width + rect.min[0];
+
+			for (u16 y = 0, height = rect.GetHeight(); y < height; ++y, texel_pos += Lightmap::Width, texel_nor += Lightmap::Width) {
+				for (u16 x = 0, width = rect.GetWidth(); x < width; ++x) {
+					vec3& pos = texel_pos[x];
+					pos[xaxis] = bounds.mins.x + x * Lightmap::TexelSize;
+					pos[yaxis] = bounds.mins.y + y * Lightmap::TexelSize;
+					pos[zaxis] = ctrl[0].pos[zaxis];
+
+					float z = 1.f;
+					if (negative)
+						z = -z;
+					texel_nor[x][zaxis] = z;
+				}
+			}
+		}
+#endif // def ENABLE_HIQ_FLAT_PATCHES
 	}
 
 	/* pack brush planes */

@@ -20,6 +20,7 @@
 //#define SHOW_LIGHTMAP
 //#define FULLBRIGHT
 //#define DRAFT_LIGHTMAP
+#define ENABLE_HIQ_FLAT_PATCHES
 //#define ENABLE_RADIOSITY
 //#define FREEZE_ITEMS
 //#define SHOW_POSITION // press P to log position/angles to console
