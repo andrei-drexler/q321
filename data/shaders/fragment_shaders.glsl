@@ -3090,7 +3090,7 @@ void Lmapped() {
 
 void present() {
 	vec3 c = T0(UV).xyz;
-	FCol = vec4(pow(sat(c.xyz), Time.www) + H(UV * 255.) / 255., 1);
+	FCol = vec4(c * pow(max(sum(c * c) / 3., 1e-5), Time.w * .5 - .5) + H(UV * 255.) / 255., 1);
 }
 
 ////////////////////////////////////////////////////////////////
