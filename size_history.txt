@@ -1350,3 +1350,4 @@
 66346,removed initial black frames
 66258,replaced rect packing algorithm
 66643,added high quality flat patch uv mapping
+66244,disabled flat patch special case
