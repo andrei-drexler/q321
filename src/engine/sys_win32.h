@@ -854,7 +854,14 @@ FORCEINLINE Sys::Library::Function Sys::GetRawFunction(Library lib, const char* 
 }
 
 ////////////////////////////////////////////////////////////////
+// OS-specific OpenGL functionality ////////////////////////////
 ////////////////////////////////////////////////////////////////
+
+namespace Sys::GL {
+	void* CreateWindowContext(Sys::Window* window);
+	PROC GetProcAddress(const char* name);
+}
+
 ////////////////////////////////////////////////////////////////
 
 namespace Win32 {
@@ -902,11 +909,6 @@ namespace Win32 {
 
 		return wglCreateContext(dc);
 	}
-}
-
-namespace Sys::GL {
-	void* CreateWindowContext(Sys::Window* window);
-	PROC GetProcAddress(const char* name);
 }
 
 ////////////////////////////////////////////////////////////////
