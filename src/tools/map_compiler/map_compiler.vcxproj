@@ -39,7 +39,7 @@
     <ProjectGuid>{E36F3037-69FC-42E8-8798-48745069FD2A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>mapcompiler</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
