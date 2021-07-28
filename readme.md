@@ -32,8 +32,7 @@ A: File sizes logged in [size_history.txt](size_history.txt) are from quick deve
 # Building [![Build status](https://ci.appveyor.com/api/projects/status/m9bhlscm8gqiev4e?svg=true)](https://ci.appveyor.com/project/andrei-drexler/q321)
 
 ## Prerequisites
-- Visual Studio 2017 with C++ support.\
-Note: Visual Studio 2019 should also work, but it hasn't been tested.
+- Visual Studio 2017 with C++ support (toolset v141) and Windows SDK 8.1
 
 ## Uncompressed builds
 For an uncompressed build, open `demo.sln` in Visual Studio, select the `Release|Win32` configuration, and build/run the `demo` project.
