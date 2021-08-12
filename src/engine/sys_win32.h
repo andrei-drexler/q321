@@ -6,6 +6,8 @@
 #define _WIN32_WINNT 0x0603
 #include <Windows.h>
 
+#include <timeapi.h>
+
 #include "keys_win32.h"
 
 ////////////////////////////////////////////////////////////////
@@ -563,6 +565,7 @@ FORCEINLINE void Sys::RasterizeFont(const char* name, int font_size, u32 flags, 
 ////////////////////////////////////////////////////////////////
 
 [[noreturn]] void WINAPI WinMainCRTStartup() {
+	timeBeginPeriod(1);
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
 	QueryPerformanceCounter(&Win32::g_start_time);

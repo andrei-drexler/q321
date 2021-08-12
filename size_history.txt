@@ -1354,3 +1354,4 @@
 66252,tweaked brightness adjustment implementation
 66252,fixed vs2019 compilation error
 66221,use winsdk 8.1
+66179,timebeginperiod(1) on startup

@@ -13,7 +13,7 @@ set out_folder=output\crinkler\
 set exe_path=!out_folder!demo.exe
 set size_log=size_history.txt
 set crinkler=external\crinkler23\win%os_bits%\crinkler.exe
-set libs=user32.lib kernel32.lib gdi32.lib opengl32.lib
+set libs=user32.lib kernel32.lib gdi32.lib opengl32.lib winmm.lib
 set range_libs=/RANGE:opengl32
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
