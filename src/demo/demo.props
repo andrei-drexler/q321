@@ -24,6 +24,8 @@
       <MapExports>true</MapExports>
       <StackCommitSize>1048576</StackCommitSize>
       <StackReserveSize>1048576</StackReserveSize>
+      <AdditionalDependencies>user32.lib;kernel32.lib;gdi32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
     </Link>
     <ClCompile>
       <BufferSecurityCheck>false</BufferSecurityCheck>
