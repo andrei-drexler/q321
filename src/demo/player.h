@@ -3,34 +3,36 @@
 namespace Demo {
 	struct Player {
 		static constexpr float
-			MoveSpeed		= 320.f,
-			StepUpSpeed		= 32.f,
-			TurnSpeed		= 90.f,
-			TeleportSpeed	= 400.f,
-			JumpSpeed		= 270.f,
-			LandSpeed		= 200.f,
-			StopSpeed		= 100.f,
+			MoveSpeed			= 320.f,
+			StepUpSpeed			= 32.f,
+			TurnSpeed			= 90.f,
+			TeleportSpeed		= 400.f,
+			JumpSpeed			= 270.f,
+			LandSpeed			= 200.f,
+			StopSpeed			= 100.f,
 
-			GroundAccel		= 10.f,
-			AirAccel		= 1.f,
-			Friction		= 6.f,
+			GroundAccel			= 10.f,
+			AirAccel			= 1.f,
+			Friction			= 6.f,
 
-			NoClipAccel		= 8.f,
+			NoClipAccel			= 8.f,
 
-			LandDeflectTime	= 0.15625f,		// 0.15 in Q3
-			LandReturnTime	= 0.3125f,		// 0.3
-			LandTime		= LandDeflectTime + LandReturnTime,
+			LandDeflectTime		= 0.15625f,		// 0.15 in Q3
+			LandReturnTime		= 0.3125f,		// 0.3
+			LandTime			= LandDeflectTime + LandReturnTime,
 
-			TeleportTime	= 1.f / 4.f,
+			TeleportTime		= 1.f / 4.f,
 
-			Height			= 56.f,
-			HalfHeight		= Height * 0.5f,
-			HalfWidth		= 15.f,
-			EyeLevel		= 48.f,
-			EyeCenterOffset	= EyeLevel - HalfHeight,
-			SpawnOffset		= HalfHeight - 4.f,
+			Height				= 56.f,
+			HalfHeight			= Height * 0.5f,
+			HalfWidth			= 15.f,
+			EyeLevel			= 48.f,
+			EyeCenterOffset		= EyeLevel - HalfHeight,
+			SpawnOffset			= HalfHeight - 4.f,
 
-			ZoomTime		= 0.125f
+			ZoomTime			= 0.125f,
+
+			WeaponChangeTime	= 0.5f
 		;
 
 		static constexpr vec3
@@ -82,11 +84,13 @@ namespace Demo {
 		float				shadow_angle;
 		float				zoom;
 		float				teleport;
+		float				weapon_change;
 		const vec4*			ground;
 		vec3				angles;
 		u32					flags;
 		i16					health;
 		Entity::Type		weapon;
+		Entity::Type		next_weapon;
 
 		enum {
 			MaxTouchEnts = 16,
@@ -96,6 +100,7 @@ namespace Demo {
 
 		void				Update(float dt);
 		void				Spawn();
+		void				ChangeWeapon(Entity::Type new_weapon);
 	} g_player;
 
 	////////////////////////////////////////////////////////////////
@@ -287,6 +292,13 @@ void Demo::Player::Update(float dt) {
 	else
 		zoom = max(0.f, zoom - zoom_delta);
 
+	/* animate weapon change */
+	if (weapon_change) {
+		weapon_change = max(0.f, weapon_change - dt / WeaponChangeTime);
+		if (weapon_change < 0.5f)
+			weapon = next_weapon;
+	}
+
 	/* touch entities */
 	for (u16 i = 0; i < num_touch_ents; ++i) {
 		u16 entity_index = touch_ents[i];
@@ -334,6 +346,8 @@ void Demo::Player::Update(float dt) {
 			default: {
 				if (entity.IsPickup()) {
 					if (entity.IsSpawned()) {
+						if (entity.IsWeapon())
+							ChangeWeapon(entity.type);
 						entity.respawn = float(EntityRespawnTime[entity.type]);
 					}
 				}
@@ -343,6 +357,18 @@ void Demo::Player::Update(float dt) {
 	}
 		
 	assert(!isnan(position.x));
+}
+
+NOINLINE void Demo::Player::ChangeWeapon(Entity::Type new_weapon) {
+	if (weapon == new_weapon)
+		return;
+
+	// FIXME: allow weapon change during animation
+	if (weapon_change > 0.f)
+		return;
+
+	weapon_change = 1.f;
+	next_weapon = new_weapon;
 }
 
 NOINLINE void Demo::Player::Spawn() {

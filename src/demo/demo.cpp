@@ -256,7 +256,6 @@ namespace Demo {
 		if (fov_delta > 0.f)
 			transform.angles[1] -= fov_delta;
 
-		mat4 rotation = MakeRotation(Math::ToRadians(transform.angles));
 		transform.position = g_player.position;
 		transform.position.z -= g_player.step;
 		mix_into(transform.position, Uniform::Cam.xyz, 17.f/16.f);
@@ -276,6 +275,11 @@ namespace Demo {
 		offset.y += speed * sin(g_player.walk_cycle * 10.f) + idle;
 		offset.z += speed * sin(g_player.walk_cycle * 20.f) * 0.25f + (WeaponSway - idle);
 
+		float change = 0.5f - abs(g_player.weapon_change - 0.5f);
+		offset.z -= 16.f * change;
+		transform.angles[0] -= 128.f * change;
+
+		mat4 rotation = MakeRotation(Math::ToRadians(transform.angles));
 		transform.position += rotation * (offset * WeaponScale);
 		transform.scale = WeaponScale;
 
