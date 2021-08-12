@@ -394,13 +394,8 @@ float box(vec2 p, vec2 r) {
 	return min(mx(p = abs(p) - r), 0.) + length(max(p, 0.));
 }
 
-float box1(vec2 p, vec2 r) {
-	return mx(abs(p) - r);
-}
-
-float circ(vec2 p, float r) {
-	return length(p) - r;
-}
+#define box1(p, r) mx(abs(p) - (r))
+#define circ(p, r) (length(p) - (r))
 
 float seg(vec2 p, vec2 a, vec2 b, float r) {
 	return circ(p - seg(p, a, b), r);
@@ -3848,6 +3843,86 @@ void rocketl_m() {
 	//FCol.xyz *= vec3(.5) * sat(d) + 1. * pow(sat(d), 16.);
 	//FCol.xyz = vec3(fract(Pos.xz/40. + vec2(.25, .15)), 0);
 	//FCol.xyz = vec3(fract(Pos.xz/1.), 0);
+}
+
+// models/weapons2/shotgun/shotgun.tga (model shader)
+void shotgun_m() {
+	FCol = (sqr(triplanar(16.)) * .6 + .2)
+		* (.7 + .3 * normalize(Nor).z)
+	;
+	FCol.xyz += pow(sat(normalize(Nor).z), mix(2., 8., FCol.y)) * sqr(FCol.xyz); // fake baked specular
+	FCol.xyz *= ModelLight();
+
+	vec3 p = Pos, q;
+	float
+		m, // mask
+		d = box1(p - vec3(16.3, -.35, 2.9), vec3(3, .4, .4))
+	;
+	// front barrel space edge highlight
+	FCol.xyz *= 1.
+		+ .5 * sqr(tri(.1, .2, d))
+	;
+
+	// shadow under top handle
+	d = box1(p - vec3(-.25, -.35, 2.8), vec3(3.1, .5, .9));
+	FCol.xyz *= 1.
+		- .5 * ls(.0, -.4, d)
+	;
+
+	// symmetry (slightly off-center)
+	p.y = abs(p.y + .25);
+
+	// front exhausts
+	d = box1(p - vec3(13.77, 1.8, 2.6), vec3(.5, .7, .5));
+	d = min(d, box1(p - vec3(15.5, 1.8, 2.6), vec3(.5, .7, .5)));
+	d = min(d, box1(p - vec3(17.25, 1.8, 2.6), vec3(.5, .7, .5)));
+
+	FCol.xyz *= 1.
+		- .6 * sqr(ls(.0, -.2, d))
+		+ .5 * sqr(tri(.0, .1, d))
+	;
+
+	// loading slot
+	d = box1(q = p - vec3(-.4, 1.5, 2), vec3(1, .7, .3));
+	FCol.xyz *= 1.
+		- 1. * (q.z - .2) * sqr(tri(.0, .2, d))
+		- ls(.1, -.3, d) * ls(-.15, .1, q.z)
+	;
+
+	// barrel reflections
+	d = length(p.yz - vec2(1.2, 3.2));
+	FCol.xyz *= 1.
+		+ 2. * sqr(ls(.7, .1, d)) * tri(15., 15., p.x) // bright top
+	;
+
+	d = length(p.yz - vec2(2.3, 2.6));
+	FCol.xyz *= 1.
+		+ 2. * sqr(ls(1., .1, d)) * tri(15., 15., p.x) // bright bottom
+	;
+
+	d = length(p.yz - vec2(2.2, 2.8));
+	FCol.xyz *= 1.
+		- .7 * sqr(ls(1., .1, d)) * tri(15., 15., p.x) // dark mid
+	;
+
+	// dark middle seam
+	FCol.xyz *= 1.
+		- .4 * sqr(ls(.7, .1, p.y)) * ls(3., 7., p.x) * ls(19., 17., p.x)
+	;
+
+	// specular
+	d = length(p - vec3(-7, 0, 2));
+	FCol.xyz *= 1.
+		+ 1.5 * sqr(ls(2., .2, d))
+	;
+
+	p.y = abs(Pos.y + .35); // shift symmetry plane a bit
+	d = length(p.yz - vec2(1.3, 2.1));
+	m = ls(18., 19., p.x);
+	FCol.xyz *= 1.
+		- ls(.7, .3, d) * m
+		+ sqr(tri(.8, .2, d)) * m * ls(2.5, 1.5, p.z)
+	;
 }
 
 ////////////////////////////////////////////////////////////////

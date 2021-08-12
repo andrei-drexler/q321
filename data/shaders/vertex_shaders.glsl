@@ -216,6 +216,7 @@ void item() {
 }
 void itemshiny() { item(); }
 void rocketl_m() { item(); }
+void shotgun_m() { item(); }
 void ammobox() { item(); }
 void ammoboxicon() { item(); }
 void healthsphere() { item(); }

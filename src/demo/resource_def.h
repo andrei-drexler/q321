@@ -158,6 +158,7 @@
 	x(gunmetal,				FSVertexBits)\
 	x(rocketl,				FSVertexBits)\
 	x(rocketl_m,			ModelVertexBits)\
+	x(shotgun_m,			ModelVertexBits)\
 	x(item,					ModelVertexBits)\
 	x(itemshiny,			ModelVertexBits)\
 	x(ammobox,				ModelVertexBits)\
@@ -425,6 +426,7 @@
 	x("models/powerups/ammo/rockammo2",			ammoboxicon,	Font,			Solid,		Opaque,					(0))\
 	x("models/powerups/armor/newred",			armor,			gunmetal,		Solid,		Opaque,					(0))\
 	x("models/weapons2/rocketl/rocketl",		rocketl_m,		rocketl,		Solid,		Opaque,					(0))\
+	x("models/weapons2/shotgun/shotgun",		shotgun_m,		gunmetal,		Solid,		Opaque,					(0))\
 	x("models/weapons2/plasma/plasma_glo",		plasma_glo_m,	plasma_glo,		Solid,		Opaque,					(0))\
 	x("skies/blacksky",							blacksky,		White,			Solid,		Sky,					(0))\
 	x("skies/tim_hell",							timhel,			White,			Solid,		Sky,					(0))\

@@ -1356,3 +1356,4 @@
 66221,use winsdk 8.1
 66179,timebeginperiod(1) on startup
 66339,weapon switching on pickup
+66526,added basic shotgun model shader
