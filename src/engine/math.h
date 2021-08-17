@@ -1122,16 +1122,18 @@ FORCEINLINE vec3 oct_to_vec3(const vec2& e) {
 	float absy = Math::abs(e.y);
 	assert(absx <= 1.f);
 	assert(absy <= 1.f);
+	v.x = e.x;
+	v.y = e.y;
 	v.z = 1.f - absx - absy;
-	if (v.z < 0.f) {
-		float sx = Math::sign_nonzero(e.x);
-		float sy = Math::sign_nonzero(e.y);
-		v.x = (1.f - absy) * sx;
-		v.y = (1.f - absx) * sy;
-	} else {
-		v.x = e.x;
-		v.y = e.y;
-	}
+	float t = Math::max(-v.z, 0.f);
+	if (v.x > 0.f)
+		v.x -= t;
+	else
+		v.x += t;
+	if (v.y > 0.f)
+		v.y -= t;
+	else
+		v.y += t;
 	safe_normalize(v);
 	return v;
 }

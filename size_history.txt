@@ -1357,3 +1357,4 @@
 66179,timebeginperiod(1) on startup
 66339,weapon switching on pickup
 66526,added basic shotgun model shader
+66515,tweaked oct_to_vec3
