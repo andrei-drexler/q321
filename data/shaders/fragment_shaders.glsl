@@ -15,7 +15,7 @@
 
 ////////////////////////////////////////////////////////////////
 
-// Hardware derivates are computed at half resolution (pixel quads).
+// Hardware derivatives are computed at half resolution (pixel quads).
 // To get full-resolution results, we need to evaluate 3 taps.
 // The macro below helps automate that process a bit.
 //
