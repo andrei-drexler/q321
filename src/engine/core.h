@@ -238,7 +238,8 @@ FORCEINLINE void MemCopyScalar(T* dst, const T* src) {
 		((u32*)dst)[1] = ((const u32*)src)[1];
 		((u32*)dst)[2] = ((const u32*)src)[2];
 	} else {
-		static_assert(false, "Unsupported object size, use MemCopy");
+		// https://devblogs.microsoft.com/oldnewthing/20200311-00/?p=103553
+		static_assert(!sizeof(T*), "Unsupported object size, use MemCopy");
 	}
 }
 
