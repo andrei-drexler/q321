@@ -343,7 +343,7 @@ void SortEntities(Map& map, const Options& options) {
 
 	DebugPrint("Entities:\n");
 	DebugPrint("-----------------\n");
-	printf(INDENT "%3d remaining entities:\n", map.entities.size());
+	printf(INDENT "%3zd remaining entities:\n", map.entities.size());
 	for (auto& type : sorted_types) {
 		printf(INDENT "%3zd x %.*s\n", type_count[type], int(type.size()), type.data());
 		DebugPrint("%.*s\n", int(type.size()), type.data());
