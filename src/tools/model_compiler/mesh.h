@@ -167,16 +167,16 @@ void WeldVertices(Mesh::Part& part) {
 		}
 	};
 
-	using VertexHashMap = std::unordered_map<size_t, size_t, VertexRefHasher, VertexRefHasher>;
-	
+	using VertexHashMap = std::unordered_map<u32, u32, VertexRefHasher, VertexRefHasher>;
+
 	/* initializate hasher and key_eq with part pointer */
 	VertexHashMap hash_map(part.vertices.size() * 2, {&part}, {&part});
 
-	std::vector<size_t> remap(part.vertices.size());
+	std::vector<u32> remap(part.vertices.size());
 
 	size_t removed = 0;
 	for (size_t i = 0; i < part.vertices.size(); ++i) {
-		size_t& index = hash_map[i];
+		u32& index = hash_map[i];
 		if (index == 0)
 			index = i + 1;
 		remap[i] = index - 1;
@@ -184,7 +184,7 @@ void WeldVertices(Mesh::Part& part) {
 			++removed;
 	}
 
-	for (size_t& i : part.indices)
+	for (u32& i : part.indices)
 		i = remap[i];
 }
 
